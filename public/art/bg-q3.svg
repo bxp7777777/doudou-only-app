@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Q版小猪和小金毛去散步">
+  <defs>
+    <linearGradient id="pigHead" x1="28%" y1="8%" x2="82%" y2="92%">
+      <stop offset="0%" stop-color="#ffe7ec"/>
+      <stop offset="50%" stop-color="#ffc9d4"/>
+      <stop offset="100%" stop-color="#ffa9bb"/>
+    </linearGradient>
+    <linearGradient id="dogHead" x1="24%" y1="4%" x2="86%" y2="96%">
+      <stop offset="0%" stop-color="#fff2d9"/>
+      <stop offset="50%" stop-color="#f9dcac"/>
+      <stop offset="100%" stop-color="#eec489"/>
+    </linearGradient>
+    <linearGradient id="grass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e7f6e6"/>
+      <stop offset="100%" stop-color="#d3ecd6"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="100%" stop-color="#ffe08a"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <g id="spark">
+      <path d="M0 -24 L6 -6 L24 0 L6 6 L0 24 L-6 6 L-24 0 L-6 -6 Z"/>
+    </g>
+
+    <g id="pig">
+      <ellipse cx="245" cy="415" rx="92" ry="120" fill="#ff9fb0" stroke="#f292a6" stroke-width="7" transform="rotate(-24 245 415)"/>
+      <ellipse cx="470" cy="350" rx="92" ry="120" fill="#ff9fb0" stroke="#f292a6" stroke-width="7" transform="rotate(18 470 350)"/>
+      <circle cx="350" cy="600" r="245" fill="url(#pigHead)" stroke="#f2a8b9" stroke-width="7"/>
+      <ellipse cx="350" cy="690" rx="98" ry="70" fill="#ff9fb0"/>
+      <ellipse cx="322" cy="690" rx="14" ry="18" fill="#e88294"/>
+      <ellipse cx="378" cy="690" rx="14" ry="18" fill="#e88294"/>
+      <path d="M318 782 Q350 800 382 782" fill="none" stroke="#d9788f" stroke-width="9" stroke-linecap="round"/>
+      <path d="M258 572 Q300 542 342 572" fill="none" stroke="#5b4044" stroke-width="15" stroke-linecap="round"/>
+      <path d="M388 586 Q430 556 472 586" fill="none" stroke="#5b4044" stroke-width="15" stroke-linecap="round"/>
+      <ellipse cx="241" cy="670" rx="50" ry="32" fill="#ff8fa3" opacity="0.5" filter="url(#soft)"/>
+      <ellipse cx="472" cy="690" rx="50" ry="32" fill="#ff8fa3" opacity="0.46" filter="url(#soft)"/>
+    </g>
+
+    <g id="dog">
+      <ellipse cx="520" cy="305" rx="96" ry="134" fill="#e6bd86" transform="rotate(-26 520 305)"/>
+      <ellipse cx="880" cy="298" rx="96" ry="134" fill="#e6bd86" transform="rotate(24 880 298)"/>
+      <circle cx="690" cy="572" r="250" fill="url(#dogHead)" stroke="#e3b681" stroke-width="7"/>
+      <ellipse cx="690" cy="700" rx="148" ry="110" fill="#fff6e8"/>
+      <ellipse cx="690" cy="652" rx="45" ry="33" fill="#6b4a45"/>
+      <ellipse cx="703" cy="641" rx="13" ry="9" fill="#fff6e8" opacity="0.55"/>
+      <path d="M642 714 Q666 736 690 714 Q714 736 738 714" fill="none" stroke="#6b4a45" stroke-width="11" stroke-linecap="round"/>
+      <ellipse cx="690" cy="744" rx="21" ry="14" fill="#ff9fb0"/>
+      <path d="M555 570 Q615 530 675 570" fill="none" stroke="#5b4044" stroke-width="16" stroke-linecap="round"/>
+      <path d="M770 556 Q830 516 890 556" fill="none" stroke="#5b4044" stroke-width="16" stroke-linecap="round"/>
+      <ellipse cx="546" cy="660" rx="56" ry="35" fill="#ff9db1" opacity="0.44" filter="url(#soft)"/>
+      <ellipse cx="906" cy="648" rx="56" ry="35" fill="#ff9db1" opacity="0.4" filter="url(#soft)"/>
+    </g>
+  </defs>
+
+  <!-- 太阳 -->
+  <circle cx="852" cy="164" r="92" fill="url(#sun)"/>
+  <g stroke="#ffe9a8" stroke-width="10" stroke-linecap="round" opacity="0.9">
+    <path d="M852 34 L852 6"/><path d="M852 294 L852 322"/><path d="M722 164 L694 164"/><path d="M982 164 L1010 164"/>
+    <path d="M760 72 L741 53"/><path d="M944 72 L963 53"/><path d="M760 256 L741 275"/><path d="M944 256 L963 275"/>
+  </g>
+
+  <!-- 云 -->
+  <g fill="#ffffff" opacity="0.92">
+    <ellipse cx="230" cy="230" rx="110" ry="58"/>
+    <ellipse cx="300" cy="210" rx="86" ry="52"/>
+    <ellipse cx="640" cy="180" rx="96" ry="52"/>
+    <ellipse cx="706" cy="200" rx="74" ry="44"/>
+  </g>
+
+  <!-- 草地 -->
+  <ellipse cx="300" cy="1050" rx="440" ry="215" fill="url(#grass)"/>
+  <ellipse cx="780" cy="1060" rx="430" ry="220" fill="url(#grass)"/>
+  <ellipse cx="520" cy="1010" rx="520" ry="130" fill="#e9f7e7" opacity="0.75"/>
+
+  <!-- 小猪（往前迈一步） -->
+  <g transform="translate(-56 48)">
+    <use href="#pig"/>
+  </g>
+  <ellipse cx="262" cy="800" rx="52" ry="34" fill="#ffb3c4"/>
+  <ellipse cx="368" cy="812" rx="52" ry="34" fill="#ffb3c4"/>
+
+  <!-- 小金毛（一只爪抬起来） -->
+  <g transform="translate(-24 28)">
+    <use href="#dog"/>
+  </g>
+  <ellipse cx="748" cy="796" rx="56" ry="36" fill="#eec489"/>
+  <ellipse cx="862" cy="806" rx="56" ry="36" fill="#eec489"/>
+  <ellipse cx="640" cy="800" rx="56" ry="36" fill="#eec489"/>
+  <ellipse cx="952" cy="700" rx="48" ry="62" fill="#f3d3a2" transform="rotate(24 952 700)"/>
+
+  <!-- 小蝴蝶 -->
+  <g transform="translate(486 430) rotate(-14)">
+    <ellipse cx="-26" cy="-8" rx="26" ry="20" fill="#ffd0e2"/>
+    <ellipse cx="26" cy="-8" rx="26" ry="20" fill="#ffd0e2"/>
+    <ellipse cx="-20" cy="16" rx="20" ry="15" fill="#ffe0ec"/>
+    <ellipse cx="20" cy="16" rx="20" ry="15" fill="#ffe0ec"/>
+    <ellipse cx="0" cy="4" rx="8" ry="26" fill="#c9a8c9"/>
+  </g>
+
+  <!-- 小花 -->
+  <g transform="translate(160 880)">
+    <circle cx="0" cy="-20" r="16" fill="#ffd0e2"/><circle cx="20" cy="0" r="16" fill="#ffd0e2"/>
+    <circle cx="0" cy="20" r="16" fill="#ffd0e2"/><circle cx="-20" cy="0" r="16" fill="#ffd0e2"/>
+    <circle cx="0" cy="0" r="12" fill="#ffe9a8"/>
+  </g>
+  <g transform="translate(410 940) scale(0.8)">
+    <circle cx="0" cy="-20" r="16" fill="#fff0c4"/><circle cx="20" cy="0" r="16" fill="#fff0c4"/>
+    <circle cx="0" cy="20" r="16" fill="#fff0c4"/><circle cx="-20" cy="0" r="16" fill="#fff0c4"/>
+    <circle cx="0" cy="0" r="12" fill="#ffd9a0"/>
+  </g>
+
+  <g transform="translate(230 360) scale(0.75)" fill="#ffe0ea" opacity="0.9"><use href="#spark"/></g>
+  <g transform="translate(640 330) scale(0.55)" fill="#fff0c4" opacity="0.9"><use href="#spark"/></g>
+</svg>

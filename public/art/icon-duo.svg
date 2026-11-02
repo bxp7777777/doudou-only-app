@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="小猪和小金毛贴贴">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7f3"/>
+      <stop offset="100%" stop-color="#ffe9e1"/>
+    </linearGradient>
+    <linearGradient id="pig" x1="30%" y1="10%" x2="80%" y2="90%">
+      <stop offset="0%" stop-color="#ffe4ea"/>
+      <stop offset="100%" stop-color="#ffa9bb"/>
+    </linearGradient>
+    <linearGradient id="dog" x1="25%" y1="5%" x2="85%" y2="95%">
+      <stop offset="0%" stop-color="#fff0d4"/>
+      <stop offset="100%" stop-color="#edc286"/>
+    </linearGradient>
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb0c2"/>
+      <stop offset="100%" stop-color="#ff8fa8"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- 小金毛耳朵 -->
+  <ellipse cx="234" cy="232" rx="40" ry="62" fill="#e6bd86" transform="rotate(-30 234 232)"/>
+  <ellipse cx="406" cy="228" rx="40" ry="62" fill="#e6bd86" transform="rotate(28 406 228)"/>
+
+  <!-- 小金毛 -->
+  <circle cx="320" cy="300" r="104" fill="url(#dog)" stroke="#e3b681" stroke-width="3"/>
+  <ellipse cx="326" cy="346" rx="55" ry="43" fill="#fff6e8"/>
+  <ellipse cx="326" cy="326" rx="17" ry="13" fill="#6b4a45"/>
+  <ellipse cx="331" cy="321" rx="5" ry="4" fill="#fff6e8" opacity="0.55"/>
+  <path d="M310 352 Q318 360 326 352 Q334 360 342 352" fill="none" stroke="#6b4a45" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="326" cy="368" rx="8" ry="6" fill="#ff9fb0"/>
+  <path d="M268 286 Q284 270 300 286" fill="none" stroke="#5b4044" stroke-width="5" stroke-linecap="round"/>
+  <path d="M340 282 Q356 266 372 282" fill="none" stroke="#5b4044" stroke-width="5" stroke-linecap="round"/>
+  <ellipse cx="248" cy="318" rx="20" ry="12" fill="#ff9db1" opacity="0.48"/>
+  <ellipse cx="402" cy="316" rx="20" ry="12" fill="#ff9db1" opacity="0.44"/>
+
+  <!-- 小猪耳朵（先画，右耳在小金毛头后探出一点） -->
+  <ellipse cx="112" cy="262" rx="36" ry="54" fill="#ff9fb0" stroke="#f292a6" stroke-width="3" transform="rotate(-26 112 262)"/>
+  <ellipse cx="262" cy="214" rx="36" ry="54" fill="#ff9fb0" stroke="#f292a6" stroke-width="3" transform="rotate(22 262 214)"/>
+
+  <!-- 小猪 -->
+  <circle cx="170" cy="338" r="90" fill="url(#pig)" stroke="#f2a8b9" stroke-width="3"/>
+  <ellipse cx="170" cy="364" rx="38" ry="29" fill="#ff9fb0"/>
+  <ellipse cx="159" cy="364" rx="6" ry="8" fill="#e88294"/>
+  <ellipse cx="181" cy="364" rx="6" ry="8" fill="#e88294"/>
+  <path d="M136 306 Q152 292 168 306" fill="none" stroke="#5b4044" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M186 310 Q202 296 218 310" fill="none" stroke="#5b4044" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M156 396 Q170 404 184 396" fill="none" stroke="#d9788f" stroke-width="3.5" stroke-linecap="round"/>
+  <ellipse cx="110" cy="352" rx="17" ry="11" fill="#ff8fa3" opacity="0.5"/>
+  <ellipse cx="232" cy="358" rx="17" ry="11" fill="#ff8fa3" opacity="0.45"/>
+
+  <!-- 爱心 -->
+  <path d="M256 92 C240 76 214 84 214 106 C214 126 238 140 256 156 C274 140 298 126 298 106 C298 84 272 76 256 92 Z" fill="url(#heartGrad)"/>
+</svg>
