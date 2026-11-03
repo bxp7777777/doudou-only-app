@@ -6,14 +6,14 @@ import SKINCARE from './skincare.js';
 import * as HEALTH from './health.js';
 
 const GREETING = {
-  morning: '豆豆大王，早上好呀',
-  noon: '豆豆大王，午安',
-  afternoon: '豆豆大王，下午好',
-  evening: '豆豆大王，晚上好',
-  late: '豆豆大王，该收工啦',
-  bedtime: '豆豆大王，故事时间到',
-  deepnight: '豆豆大王，这么晚还没睡呀',
-  sleep: '豆豆大王，该睡啦'
+  morning: ['豆豆大王，早上好呀', '豆豆大王，醒啦，新的一天慢慢来', '早安豆豆大王，今天也轻松一点开始', '早上好呀，小猪小金毛在这儿陪你', '醒过来先笑一个，今天顺一点'],
+  noon: ['豆豆大王，午安', '豆豆大王，中午好呀', '午安豆豆大王，先歇口气再忙', '中午好，吃口热的补补精神'],
+  afternoon: ['豆豆大王，下午好', '豆豆大王，下午好呀', '下午啦，困了就起身动一动', '午后好，温水别忘抿一口'],
+  evening: ['豆豆大王，晚上好', '豆豆大王，晚上好呀', '晚上好，忙了一天先松口气', '傍晚好，慢慢收个尾就好'],
+  late: ['豆豆大王，该收工啦', '豆豆大王，差不多收尾啦', '今天辛苦啦，慢慢收个尾', '不着急，把手头的事存好就歇'],
+  bedtime: ['豆豆大王，故事时间到', '豆豆大王，来看今天的小故事吧', '故事时间，和两只小家伙轻松一会儿', '今天的小故事和笑话在等你'],
+  deepnight: ['豆豆大王，这么晚还没睡呀', '豆豆大王，夜深啦，先让自己静下来', '这么晚啦，小猪就在旁边陪着', '别熬太狠，先让眼睛歇一歇'],
+  sleep: ['豆豆大王，该歇着啦', '豆豆大王，慢慢准备休息吧', '该歇啦，把手机放远一点', '放松下来，好好歇一觉']
 };
 
 const CUP_HEADS = {
@@ -35,13 +35,15 @@ function dayIndex(key) {
   return Math.floor(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])).getTime() / 86400000);
 }
 
-function greeting(period) {
-  return GREETING[period] || GREETING.morning;
+function greeting(period, seed) {
+  const arr = GREETING[period] || GREETING.morning;
+  if (seed === undefined || seed === null) return arr[0];
+  return rot(arr, seed);
 }
 
 /* ------------------------- 1. 喝水 ------------------------- */
 
-function waterModule(period, day, water) {
+function waterModule(period, day, water, weather) {
   const cups = water && water.cups ? water.cups : [false, false, false];
   const done = cups.filter(Boolean).length;
   const seed = Number(dayIndex(day)) || 0;
@@ -86,6 +88,27 @@ function waterModule(period, day, water) {
       '就差最后一杯，小猪陪你一起喝掉它。',
       '只差临门一脚，把最后一杯喝完就达标啦。'
     ], seed + 2));
+  }
+
+  // 按南宁当天天气追加补水建议，不影响杯子计数结构
+  const nn = (Array.isArray(weather) ? weather : []).filter(function (c) {
+    return c && c.key === 'nanning';
+  })[0] || null;
+  if (nn) {
+    const wl = [];
+    if (nn.temp !== null && nn.temp !== undefined && nn.temp >= 30) {
+      wl.push('南宁今天约' + nn.temp + '度偏热，温水少量多次补，别等口渴才喝。');
+    }
+    if (nn.humidity !== null && nn.humidity !== undefined && nn.humidity <= 40) {
+      wl.push('南宁空气偏干（湿度' + nn.humidity + '%），白天多抿两口温水、润润嘴唇。');
+    }
+    if (nn.rain !== null && nn.rain !== undefined && nn.rain >= 50) {
+      wl.push('南宁可能下雨（' + nn.rain + '%），在屋里也记得按时喝水。');
+    }
+    if (nn.diff !== null && nn.diff !== undefined && nn.diff >= 8) {
+      wl.push('南宁昼夜差' + nn.diff + '度，温水随时抿两口，护好肚子别着凉。');
+    }
+    wl.slice(0, 2).forEach(function (x) { lines.push(x); });
   }
 
   return {
@@ -308,7 +331,27 @@ function qinModule(period, now) {
 
 /* ------------------------- 敏感肌护肤 ------------------------- */
 
-function skincareModule(period) {
+function skincareModule(period, weather) {
+  const nn = (Array.isArray(weather) ? weather : []).filter(function (c) {
+    return c && c.key === 'nanning';
+  })[0] || null;
+  const extra = [];
+  if (nn) {
+    if (nn.humidity !== null && nn.humidity !== undefined && nn.humidity <= 40) {
+      extra.push('空气偏干：保湿和润唇少量多次补，别让脸和手绷着。');
+    }
+    if (nn.temp !== null && nn.temp !== undefined && nn.temp >= 30) {
+      extra.push('天气偏热：出汗及时温和清洁、擦干，防晒优先帽子和伞。');
+    }
+    if (nn.rain !== null && nn.rain !== undefined && nn.rain >= 50) {
+      extra.push('阴雨天湿度大：护肤从简、少叠层，保持清爽不闷。');
+    }
+    if (nn.humidity !== null && nn.humidity !== undefined && nn.humidity >= 80) {
+      extra.push('湿度偏高：洁面后薄涂一层就好，别叠太多层。');
+    }
+  }
+  const skinExtra = extra.slice(0, 2);
+
   if (period === 'morning') {
     return {
       id: 'skin',
@@ -316,7 +359,7 @@ function skincareModule(period) {
       icon: '🧴',
       title: SKINCARE.morning.title,
       sub: '敏感肌越简单越稳',
-      lines: SKINCARE.morning.steps.concat([SKINCARE.morning.note])
+      lines: SKINCARE.morning.steps.concat([SKINCARE.morning.note]).concat(skinExtra)
     };
   }
   if (period === 'evening' || period === 'late') {
@@ -326,7 +369,7 @@ function skincareModule(period) {
       icon: '🧴',
       title: SKINCARE.evening.title,
       sub: '不刷酸、不去角质、不上猛药',
-      lines: SKINCARE.evening.steps.concat([SKINCARE.evening.note])
+      lines: SKINCARE.evening.steps.concat([SKINCARE.evening.note]).concat(skinExtra)
     };
   }
   if (period === 'afternoon') {
@@ -336,7 +379,7 @@ function skincareModule(period) {
       icon: '🧴',
       title: '护肤 · 下午补一下',
       sub: '',
-      lines: ['太阳还在的话，帽子、伞、口罩别落下，物理遮挡最省事。', '脸干了就薄涂一点保湿修护，别用手一直摸。']
+      lines: ['太阳还在的话，帽子、伞、口罩别落下，物理遮挡最省事。', '脸干了就薄涂一点保湿修护，别用手一直摸。'].concat(skinExtra)
     };
   }
   if (period === 'bedtime' || period === 'sleep') {
@@ -346,7 +389,7 @@ function skincareModule(period) {
       icon: '🧴',
       title: '护肤 · 睡前一步',
       sub: '',
-      lines: ['嘴唇干就补一层润唇，其他都留给明天早上。']
+      lines: ['嘴唇干就补一层润唇，其他都留给明天早上。'].concat(skinExtra)
     };
   }
   return null;
@@ -502,8 +545,8 @@ function bedtimeModules(ctx, now) {
 function lateModules(ctx) {
   const t = schedule.tomorrow(new Date());
   return [
-    waterModule(ctx.period, ctx.today, ctx.water),
-    skincareModule(ctx.period),
+    waterModule(ctx.period, ctx.today, ctx.water, ctx.weather),
+    skincareModule(ctx.period, ctx.weather),
     {
       id: 'sleep-push',
       type: 'text',
@@ -529,18 +572,18 @@ function build(ctx) {
 
   if (p === 'morning') {
     mods = [
-      waterModule(p, ctx.today, ctx.water),
+      waterModule(p, ctx.today, ctx.water, ctx.weather),
       scheduleModule(now),
       mealModule(p, now),
       weatherModule(ctx),
-      skincareModule(p),
+      skincareModule(p, ctx.weather),
       checkinModule(ctx.today, 'today')
     ];
   } else if (p === 'noon') {
-    mods = [mealModule(p, now), waterModule(p, ctx.today, ctx.water), scheduleModule(now), cycleModule(ctx)];
+    mods = [mealModule(p, now), waterModule(p, ctx.today, ctx.water, ctx.weather), scheduleModule(now), cycleModule(ctx)];
   } else if (p === 'afternoon') {
     mods = [
-      waterModule(p, ctx.today, ctx.water),
+      waterModule(p, ctx.today, ctx.water, ctx.weather),
       mealModule(p, now),
       qinModule(p, now),
       weatherModule(ctx),
@@ -548,9 +591,9 @@ function build(ctx) {
     ];
   } else if (p === 'evening') {
     mods = [
-      waterModule(p, ctx.today, ctx.water),
+      waterModule(p, ctx.today, ctx.water, ctx.weather),
       mealModule(p, now),
-      skincareModule(p),
+      skincareModule(p, ctx.weather),
       qinModule(p, now),
       checkinModule(ctx.today, 'today'),
       cycleModule(ctx)
@@ -560,25 +603,57 @@ function build(ctx) {
   } else if (p === 'bedtime') {
     mods = bedtimeModules(ctx, now);
   } else if (p === 'sleep') {
+    const sk = dayIndex(ctx.today);
     mods = [
       {
         id: 'sleep',
         type: 'text',
         icon: '🌛',
-        title: '该睡了，豆豆大王',
-        sub: '',
-        lines: ['夜深啦，先把手机放远一点，让自己慢慢安静下来。', '小猪和小金毛在梦里等你，明天继续来陪你。']
+        title: '慢慢歇下来，豆豆大王',
+        sub: '不赶时间，先放松',
+        lines: [
+          rot([
+            '把今天没做完的事先搁到明天，现在只负责让自己舒服。',
+            '灯光调柔、手机放远，做几次长长的呼吸。',
+            '肩膀提一提再松开，把白天的紧绷一点点卸掉。',
+            '窝进软和的位置，回想一件今天的小开心事。',
+            '手脚捂暖一点，整个人慢慢就松下来。'
+          ], sk),
+          rot([
+            '小猪和小金毛在旁边安静陪着，一点也不催你。',
+            '放松躺着也是休息，不用逼自己立刻睡着。',
+            '脑子里的事说一句“明天再想”，先歇着。',
+            '呼吸慢慢放匀，让身边的安静裹住自己。',
+            '今天已经很棒了，剩下的交给明天。'
+          ], sk + 1)
+        ]
       }
     ];
   } else {
+    const sk = dayIndex(ctx.today);
     mods = [
       {
         id: 'deepnight',
         type: 'text',
         icon: '🌜',
-        title: '这么晚还没睡呀',
-        sub: '',
-        lines: ['小猪不说话，就趴在你旁边陪着。', '手机放远一点，闭上眼，明天再说。']
+        title: '这么晚啦，慢慢安静下来',
+        sub: '小猪就在旁边陪着',
+        lines: [
+          rot([
+            '小猪不说话，就趴在你旁边陪着，不催也不劝。',
+            '手机先放远一点，让眼睛和脑子歇一歇。',
+            '累了就躺下，盖好软和的被子，别硬撑着刷。',
+            '做几次深呼吸，把肩膀和眉头松开来。',
+            '没做完的事记在备忘录里，明天再处理。'
+          ], sk),
+          rot([
+            '身边安安静静的，两只小家伙陪着你。',
+            '不用着急立刻有困意，放松躺着就好。',
+            '灯光调暗一些，节奏自然会慢下来。',
+            '回想一点温暖的小细节，心也跟着软下来。',
+            '今天辛苦了，先把自己照顾舒服最重要。'
+          ], sk + 1)
+        ]
       }
     ];
   }

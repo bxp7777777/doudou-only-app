@@ -37,6 +37,16 @@ function todayKey() {
   return date.dateKey(new Date());
 }
 
+// 按当天日期取模选句：同一天固定，跨天轮换，长期不重样
+function dayRotSeed() {
+  return Number(plan.dayIndex(todayKey())) || 0;
+}
+function dayPick(arr, off) {
+  if (!arr || !arr.length) return '';
+  const s = dayRotSeed() + (off || 0);
+  return arr[(((s % arr.length) + arr.length) % arr.length)];
+}
+
 /* ------------------------- 小日子的小工具 ------------------------- */
 
 const pad2 = (n) => String(n).padStart(2, '0');
@@ -179,7 +189,7 @@ function homePage(now, period) {
   return `<div class="wrap">
     <header class="hero hero--home">
       <div class="hero-top">
-        <h1 class="hero-hi">${esc(plan.greeting(period))}</h1>
+        <h1 class="hero-hi">${esc(plan.greeting(period, dayRotSeed()))}</h1>
         <button class="gear" data-act="tab" data-tab="settings" aria-label="设置">⚙️</button>
       </div>
       <div class="hero-mascots">
@@ -246,16 +256,17 @@ function moduleHTML(m) {
 
 function homeNote(period) {
   const NOTE = {
-    morning: '先喝半杯温水，今天也慢慢陪你',
-    noon: '午饭吃热的、七分饱，别用冰饮顶',
-    afternoon: '起身活动两分钟，再喝一口水',
-    evening: '晚饭七分饱，吃完走两圈再回宿舍',
-    late: '准备收工，别再刷太久',
-    bedtime: '小故事看完啦，让眼睛和心情松一松',
-    sleep: '放下手机，好好睡一觉',
-    deepnight: '不打扰你，就在旁边安静陪着'
+    morning: ['先喝半杯温水，今天也慢慢陪你', '起床先润一口温水，别急着忙起来', '早餐吃点温热的，上午更有精神', '伸个懒腰再开始，今天轻松一点', '天亮啦，小猪小金毛陪你慢慢进入状态'],
+    noon: ['午饭吃热的、七分饱，别用冰饮顶', '午间慢慢吃，饭后歇十分钟', '午饭别凑合，温热七分饱最舒服', '午后补一口温水，别等渴了才喝', '中午歇一歇，下午才不容易累'],
+    afternoon: ['起身活动两分钟，再喝一口水', '犯困就站起来走走，洗把脸清醒一下', '课间喝两口温水，眼睛远眺一会儿', '下午慢慢来，别把自己绷太紧', '阳光好就晒一小会儿，心情会亮一点'],
+    evening: ['晚饭七分饱，吃完走两圈再回宿舍', '晚饭温热清淡些，饭后活动一小会儿', '晚上别吃太撑，舒服最重要', '收工前再补一口温水', '傍晚慢慢放松，把白天的累卸掉一点'],
+    late: ['准备收工，别再刷太久', '慢慢把今天的事收尾，别熬夜硬撑', '差不多就停手，明天接着来', '手头的事先存好，早点让自己松下来', '今天已经做得够多啦，温柔收尾'],
+    bedtime: ['小故事看完啦，让眼睛和心情松一松', '轻松看完今天的小故事，好心情收进口袋', '故事和笑话都看过啦，慢慢安静下来', '两只小家伙陪你乐过，现在歇一歇', '把今天的小开心收好，明天还有新的'],
+    sleep: ['放下手机，好好歇一觉', '把灯调柔，让自己慢慢静下来', '不赶时间，放松躺着也是休息', '呼吸放慢，今天的事交给明天', '窝舒服一点，慢慢进入休息状态'],
+    deepnight: ['不打扰你，就在旁边安静陪着', '小猪小金毛不催你，只陪着', '这么晚啦，先把手机放远一点', '安安静静待着，等你慢慢放松', '别硬撑，累了就先躺下歇着']
   };
-  return '小猪盯吃喝，小金毛摇尾巴 · ' + (NOTE[period] || '陪着你');
+  const arr = NOTE[period] || ['陪着你'];
+  return '小猪盯吃喝，小金毛摇尾巴 · ' + dayPick(arr, 0);
 }
 
 function daysBetween(a, b) {
@@ -756,13 +767,33 @@ function storyPage() {
     </section>`;
 
   const softCard = `<section class="card">
-      <h2 class="card-head"><span class="card-icon">🌿</span><span class="card-title">日常小照顾</span></h2>
+      <h2 class="card-head"><span class="card-icon">🌿</span><span class="card-title">日常小提醒</span></h2>
       <p class="line">忙累了就起身活动两分钟，喝几口温温水，让肩膀松一松。</p>
       <p class="line">手干补一点护手霜、嘴唇干抹润唇，把自己照顾得舒服一点。</p>
       <p class="line">笑一笑、伸个懒腰，心情轻了，做事情也更有精神。</p>
+      <p class="line">久坐就换个姿势、远眺一会儿，眼睛和腰背都歇口气。</p>
     </section>`;
 
-  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}</div>`;
+  const SLEEP_TIPS = [
+    '把今天没做完的事先搁一搁，天塌不下来，明天再慢慢弄。',
+    '灯光调柔一点，手机放远些，让眼睛和脑子慢慢慢下来。',
+    '做几次长长的呼吸：吸气、停一下、再慢慢吐出去。',
+    '肩膀往上提一提再松开，把白天的紧绷一点点卸掉。',
+    '想到烦心事就在心里说“明天再想”，现在先顾着舒服。',
+    '窝进软和的位置，听一点轻轻的声音，节奏自然会慢。',
+    '不用逼自己立刻睡着，放松躺着也是在好好休息。',
+    '回想今天一件小小的开心事，带着笑意慢慢安静下来。',
+    '手脚如果发凉就先捂暖，暖乎乎的更容易松下来。',
+    '小猪和小金毛就在旁边陪着，安安静静，一点也不催你。'
+  ];
+  const sleepTipCard = `<section class="card">
+      <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">睡前小建议</span></h2>
+      <p class="card-sub">不赶时间，只让自己慢慢放松</p>
+      <p class="line">${esc(dayPick(SLEEP_TIPS, 0))}</p>
+      <p class="line">${esc(dayPick(SLEEP_TIPS, 1))}</p>
+    </section>`;
+
+  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}${sleepTipCard}</div>`;
 }
 
 /* ------------------------- 备忘 ------------------------- */
@@ -860,27 +891,29 @@ function settingsPage() {
     </section>
 
     <section class="card">
-      <h2 class="card-head"><span class="card-icon">🏫</span><span class="card-title">学校与天气</span></h2>
-      <p class="line">${esc(prefs.school)} · 在食堂吃，不推具体菜。</p>
-      <p class="line">天气看 ${esc(prefs.cities.map((c) => c.name).join(' / '))}，只用来提醒温差、湿度、下雨带伞。</p>
-      <p class="hint">数据来自 Open-Meteo，绕过后端代理，前端不暴露任何 key。</p>
-    </section>
-
-    <section class="card">
       <h2 class="card-head"><span class="card-icon">💧</span><span class="card-title">喝水</span></h2>
-      <p class="line">每天 ${esc(prefs.waterGoal)} 杯温水：${esc(prefs.cups.join(' / '))}各一杯，睡前只抿两口。</p>
+      <p class="line">每天 ${esc(prefs.waterGoal)} 杯温水：${esc(prefs.cups.join(' / '))}各一杯，小口慢喝。</p>
+      <p class="line">常温或温的最好，少冰、不灌猛；出门随身带瓶水，想起来就抿一口。</p>
+      <p class="line">天气热、出汗多或者空气干的时候，稍微多补两口，别等口渴才喝。</p>
+      <p class="line">睡前只抿两口润润嘴就好，不喝一大杯，免得夜里起夜。</p>
     </section>
 
     <section class="card">
-      <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">睡觉</span></h2>
-      <p class="line">困了就慢慢放下手机，让呼吸和身边的小猪小金毛一起软下来。</p>
-      <p class="line">想看每日小故事或笑话时就点开，和两只小家伙轻松一会儿就好。</p>
+      <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">睡觉 · 好好放松</span></h2>
+      <p class="line">不规定几点必须躺下：觉得累、眼睛酸了，就慢慢把节奏放慢。</p>
+      <p class="line">放下手机、调柔灯光，做几次深呼吸，让肩膀和眉头松开。</p>
+      <p class="line">脑子里事多就先搁到明天，不用今晚全想明白；放松躺着也是休息。</p>
+      <p class="line">想看每日小故事或笑话就点开，和两只小家伙轻松一会儿，再安心歇着。</p>
+      <p class="line">手脚凉就先捂暖，窝舒服一点，小猪小金毛在旁边安静陪着你。</p>
     </section>
 
     <section class="card">
       <h2 class="card-head"><span class="card-icon">🧴</span><span class="card-title">护肤 · ${esc(prefs.skin)}</span></h2>
-      <p class="line">温和洁面、无香精保湿修护、物理遮挡优先。</p>
+      <p class="line">温和洁面、无香精保湿修护、物理遮挡优先，步骤越简单越稳。</p>
       <p class="line">不刷酸、不去角质、不上功效猛药；换季和经期前后加强修护、少换新品。</p>
+      <p class="line">天气干燥、湿度低时，少量多次补保湿和润唇，手脸都别让它绷着。</p>
+      <p class="line">天热出汗就温和清洁、及时擦干，别让汗水闷着脸；防晒靠帽子伞比叠产品省事。</p>
+      <p class="line">阴雨潮湿时简单护肤为主，少叠好几层，保持清爽不闷。</p>
     </section>
 
     <section class="card">
