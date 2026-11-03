@@ -355,6 +355,15 @@ img{max-width:100%}
 }
 .mini-pet .mini-emoji{width:25px;height:25px;display:grid;place-items:center;border-radius:50%;font-size:17px;background:#fff7e7}
 .mini-pet .front-mark{font-size:8px;color:var(--muted);font-weight:500}
+.home-pet-img{width:96px;height:96px;border-radius:50%;object-fit:cover;display:inline-block;box-shadow:0 6px 14px rgba(111,82,54,.16)}
+.mini-pet-img{width:25px;height:25px;border-radius:50%;object-fit:cover;display:block}
+.scene-pal{position:absolute;bottom:23%;z-index:3;filter:drop-shadow(0 4px 6px rgba(111,82,54,.14))}
+.scene-pal.pal-left{left:9%}
+.scene-pal.pal-right{right:9%}
+.pal-img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;animation:petFloat 3.2s ease-in-out infinite}
+.pal-emoji{font-size:54px;line-height:1;display:inline-block}
+.scene-pal.pal-right .pal-img{animation-delay:.55s}
+@media (max-width:420px){.scene-pal{display:none}}
 .quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .quick-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:16px;border:1px solid #f0dfca;background:rgba(255,255,255,.6);padding:12px 5px;font-size:11px;font-weight:700;color:var(--ink-soft);transition:transform .2s,background .2s}
 .quick-btn:hover{transform:translateY(-2px);background:#fff9f0}
@@ -367,6 +376,16 @@ img{max-width:100%}
 .task-mini .reward{font-size:10px;color:var(--muted);white-space:nowrap}
 .home-bottom-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px;margin-top:14px}
 .boost-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.garden-card{margin-top:12px}
+.garden-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.garden-cell{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;background:#fffdf6;cursor:pointer}
+.garden-cell:disabled{cursor:default}
+.garden-cell .garden-emoji{font-size:26px;line-height:1}
+.garden-cell .garden-label{font-size:10px;color:var(--muted);line-height:1.2;text-align:center}
+.garden-cell.plot-growing{background:#f3fbf0}
+.garden-cell.plot-ready{background:#fff3ec;border-color:#f2b58a;animation:gardenPulse 1.5s ease-in-out infinite}
+@keyframes gardenPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,158,107,0)}50%{box-shadow:0 0 0 4px rgba(242,158,107,.16)}}
+@media (max-width:420px){.garden-grid{grid-template-columns:repeat(2,1fr)}}
 .boost-pill{font-size:10.5px;padding:6px 9px;border-radius:11px;background:#fff1dc;border:1px dashed #f0cf9f;color:#95652d;font-weight:700}
 .boost-pill.active{background:#daf7e9;border-color:#9edcbf;color:#2e7b5f}
 .feed-hint{font-size:10.5px;color:var(--muted);margin-top:6px}
@@ -2152,7 +2171,7 @@ const ENCOUNTERS = [
     choices: [
       { label: '买一个神秘袋', cost: { gold: 600 }, outcomes: [
         { w: 50, text: '袋子里滚出满满一捧金币，商人笑而不语。', rewards: { gold: 950 } },
-        { w: 25, text: '是一小袋会发光的兽晶，赚到了！', rewards: { crystal: 65 } },
+        { w: 25, text: '是一小袋会发光的钻石，赚到了！', rewards: { crystal: 65 } },
         { w: 17, text: '一本被翻旧了的技能书，扉页写着「多练」。', rewards: { skillBook: 1 } },
         { w: 8, text: '袋底居然是一件装备，商人说这是友情价。', rewards: { equipment: 'fine' } }
       ] },
@@ -2173,7 +2192,7 @@ const ENCOUNTERS = [
       ] },
       { label: '留一篮给园主，换果酱', outcomes: [
         { w: 70, text: '园主送你手工果酱，宠物们抢着舔勺子。', rewards: { fruit: 12, bondBadge: 1 } },
-        { w: 30, text: '果酱罐底藏着一张兽晶兑换券。', rewards: { crystal: 45 } }
+        { w: 30, text: '果酱罐底藏着一张钻石兑换券。', rewards: { crystal: 45 } }
       ] }
     ]
   },
@@ -2183,7 +2202,7 @@ const ENCOUNTERS = [
       { label: '分享自己的午餐', cost: { fruit: 8 }, outcomes: [
         { w: 55, text: '小家伙吃饱后蹭了蹭你，临走留下一些同族碎片。', rewards: { randomShards: 12 } },
         { w: 30, text: '它叼来一枚亮闪闪的羁绊徽章。', rewards: { bondBadge: 1 } },
-        { w: 15, text: '它绕着你的脚转三圈，掉下一颗兽晶。', rewards: { crystal: 50 } }
+        { w: 15, text: '它绕着你的脚转三圈，掉下一颗钻石。', rewards: { crystal: 50 } }
       ] },
       { label: '带它回镇上找领养', cost: { gold: 500 }, outcomes: [
         { w: 60, text: '小镇居民争着领养，还给你捐了一笔谢礼。', rewards: { crystal: 70, randomShards: 8 } },
@@ -2204,7 +2223,7 @@ const ENCOUNTERS = [
       { label: '直接一脚踹开', outcomes: [
         { w: 45, text: '宝箱弹开，金币撒了一地。', rewards: { gold: 700 } },
         { w: 30, text: '你被吓了一跳，但宝箱里滚出装备碎片。', rewards: { equipShard: 24 } },
-        { w: 25, text: '宝箱里只有一张字条：「愚人节快乐」。不过压着一枚兽晶。', rewards: { crystal: 35 } }
+        { w: 25, text: '宝箱里只有一张字条：「愚人节快乐」。不过压着一枚钻石。', rewards: { crystal: 35 } }
       ] }
     ]
   },
@@ -2213,7 +2232,7 @@ const ENCOUNTERS = [
     choices: [
       { label: '在雨里转圈跳舞', outcomes: [
         { w: 55, text: '雨滴落在爪尖，心情好得冒泡，捡到几颗经验果。', rewards: { fruit: 16 } },
-        { w: 30, text: '彩虹尽头有一枚兽晶，亮得像糖纸。', rewards: { crystal: 40 } },
+        { w: 30, text: '彩虹尽头有一枚钻石，亮得像糖纸。', rewards: { crystal: 40 } },
         { w: 15, text: '你踩到一枚被雨冲出来的升星碎片。', rewards: { starShard: 2 } }
       ] },
       { label: '躲进树洞等雨停', outcomes: [
@@ -2234,7 +2253,7 @@ const ENCOUNTERS = [
       { label: '许愿：发大财', outcomes: [
         { w: 60, text: '流星似乎笑了，金币叮叮当当落了一地。', rewards: { gold: 1300 } },
         { w: 25, text: '你没有发财，但捡到很多经验果。', rewards: { fruit: 30 } },
-        { w: 15, text: '一颗兽晶从天上掉下来，砸中了你的帽子。', rewards: { crystal: 80 } }
+        { w: 15, text: '一颗钻石从天上掉下来，砸中了你的帽子。', rewards: { crystal: 80 } }
       ] }
     ]
   },
@@ -2247,7 +2266,7 @@ const ENCOUNTERS = [
       ] },
       { label: '在岸边卖温泉蛋', outcomes: [
         { w: 60, text: '温泉蛋意外受欢迎，赚了一小笔金币。', rewards: { gold: 850 } },
-        { w: 25, text: '一位客人用兽晶换了十个蛋。', rewards: { crystal: 55 } },
+        { w: 25, text: '一位客人用钻石换了十个蛋。', rewards: { crystal: 55 } },
         { w: 15, text: '最后两颗蛋分给了自家宠物，亲密度上涨。', rewards: { intimacyAll: 3, bondBadge: 1 } }
       ] }
     ]
@@ -2272,7 +2291,7 @@ const ENCOUNTERS = [
     choices: [
       { label: '邀请路过的伙伴一起分享', cost: { gold: 200 }, outcomes: [
         { w: 60, text: '大家吃得很开心，你收到一篮新鲜经验果。', rewards: { fruit: 24, bondBadge: 1 } },
-        { w: 25, text: '一位旅人留下一枚兽晶作为谢礼。', rewards: { crystal: 55 } },
+        { w: 25, text: '一位旅人留下一枚钻石作为谢礼。', rewards: { crystal: 55 } },
         { w: 15, text: '一只小鸟叼来一颗闪亮的升星碎片。', rewards: { starShard: 2 } }
       ] },
       { label: '独享布丁', outcomes: [
@@ -2286,7 +2305,7 @@ const ENCOUNTERS = [
     choices: [
       { label: '原地等失主', outcomes: [
         { w: 55, text: '失主是一位面包师，他送你刚出炉的谢礼金币。', rewards: { gold: 900, fruit: 8 } },
-        { w: 30, text: '失主是一位收藏家，用兽晶感谢你的诚实。', rewards: { crystal: 60 } },
+        { w: 30, text: '失主是一位收藏家，用钻石感谢你的诚实。', rewards: { crystal: 60 } },
         { w: 15, text: '失主留下了一张装备兑换单。', rewards: { equipShard: 22 } }
       ] },
       { label: '交给小镇守卫', outcomes: [
@@ -2322,7 +2341,7 @@ const ENCOUNTERS = [
       { label: '看花车游行', outcomes: [
         { w: 65, text: '花车撒下糖果和金币，收获满满。', rewards: { gold: 650, fruit: 12 } },
         { w: 20, text: '一位演员送了你一枚羁绊徽章。', rewards: { bondBadge: 1 } },
-        { w: 15, text: '你接到一束会发光的兽晶花。', rewards: { crystal: 45 } }
+        { w: 15, text: '你接到一束会发光的钻石花。', rewards: { crystal: 45 } }
       ] }
     ]
   },
@@ -2330,7 +2349,7 @@ const ENCOUNTERS = [
     id: 'echo', emoji: '🕳️', title: '回声洞窟', desc: '洞口长满会发光的苔藓，你每说一句话，洞里就传来一句拖长音的回应。',
     choices: [
       { label: '朝洞里大喊「你好」', outcomes: [
-        { w: 45, text: '回声越来越远，却带回一颗兽晶。', rewards: { crystal: 60 } },
+        { w: 45, text: '回声越来越远，却带回一颗钻石。', rewards: { crystal: 60 } },
         { w: 30, text: '洞壁震落几颗亮晶晶的碎石，可以当强化石。', rewards: { enhanceStone: 4 } },
         { w: 25, text: '只有回声。但宠物们笑得很开心，亲密度上升。', rewards: { intimacyAll: 2 } }
       ] },
@@ -2353,7 +2372,7 @@ const ENCOUNTERS = [
       { label: '把种子送给小镇花匠', outcomes: [
         { w: 60, text: '花匠种出了彩虹花，送你金币和花种。', rewards: { gold: 650, fruit: 10 } },
         { w: 25, text: '花匠回赠一袋装备碎片。', rewards: { equipShard: 20 } },
-        { w: 15, text: '花匠说这花以后会开遍小镇，送你兽晶。', rewards: { crystal: 50 } }
+        { w: 15, text: '花匠说这花以后会开遍小镇，送你钻石。', rewards: { crystal: 50 } }
       ] }
     ]
   },
@@ -2361,7 +2380,7 @@ const ENCOUNTERS = [
     id: 'well', emoji: '🪣', title: '许愿古井', desc: '井沿被磨得光滑，井水映着天空。旁边的小木牌写着：「投币许愿，童叟无欺」。',
     choices: [
       { label: '投一枚金币许愿', cost: { gold: 100 }, outcomes: [
-        { w: 45, text: '水面泛起金光，你捞起几颗兽晶。', rewards: { crystal: 60 } },
+        { w: 45, text: '水面泛起金光，你捞起几颗钻石。', rewards: { crystal: 60 } },
         { w: 30, text: '井底传来叮当声，金币翻了倍。', rewards: { gold: 500 } },
         { w: 25, text: '什么也没出现，但宠物说愿望已经听到了。', rewards: { intimacyAll: 3 } }
       ] },
@@ -2378,7 +2397,7 @@ const ENCOUNTERS = [
       { label: '帮它搬回蜂巢', outcomes: [
         { w: 60, text: '蜂后送给你一罐蜂蜜，宠物们开心极了。', rewards: { fruit: 20, intimacyAll: 2 } },
         { w: 25, text: '蜂巢旁堆着亮晶晶的强化石。', rewards: { enhanceStone: 4 } },
-        { w: 15, text: '你用蜂蜜换到了一小袋兽晶。', rewards: { crystal: 45 } }
+        { w: 15, text: '你用蜂蜜换到了一小袋钻石。', rewards: { crystal: 45 } }
       ] },
       { label: '悄悄绕开', outcomes: [
         { w: 70, text: '你绕开了蜂群，在路边捡到金币。', rewards: { gold: 500 } },
@@ -2396,7 +2415,7 @@ const ENCOUNTERS = [
       ] },
       { label: '把它做成棉花糖卖', outcomes: [
         { w: 65, text: '云朵棉花糖大受欢迎，金币进账。', rewards: { gold: 850 } },
-        { w: 20, text: '一位客人用兽晶买走了整朵云。', rewards: { crystal: 55 } },
+        { w: 20, text: '一位客人用钻石买走了整朵云。', rewards: { crystal: 55 } },
         { w: 15, text: '你偷偷留了一小团给宠物，亲密度上升。', rewards: { intimacyAll: 3 } }
       ] }
     ]
@@ -2405,14 +2424,14 @@ const ENCOUNTERS = [
     id: 'singer', emoji: '🎸', title: '流浪歌手', desc: '戴草帽的歌手坐在桥边弹琴，脚边的小碗里有几枚硬币，曲子温柔得像晚风。',
     choices: [
       { label: '打赏一枚金币', cost: { gold: 200 }, outcomes: [
-        { w: 50, text: '歌手为你唱了一首幸运歌，送你兽晶。', rewards: { crystal: 55 } },
+        { w: 50, text: '歌手为你唱了一首幸运歌，送你钻石。', rewards: { crystal: 55 } },
         { w: 30, text: '他从吉他盒里摸出一枚羁绊徽章。', rewards: { bondBadge: 1 } },
         { w: 20, text: '歌迷们围了过来，你收到了不少小费。', rewards: { gold: 650 } }
       ] },
       { label: '和宠物一起合唱', outcomes: [
         { w: 60, text: '你们的合唱吸引了一群小鸟，掉落经验果。', rewards: { fruit: 18, intimacyAll: 2 } },
         { w: 25, text: '歌手送了你一本写满和弦的技能书。', rewards: { skillBook: 1 } },
-        { w: 15, text: '路人往帽子里丢了几枚兽晶。', rewards: { crystal: 40 } }
+        { w: 15, text: '路人往帽子里丢了几枚钻石。', rewards: { crystal: 40 } }
       ] }
     ]
   }
@@ -2512,6 +2531,7 @@ function defaultState() {
     codex: { claimed: [], seen: [] },
     bonds: { mastery: {}, ever: [] },
     idle: { pendingGold: 0, pendingFruit: 0, offlineSlots: 0, boostUntil: 0, lastCare: now },
+    garden: { plots: [] },
     cosmetics: { owned: ['bg_cream'], background: 'bg_cream', petAccessory: {} },
     tutorial: { step: 1, done: false },
     settings: { sfx: true, music: false },
@@ -2804,6 +2824,18 @@ function petArtFrame(templateId, fallbackEmoji, sizeClass) {
   if (!url) return null;
   const fb = esc(fallbackEmoji);
   return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+}
+// 主页场景主宠大图：有立绘显示圆形图，缺失回退 emoji
+function homePetArt(pet, tpl) {
+  const url = petArtUrl(tpl.id);
+  if (!url) return `<span class="main-pet-emoji">${esc(petEmoji(pet))}</span>`;
+  return `<img class="home-pet-img" src="${url}" alt="${esc(petEmoji(pet))}" loading="lazy" onerror="this.remove()">`;
+}
+// 主页驻守小队小头像：有立绘显示小圆图，缺失回退 emoji
+function miniPetArt(pet) {
+  const url = petArtUrl(pet.templateId);
+  if (!url) return esc(petEmoji(pet));
+  return `<img class="mini-pet-img" src="${url}" alt="" loading="lazy" onerror="this.remove()">`;
 }
 function stateUniqueCount(s = state) {
   return new Set(Object.values(s.pets || {}).map(p => p.templateId)).size;
@@ -3239,7 +3271,7 @@ function randomStoneGain(amount) {
 
 function resourceLabel(key) {
   return ({
-    gold: '金币', crystal: '兽晶', fruit: '经验果', skillBook: '技能书',
+    gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书',
     equipShard: '装备碎片', starShard: '升星碎片', bondBadge: '羁绊徽章',
     enhanceStone: '强化石', arenaCoin: '竞技币', eternal: '永恒结晶'
   })[key] || key;
@@ -3264,7 +3296,7 @@ function addReward(reward, options = {}) {
   if (reward.crystal) {
     const amount = Math.max(0, Math.floor(num(reward.crystal, 0)));
     state.resources.crystal += amount;
-    logs.push({ icon: '💎', label: '兽晶', amount });
+    logs.push({ icon: '💎', label: '钻石', amount });
   }
   if (reward.fruit) {
     const amount = Math.max(0, Math.floor(num(reward.fruit, 0)));
@@ -4940,7 +4972,7 @@ function finishBattle() {
       }
       bumpMetric('towerClears', 1);
       resultTitle = `第 ${floor} 层通过！`;
-      resultNote = `塔灵消散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。塔的奖励包含进化石与兽晶。`;
+      resultNote = `塔灵消散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。塔的奖励包含进化石与钻石。`;
     } else {
       resultNote = '塔灵亮出了更强的姿态。强化装备、升星或试试属性克制再来吧。';
     }
@@ -5197,7 +5229,7 @@ function renderTopbar() {
   const challenge = state.challenge;
   strip.innerHTML = `
     <span class="res-pill" title="金币：升级、升星、抽普通蛋与喂食"><span class="ico">${artIconFrame(resArtUrl('gold'),'🪙','art-resico') || '🪙'}</span><em>金币</em><b id="resGold">${fmt(state.resources.gold)}</b></span>
-    <span class="res-pill" title="兽晶：稀有抽蛋、商店兑换与加速"><span class="ico">${artIconFrame(resArtUrl('crystal'),'💎','art-resico') || '💎'}</span><em>兽晶</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
+    <span class="res-pill" title="钻石：稀有抽蛋、商店兑换与加速"><span class="ico">${artIconFrame(resArtUrl('crystal'),'💎','art-resico') || '💎'}</span><em>钻石</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
     <span class="res-pill" title="经验果：宠物升级"><span class="ico">${artIconFrame(resArtUrl('fruit'),'🍎','art-resico') || '🍎'}</span><em>经验果</em><b id="resFruit">${fmt(state.resources.fruit)}</b></span>
     <span class="res-pill" title="体力：主线与每日副本"><span class="ico">⚡</span><em>体力</em><b id="resStamina">${stamina.value}/${stamina.max}</b></span>
     <span class="res-pill" title="挑战券：爬塔、竞技场与每日 Boss"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
@@ -5297,6 +5329,26 @@ function moodSpeech(pet) {
   if (h >= 80 && m >= 80) return pick(['吃饱喝足，尾巴摇得停不下来～', '心情好好，想马上跟你去冒险！']);
   return '';
 }
+function gardenHTML() {
+  ensureGarden();
+  const now = Date.now();
+  const readyCount = state.garden.plots.filter(p => gardenPlotStatus(p, now) === 'ready').length;
+  const cells = state.garden.plots.map((p, i) => {
+    const st = gardenPlotStatus(p, now);
+    if (st === 'empty') {
+      return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">点我播种</span></button>`;
+    }
+    if (st === 'growing') {
+      return `<button class="garden-cell plot-growing" type="button" data-index="${i}" disabled><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟</span></button>`;
+    }
+    return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">点我收获</span></button>`;
+  }).join('');
+  return `<section class="card garden-card">
+    <div class="card-head"><div><h2>🌱 小菜园</h2><p>播种约 3 分钟成熟，点一下收金币和经验果，不耗体力。</p></div><span class="chip">${readyCount} 块可收</span></div>
+    <div class="garden-grid">${cells}</div>
+  </section>`;
+}
+
 function renderHome() {
   const pet = getMainPet();
   const t = pet ? templateOf(pet) : null;
@@ -5323,9 +5375,16 @@ function renderHome() {
   const pendingFruit = Math.floor(state.idle.pendingFruit);
   const mainAccessory = accessory ? `<span class="accessory">${accessory.emoji}</span>` : '';
   const shinyStars = pet && pet.shiny ? '<span class="shiny-star s1">✦</span><span class="shiny-star s2">✦</span>' : '';
+  // 场景内左右伙伴：取队伍中除主宠外最多两只，图优先回退 emoji
+  const palsHTML = team.slice(1, 3).map((p, i) => {
+    const art = petArtUrl(p.templateId)
+      ? `<img class="pal-img" src="${petArtUrl(p.templateId)}" alt="" loading="lazy" onerror="this.remove()">`
+      : `<span class="pal-emoji">${esc(petEmoji(p))}</span>`;
+    return `<div class="scene-pal ${i === 0 ? 'pal-left' : 'pal-right'}" title="${esc(petDisplayName(p))}">${art}</div>`;
+  }).join('');
   const petHtml = pet ? `
     <div class="idle-pet-wrap" id="homePetWrap" data-act="pat" title="摸摸头">
-      <span class="idle-pet"><span class="main-pet-emoji">${esc(petEmoji(pet))}</span>${mainAccessory}${shinyStars}</span>
+      <span class="idle-pet">${homePetArt(pet, t)}${mainAccessory}${shinyStars}</span>
       <div class="pet-shadow"></div>
       <div class="pet-name-bubble">${esc(petDisplayName(pet))} · Lv.${pet.level}</div>
     </div>
@@ -5338,7 +5397,7 @@ function renderHome() {
 
   const teamChips = team.length ? team.map(p => {
     const tt = templateOf(p);
-    return `<span class="mini-pet"><span class="mini-emoji">${esc(petEmoji(p))}</span>${esc(petDisplayName(p))}<span class="front-mark">${deployedRow(p.uid) === 'front' ? '前排' : '后排'}</span></span>`;
+    return `<span class="mini-pet"><span class="mini-emoji">${miniPetArt(p)}</span>${esc(petDisplayName(p))}<span class="front-mark">${deployedRow(p.uid) === 'front' ? '前排' : '后排'}</span></span>`;
   }).join('') : '<span class="chip">还没有上阵伙伴</span>';
 
   return `
@@ -5365,6 +5424,7 @@ function renderHome() {
         <div class="house"><div class="house-roof"></div><div class="window"></div><div class="door"></div></div>
         <div class="grass"></div><div class="rug"></div>
         ${petHtml}
+        ${palsHTML}
         <div class="idle-hud">
           <div class="rate-badge">
             <b id="homeRateGold">${fmtRate(rate.gold)} /秒</b>
@@ -5388,6 +5448,7 @@ function renderHome() {
         </div>
         <button class="btn btn-primary" type="button" data-act="claimIdle" ${pendingGold < 1 && pendingFruit < 1 ? 'disabled' : ''}>一键领取挂机收益</button>
       </div>
+      ${gardenHTML()}
       <div class="boost-row">
         <span class="boost-pill ${boostRemain > 0 ? 'active' : ''}" id="homeBoostTimer">${boostRemain > 0 ? `双倍加速中 ${fmtClock(boostRemain)}` : '当前未加速'}</span>
         <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="gold">🪙 1200 · 5 分钟 2 倍</button>
@@ -5446,7 +5507,7 @@ function renderHome() {
 function addRewardPreview(reward) {
   const out = [];
   const labelMap = {
-    gold: '金币', crystal: '兽晶', fruit: '经验果', skillBook: '技能书', equipShard: '装备碎片',
+    gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书', equipShard: '装备碎片',
     enhanceStone: '强化石', bondBadge: '羁绊徽章', arenaCoin: '竞技币', starShard: '升星碎片',
     stonesRandom: '随机进化石', stoneChoice: '自选进化石', randomShards: '随机碎片',
     intimacyAll: '全队亲密', frame: '头像框', equipment: '装备', eternal: '永恒结晶'
@@ -5759,7 +5820,7 @@ function renderBattlePage() {
             <div class="idle-stat"><span>历史最高</span><b>${state.tower.best} / 30</b></div>
             <div class="idle-stat"><span>今日钥匙</span><b>🎟️ ${state.challenge.value}/${state.challenge.max}</b></div>
           </div>
-          <div class="reward-chips">${rewardLogHTML([{ icon: '🪙', label: '金币', amount: 520 + towerFloor * 180 }, { icon: '💎', label: '兽晶', amount: 15 + towerFloor * 2 }, { icon: '💠', label: '进化石', amount: 2 }])}</div>
+          <div class="reward-chips">${rewardLogHTML([{ icon: '🪙', label: '金币', amount: 520 + towerFloor * 180 }, { icon: '💎', label: '钻石', amount: 15 + towerFloor * 2 }, { icon: '💠', label: '进化石', amount: 2 }])}</div>
           <button class="btn btn-primary btn-wide" type="button" data-act="startTower" ${towerDone ? 'disabled' : ''}>${towerDone ? '塔顶已被征服' : `挑战第 ${towerFloor} 层 · 🎟️ ${TOWER_CHALLENGE_COST}`}</button>
         </div>
       </div>
@@ -5901,7 +5962,7 @@ function renderShop() {
     ];
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>🧩 同族碎片兑换</h2><p>用兽晶买碎片，或集齐碎片直接唤醒新伙伴。已拥有的宠物用碎片升星。</p></div><span class="chip">持有碎片</span></div>
+        <div class="card-head"><div><h2>🧩 同族碎片兑换</h2><p>用钻石买碎片，或集齐碎片直接唤醒新伙伴。已拥有的宠物用碎片升星。</p></div><span class="chip">持有碎片</span></div>
         <div class="exchange-grid">
           ${PETS.map(t => {
             const owned = ownedIds.includes(t.id);
@@ -5919,7 +5980,7 @@ function renderShop() {
         </div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>🪙 材料补给</h2><p>稀有材料用兽晶兑换，竞技币与装扮在另一页。</p></div><span class="chip">💎 ${fmt(state.resources.crystal)}</span></div>
+        <div class="card-head"><div><h2>🪙 材料补给</h2><p>稀有材料用钻石兑换，竞技币与装扮在另一页。</p></div><span class="chip">💎 ${fmt(state.resources.crystal)}</span></div>
         <div class="grid three">
           ${materialRows.map(row => `<div class="shop-item">
             <span class="shop-ico">${row.icon}</span><b>${row.name}</b><p>${esc(row.desc)}</p>
@@ -5927,7 +5988,7 @@ function renderShop() {
           </div>`).join('')}
         </div>
         <div class="divider-dots">✦</div>
-        <div class="flex between" style="margin-bottom:8px"><h3 style="margin:0;font-size:14px">💠 属性进化石</h3><span class="tiny muted">80 兽晶 / 3 颗</span></div>
+        <div class="flex between" style="margin-bottom:8px"><h3 style="margin:0;font-size:14px">💠 属性进化石</h3><span class="tiny muted">80 钻石 / 3 颗</span></div>
         <div class="grid three">
           ${ELEMENT_KEYS.map(el => `<div class="shop-item stone-shop" style="--el-color:${ELEMENTS[el].color};--el-soft:${ELEMENTS[el].soft}">
             <span class="shop-ico">${artIconFrame(elementArtUrl(el), ELEMENTS[el].emoji, 'art-shopico') || ELEMENTS[el].emoji}</span><b>${ELEMENTS[el].name}进化石</b><p>持有 ${state.stones[el]} 颗</p>
@@ -5965,7 +6026,7 @@ function renderShop() {
       </div>
       <div class="note lav">竞技场、每日结算和赛季重置会获得竞技币。所有装扮只改变外观，不影响战力。</div>`;
   }
-  return `<div class="page">${pageHead('SHOP · 奶油杂货铺', `<span class="emoji">🛍️</span>商店`, `金币 ${fmt(state.resources.gold)} · 兽晶 ${fmt(state.resources.crystal)} · 竞技币 ${fmt(state.items.arenaCoin)}`, `<button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">查看名册</button>`)}${subnav}${body}</div>`;
+  return `<div class="page">${pageHead('SHOP · 奶油杂货铺', `<span class="emoji">🛍️</span>商店`, `金币 ${fmt(state.resources.gold)} · 钻石 ${fmt(state.resources.crystal)} · 竞技币 ${fmt(state.items.arenaCoin)}`, `<button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">查看名册</button>`)}${subnav}${body}</div>`;
 }
 
 /* -------- 任务 -------- */
@@ -6457,7 +6518,7 @@ function openRebirthConfirm() {
   if (state.stage.maxCleared < 25) { toast('还未解锁轮回之泉', 'bad'); return; }
   const gain = rebirthEternalPreview();
   const body = `
-    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、兽晶、经验果、关卡、爬塔、竞技场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
+    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、钻石、经验果、关卡、爬塔、竞技场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
     <div class="offline-rewards"><div class="offline-reward"><span>🌀</span><div><small>获得永恒结晶</small><b>${fmt(gain)}</b></div></div></div>
     <div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="openRebirth">再想想</button><button class="btn btn-lav" type="button" data-act="rebirthConfirm">确认轮回</button></div>`;
   openModal('🌀 最后的确认', body, { wide: false });
@@ -6618,6 +6679,45 @@ function claimIdle() {
   renderAll();
   toast(`收下挂机收益：${rewardLogText(logs)}`, 'good', 3000);
   playSfx('claim');
+}
+
+/* ---------------- 小菜园：播种后定时成熟，点击收获金币+经验果，零成本不耗体力 ---------------- */
+const GARDEN_SIZE = 6;
+const GROW_MS = 180000; // 约 3 分钟一茬
+const GARDEN_YIELD = { gold: 24, fruit: 3 };
+function ensureGarden() {
+  if (!state.garden || !Array.isArray(state.garden.plots)) state.garden = { plots: [] };
+  while (state.garden.plots.length < GARDEN_SIZE) state.garden.plots.push({ state: 'empty' });
+}
+function gardenPlotStatus(p, now = Date.now()) {
+  if (!p || p.state === 'empty') return 'empty';
+  if (p.state === 'growing') return now < num(p.readyAt, 0) ? 'growing' : 'ready';
+  return 'ready';
+}
+function gardenPlant(i) {
+  ensureGarden();
+  const p = state.garden.plots[i];
+  if (!p || p.state !== 'empty') return;
+  p.state = 'growing';
+  p.readyAt = Date.now() + GROW_MS;
+  toast('种下啦，等它成熟～');
+  persist();
+}
+function gardenHarvest(i) {
+  ensureGarden();
+  const p = state.garden.plots[i];
+  if (!p) return;
+  if (gardenPlotStatus(p) !== 'ready') { toast('还没成熟，再等等哦'); return; }
+  addReward({ gold: GARDEN_YIELD.gold, fruit: GARDEN_YIELD.fruit });
+  p.state = 'empty';
+  p.readyAt = 0;
+  toast(`菜园丰收：+${GARDEN_YIELD.gold} 金币、+${GARDEN_YIELD.fruit} 经验果`, 'good', 2600);
+  persist();
+}
+function gardenJustReady() {
+  if (!state.garden || !Array.isArray(state.garden.plots)) return false;
+  const now = Date.now();
+  return state.garden.plots.some(p => p && p.state === 'growing' && num(p.readyAt, 0) <= now);
 }
 
 function patPet() {
@@ -7247,7 +7347,7 @@ function buyShards(petId) {
   const template = PET_MAP[petId];
   if (!template) return;
   const cost = { crystal: RARITIES[template.rarity].buy * 5 };
-  if (!canPayCost(cost)) { toast(`兽晶不足：${costText(cost)}`, 'bad'); return; }
+  if (!canPayCost(cost)) { toast(`钻石不足：${costText(cost)}`, 'bad'); return; }
   payCost(cost);
   addPetShards(petId, 5);
   saveGame();
@@ -7272,7 +7372,7 @@ function unlockPet(petId) {
 function buyMaterial(key, price) {
   const allowed = ['skillBook', 'starShard', 'equipShard', 'bondBadge', 'enhanceStone'];
   if (!allowed.includes(key)) return;
-  if (state.resources.crystal < price) { toast('兽晶不足', 'bad'); return; }
+  if (state.resources.crystal < price) { toast('钻石不足', 'bad'); return; }
   state.resources.crystal -= price;
   state.items[key] += 1;
   saveGame();
@@ -7282,7 +7382,7 @@ function buyMaterial(key, price) {
 }
 function buyStone(element) {
   if (!ELEMENTS[element]) return;
-  if (state.resources.crystal < 80) { toast('兽晶不足，需要 80', 'bad'); return; }
+  if (state.resources.crystal < 80) { toast('钻石不足，需要 80', 'bad'); return; }
   state.resources.crystal -= 80;
   state.stones[element] += 3;
   saveGame();
@@ -7536,6 +7636,8 @@ function handleActionClick(event) {
     case 'openRebirth': openRebirthModal(); break;
 
     case 'claimIdle': claimIdle(); break;
+    case 'gardenPlant': gardenPlant(Number(target.dataset.index)); break;
+    case 'gardenHarvest': gardenHarvest(Number(target.dataset.index)); break;
     case 'pat': patPet(); break;
     case 'buyBoost': buyBoost(target.dataset.kind); break;
     case 'buyOfflineSlot': buyOfflineSlot(); break;
@@ -7775,6 +7877,11 @@ function gameTick() {
   if (!UI.offlineOffer) accrueIdleToNow();
   else UI.lastTick = Date.now();
   const now = Date.now();
+  if (UI.tab === 'home' && !UI.modal && !UI.battle && !UI.offlineOffer) {
+    const anyReady = gardenJustReady();
+    if (anyReady && !UI.gardenReadyPing) { UI.gardenReadyPing = true; renderPage(); }
+    else if (!anyReady) UI.gardenReadyPing = false;
+  }
   if (now - UI.lastSaveTick >= 10000) {
     UI.lastSaveTick = now;
     saveGame();

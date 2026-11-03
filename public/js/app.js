@@ -188,11 +188,6 @@ function homePage(now, period) {
       <p class="hero-note">小猪盯吃喝，小金毛摇尾巴～</p>
     </header>
     ${modules.map(moduleHTML).join('')}
-    ${store.hasDiary(today) ? '' : `<section class="card">
-      <h2 class="card-head"><span class="card-icon">📖</span><span class="card-title">今天的小日子还空着</span></h2>
-      <p class="line">两句也行，小猪给你留着空，写完自己会存。</p>
-      <button class="btn btn-ghost btn-mini" data-act="tab" data-tab="cycle">去写两句</button>
-    </section>`}
     <p class="foot">小猪和小金毛都在这儿，不催不吼，只陪你。</p>
   </div>`;
 }
