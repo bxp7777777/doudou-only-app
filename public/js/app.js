@@ -330,8 +330,8 @@ const PERSONA_TAGS = [
 
 function extraHomeHTML(now) {
   return [
-    birthdayCardHTML(),
-    cancerSignCardHTML(),
+    birthdayBlessingHTML(),
+    dailySignCardHTML(),
     healLineHTML(),
     personalityTagHTML(),
     careHintHTML(),
@@ -343,39 +343,55 @@ function extraHomeHTML(now) {
   ].join('');
 }
 
-/* ---- 她的生日（7/15）与巨蟹座小特质 ---- */
+/* ---- 生日（7/15）：底层只在当天露出祝福，平时主页不显示生日内容 ---- */
 const BIRTHDAY = { month: 7, day: 15 };
 
-function nextBirthdayDays() {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let target = new Date(now.getFullYear(), BIRTHDAY.month - 1, BIRTHDAY.day);
-  if ((target - today) / 86400000 < 0) {
-    target = new Date(now.getFullYear() + 1, BIRTHDAY.month - 1, BIRTHDAY.day);
-  }
-  return Math.round((target - today) / 86400000);
+function isBirthday(now) {
+  const t = now || new Date();
+  return t.getMonth() === BIRTHDAY.month - 1 && t.getDate() === BIRTHDAY.day;
 }
 
-function birthdayCardHTML() {
-  const now = new Date();
-  const isDay = now.getMonth() === BIRTHDAY.month - 1 && now.getDate() === BIRTHDAY.day;
-  const left = nextBirthdayDays();
-  const body = isDay
-    ? '<p class="line">🎂 今天是专属日子，把温柔都送给她：愿新的一岁被好好爱着，睡得香、吃得暖、事事顺心。</p>'
-    : `<p class="line">距离她的生日（7月15日）还有 <b>${left}</b> 天，到那天准备一句暖暖的祝福就好。</p>`;
+function birthdayBlessingHTML() {
+  if (!isBirthday(new Date())) return '';
   return `<section class="card bday-card">
-    <h2 class="card-head"><span class="card-icon">🎂</span><span class="card-title">她的生日</span></h2>
-    ${body}
+    <h2 class="card-head"><span class="card-icon">🎂</span><span class="card-title">专属祝福</span></h2>
+    <p class="line">生日快乐呀：愿这一岁睡得香、吃得暖，被人放在心上，想要的都慢慢靠近。小猪和小金毛今天一直陪着你。</p>
   </section>`;
 }
 
-function cancerSignCardHTML() {
-  const traits = ['体贴温柔', '念旧长情', '重安全感', '认定就长久', '心软护短'];
-  const chips = traits.map((t) => `<span class="sign-pill">${esc(t)}</span>`).join('');
+/* ---- 巨蟹座 · 每日温和提示（按日期轮换；只做陪伴提醒与小彩蛋，不预测吉凶祸福） ---- */
+const SIGN_TIPS = [
+  '今天多给自己一点耐心，慢一点也没关系。',
+  '记得喝几口温的，先把自己照顾好。',
+  '累了就歇一小会儿，别硬撑到傍晚。',
+  '对自己温柔一点，你值得被好好对待。',
+  '心里有事就写两笔下来，说出来会轻一些。',
+  '肩颈和脚注意保暖，别对着风口久待。',
+  '三餐吃热一点，肚子舒服了心情会跟着松。',
+  '忙之前先坐一分钟，把今天最重要的事排前面。',
+  '有点低落也没关系，先喝口水、深呼吸三下。',
+  '今天不必事事满分，做完手头这件就很棒。',
+  '睡前少刷一会儿，让脑子慢慢安静下来。',
+  '和人相处时先顾好自己的感受，不勉强迎合。',
+  '遇到小不顺别否定全部，那只是今天的一小段。',
+  '今晚早点躺平，明天才有力气去做喜欢的事。'
+];
+const SIGN_LUCK = ['🍊', '🌟', '☁️', '🌙', '🧸', '🫧', '🌷', '🍑', '🍀', '🦋', '🧶', '🍯'];
+
+function daySeed(now) {
+  const t = now || new Date();
+  return t.getFullYear() * 372 + (t.getMonth() + 1) * 31 + t.getDate();
+}
+
+function dailySignCardHTML() {
+  const seed = daySeed();
+  const tip = SIGN_TIPS[seed % SIGN_TIPS.length];
+  const icon = SIGN_LUCK[seed % SIGN_LUCK.length];
+  const luckyNo = (seed % 9) + 1;
   return `<section class="card sign-card">
-    <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 小特质</span></h2>
-    <p class="line">体贴、念旧、心软，慢热却长情；给足安全感，就会一直守在身边。</p>
-    <div class="sign-pills">${chips}</div>
+    <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 今日小提示</span></h2>
+    <p class="line">${esc(tip)}</p>
+    <p class="card-sub" style="margin-top:6px">今日小彩蛋 ${icon} · 小标记 ${luckyNo}</p>
   </section>`;
 }
 
@@ -1336,8 +1352,8 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-const DUO_ARTS = ['/art/bg-q1.svg', '/art/bg-q2.svg', '/art/bg-q3.svg', '/art/bg-q4.svg'];
-const DUO_NAMES = ['贴贴', '打盹', '散步', '点心'];
+const DUO_ARTS = ['/art/bg-q1.svg', '/art/bg-q2.svg', '/art/bg-q3.svg', '/art/bg-q4.svg', '/art/bg-q5.svg', '/art/bg-q6.svg', '/art/bg-q7.svg', '/art/bg-q8.svg'];
+const DUO_NAMES = ['贴贴', '打盹', '散步', '点心', '雨天小伞', '花田', '晚安窗前', '暖阳'];
 
 /** 未指定就用「今天第几张」：每天自动换一张，同一天不跳 */
 function dayArtIndex() {

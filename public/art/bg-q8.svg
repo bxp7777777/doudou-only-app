@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="Q版小猪和小金毛窝在暖阳里">
+  <defs>
+
+    <linearGradient id="pigHead" x1="28%" y1="8%" x2="82%" y2="92%">
+      <stop offset="0%" stop-color="#ffe7ec"/>
+      <stop offset="50%" stop-color="#ffc9d4"/>
+      <stop offset="100%" stop-color="#ffa9bb"/>
+    </linearGradient>
+    <linearGradient id="dogHead" x1="24%" y1="4%" x2="86%" y2="96%">
+      <stop offset="0%" stop-color="#fff2d9"/>
+      <stop offset="50%" stop-color="#f9dcac"/>
+      <stop offset="100%" stop-color="#eec489"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <g id="spark">
+      <path d="M0 -24 L6 -6 L24 0 L6 6 L0 24 L-6 6 L-24 0 L-6 -6 Z"/>
+    </g>
+    <g id="pig">
+      <ellipse cx="245" cy="415" rx="92" ry="120" fill="#ff9fb0" stroke="#f292a6" stroke-width="7" transform="rotate(-24 245 415)"/>
+      <ellipse cx="470" cy="350" rx="92" ry="120" fill="#ff9fb0" stroke="#f292a6" stroke-width="7" transform="rotate(18 470 350)"/>
+      <circle cx="350" cy="600" r="245" fill="url(#pigHead)" stroke="#f2a8b9" stroke-width="7"/>
+      <ellipse cx="350" cy="690" rx="98" ry="70" fill="#ff9fb0"/>
+      <ellipse cx="322" cy="690" rx="14" ry="18" fill="#e88294"/>
+      <ellipse cx="378" cy="690" rx="14" ry="18" fill="#e88294"/>
+      <path d="M318 782 Q350 800 382 782" fill="none" stroke="#d9788f" stroke-width="9" stroke-linecap="round"/>
+      <path d="M258 572 Q300 542 342 572" fill="none" stroke="#5b4044" stroke-width="15" stroke-linecap="round"/>
+      <path d="M388 586 Q430 556 472 586" fill="none" stroke="#5b4044" stroke-width="15" stroke-linecap="round"/>
+      <ellipse cx="241" cy="670" rx="50" ry="32" fill="#ff8fa3" opacity="0.5" filter="url(#soft)"/>
+      <ellipse cx="472" cy="690" rx="50" ry="32" fill="#ff8fa3" opacity="0.46" filter="url(#soft)"/>
+    </g>
+    <g id="dog">
+      <ellipse cx="520" cy="305" rx="96" ry="134" fill="#e6bd86" transform="rotate(-26 520 305)"/>
+      <ellipse cx="880" cy="298" rx="96" ry="134" fill="#e6bd86" transform="rotate(24 880 298)"/>
+      <circle cx="690" cy="572" r="250" fill="url(#dogHead)" stroke="#e3b681" stroke-width="7"/>
+      <ellipse cx="690" cy="700" rx="148" ry="110" fill="#fff6e8"/>
+      <ellipse cx="690" cy="652" rx="45" ry="33" fill="#6b4a45"/>
+      <ellipse cx="703" cy="641" rx="13" ry="9" fill="#fff6e8" opacity="0.55"/>
+      <path d="M642 714 Q666 736 690 714 Q714 736 738 714" fill="none" stroke="#6b4a45" stroke-width="11" stroke-linecap="round"/>
+      <ellipse cx="690" cy="744" rx="21" ry="14" fill="#ff9fb0"/>
+      <path d="M555 570 Q615 530 675 570" fill="none" stroke="#5b4044" stroke-width="16" stroke-linecap="round"/>
+      <path d="M770 556 Q830 516 890 556" fill="none" stroke="#5b4044" stroke-width="16" stroke-linecap="round"/>
+      <ellipse cx="546" cy="660" rx="56" ry="35" fill="#ff9db1" opacity="0.44" filter="url(#soft)"/>
+      <ellipse cx="906" cy="648" rx="56" ry="35" fill="#ff9db1" opacity="0.4" filter="url(#soft)"/>
+    </g>
+
+    <radialGradient id="sunwarm" cx="34%" cy="30%" r="62%">
+      <stop offset="0%" stop-color="#fff6dd" stop-opacity="0.8"/>
+      <stop offset="60%" stop-color="#ffe9c4" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#ffe9c4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <circle cx="330" cy="290" r="430" fill="url(#sunwarm)"/>
+  <circle cx="228" cy="196" r="76" fill="url(#sunwarm)" stroke="#ffd98a" stroke-width="2"/>
+  <g stroke="#ffd98a" stroke-width="9" stroke-linecap="round" opacity="0.75">
+    <path d="M228 96 L228 62"/><path d="M228 296 L228 330"/>
+    <path d="M128 196 L94 196"/><path d="M328 196 L362 196"/>
+    <path d="M158 126 L134 102"/><path d="M298 126 L322 102"/>
+  </g>
+  <ellipse cx="512" cy="956" rx="420" ry="120" fill="#ffe9c9" opacity="0.8"/>
+  <use href="#pig" transform="translate(-70 110)"/>
+  <use href="#dog" transform="translate(36 108)"/>
+  <!-- 落叶 -->
+  <g fill="#f0b98a" opacity="0.85">
+    <ellipse cx="250" cy="884" rx="26" ry="14" transform="rotate(24 250 884)"/>
+    <ellipse cx="760" cy="872" rx="24" ry="13" transform="rotate(-18 760 872)"/>
+    <ellipse cx="620" cy="920" rx="22" ry="12" transform="rotate(40 620 920)"/>
+  </g>
+  <g transform="translate(200 430) scale(0.8)" fill="#ffe6bb" opacity="0.9"><use href="#spark"/></g>
+  <g transform="translate(866 430) scale(0.7)" fill="#ffd3dc" opacity="0.7"><use href="#spark"/></g>
+
+</svg>

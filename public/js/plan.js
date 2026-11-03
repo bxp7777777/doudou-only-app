@@ -16,14 +16,19 @@ const GREETING = {
   sleep: '豆豆大王，该睡啦'
 };
 
-const CUP_TEXT = {
-  morning: '上午这一杯',
-  noon: '午间也来一口',
-  afternoon: '午后这一杯',
-  evening: '晚间这一杯',
-  late: '睡前只抿两口',
-  bedtime: '睡前只抿两口'
+const CUP_HEADS = {
+  morning: ['上午这一杯', '起床后的第一杯', '早自习先来一口', '早晨慢慢润一杯'],
+  noon: ['午间也来一口', '饭前先抿两口温水', '午后补一杯', '午饭前后喝两口'],
+  afternoon: ['午后这一杯', '犯困时来一口', '下午慢慢补一杯', '课间喝两口温水'],
+  evening: ['晚间这一杯', '晚饭前后润一口', '傍晚再来一杯', '收工前补一杯'],
+  late: ['睡前只抿两口', '夜里口干抿一小口'],
+  bedtime: ['睡前只抿两口', '润润喉咙就好']
 };
+
+function rot(arr, seed) {
+  if (!arr || !arr.length) return '';
+  return arr[(((seed % arr.length) + arr.length) % arr.length)];
+}
 
 function dayIndex(key) {
   const parts = String(key || '').split('-');
@@ -39,18 +44,48 @@ function greeting(period) {
 function waterModule(period, day, water) {
   const cups = water && water.cups ? water.cups : [false, false, false];
   const done = cups.filter(Boolean).length;
+  const seed = Number(dayIndex(day)) || 0;
   let lines = [];
 
   if (done >= 3) {
-    lines = ['3杯全搞定啦！小金毛尾巴摇成小风扇，夸夸你！', '还想喝就小口抿一点，别灌。'];
+    lines = [
+      rot([
+        '3杯全搞定啦！小金毛尾巴摇成小风扇，夸夸你！',
+        '今天的水量很棒，人也会跟着轻快，继续保持就好。',
+        '喝够啦，想喝就小口抿一点，别一口气灌。',
+        '三杯打卡完成，小猪悄悄把水杯又添满了。'
+      ], seed),
+      rot([
+        '还想喝就小口抿一点，别灌。',
+        '温水慢慢喝，身体会记得这份舒服。',
+        '多出来的那口慢慢抿，不追求喝完一整杯。'
+      ], seed + 1)
+    ];
   } else if (period === 'late' || period === 'bedtime') {
-    lines = ['睡前这杯只抿两口润润嘴，喝多了夜里要起夜。', '今天已经喝了 ' + done + '/3 杯，剩下的明天小猪接着陪。'];
+    lines = [
+      rot([
+        '睡前这杯只抿两口润润嘴，喝多了夜里要起夜。',
+        '夜里口干就抿一小口温水，别一大杯灌下去。',
+        '临睡前别喝太猛，润一润就好，安安稳稳睡。'
+      ], seed),
+      '今天已经喝了 ' + done + '/3 杯，剩下的明天小猪接着陪。'
+    ];
   } else {
-    const head = CUP_TEXT[period] || '这一杯';
+    const head = rot(CUP_HEADS[period] || ['这一杯'], seed);
     lines = [head + '，小口慢喝、别加冰，别一口闷。'];
-    if (done === 0) lines.push('先喝半杯就好，小猪已经把温水端过来了。');
-    if (done === 1) lines.push('已经1杯啦，还差2杯，小猪陪你慢慢喝。');
-    if (done === 2) lines.push('就差最后一杯，小猪陪你一起喝掉它。');
+    if (done === 0) lines.push(rot([
+      '先喝半杯就好，小猪已经把温水端过来了。',
+      '还没开始也不急，先倒一杯放手边，想起来就喝一口。',
+      '第一杯最关键，慢慢喝，不用有压力。'
+    ], seed));
+    if (done === 1) lines.push(rot([
+      '已经1杯啦，还差2杯，小猪陪你慢慢喝。',
+      '进度三分之一啦，下午记得再补一口温水。'
+    ], seed + 1));
+    if (done === 2) lines.push(rot([
+      '就差最后一杯，小猪陪你一起喝掉它。',
+      '只差临门一脚，把最后一杯喝完就达标啦。'
+    ], seed + 2));
   }
 
   return {
@@ -69,7 +104,9 @@ function waterModule(period, day, water) {
 /* ------------------- 2. 吃饭（不推具体菜，她在学校吃） ------------------- */
 
 function mealModule(period, now) {
-  const s = schedule.of(now || new Date());
+  const d = now || new Date();
+  const s = schedule.of(d);
+  const seed = d.getFullYear() * 372 + (d.getMonth() + 1) * 31 + d.getDate();
   const M = {
     morning: {
       title: '吃饭 · 早餐',
@@ -79,28 +116,71 @@ function mealModule(period, now) {
         s.first === '08:00'
           ? '今天早八，先吃再出门；来不及就带一份能拿在手上的热乎的。'
           : '今天不早八，可以慢慢吃，吃完再晃过去。',
-        '别用冰饮开胃，配温水。'
+        rot([
+          '别用冰饮开胃，配温水更舒服。',
+          '早餐来一口主食垫肚子，上午不容易发慌。',
+          '哪怕只买个热乎的包子豆浆，也比空着肚子强。'
+        ], seed)
       ]
     },
     noon: {
       title: '吃饭 · 午餐',
       sub: '错峰去食堂，不用挤',
-      lines: ['去食堂打热的菜，一荤一素，七分饱。', '吃完饭慢慢走两分钟，别马上趴桌睡。', '少冷饮，少重油重辣。']
+      lines: [
+        '去食堂打热的菜，一荤一素，七分饱。',
+        rot([
+          '吃完饭慢慢走两分钟，别马上趴桌睡。',
+          '饭后别立刻瘫着，站一站、走两步更舒服。'
+        ], seed + 1),
+        rot([
+          '少冷饮，少重油重辣。',
+          '今天也记得配口热汤或温水，别只用冰的下饭。',
+          '七分饱就停筷子，下午不容易犯困。'
+        ], seed)
+      ]
     },
     afternoon: {
       title: '吃饭 · 下午垫一口（可选）',
       sub: '饿就吃一点，别硬撑到晚饭',
-      lines: ['饿了就在食堂或小卖部垫一小份温的，别用零食顶一顿。', '不饿也别硬塞，等晚饭好好吃。']
+      lines: [
+        rot([
+          '饿了就在食堂或小卖部垫一小份温的，别用零食顶一顿。',
+          '下午有点饿，选个温热的小份点心垫一下就好。'
+        ], seed),
+        rot([
+          '不饿也别硬塞，等晚饭好好吃。',
+          '不饿就多喝两口温水，别边忙边无意识地吃。'
+        ], seed + 1)
+      ]
     },
     evening: {
       title: '吃饭 · 晚餐',
       sub: '再忙也坐下把饭吃完',
-      lines: ['晚饭七分饱，热的菜多打一点。', '吃完走两圈，别直接回宿舍躺。', '少冰、少重油重辣。']
+      lines: [
+        '晚饭七分饱，热的菜多打一点。',
+        rot([
+          '吃完走两圈，别直接回宿舍躺。',
+          '晚饭别拖到太晚，也别只拿零食凑合。'
+        ], seed),
+        rot([
+          '少冰、少重油重辣。',
+          '晚饭吃舒服点，肠胃不闹脾气，夜里才睡得香。'
+        ], seed + 1)
+      ]
     },
     late: {
       title: '别再加餐啦',
       sub: '',
-      lines: ['这会儿不饿就别吃了，最多抿两口温水。', '胃也要睡觉，留着明天好好吃早饭。']
+      lines: [
+        rot([
+          '这会儿不饿就别吃了，最多抿两口温水。',
+          '睡前别再找东西吃啦，胃也要歇一歇。'
+        ], seed),
+        rot([
+          '胃也要睡觉，留着明天好好吃早饭。',
+          '真饿到睡不着，就抿一小口温水，别开零食袋。'
+        ], seed + 1)
+      ]
     }
   };
 
