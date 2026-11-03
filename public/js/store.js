@@ -9,7 +9,9 @@ export const K = {
   water: 'dd:water:',
   checkin: 'dd:checkin:',
   memo: 'dd:memo',
-  schedule: 'dd:schedule'
+  schedule: 'dd:schedule',
+  milestones: 'dd:milestones',
+  wishes: 'dd:wishes'
 };
 
 export const CHECK_ITEMS = [
@@ -192,6 +194,48 @@ export function removeMemo(id) {
   const list = getMemos().filter((m) => m.id !== id);
   set(K.memo, list);
   return list;
+}
+
+/* ---------------- 重要日子纪念册（本地倒计时，纯本地不上传） ---------------- */
+
+export function getMilestones() {
+  const list = get(K.milestones, []);
+  return Array.isArray(list) ? list : [];
+}
+
+export function addMilestone(label, date) {
+  const t = String(label || '').trim().slice(0, 30);
+  const d = String(date || '').trim();
+  if (!t || !/^\d{4}-\d{2}-\d{2}$/.test(d)) return getMilestones();
+  const list = getMilestones();
+  list.push({ id: String(Date.now()) + Math.random().toString(36).slice(2, 6), label: t, date: d });
+  list.sort((a, b) => (a.date < b.date ? -1 : 1));
+  set(K.milestones, list);
+  return list;
+}
+
+export function removeMilestone(id) {
+  set(K.milestones, getMilestones().filter((m) => m.id !== id));
+}
+
+/* ---------------- 想吃清单（随口记，不替身体做决定） ---------------- */
+
+export function getWishes() {
+  const list = get(K.wishes, []);
+  return Array.isArray(list) ? list : [];
+}
+
+export function addWish(text) {
+  const t = String(text || '').trim().slice(0, 30);
+  if (!t) return getWishes();
+  const list = getWishes();
+  list.unshift({ id: String(Date.now()) + Math.random().toString(36).slice(2, 6), text: t, done: false });
+  set(K.wishes, list.slice(0, 50));
+  return list;
+}
+
+export function removeWish(id) {
+  set(K.wishes, getWishes().filter((w) => w.id !== id));
 }
 
 /* ---------------- 故事 ---------------- */

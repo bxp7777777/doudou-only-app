@@ -3754,7 +3754,7 @@ function claimAchievement(id) {
   const logs = addReward(ach.reward || {});
   saveGame();
   renderAll();
-  toast(`成就达成：${ach.name}！${rewardLogText(logs)}`, 'gold', 3200);
+  toast(`成就达成：${ach.name}！${rewardLogText(logs)}。${pick(PRAISE_LINES)}`, 'gold', 3400);
 }
 function canSignInToday() {
   const today = localDateKey();
@@ -5449,6 +5449,7 @@ function renderHome() {
         <button class="btn btn-primary" type="button" data-act="claimIdle" ${pendingGold < 1 && pendingFruit < 1 ? 'disabled' : ''}>一键领取挂机收益</button>
       </div>
       ${gardenHTML()}
+      ${careCardHTML()}
       <div class="boost-row">
         <span class="boost-pill ${boostRemain > 0 ? 'active' : ''}" id="homeBoostTimer">${boostRemain > 0 ? `双倍加速中 ${fmtClock(boostRemain)}` : '当前未加速'}</span>
         <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="gold">🪙 1200 · 5 分钟 2 倍</button>
@@ -6720,6 +6721,60 @@ function gardenJustReady() {
   return state.garden.plots.some(p => p && p.state === 'growing' && num(p.readyAt, 0) <= now);
 }
 
+/* ---------------- 今日小陪伴：自律打卡（低额奖励，不超模）+ 抱抱/晚安互动 ---------------- */
+const SELF_CARE_REWARD = { gold: 12, fruit: 1 };
+const PRAISE_LINES = [
+  '真棒，毛茸茸为你鼓掌', '又向前一步，继续保持', '这份努力被记住啦', '做得漂亮，再接再厉', '慢慢来，稳稳地变好'
+];
+function selfCareToday() {
+  if (!state.selfCare || state.selfCare.date !== localDateKey()) {
+    state.selfCare = { date: localDateKey(), focus: false, move: false };
+  }
+  return state.selfCare;
+}
+function claimSelfCare(kind) {
+  const sc = selfCareToday();
+  if (sc[kind]) { toast('今天这项已经完成啦，明天再来'); return; }
+  sc[kind] = true;
+  addReward(SELF_CARE_REWARD);
+  saveGame();
+  renderAll();
+  toast(kind === 'focus'
+    ? '专注完成！+12 金币 +1 经验果，毛茸茸为你骄傲'
+    : '活动一下完成！+12 金币 +1 经验果，动一动更有精神', 'good');
+}
+function hugPet() {
+  const pet = getMainPet();
+  if (!pet) return;
+  pet.intimacy = clamp(num(pet.intimacy, 0) + 0.4, 0, 100);
+  pet.mood = clamp(num(pet.mood, 80) + 2, 0, 100);
+  saveGame();
+  renderAll();
+  toast(`你抱住了${petDisplayName(pet)}，它舒服地蹭了蹭你 💗`, 'good');
+}
+function goodnightPet() {
+  const pet = getMainPet();
+  if (!pet) return;
+  pet.mood = clamp(num(pet.mood, 80) + 1, 0, 100);
+  pet.intimacy = clamp(num(pet.intimacy, 0) + 0.2, 0, 100);
+  saveGame();
+  renderAll();
+  toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你入梦 🌙`, 'good');
+}
+function careCardHTML() {
+  const sc = selfCareToday();
+  const btn = (act, label, done) => `<button class="btn btn-ghost btn-sm" type="button" data-act="${act}" ${done ? 'disabled' : ''}>${label} ${done ? '✓' : '+'}</button>`;
+  return `<section class="card care-card">
+    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>完成一项小自律换一点奖励；抱抱、说晚安也是陪伴。</p></div></div>
+    <div class="care-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${btn('selfFocus', '📖 专注25分钟', sc.focus)}
+      ${btn('selfMove', '🚶 活动10分钟', sc.move)}
+      ${btn('hugPet', '🤗 抱抱', false)}
+      ${btn('goodnightPet', '🌙 说晚安', false)}
+    </div>
+  </section>`;
+}
+
 function patPet() {
   const pet = getMainPet();
   if (!pet) { toast('先去抽一只宠物吧'); return; }
@@ -7057,13 +7112,16 @@ function feedPet(uid) {
   state.resources.gold -= cost;
   pet.hunger = clamp(num(pet.hunger, 80) + 18, 0, 100);
   pet.mood = clamp(num(pet.mood, 80) + 6, 0, 100);
-  pet.intimacy = clamp(num(pet.intimacy, 0) + 2, 0, 100);
+  const el = templateOf(pet).element;
+  const likeBonus = (el === 'fire' || el === 'grass') ? 1 : 0;
+  pet.intimacy = clamp(num(pet.intimacy, 0) + 2 + likeBonus, 0, 100);
   pet.lastFeed = Date.now();
   bumpMetric('feeds', 1);
   saveGame();
   renderAll();
   openFeedModal(pet.uid);
-  toast(`${petDisplayName(pet)} 吃得很开心！`, 'good');
+  const likeLine = likeBonus ? '，正合它的口味，格外亲近' : '';
+  toast(`${petDisplayName(pet)} 吃得很开心！${likeLine}`, 'good');
   playSfx('feed');
 }
 function startFeedGameAction(uid) {
@@ -7638,6 +7696,10 @@ function handleActionClick(event) {
     case 'claimIdle': claimIdle(); break;
     case 'gardenPlant': gardenPlant(Number(target.dataset.index)); break;
     case 'gardenHarvest': gardenHarvest(Number(target.dataset.index)); break;
+    case 'selfFocus': claimSelfCare('focus'); break;
+    case 'selfMove': claimSelfCare('move'); break;
+    case 'hugPet': hugPet(); break;
+    case 'goodnightPet': goodnightPet(); break;
     case 'pat': patPet(); break;
     case 'buyBoost': buyBoost(target.dataset.kind); break;
     case 'buyOfflineSlot': buyOfflineSlot(); break;

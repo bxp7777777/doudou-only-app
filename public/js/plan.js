@@ -307,13 +307,20 @@ function checkinModule(day, mode) {
     };
   }
 
+  let todayLines = ['做完一项点一下，小金毛就摇一次尾巴。'];
+  if (items.length && doneCount === items.length) {
+    todayLines.push('今天的小习惯全部打勾啦，小猪记一笔大大的表扬！');
+  } else if (doneCount > 0) {
+    todayLines.push(`已完成 ${doneCount} 项，不着急，慢慢来就好。`);
+  }
+
   return {
     id: 'checkin',
     type: 'checklist',
     icon: '📌',
     title: '今日小习惯',
     sub: '先催前两条：喝水3杯、吃饭按时',
-    lines: ['做完一项点一下，小金毛就摇一次尾巴。'],
+    lines: todayLines,
     items: items
   };
 }

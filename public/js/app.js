@@ -185,9 +185,12 @@ function homePage(now, period) {
         <img class="hero-mascot m-dog" src="/art/pets/golden.jpg" alt="小金毛" loading="lazy" onerror="this.remove()">
       </div>
       <p class="hero-date">${esc(date.cn(today))} · ${esc(date.weekdayCN(now))} · ${esc(date.PERIOD_LABEL[period] || '')}</p>
-      <p class="hero-note">小猪盯吃喝，小金毛摇尾巴～</p>
+      <p class="hero-note">${esc(homeNote(period))}</p>
     </header>
     ${modules.map(moduleHTML).join('')}
+    ${moodTrendCardHTML()}
+    ${milestoneCardHTML()}
+    ${wishCardHTML()}
     <p class="foot">小猪和小金毛都在这儿，不催不吼，只陪你。</p>
   </div>`;
 }
@@ -233,6 +236,72 @@ function moduleHTML(m) {
     ${lines}
     ${extra}
     ${cta}
+  </section>`;
+}
+
+/* ------------------------- 首页补充小卡：心情趋势 / 纪念册 / 想吃清单（纯本地、不进 plan.build） ------------------------- */
+
+function homeNote(period) {
+  const NOTE = {
+    morning: '先喝半杯温水，今天也慢慢陪你',
+    noon: '午饭吃热的、七分饱，别用冰饮顶',
+    afternoon: '起身活动两分钟，再喝一口水',
+    evening: '晚饭七分饱，吃完走两圈再回宿舍',
+    late: '准备收工，别再刷太久',
+    bedtime: '故事讲完就放下手机',
+    sleep: '放下手机，好好睡一觉',
+    deepnight: '不打扰你，就在旁边安静陪着'
+  };
+  return '小猪盯吃喝，小金毛摇尾巴 · ' + (NOTE[period] || '陪着你');
+}
+
+function daysBetween(a, b) {
+  const ta = new Date(a + 'T00:00:00').getTime();
+  const tb = new Date(b + 'T00:00:00').getTime();
+  return Math.round((tb - ta) / 86400000);
+}
+
+function moodTrendCardHTML() {
+  const moodEmoji = {};
+  store.MOODS.forEach((m) => { moodEmoji[m.key] = m.emoji; });
+  const cells = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = date.dateKey(d);
+    const e = store.getDiary(key);
+    const emoji = e && e.mood ? moodEmoji[e.mood] : '';
+    cells.push(`<span style="display:flex;flex-direction:column;align-items:center;font-size:18px;gap:2px">${emoji || '<span style="opacity:.25">·</span>'}<i style="font-style:normal;font-size:10px;color:#9a948c">${date.weekdayCN(d).slice(-1)}</i></span>`);
+  }
+  return `<section class="card">
+    <h2 class="card-head"><span class="card-icon">🌈</span><span class="card-title">近7天心情小记</span></h2>
+    <div style="display:flex;gap:6px;justify-content:space-between;margin:8px 0">${cells.join('')}</div>
+    <p class="card-sub">在「小日子」里点一下今天的心情，这里就会亮起来。</p>
+  </section>`;
+}
+
+function milestoneCardHTML() {
+  const today = date.dateKey(new Date());
+  const list = store.getMilestones();
+  const rows = list.map((m) => {
+    const left = daysBetween(today, m.date);
+    const status = left > 0 ? `还有 ${left} 天` : left === 0 ? '就是今天！' : '已过去';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0"><span>🎯 ${esc(m.label)}</span><span style="color:#9a948c;font-size:12px">${status}</span><button class="btn btn-mini" data-act="ms-del" data-id="${esc(m.id)}">删</button></div>`;
+  }).join('');
+  return `<section class="card">
+    <h2 class="card-head"><span class="card-icon">📌</span><span class="card-title">重要日子 · 倒计时</span></h2>
+    ${rows || '<p class="line">记一个想记住的日子（考试、见面、生日都行），小猪帮你数着。</p>'}
+    <div style="margin-top:8px"><button class="btn btn-mini" data-act="ms-add">＋ 添加一个日子</button></div>
+  </section>`;
+}
+
+function wishCardHTML() {
+  const list = store.getWishes();
+  const rows = list.map((w) => `<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0"><span>🍡 ${esc(w.text)}</span><button class="btn btn-mini" data-act="wish-del" data-id="${esc(w.id)}">删</button></div>`).join('');
+  return `<section class="card">
+    <h2 class="card-head"><span class="card-icon">🍡</span><span class="card-title">想吃清单</span></h2>
+    ${rows || '<p class="line">随口记下想吃的，方便时再去吃；身体不舒服时不硬吃。</p>'}
+    <div style="display:flex;gap:8px;margin-top:8px"><input id="wish-input" class="wish-input" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #e3ddd5;border-radius:8px;background:#fff" placeholder="记下一个想吃的…" /><button class="btn btn-mini" data-act="wish-add">＋ 记下</button></div>
   </section>`;
 }
 
@@ -854,6 +923,41 @@ document.addEventListener('click', (e) => {
       render();
       toast('删掉啦');
     }
+    return;
+  }
+
+  if (act === 'ms-add') {
+    if (typeof window.prompt !== 'function') return toast('请在浏览器里添加');
+    const label = window.prompt('这个日子叫什么？（如：期末考试）');
+    if (label == null) return;
+    const dateStr = window.prompt('日期：格式 YYYY-MM-DD（如 2026-12-31）');
+    if (dateStr == null) return;
+    const before = store.getMilestones().length;
+    store.addMilestone(label, dateStr);
+    render();
+    toast(store.getMilestones().length > before ? '记好啦，小猪帮你数着日子' : '日期格式不对，要用 YYYY-MM-DD');
+    return;
+  }
+
+  if (act === 'ms-del') {
+    store.removeMilestone(el.dataset.id);
+    render();
+    return;
+  }
+
+  if (act === 'wish-add') {
+    const box = document.getElementById('wish-input');
+    const v = box ? box.value : '';
+    if (!v.trim()) return toast('先写一句想吃的再存');
+    store.addWish(v);
+    render();
+    toast('小猪帮你记下啦');
+    return;
+  }
+
+  if (act === 'wish-del') {
+    store.removeWish(el.dataset.id);
+    render();
     return;
   }
 
