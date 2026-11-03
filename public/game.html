@@ -877,6 +877,13 @@ body.modal-open{overflow:hidden}
 .ult-flash.ssr{background:radial-gradient(circle at center,rgba(255,255,255,.95),rgba(255,206,117,.6) 35%,rgba(176,136,235,.4) 58%,transparent 76%)}
 .ult-flash .ult-name{font-size:22px;font-weight:900;color:#7b4e6c;text-shadow:0 2px 0 #fff,0 0 30px #fff}
 .ult-flash .ult-rays{position:absolute;width:460px;height:460px;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.55),transparent 20%,rgba(255,255,255,.55),transparent 40%);animation:spinSlow 1.2s linear infinite;opacity:.7}
+/* ---------- 进化闪光横幅（全局，复用大招闪光语言，pointer-events 不挡操作） ---------- */
+.evo-flash{position:fixed;inset:0;z-index:130;pointer-events:none;opacity:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;transition:opacity .18s}
+.evo-flash.active{opacity:1;animation:evoFlash 1.5s ease both;background:radial-gradient(circle at center,rgba(255,255,255,.95),rgba(255,214,128,.55) 34%,rgba(190,150,240,.32) 56%,transparent 76%)}
+.evo-flash .evo-rays{position:absolute;width:440px;height:440px;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(255,255,255,.55),transparent 18%,rgba(255,238,190,.5),transparent 38%);animation:spinSlow 1.4s linear infinite;opacity:.75}
+.evo-flash .evo-name{position:relative;font-size:24px;font-weight:900;color:#8a5a2b;text-shadow:0 2px 0 #fff,0 0 34px #fff;letter-spacing:1px}
+.evo-flash .evo-stage{position:relative;font-size:13px;font-weight:800;color:#a86a22;background:rgba(255,255,255,.74);padding:4px 16px;border-radius:999px;box-shadow:0 4px 18px rgba(200,150,60,.25)}
+@keyframes evoFlash{0%{opacity:0;transform:scale(.92)}14%{opacity:1;transform:scale(1)}78%{opacity:.9}100%{opacity:0;transform:scale(1.04)}}
 .battle-empty{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
 
 /* ---------- 新手引导 / Toast ---------- */
@@ -1451,6 +1458,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 <div id="modalRoot"></div>
 <div id="battleRoot"></div>
 <div id="toastRoot" class="toast-root"></div>
+<div id="evoFlash" class="evo-flash"><div class="evo-rays"></div><div class="evo-name"></div><div class="evo-stage"></div></div>
 <div id="tutorialRoot"></div>
 <script>
 'use strict';
@@ -3086,6 +3094,25 @@ function petArtFrame(templateId, fallbackEmoji, sizeClass) {
   const fb = esc(fallbackEmoji);
   return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
 }
+// 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
+// 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
+const PET_EVO_ART = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
+function evoArtUrl(templateId, evo) {
+  return (evo >= 1 && PET_EVO_ART[templateId]) ? 'art/pets-evo/' + templateId + '_s1.jpg' : null;
+}
+// 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失自动回退基础图，再由底层 emoji 兜底
+function petArtFrameFor(pet, sizeClass) {
+  const t = templateOf(pet);
+  const fb = esc(petEmoji(pet));
+  const evoUrl = evoArtUrl(t.id, pet.evo || 0);
+  const baseUrl = petArtUrl(t.id);
+  const primary = evoUrl || baseUrl;
+  if (!primary) return null;
+  const chain = (evoUrl && baseUrl)
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';}else{this.remove();}"`
+    : 'onerror="this.remove()"';
+  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${primary}" alt="${fb}" loading="lazy" ${chain}></span>`;
+}
 // 装备 AI 图标：key=槽位_品质；未登记或图片缺失时 equipIcon() 返回 emoji，onerror 自动兜底，绝不白图
 const EQUIP_ART = { weapon_fine:true, armor_fine:true, accessory_fine:true, amulet_fine:true, weapon_epic:true, armor_epic:true, accessory_epic:true, amulet_epic:true };
 function equipmentArtUrl(item) {
@@ -3109,11 +3136,17 @@ function natureChip(pet) {
   const n = PET_NATURES[pet.nature] || PET_NATURES.neutral;
   return `<span class="chip" title="${esc(n.desc)}">${n.emoji}${n.name}</span>`;
 }
-// 主页场景主宠大图：有立绘显示圆形图，缺失回退 emoji
+// 主页场景主宠大图：进化形态优先 s1 立绘，缺失回退基础图，再回退 emoji
 function homePetArt(pet, tpl) {
-  const url = petArtUrl(tpl.id);
-  if (!url) return `<span class="main-pet-emoji">${esc(petEmoji(pet))}</span>`;
-  return `<img class="home-pet-img" src="${url}" alt="${esc(petEmoji(pet))}" loading="lazy" onerror="this.remove()">`;
+  const fb = esc(petEmoji(pet));
+  const evoUrl = evoArtUrl(tpl.id, pet.evo || 0);
+  const baseUrl = petArtUrl(tpl.id);
+  const primary = evoUrl || baseUrl;
+  if (!primary) return `<span class="main-pet-emoji">${fb}</span>`;
+  const chain = (evoUrl && baseUrl)
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';}else{this.remove();}"`
+    : 'onerror="this.remove()"';
+  return `<img class="home-pet-img" src="${primary}" alt="${fb}" loading="lazy" ${chain}>`;
 }
 // 主页驻守小队小头像：有立绘显示小圆图，缺失回退 emoji
 function miniPetArt(pet) {
@@ -4215,7 +4248,8 @@ function buildBattleUnitFromPet(pet, side, ctx) {
     dodge: stats.dodge,
     lifesteal: stats.lifesteal,
     // 亲密档（亲密度≥60）开局额外 +15 怒气的温和被动；敌方伪档案 intimacy=0，不受影响
-    rage: num(pet.intimacy, 0) >= 60 ? 35 : 20,
+    // 主角猪猪 / 金毛为陪伴初始伙伴，我方出战再额外 +8 怒气以更快开启奥义；敌方伪档案不走本函数
+    rage: (num(pet.intimacy, 0) >= 60 ? 35 : 20) + ((template.id === 'pig' || template.id === 'golden') ? 8 : 0),
     alive: true,
     shield: 0,
     shieldTurns: 0,
@@ -5129,6 +5163,18 @@ function showUltFlash(name, rarity, element) {
   setTimeout(() => { el.classList.remove('active', 'ssr'); }, 950);
 }
 
+// 全局进化闪光横幅：成功进化时短暂展示「名字 进化！→ 新形态」，不拦截点击
+function showEvolveBanner(displayName, evoName) {
+  const el = $('#evoFlash');
+  if (!el) return;
+  const nameEl = el.querySelector('.evo-name');
+  const stageEl = el.querySelector('.evo-stage');
+  if (nameEl) nameEl.textContent = '✨ ' + displayName + ' 进化！';
+  if (stageEl) stageEl.textContent = '形态进化为 · ' + evoName;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 1500);
+}
+
 function skipBattle() {
   const b = UI.battle;
   if (!b || b.over) return;
@@ -5921,7 +5967,7 @@ function petCardHTML(pet, context = 'team') {
        <button class="btn btn-mint btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级</button>`;
   return `<div class="pet-card rarity-${pet.rarity} ${t.rarity === 'SSR' ? 'ssr' : ''} ${row ? 'deployed' : ''}">
     <div class="pet-top">
-      <div class="pet-avatar ${hunger < 30 ? 'droopy' : ''}">${petArtFrame(t.id, petEmoji(pet), 'art-card') || esc(pet.shiny ? t.shiny : petEmoji(pet))}${accessory ? `<span class="acc">${accessory.emoji}</span>` : ''}${pet.shiny ? '<span class="spark s1">✦</span><span class="spark s2">✦</span>' : ''}</div>
+      <div class="pet-avatar ${hunger < 30 ? 'droopy' : ''}">${petArtFrameFor(pet, 'art-card') || esc(pet.shiny ? t.shiny : petEmoji(pet))}${accessory ? `<span class="acc">${accessory.emoji}</span>` : ''}${pet.shiny ? '<span class="spark s1">✦</span><span class="spark s2">✦</span>' : ''}</div>
       <div class="pet-headline">
         <div class="pet-name">${esc(petDisplayName(pet))}</div>
         <div class="pet-sub">${elementTag(t.element)} ${rarityTag(t.rarity)}</div>
@@ -6622,7 +6668,7 @@ function openPetModal(uid) {
   const careText = careParts.length ? careParts.join('、') : '状态平稳，无额外加减成';
   const body = `
     <div class="pet-modal-hero rarity-${t.rarity}">
-      <div class="pet-modal-avatar ${pet.hunger < 30 ? 'droopy' : ''}">${petArtFrame(t.id, petEmoji(pet), 'art-modal') || `<span>${esc(petEmoji(pet))}</span>`}${accessory ? `<em>${accessory.emoji}</em>` : ''}${pet.shiny ? '<i class="spark s1">✦</i><i class="spark s2">✦</i>' : ''}</div>
+      <div class="pet-modal-avatar ${pet.hunger < 30 ? 'droopy' : ''}">${petArtFrameFor(pet, 'art-modal') || `<span>${esc(petEmoji(pet))}</span>`}${accessory ? `<em>${accessory.emoji}</em>` : ''}${pet.shiny ? '<i class="spark s1">✦</i><i class="spark s2">✦</i>' : ''}</div>
       <div class="pet-modal-id">
         <div class="flex" style="gap:6px;flex-wrap:wrap"><h2>${esc(petDisplayName(pet))}</h2>${rarityTag(t.rarity)}${elementTag(t.element)}<span class="chip gold-text">💗 ${intimacyTier.name}</span>${intimacyTier.at >= 60 ? '<span class="chip mint">开局怒气 +15</span>' : ''}${natureChip(pet)}${inTeam ? `<span class="chip mint">${deployedRow(pet.uid) === 'front' ? '前排' : '后排'}</span>` : '<span class="chip">替补</span>'}</div>
         <p>${esc(t.title)} · Lv.${pet.level} / ${MAX_LEVEL} · ${EVOLUTIONS[pet.evo].name} · ${starsHTML(pet.star)}</p>
@@ -7383,6 +7429,7 @@ function evolvePet(uid) {
   saveGame();
   renderAll();
   if (UI.modal) openPetModal(uid);
+  showEvolveBanner(petDisplayName(pet), EVOLUTIONS[pet.evo].name);
   toast(`${petDisplayName(pet)} 进化成 ${EVOLUTIONS[pet.evo].name}！`, 'gold', 3200);
   playSfx('evolve');
 }
