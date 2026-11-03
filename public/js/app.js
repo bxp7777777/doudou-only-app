@@ -3,6 +3,7 @@ import * as store from './store.js';
 import * as plan from './plan.js';
 import * as cycleUtil from './cycle.js';
 import * as storyUtil from './story.js';
+import * as jokeUtil from './joke.js';
 import * as schedule from './schedule.js';
 import { load as loadWeather } from './weather.js';
 
@@ -12,7 +13,7 @@ const tabsEl = document.getElementById('tabs');
 const TABS = [
   { key: 'home', icon: '🏠', label: '今陪伴' },
   { key: 'cycle', icon: '🌸', label: '小日子' },
-  { key: 'story', icon: '🌙', label: '小故事' },
+  { key: 'story', icon: '🌙', label: '每日故事' },
   { key: 'memo', icon: '📝', label: '备忘' },
   { key: 'game', icon: '🎮', label: '养成' }
 ];
@@ -702,16 +703,38 @@ function diaryItem(e) {
 
 /* ------------------------- 小故事 ------------------------- */
 
+function badgeCardHTML() {
+  const bs = store.getBadges();
+  return `<section class="card">
+    <h2 class="card-head"><span class="card-icon">🏅</span><span class="card-title">陪伴小勋章</span></h2>
+    <div class="badges">
+      ${bs
+        .map(
+          (b) => `<div class="badge ${b.unlocked ? 'badge-on' : ''}">
+        <span class="badge-emoji">${b.unlocked ? b.emoji : '🔒'}</span>
+        <span class="badge-meta">
+          <span class="badge-name">${esc(b.name)}</span>
+          <span class="badge-desc">${esc(b.desc)}</span>
+          <span class="badge-prog">${b.unlocked ? '已解锁 · ' : ''}${b.progress}</span>
+        </span>
+      </div>`
+        )
+        .join('')}
+    </div>
+  </section>`;
+}
+
 function storyPage() {
   const today = date.dateKey();
   const story = storyUtil.current(today);
+  const joke = jokeUtil.current(today);
   const done = store.getStoryDone(today);
 
-  const body = done
+  const storyCard = done
     ? `<section class="card">
         <h2 class="card-head"><span class="card-icon">🌛</span><span class="card-title">晚安豆豆大王</span></h2>
-        <p class="line">23:30前放下手机，梦里有小猪和小金毛。</p>
-        <p class="line">明天小猪还来盯你喝水、吃饭、练琴。</p>
+        <p class="line">故事讲完就安心躺下，把手机轻轻放到手边，梦里有小猪和小金毛守着你。</p>
+        <p class="line">明天小猪还来陪你喝水、吃饭、练琴，安心睡吧。</p>
         <button class="btn btn-ghost" data-act="tab" data-tab="home">回到今天的陪伴</button>
       </section>`
     : `<section class="card">
@@ -722,16 +745,25 @@ function storyPage() {
           <button class="btn" data-act="story-done">讲完啦，去睡觉</button>
           <button class="btn btn-ghost" data-act="story-another">换一个故事</button>
         </div>
-      </section>
-
-      <section class="card">
-        <h2 class="card-head"><span class="card-icon">⏰</span><span class="card-title">睡前小节奏</span></h2>
-        <p class="line">${esc(store.getPrefs().storyAt)} 小猪讲故事，讲完就放下手机。</p>
-        <p class="line">${esc(store.getPrefs().sleepAt)} 前睡着，睡前只抿两口温水。</p>
-        <p class="line">手干了补护手霜、嘴唇干抹润唇，别敷面膜熬时间。</p>
       </section>`;
 
-  return `<div class="wrap">${hero('睡前小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${body}</div>`;
+  const jokeCard = `<section class="card">
+      <h2 class="card-head"><span class="card-icon">😄</span><span class="card-title">每日一笑 · 小猪和小金毛日常</span></h2>
+      <p class="joke-name">《${esc(joke.title)}》</p>
+      <p class="line joke-body">${esc(joke.body)}</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" data-act="joke-another">换一个笑话</button>
+      </div>
+    </section>`;
+
+  const softCard = `<section class="card">
+      <h2 class="card-head"><span class="card-icon">🌿</span><span class="card-title">睡前轻轻做</span></h2>
+      <p class="line">困了就慢慢放下手机，把房间调暗一点、呼吸放慢一点。</p>
+      <p class="line">睡前只抿两口温温水，润润嗓子就好。</p>
+      <p class="line">手干了补一点护手霜、嘴唇干抹润唇，别让护肤熬成熬夜。</p>
+    </section>`;
+
+  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}</div>`;
 }
 
 /* ------------------------- 备忘 ------------------------- */
@@ -842,8 +874,8 @@ function settingsPage() {
 
     <section class="card">
       <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">睡觉</span></h2>
-      <p class="line">${esc(prefs.sleepAt)} 前放下手机入睡。</p>
-      <p class="line">${esc(prefs.storyAt)} 左右讲故事，讲完立刻催睡。</p>
+      <p class="line">困了就慢慢放下手机，让呼吸和身边的小猪小金毛一起软下来。</p>
+      <p class="line">想听故事时就开始讲，讲到眼皮发沉，自然就想睡了。</p>
     </section>
 
     <section class="card">
@@ -1100,8 +1132,18 @@ document.addEventListener('click', (e) => {
   }
 
   if (act === 'story-done') {
+    const beforeBadges = store.unlockedKeys();
     store.setStoryDone(today, true);
+    store.bumpStoryDone(today);
+    const afterBadges = store.unlockedKeys();
     render();
+    const newOne = afterBadges.filter((k) => !beforeBadges.includes(k));
+    if (newOne.length) {
+      const b = store.getBadges().find((x) => x.key === newOne[0]);
+      toast(`🎉 解锁勋章 ${b.emoji} ${b.name}`);
+    } else {
+      toast('讲完啦，好好睡个软觉');
+    }
     return;
   }
 
@@ -1109,6 +1151,20 @@ document.addEventListener('click', (e) => {
     store.setStoryDone(today, false);
     storyUtil.another(today);
     render();
+    return;
+  }
+
+  if (act === 'joke-another') {
+    const beforeBadges = store.unlockedKeys();
+    jokeUtil.another(today);
+    store.bumpJokeView();
+    const afterBadges = store.unlockedKeys();
+    render();
+    const newOne = afterBadges.filter((k) => !beforeBadges.includes(k));
+    if (newOne.length) {
+      const b = store.getBadges().find((x) => x.key === newOne[0]);
+      toast(`🎉 解锁勋章 ${b.emoji} ${b.name}`);
+    }
     return;
   }
 

@@ -418,6 +418,73 @@ body.theme-duo .bg::after {
   color: #c9687f;
 }
 
+/* 每日一笑 · 小猪和小金毛日常 */
+.joke-name {
+  margin: 6px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.joke-body {
+  line-height: 1.9;
+  font-size: 15px;
+}
+
+/* 陪伴小勋章 */
+.badges {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.badge {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid #f0e3e8;
+}
+
+.badge-emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.badge-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.badge-name {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.badge-desc {
+  font-size: 13px;
+  color: #8a7a82;
+}
+
+.badge-prog {
+  font-size: 12px;
+  color: #b08a96;
+}
+
+.badge-on {
+  background: #fff6ec;
+  border-color: #f3d9b8;
+}
+
+.badge-on .badge-prog {
+  color: #c98a3a;
+  font-weight: 700;
+}
+
 /* 小日子 */
 .chips {
   display: flex;

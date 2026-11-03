@@ -83,9 +83,18 @@ click({ act: 'diary-search' });
 check(homeHtml().includes('不推算任何日期') || homeHtml().includes('小猪先按 28 天记'), '周期卡没渲染参数说明');
 
 click({ act: 'tab', tab: 'story' });
-check(!homeHtml().includes('今天什么心情'), '切到小故事后不该还留着日记表单');
-check(homeHtml().includes('睡前故事') || homeHtml().includes('晚安豆豆大王'), '小故事页没渲染');
+check(!homeHtml().includes('今天什么心情'), '切到每日故事后不该还留着日记表单');
+check(homeHtml().includes('每日小故事') || homeHtml().includes('晚安豆豆大王'), '每日小故事页没渲染');
 check(/《.+》/.test(homeHtml()), '小故事页没渲染故事标题');
+check(homeHtml().includes('每日一笑'), '缺「每日一笑」笑话卡');
+check(homeHtml().includes('陪伴小勋章'), '缺陪伴勋章卡');
+check(homeHtml().includes('夜夜有伴') && homeHtml().includes('开心果'), '两枚勋章未全部展示');
+check(homeHtml().includes('换一个笑话'), '缺「换一个笑话」按钮');
+click({ act: 'joke-another' });
+check(homeHtml().includes('每日一笑'), '换笑话后笑话卡应仍在');
+check(store.jokeCount() >= 1, '看笑话后应累计计数');
+click({ act: 'story-done' });
+check(homeHtml().includes('晚安豆豆大王'), '讲完后应进入晚安态文案');
 
 click({ act: 'tab', tab: 'memo' });
 check(homeHtml().includes('豆豆的备忘录'), '备忘页没渲染');
