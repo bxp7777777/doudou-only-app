@@ -6,6 +6,9 @@ export const K = {
   cycleAsk: 'dd:cycle:ask',
   storyLast: 'dd:story:last',
   storyDone: 'dd:story:done:',
+  jokeLast: 'dd:joke:last',
+  storyLog: 'dd:story:log',
+  jokeLog: 'dd:joke:log',
   water: 'dd:water:',
   checkin: 'dd:checkin:',
   memo: 'dd:memo',
@@ -17,7 +20,7 @@ export const K = {
 export const CHECK_ITEMS = [
   { id: 'water', label: '喝水3杯' },
   { id: 'meal', label: '三餐按时温热' },
-  { id: 'sleep', label: '23:30前睡' },
+  { id: 'sleep', label: '早点安心入睡' },
   { id: 'qin', label: '练琴30分钟' },
   { id: 'move', label: '久坐起身活动' },
   { id: 'eyes', label: '护眼/拉伸一次' },
@@ -246,6 +249,73 @@ export function getStoryDone(day) {
 
 export function setStoryDone(day, flag) {
   set(K.storyDone + day, !!flag);
+}
+
+/* ---------------- 每日小故事 / 每日一笑 · 打卡日志与陪伴勋章 ---------------- */
+
+export const BADGE_STORY_STREAK = 7; // 🌙 连续讲满 7 晚
+export const BADGE_JOKE_COUNT = 14;  // 😄 累计看 14 条笑话
+
+export const BADGES = [
+  { key: 'moon', emoji: '🌙', name: '夜夜有伴', desc: '连续讲满 7 晚每日小故事', goal: BADGE_STORY_STREAK, kind: 'storyStreak' },
+  { key: 'smile', emoji: '😄', name: '开心果', desc: '累计看过 14 条每日一笑', goal: BADGE_JOKE_COUNT, kind: 'jokeCount' }
+];
+
+function localYmd(d) {
+  const p = (n) => String(n).padStart(2, '0');
+  return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+}
+
+export function storyStats() {
+  const cur = get(K.storyLog, { days: [] });
+  const days = Array.isArray(cur.days) ? cur.days.filter((x) => typeof x === 'string') : [];
+  const set = new Set(days);
+  let streak = 0;
+  let d = new Date();
+  if (!set.has(localYmd(d))) d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+  while (set.has(localYmd(d))) {
+    streak += 1;
+    d = new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+  }
+  return { total: days.length, streak };
+}
+
+// 当天讲完一篇故事：记入打卡晚数（同一天重复操作不重复计数）
+export function bumpStoryDone(day) {
+  const cur = get(K.storyLog, { days: [] });
+  let days = Array.isArray(cur.days) ? cur.days.slice() : [];
+  if (day && !days.includes(day)) {
+    days.push(day);
+    days = days.slice().sort();
+    set(K.storyLog, { days });
+  }
+  return storyStats();
+}
+
+export function jokeCount() {
+  const cur = get(K.jokeLog, { count: 0 });
+  return typeof cur.count === 'number' && cur.count > 0 ? cur.count : 0;
+}
+
+export function bumpJokeView() {
+  const count = jokeCount() + 1;
+  set(K.jokeLog, { count });
+  return count;
+}
+
+export function getBadges() {
+  const s = storyStats();
+  const c = jokeCount();
+  return BADGES.map((b) => {
+    const value = b.kind === 'storyStreak' ? s.streak : c;
+    const clipped = Math.max(0, Math.min(value, b.goal));
+    return { ...b, value: clipped, unlocked: value >= b.goal, progress: clipped + '/' + b.goal };
+  });
+}
+
+// 供交互层对比前后，返回当前已解锁勋章 key
+export function unlockedKeys() {
+  return getBadges().filter((b) => b.unlocked).map((b) => b.key);
 }
 
 /* ---------------- 课表（豆豆自己填） ---------------- */

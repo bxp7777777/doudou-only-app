@@ -21,6 +21,7 @@ const store = await import('../public/js/store.js');
 const plan = await import('../public/js/plan.js');
 const cycleUtil = await import('../public/js/cycle.js');
 const storyUtil = await import('../public/js/story.js');
+const jokeUtil = await import('../public/js/joke.js');
 const schedule = await import('../public/js/schedule.js');
 
 store.ensureDefaults();
@@ -225,24 +226,49 @@ check(a3.phase === 'normal' && a3.cycleDay === 11, '常规相位错');
 const a4 = cycleUtil.analyze({ lastStart: date.addDays(today, -35), cycleLength: 28, periodLength: 5 }, today);
 check(a4.phase === 'overdue', '推迟相位错');
 
-/* 365 篇故事：按时长全量走一年，检查不重复、字数、禁用词 */
-let last = null;
-const seen = new Set();
+/* 1000 篇每日小故事：全量走一遍，检查字数区间、正文唯一、禁用词；标题允许复用 */
+let lastBody = null;
+const bodySeen = new Set();
 const storyBodies = [];
-for (let i = 0; i < 365; i++) {
+for (let i = 0; i < 1000; i++) {
   const s = storyUtil.current(date.addDays('2026-01-01', i));
-  check(s.body.length >= 50, `故事太短（${s.body.length}字）：${s.title}`);
-  check(s.body.length <= 150, `故事太长（${s.body.length}字）：${s.title}`);
-  seen.add(s.title);
+  check(s.body.length >= 100, `故事太短（${s.body.length}字）：${s.title}`);
+  check(s.body.length <= 300, `故事太长（${s.body.length}字）：${s.title}`);
+  bodySeen.add(s.body);
   storyBodies.push(s.body);
-  if (last) check(last.title !== s.title, `连续两晚重复：${s.title}`);
-  last = s;
+  if (lastBody) check(lastBody !== s.body, `连续两天正文相同：${s.title}`);
+  lastBody = s.body;
 }
-check(seen.size === 365, `故事应正好 365 篇，实际 ${seen.size}`);
+check(bodySeen.size === 1000, `故事正文应正好 1000 篇且唯一，实际 ${bodySeen.size}`);
 const storyAll = storyBodies.join('');
 for (const b of ['榴莲', '臭豆腐', '螺蛳粉', '穿搭', '外套', '羽绒', '加件衣服']) {
   check(!storyAll.includes(b), `故事里出现禁用词「${b}」`);
 }
+
+/* 1000 条每日一笑：数量、字数区间、正文唯一、禁用词、取篇/换篇可用 */
+const JOKES = (await import('../public/js/jokes.js')).default;
+check(JOKES.length === 1000, `笑话应 1000 条，实际 ${JOKES.length}`);
+const jokeSeen = new Set();
+const jokeAll = [];
+for (const j of JOKES) {
+  check(j.body.length >= 45, `笑话太短（${j.body.length}字）：${j.title}`);
+  check(j.body.length <= 140, `笑话太长（${j.body.length}字）：${j.title}`);
+  jokeSeen.add(j.body);
+  jokeAll.push(j.body);
+}
+check(jokeSeen.size === JOKES.length, '笑话正文存在重复');
+for (const b of ['榴莲', '臭豆腐', '螺蛳粉', '穿搭', '外套', '羽绒', '加件衣服']) {
+  check(!jokeAll.join('').includes(b), `笑话里出现禁用词「${b}」`);
+}
+const j1 = jokeUtil.current('2026-11-03');
+const j2 = jokeUtil.another('2026-11-03');
+check(j1.total === 1000 && j2.total === 1000, '笑话总数不对');
+check(j1.body !== j2.body, '换一个笑话应得到不同正文');
+
+/* 陪伴勋章数据层：初始两枚均未解锁，结构完整 */
+check(store.getBadges().length === 2, '应有两枚陪伴勋章');
+check(store.getBadges().every((b) => !b.unlocked), '初始状态两枚勋章都不应解锁');
+check(store.getBadges().every((b) => typeof b.progress === 'string' && b.progress.includes('/')), '勋章应显示进度 x/y');
 
 /* 小日子：写、读、标签、搜索、统计、删除 */
 const d1 = date.addDays(today, -2);
@@ -278,4 +304,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log(`✅ 逻辑烟测通过：8 时段 × 3 天气状态、7 天课表、周期 4 相位、${seen.size} 篇故事`);
+console.log(`✅ 逻辑烟测通过：8 时段 × 3 天气状态、7 天课表、周期 4 相位、${bodySeen.size} 篇故事、${JOKES.length} 条笑话、2 枚勋章`);
