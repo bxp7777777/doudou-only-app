@@ -1,5 +1,5 @@
 /* 简单离线壳：静态资源缓存优先，接口一律走网络 */
-const CACHE = 'doudou-v3';
+const CACHE = 'doudou-v4';
 const SHELL = [
   '/',
   '/index.html',
@@ -20,6 +20,7 @@ const SHELL = [
   '/art/bg-ai2.jpg',
   '/art/bg-ai3.jpg',
   '/art/bg-ai4.jpg',
+  '/art/battle-field.jpg',
   '/art/icon-duo.svg',
   '/manifest.webmanifest',
   '/icons/icon-192.png',
