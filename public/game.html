@@ -5934,16 +5934,19 @@ function gardenHTML() {
   const readyCount = state.garden.plots.filter(p => gardenPlotStatus(p, now) === 'ready').length;
   const cells = state.garden.plots.map((p, i) => {
     const st = gardenPlotStatus(p, now);
+    const t = gardenTier(i);
+    const gold = num(p.gold, t.gold);
+    const fruit = num(p.fruit, t.fruit);
     if (st === 'empty') {
-      return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">点我播种</span></button>`;
+      return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">${t.minutes} 分钟成熟<br>💰${gold} 🍎${fruit} · 点我种</span></button>`;
     }
     if (st === 'growing') {
-      return `<button class="garden-cell plot-growing" type="button" data-index="${i}" disabled><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟</span></button>`;
+      return `<button class="garden-cell plot-growing" type="button" data-index="${i}" disabled><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟<br>💰${gold} 🍎${fruit}</span></button>`;
     }
-    return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">点我收获</span></button>`;
+    return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">点我收获<br>💰${gold} 🍎${fruit}</span></button>`;
   }).join('');
   return `<section class="card garden-card">
-    <div class="card-head"><div><h2>🌱 小菜园</h2><p>播种约 3 分钟成熟，点一下收金币和经验果，不耗体力。</p></div><span class="chip">${readyCount} 块可收</span></div>
+    <div class="card-head"><div><h2>🌱 小菜园</h2><p>6 块地由快到慢：3 / 5 / 10 / 30 / 40 / 60 分钟成熟，种得越久收成越多，不耗体力。</p></div><span class="chip">${readyCount} 块可收</span></div>
     <div class="garden-grid">${cells}</div>
   </section>`;
 }
@@ -7298,8 +7301,16 @@ function claimIdle() {
 
 /* ---------------- 小菜园：播种后定时成熟，点击收获金币+经验果，零成本不耗体力 ---------------- */
 const GARDEN_SIZE = 6;
-const GROW_MS = 180000; // 约 3 分钟一茬
-const GARDEN_YIELD = { gold: 24, fruit: 3 };
+// 六块地由快到慢分档：成熟时长 3/5/10/30/40/60 分钟递增；收获金币与经验果随档递增，单位时间产出边际递减，避免纯挂机套利
+const GARDEN_TIERS = [
+  { minutes: 3,   gold: 24,  fruit: 3  },
+  { minutes: 5,   gold: 36,  fruit: 5  },
+  { minutes: 10,  gold: 60,  fruit: 8  },
+  { minutes: 30,  gold: 150, fruit: 16 },
+  { minutes: 40,  gold: 190, fruit: 21 },
+  { minutes: 60,  gold: 260, fruit: 28 }
+];
+function gardenTier(i) { return GARDEN_TIERS[i] || GARDEN_TIERS[GARDEN_TIERS.length - 1]; }
 function ensureGarden() {
   if (!state.garden || !Array.isArray(state.garden.plots)) state.garden = { plots: [] };
   while (state.garden.plots.length < GARDEN_SIZE) state.garden.plots.push({ state: 'empty' });
@@ -7313,9 +7324,14 @@ function gardenPlant(i) {
   ensureGarden();
   const p = state.garden.plots[i];
   if (!p || p.state !== 'empty') return;
+  const t = gardenTier(i);
   p.state = 'growing';
-  p.readyAt = Date.now() + GROW_MS;
-  toast('种下啦，等它成熟～');
+  p.tier = i;
+  p.minutes = t.minutes;
+  p.gold = t.gold;
+  p.fruit = t.fruit;
+  p.readyAt = Date.now() + t.minutes * 60000;
+  toast(`种下啦，约 ${t.minutes} 分钟成熟，收成 ${t.gold} 金币 + ${t.fruit} 经验果～`);
   persist();
 }
 function gardenHarvest(i) {
@@ -7323,10 +7339,14 @@ function gardenHarvest(i) {
   const p = state.garden.plots[i];
   if (!p) return;
   if (gardenPlotStatus(p) !== 'ready') { toast('还没成熟，再等等哦'); return; }
-  addReward({ gold: GARDEN_YIELD.gold, fruit: GARDEN_YIELD.fruit });
+  const t = gardenTier(i);
+  const gold = num(p.gold, t.gold);
+  const fruit = num(p.fruit, t.fruit);
+  addReward({ gold, fruit });
   p.state = 'empty';
   p.readyAt = 0;
-  toast(`菜园丰收：+${GARDEN_YIELD.gold} 金币、+${GARDEN_YIELD.fruit} 经验果`, 'good', 2600);
+  delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
+  toast(`菜园丰收：+${gold} 金币、+${fruit} 经验果`, 'good', 2600);
   persist();
 }
 function gardenJustReady() {
