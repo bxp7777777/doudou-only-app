@@ -1023,3 +1023,25 @@ body.theme-duo .bg::after {
     transition: none !important;
   }
 }
+
+/* ---------------- 主页陪伴模块视觉增强（追加，不改既有选择器） ---------------- */
+.bday-card { background: linear-gradient(135deg, #fff3e8, #fff1f5); }
+.sign-card { background: linear-gradient(135deg, #f2eefb, #fff3f6); }
+.sign-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.sign-pill { padding: 3px 10px; border-radius: 999px; background: #fbeef2; font-size: 12px; color: #a06a78; }
+.tomato-card { background: linear-gradient(160deg, #fffaf5, #fff2f3); }
+.tomato-time { text-align: center; font-size: 30px; font-weight: 700; margin: 8px 0; font-variant-numeric: tabular-nums; color: #c26a5e; }
+.tomato-track { height: 8px; background: #f3e9e6; border-radius: 999px; overflow: hidden; }
+.tomato-bar { height: 100%; background: linear-gradient(90deg, #f6a69a, #ef7f8f); transition: width .3s ease; }
+.tomato-controls { display: flex; gap: 10px; margin-top: 12px; }
+.tomato-controls .btn { flex: 1; width: auto; margin-top: 0; }
+.tomato-set { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.tomato-set-label { font-size: 12.5px; color: #9a8488; }
+.tomato-quick { border: 1px solid #ffd8df; background: #fff5f6; color: #e2788e; border-radius: 999px; padding: 5px 13px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.tomato-quick:active { transform: scale(.97); }
+.tomato-min { width: 66px; padding: 6px 8px; border: 1px solid #eccfd4; border-radius: 10px; background: #fff; font-family: inherit; font-size: 13px; }
+.tomato-set-apply { margin-top: 0 !important; padding: 7px 15px; font-size: 13px; }
+#app .card { transition: box-shadow .2s ease; }
+@media (hover: hover) {
+  #app .card:hover { box-shadow: 0 10px 24px rgba(226, 167, 170, .22); }
+}

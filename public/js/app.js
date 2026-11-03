@@ -24,7 +24,7 @@ const state = {
   lastPeriod: '',
   diaryDate: '',
   diaryQuery: '',
-  tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0 }
+  tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 }
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -330,16 +330,53 @@ const PERSONA_TAGS = [
 
 function extraHomeHTML(now) {
   return [
+    birthdayCardHTML(),
+    cancerSignCardHTML(),
     healLineHTML(),
     personalityTagHTML(),
     careHintHTML(),
     comfortHTML(),
     moveCardHTML(now),
     tomatoCardHTML(),
-    focusStreakHTML(),
     pledgeCardHTML(now),
     foodPrefCardHTML()
   ].join('');
+}
+
+/* ---- 她的生日（7/15）与巨蟹座小特质 ---- */
+const BIRTHDAY = { month: 7, day: 15 };
+
+function nextBirthdayDays() {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let target = new Date(now.getFullYear(), BIRTHDAY.month - 1, BIRTHDAY.day);
+  if ((target - today) / 86400000 < 0) {
+    target = new Date(now.getFullYear() + 1, BIRTHDAY.month - 1, BIRTHDAY.day);
+  }
+  return Math.round((target - today) / 86400000);
+}
+
+function birthdayCardHTML() {
+  const now = new Date();
+  const isDay = now.getMonth() === BIRTHDAY.month - 1 && now.getDate() === BIRTHDAY.day;
+  const left = nextBirthdayDays();
+  const body = isDay
+    ? '<p class="line">🎂 今天是专属日子，把温柔都送给她：愿新的一岁被好好爱着，睡得香、吃得暖、事事顺心。</p>'
+    : `<p class="line">距离她的生日（7月15日）还有 <b>${left}</b> 天，到那天准备一句暖暖的祝福就好。</p>`;
+  return `<section class="card bday-card">
+    <h2 class="card-head"><span class="card-icon">🎂</span><span class="card-title">她的生日</span></h2>
+    ${body}
+  </section>`;
+}
+
+function cancerSignCardHTML() {
+  const traits = ['体贴温柔', '念旧长情', '重安全感', '认定就长久', '心软护短'];
+  const chips = traits.map((t) => `<span class="sign-pill">${esc(t)}</span>`).join('');
+  return `<section class="card sign-card">
+    <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 小特质</span></h2>
+    <p class="line">体贴、念旧、心软，慢热却长情；给足安全感，就会一直守在身边。</p>
+    <div class="sign-pills">${chips}</div>
+  </section>`;
 }
 
 function healLineHTML() {
@@ -374,19 +411,35 @@ function moveCardHTML(now) {
   <button class="btn ${done ? 'btn-mint' : 'btn-ghost'} btn-sm" data-act="moveToggle">${done ? '✓ 今天活动过了' : '点我打个卡'}</button></section>`;
 }
 
+function focusStreak() {
+  const s = store.get('dd:focusStreak', { lastDate: '', streak: 0 });
+  return Number(s.streak) || 0;
+}
+
 function tomatoCardHTML() {
   const t = state.tomato;
   const mm = pad2(Math.floor(t.remain / 60));
   const ss = pad2(t.remain % 60);
   const pct = Math.round((1 - t.remain / t.focus) * 100);
-  return `<section class="card"><h2 class="card-head"><span class="card-icon">🍅</span><span class="card-title">番茄专注钟</span></h2>
-  <p id="tomato-time" style="text-align:center;font-size:28px;margin:6px 0;font-variant-numeric:tabular-nums">${mm}:${ss}</p>
-  <div style="height:6px;background:#f0ece6;border-radius:6px;overflow:hidden"><div id="tomato-bar" style="height:100%;width:${pct}%;background:#e0898a;transition:width .3s"></div></div>
-  <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
-    <button class="btn ${t.running ? 'btn-ghost' : 'btn-primary'} btn-sm" data-act="tomatoToggle">${t.running ? '暂停' : '开始专注'}</button>
+  const quick = [15, 20, 25, 30, 45]
+    .map((m) => `<button class="tomato-quick" type="button" data-act="tomatoQuick" data-min="${m}">${m}′</button>`)
+    .join('');
+  return `<section class="card tomato-card">
+  <h2 class="card-head"><span class="card-icon">🍅</span><span class="card-title">番茄专注钟</span></h2>
+  <p id="tomato-time" class="tomato-time">${mm}:${ss}</p>
+  <div class="tomato-track"><div id="tomato-bar" class="tomato-bar" style="width:${pct}%"></div></div>
+  <div class="tomato-controls">
+    <button class="btn ${t.running ? 'btn-ghost' : ''} btn-sm" data-act="tomatoToggle">${t.running ? '暂停' : '开始专注'}</button>
     <button class="btn btn-ghost btn-sm" data-act="tomatoReset">重置</button>
-    <span style="margin-left:auto;font-size:12px;color:#9a948c">今日完成 ${t.done} 轮</span>
-  </div></section>`;
+  </div>
+  <div class="tomato-set">
+    <span class="tomato-set-label">时长</span>
+    ${quick}
+    <input id="tomato-min" class="tomato-min" type="number" min="5" max="90" step="1" placeholder="自定义" />
+    <button class="btn btn-mini tomato-set-apply" data-act="tomatoSetApply">应用</button>
+  </div>
+  <p class="card-sub" style="text-align:right;margin-top:8px">今日完成 ${t.done} 轮 · 连续专注 ${focusStreak()} 天</p>
+  </section>`;
 }
 
 function tomatoTick() {
@@ -418,11 +471,6 @@ function recordFocusRound() {
     s.lastDate = today;
   }
   store.set('dd:focusStreak', s);
-}
-
-function focusStreakHTML() {
-  const s = store.get('dd:focusStreak', { lastDate: '', streak: 0 });
-  return `<section class="card"><h2 class="card-head"><span class="card-icon">🔥</span><span class="card-title">专注连续天数</span></h2><p class="line">已连续专注 ${s.streak} 天；每完成一轮番茄钟就记上一笔。</p></section>`;
 }
 
 function pledgeCardHTML(now) {
@@ -1132,6 +1180,35 @@ document.addEventListener('click', (e) => {
     return;
   }
 
+  if (act === 'tomatoQuick') {
+    const m = Number(el.dataset.min);
+    if (m >= 5 && m <= 90) {
+      state.tomato.setMin = m;
+      state.tomato.focus = m * 60;
+      state.tomato.remain = m * 60;
+      state.tomato.running = false;
+      store.set('dd:tomatoSet', m);
+      render();
+      toast(`专注时长设为 ${m} 分钟`);
+    }
+    return;
+  }
+
+  if (act === 'tomatoSetApply') {
+    const box = document.getElementById('tomato-min');
+    const m = Number(box ? box.value : NaN);
+    if (!Number.isFinite(m) || m < 5 || m > 90) return toast('时长请填 5–90 分钟之间');
+    const mins = Math.floor(m);
+    state.tomato.setMin = mins;
+    state.tomato.focus = mins * 60;
+    state.tomato.remain = state.tomato.focus;
+    state.tomato.running = false;
+    store.set('dd:tomatoSet', mins);
+    render();
+    toast(`专注时长设为 ${mins} 分钟`);
+    return;
+  }
+
   if (act === 'pledgeSave') {
     const box = document.getElementById('pledge-input');
     const v = box ? box.value : '';
@@ -1394,6 +1471,12 @@ async function init() {
   store.ensureDefaults();
   schedule.setCustom(store.getSchedule()); // 豆豆填的课表优先
   applyTheme();
+  const savedMin = Number(store.get('dd:tomatoSet', 0));
+  if (savedMin >= 5 && savedMin <= 90) {
+    state.tomato.setMin = Math.floor(savedMin);
+    state.tomato.focus = Math.floor(savedMin) * 60;
+    state.tomato.remain = state.tomato.focus;
+  }
   state.tab = currentTab();
   state.lastPeriod = date.periodOfDay(new Date());
   render();
