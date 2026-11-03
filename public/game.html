@@ -3073,8 +3073,8 @@ function petEmojiById(templateId, stage = 0) {
   return t.emoji[clamp(stage, 0, 2)] || t.emoji[0];
 }
 // Q版立绘素材：键为 templateId，仅已生成的基础形态；缺图自动回退 emoji，不影响存档结构与战斗数值
-const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true };
-const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth:true };
+const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true,gull:true,flysquirrel:true,sparrow:true,moth:true,albatross:true,penguin:true,seal:true,arcticfox:true,polarbear:true,walrus:true,koala:true,flamingo:true,octopus:true,mushroom:true,bat:true,lynx:true,alpaca:true,mole:true,jellyfish:true,peacock:true };
+const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth:true,wind:true,ice:true };
 const RES_ART = { gold:true,crystal:true,fruit:true };
 function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
 function resArtUrl(k) { return RES_ART[k] ? 'art/icons/res_' + k + '.jpg' : null; }
