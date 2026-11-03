@@ -2755,6 +2755,7 @@ const STAGE_STAMINA_COST = 6;
 const TOWER_CHALLENGE_COST = 1;
 const ARENA_CHALLENGE_COST = 1;
 const BOSS_CHALLENGE_COST = 1;
+const CHALLENGE_TICKET_PRICE = 60; // 商店应急补票：💎钻石换 1 张挑战券（定高价，保留自然恢复的价值）
 
 let state = null;
 
@@ -6433,6 +6434,13 @@ function renderShop() {
             <button class="btn btn-ghost btn-xs" type="button" data-act="buyStone" data-el="${el}" ${state.resources.crystal < 80 ? 'disabled' : ''}>💎80 换 3</button>
           </div>`).join('')}
         </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>月影爬塔、竞技场、每日 Boss 的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
+        <div class="flex between" style="gap:10px;align-items:center">
+          <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
+          <button class="btn btn-lav btn-xs" type="button" data-act="buyChallengeTicket" ${state.challenge.value >= state.challenge.max || state.resources.crystal < CHALLENGE_TICKET_PRICE ? 'disabled' : ''}>💎${CHALLENGE_TICKET_PRICE} 换 1</button>
+        </div>
       </div>`;
   } else {
     const main = getMainPet();
@@ -7893,6 +7901,17 @@ function buyMaterial(key, price) {
   toast(`购买 ${resourceLabel(key)} ×1`, 'good');
   playSfx('buy');
 }
+function buyChallengeTicket() {
+  regenAll();
+  if (state.challenge.value >= state.challenge.max) { toast('挑战券已满，先去爬塔/竞技场消耗一些吧', 'bad'); return; }
+  if (state.resources.crystal < CHALLENGE_TICKET_PRICE) { toast(`钻石不足，需要 💎${CHALLENGE_TICKET_PRICE}`, 'bad'); return; }
+  state.resources.crystal -= CHALLENGE_TICKET_PRICE;
+  state.challenge.value = Math.min(state.challenge.max, state.challenge.value + 1);
+  saveGame();
+  renderAll();
+  toast(`挑战券 +1（当前 ${state.challenge.value}/${state.challenge.max}）`, 'good');
+  playSfx('buy');
+}
 function buyStone(element) {
   if (!ELEMENTS[element]) return;
   if (state.resources.crystal < 80) { toast('钻石不足，需要 80', 'bad'); return; }
@@ -8220,6 +8239,7 @@ function handleActionClick(event) {
     case 'buyShards': buyShards(target.dataset.pet); break;
     case 'unlockPet': unlockPet(target.dataset.pet); break;
     case 'buyItem': buyMaterial(target.dataset.key, Number(target.dataset.price || 0)); break;
+    case 'buyChallengeTicket': buyChallengeTicket(); break;
     case 'buyStone': buyStone(target.dataset.el); break;
     case 'buyCosmetic': buyCosmetic(target.dataset.id); break;
     case 'equipCosmetic': equipCosmetic(target.dataset.id); break;
