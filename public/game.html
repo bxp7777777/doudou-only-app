@@ -418,6 +418,10 @@ img{max-width:100%}
 .art-card{width:46px;height:46px}
 .art-battle{width:38px;height:38px}
 .art-modal{width:76px;height:76px}
+.art-frame.art-tag{width:15px;height:15px;flex:0 0 auto}
+.art-frame.art-resico{width:16px;height:16px;flex:0 0 auto}
+.art-frame.art-bagico{width:20px;height:20px;flex:0 0 auto}
+.art-frame.art-shopico{width:24px;height:24px;flex:0 0 auto}
 .b-unit.dead .art-frame img{filter:grayscale(1);opacity:.5}
 .pet-avatar.droopy .art-frame img{filter:grayscale(.45);opacity:.83}
 .pet-name{font-size:13px;font-weight:800;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -2780,7 +2784,17 @@ function petEmojiById(templateId, stage = 0) {
   return t.emoji[clamp(stage, 0, 2)] || t.emoji[0];
 }
 // Q版立绘素材：键为 templateId，仅已生成的基础形态；缺图自动回退 emoji，不影响存档结构与战斗数值
-const PET_ART = { pig: true, shiba: true, rabbit: true, golden: true };
+const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true };
+const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth:true };
+const RES_ART = { gold:true,crystal:true,fruit:true };
+function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
+function resArtUrl(k) { return RES_ART[k] ? 'art/icons/res_' + k + '.jpg' : null; }
+// 小图标位（元素徽章/资源图标）：有图返回圆形图框并垫 emoji 兜底，无图返回 null
+function artIconFrame(url, fallbackEmoji, sizeClass) {
+  if (!url) return null;
+  const fb = esc(fallbackEmoji);
+  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+}
 function petArtUrl(templateId) {
   return PET_ART[templateId] ? 'art/pets/' + templateId + '.jpg' : null;
 }
@@ -5091,7 +5105,8 @@ function starsHTML(star, compact = false) {
 }
 function elementTag(el) {
   const e = ELEMENTS[el] || ELEMENTS.light;
-  return `<span class="element-tag" style="--el-color:${e.color};--el-soft:${e.soft}">${e.emoji} ${e.name}</span>`;
+  const head = artIconFrame(elementArtUrl(el), e.emoji, 'art-tag') || e.emoji;
+  return `<span class="element-tag" style="--el-color:${e.color};--el-soft:${e.soft}">${head} ${e.name}</span>`;
 }
 function rarityTag(rarity) {
   const r = RARITIES[rarity] || RARITIES.N;
@@ -5181,9 +5196,9 @@ function renderTopbar() {
   const stamina = state.stamina;
   const challenge = state.challenge;
   strip.innerHTML = `
-    <span class="res-pill" title="金币：升级、升星、抽普通蛋与喂食"><span class="ico">🪙</span><em>金币</em><b id="resGold">${fmt(state.resources.gold)}</b></span>
-    <span class="res-pill" title="兽晶：稀有抽蛋、商店兑换与加速"><span class="ico">💎</span><em>兽晶</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
-    <span class="res-pill" title="经验果：宠物升级"><span class="ico">🍎</span><em>经验果</em><b id="resFruit">${fmt(state.resources.fruit)}</b></span>
+    <span class="res-pill" title="金币：升级、升星、抽普通蛋与喂食"><span class="ico">${artIconFrame(resArtUrl('gold'),'🪙','art-resico') || '🪙'}</span><em>金币</em><b id="resGold">${fmt(state.resources.gold)}</b></span>
+    <span class="res-pill" title="兽晶：稀有抽蛋、商店兑换与加速"><span class="ico">${artIconFrame(resArtUrl('crystal'),'💎','art-resico') || '💎'}</span><em>兽晶</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
+    <span class="res-pill" title="经验果：宠物升级"><span class="ico">${artIconFrame(resArtUrl('fruit'),'🍎','art-resico') || '🍎'}</span><em>经验果</em><b id="resFruit">${fmt(state.resources.fruit)}</b></span>
     <span class="res-pill" title="体力：主线与每日副本"><span class="ico">⚡</span><em>体力</em><b id="resStamina">${stamina.value}/${stamina.max}</b></span>
     <span class="res-pill" title="挑战券：爬塔、竞技场与每日 Boss"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
   refreshHUD();
@@ -5601,7 +5616,7 @@ function renderPets() {
       <div class="card">
         <div class="card-head"><div><h2>🎒 材料背包</h2><p>进化石按属性区分，升星碎片可补足同名碎片缺口。</p></div><button class="btn btn-lav btn-sm" type="button" data-act="forgeEquipment">🧩 装备锻造 · 40碎片 + 🪙800</button></div>
         <div class="bag-res-grid">
-          ${ELEMENT_KEYS.map(el => `<div class="bag-res"><span class="ico">${ELEMENTS[el].emoji}</span><div><b>${state.stones[el]}</b><span>${ELEMENTS[el].name}进化石</span></div></div>`).join('')}
+          ${ELEMENT_KEYS.map(el => `<div class="bag-res"><span class="ico">${artIconFrame(elementArtUrl(el), ELEMENTS[el].emoji, 'art-bagico') || ELEMENTS[el].emoji}</span><div><b>${state.stones[el]}</b><span>${ELEMENTS[el].name}进化石</span></div></div>`).join('')}
           ${['skillBook','equipShard','starShard','bondBadge','enhanceStone','arenaCoin','eternal'].map(key => `<div class="bag-res"><span class="ico">${resourceIcon(key)}</span><div><b>${fmt(state.items[key])}</b><span>${resourceLabel(key)}</span></div></div>`).join('')}
         </div>
       </div>
@@ -5915,7 +5930,7 @@ function renderShop() {
         <div class="flex between" style="margin-bottom:8px"><h3 style="margin:0;font-size:14px">💠 属性进化石</h3><span class="tiny muted">80 兽晶 / 3 颗</span></div>
         <div class="grid three">
           ${ELEMENT_KEYS.map(el => `<div class="shop-item stone-shop" style="--el-color:${ELEMENTS[el].color};--el-soft:${ELEMENTS[el].soft}">
-            <span class="shop-ico">${ELEMENTS[el].emoji}</span><b>${ELEMENTS[el].name}进化石</b><p>持有 ${state.stones[el]} 颗</p>
+            <span class="shop-ico">${artIconFrame(elementArtUrl(el), ELEMENTS[el].emoji, 'art-shopico') || ELEMENTS[el].emoji}</span><b>${ELEMENTS[el].name}进化石</b><p>持有 ${state.stones[el]} 颗</p>
             <button class="btn btn-ghost btn-xs" type="button" data-act="buyStone" data-el="${el}" ${state.resources.crystal < 80 ? 'disabled' : ''}>💎80 换 3</button>
           </div>`).join('')}
         </div>

@@ -114,6 +114,36 @@ body.theme-duo .bg::after {
   color: #8d6a70;
 }
 
+/* 首页专属：柔化底 + 小猪/小金毛圆形挂件（图缺失时由 onerror 自删，不占位破损） */
+.hero--home {
+  position: relative;
+  padding: 14px 16px 16px;
+  margin-bottom: 6px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 243, 226, 0.62), rgba(255, 233, 238, 0.5));
+}
+.hero-mascots {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 10px 2px 2px;
+}
+.hero-mascot {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fffdf8;
+  background: #fdf3d8;
+  box-shadow: 0 5px 12px rgba(214, 150, 120, 0.2);
+}
+.hero-mascot.m-dog {
+  transform: translateY(4px);
+}
+@media (max-width: 380px) {
+  .hero-mascot { width: 50px; height: 50px; }
+}
+
 .gear,
 .gear-space {
   background: none;

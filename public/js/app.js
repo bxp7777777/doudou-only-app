@@ -175,10 +175,14 @@ function homePage(now, period) {
   });
 
   return `<div class="wrap">
-    <header class="hero">
+    <header class="hero hero--home">
       <div class="hero-top">
         <h1 class="hero-hi">${esc(plan.greeting(period))}</h1>
         <button class="gear" data-act="tab" data-tab="settings" aria-label="设置">⚙️</button>
+      </div>
+      <div class="hero-mascots">
+        <img class="hero-mascot m-pig" src="/art/pets/pig.jpg" alt="小猪" loading="lazy" onerror="this.remove()">
+        <img class="hero-mascot m-dog" src="/art/pets/golden.jpg" alt="小金毛" loading="lazy" onerror="this.remove()">
       </div>
       <p class="hero-date">${esc(date.cn(today))} · ${esc(date.weekdayCN(now))} · ${esc(date.PERIOD_LABEL[period] || '')}</p>
       <p class="hero-note">小猪盯吃喝，小金毛摇尾巴～</p>
