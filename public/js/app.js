@@ -959,6 +959,16 @@ function settingsPage() {
     </section>
 
     <section class="card">
+      <h2 class="card-head"><span class="card-icon">💾</span><span class="card-title">本地备份</span></h2>
+      <p class="line">导出一份 JSON 存到本机文件；换浏览器或清缓存前先备份，需要时一键还原。</p>
+      <div class="btn-row">
+        <button class="btn btn-mini" data-act="backup-export">导出全部 JSON</button>
+        <button class="btn btn-ghost btn-mini" data-act="backup-import">导入还原</button>
+      </div>
+      <p class="hint">只保存本机记录、不另传别处；导入会覆盖当前记录，建议先导出旧备份。游戏存档请在游戏设置里单独导出。</p>
+    </section>
+
+    <section class="card">
       <h2 class="card-head"><span class="card-icon">🧹</span><span class="card-title">清空记忆</span></h2>
       <p class="line">喝水和打卡只记当天，备忘录和参数长期留着。</p>
       <button class="btn btn-ghost" data-act="clear">清掉小猪记的东西</button>
@@ -1412,6 +1422,9 @@ document.addEventListener('click', (e) => {
     return toast('已断开同步，本机数据还在');
   }
 
+  if (act === 'backup-export') return exportBackup();
+  if (act === 'backup-import') return importBackup();
+
   if (act === 'clear') {
     if (window.confirm('清掉小猪的记忆？喝水、打卡、备忘录、参数都会清空（同步码会留着）。')) {
       store.clearAll();
@@ -1520,6 +1533,61 @@ function restore(payload) {
       /* 忽略 */
     }
   });
+}
+
+/** 本地全量备份：复用 snapshot，导出成一份 JSON 文件（只含本机 dd: 记录，不含同步码） */
+function exportBackup() {
+  const payload = snapshot();
+  const keys = Object.keys(payload);
+  if (!keys.length) return toast('现在还没有可备份的记录');
+  const d = new Date();
+  const p2 = (n) => String(n).padStart(2, '0');
+  const stamp = `${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}`;
+  const data = { app: 'doudou-app', kind: 'local-backup', version: 1, exportedAt: d.toISOString(), keys: keys.length, payload };
+  try {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `豆豆本地备份-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { a.remove(); URL.revokeObjectURL(a.href); } catch { /* 忽略 */ } }, 1000);
+    toast(`已导出 ${keys.length} 项本地记录`);
+  } catch {
+    toast('这个浏览器不让下载，换个方式试试');
+  }
+}
+
+/** 从备份 JSON 还原：先校验结构，确认后覆盖本机记录（同步码保留） */
+function importBackup() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json,.json';
+  input.addEventListener('change', () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let data = null;
+      try { data = JSON.parse(String(reader.result)); } catch { return toast('文件不是有效的 JSON'); }
+      const payload = data && typeof data === 'object' && !Array.isArray(data) && data.payload && typeof data.payload === 'object' && !Array.isArray(data.payload)
+        ? data.payload
+        : (data && typeof data === 'object' && !Array.isArray(data) ? data : null);
+      if (!payload) return toast('备份格式不对，没有可还原的记录');
+      const valid = Object.keys(payload).filter((k) => k.indexOf('dd:') === 0 && k !== SYNC_KEY && typeof payload[k] === 'string');
+      if (!valid.length) return toast('备份里没有本机认识的记录');
+      if (!window.confirm(`将导入 ${valid.length} 项记录，并覆盖本机现有的喝水、打卡、日记、备忘、课表等（同步码保留）。确定还原吗？`)) return;
+      restore(payload);
+      store.ensureDefaults();
+      applyTheme();
+      render();
+      toast('还原完成啦');
+      if (syncCfg()) scheduleSync();
+    };
+    reader.onerror = () => toast('读取文件失败，再试一次');
+    reader.readAsText(file, 'utf-8');
+  });
+  input.click();
 }
 
 async function syncNow(silent) {

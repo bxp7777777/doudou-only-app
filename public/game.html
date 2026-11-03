@@ -2925,6 +2925,7 @@ const UI = {
   petTab: 'team',
   shopTab: 'gacha',
   questTab: 'daily',
+  achFilter: 'all',
   adventureChapter: 1,
   selectedPet: null,
   gachaResults: null,
@@ -6112,7 +6113,7 @@ function addRewardPreview(reward) {
   const labelMap = {
     gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书', equipShard: '装备碎片',
     enhanceStone: '强化石', bondBadge: '羁绊徽章', arenaCoin: '竞技币', starShard: '升星碎片',
-    stonesRandom: '随机进化石', stoneChoice: '自选进化石', randomShards: '随机碎片',
+    stonesRandom: '随机进化石', stoneChoice: '随机进化石', randomShards: '随机碎片',
     intimacyAll: '全队亲密', frame: '头像框', equipment: '装备', eternal: '永恒结晶'
   };
   for (const key of Object.keys(reward || {})) {
@@ -6681,13 +6682,40 @@ function renderQuest() {
         <div class="note" style="margin-top:9px">每日刷新倒计时：<b id="dailyResetCountdown">--:--</b> · 任务进度从打开游戏、战斗、抽蛋、投喂等行为自动累计。</div>
       </div>`;
   } else if (tab === 'achievements') {
-    const done = ACHIEVEMENTS.filter(a => achievementClaimed(a.id)).length;
+    const FILTERS = [
+      { id: 'all', name: '全部' },
+      { id: 'ready', name: '可领取' },
+      { id: 'unclaimed', name: '未达成' },
+      { id: 'claimed', name: '已领取' }
+    ];
+    const f = UI.achFilter || 'all';
+    const rows = ACHIEVEMENTS.map(a => ({ a, progress: achievementProgress(a), claimed: achievementClaimed(a.id) }));
+    const counts = {
+      all: rows.length,
+      ready: rows.filter(r => !r.claimed && r.progress >= r.a.target).length,
+      unclaimed: rows.filter(r => !r.claimed && r.progress < r.a.target).length,
+      claimed: rows.filter(r => r.claimed).length
+    };
+    const shown = rows.filter(r => {
+      if (f === 'ready') return !r.claimed && r.progress >= r.a.target;
+      if (f === 'unclaimed') return !r.claimed && r.progress < r.a.target;
+      if (f === 'claimed') return r.claimed;
+      return true;
+    });
+    const done = counts.claimed;
+    const filterBar = '<div class="subnav" style="margin:4px 0 10px">' + FILTERS.map(fl =>
+      `<button type="button" class="${f === fl.id ? 'active' : ''}" data-act="achFilter" data-filter="${fl.id}">${fl.name} ${counts[fl.id]}</button>`
+    ).join('') + '</div>';
+    const gridHTML = shown.length
+      ? shown.map(r => achievementCardHTML(r.a)).join('')
+      : '<div class="note" style="padding:14px 6px">这个分类暂时没有成就。</div>';
     body = `
       <div class="card">
         <div class="card-head"><div><h2>🏅 成长成就</h2><p>一次性成就，达成后手动领取。共 ${ACHIEVEMENTS.length} 项。</p></div>
           <div class="flex"><span class="chip mint">已领取 ${done}/${ACHIEVEMENTS.length}</span><button class="btn btn-ghost btn-sm" type="button" data-act="claimAllAchievements">一键可领</button></div>
         </div>
-        <div class="achievement-grid">${ACHIEVEMENTS.map(achievementCardHTML).join('')}</div>
+        ${filterBar}
+        <div class="achievement-grid">${gridHTML}</div>
       </div>`;
   } else {
     const canSign = canSignInToday();
@@ -8378,6 +8406,10 @@ function handleActionClick(event) {
       break;
     case 'questTab':
       UI.questTab = target.dataset.tab || 'daily';
+      renderPage();
+      break;
+    case 'achFilter':
+      UI.achFilter = target.dataset.filter || 'all';
       renderPage();
       break;
     case 'deploy': deployPet(uid, target.dataset.row === 'front' ? 'front' : 'back'); break;
