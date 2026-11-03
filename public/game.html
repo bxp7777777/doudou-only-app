@@ -2177,6 +2177,24 @@ const EQUIP_AFFIXES = [
 const EQUIP_PREFIX = ['软糖', '棉花', '星尘', '月光', '蜂蜜', '云朵', '薄荷', '樱桃', '暖阳', '奶油'];
 const MAX_ENHANCE = 15;
 
+// 装备套装：同一宠物穿戴同名套装 2 件 / 4 件触发纯加成；无套装 ID 的散件与旧存档装备不参与计数
+const EQUIP_SETS = {
+  teddy: { name: '小熊守护', emoji: '🧸', bonus2: { defPct: 0.06, hpPct: 0.06 }, bonus4: { defPct: 0.12, hpPct: 0.12, dr: 0.04 } },
+  swift: { name: '疾风轻羽', emoji: '🪶', bonus2: { spdPct: 0.08, crit: 0.02 }, bonus4: { spdPct: 0.15, crit: 0.05 } },
+  blaze: { name: '烈焰勇气', emoji: '🔥', bonus2: { atkPct: 0.08, crit: 0.02 }, bonus4: { atkPct: 0.16, crit: 0.05 } },
+  moon:  { name: '月华清心', emoji: '🌙', bonus2: { hpPct: 0.08, atkPct: 0.04 }, bonus4: { hpPct: 0.16, atkPct: 0.08, lifesteal: 0.02 } }
+};
+const EQUIP_SET_KEYS = Object.keys(EQUIP_SETS);
+
+// 轻量性格：新宠随机获得偏向；老存档归一为中性「随性」，不改变其既有数值。敌人伪档案无字段，按中性处理
+const PET_NATURES = {
+  neutral: { name: '随性', emoji: '🍃', desc: '天生随和，没有明显偏向。', bonus: {} },
+  brave:   { name: '勇敢', emoji: '⚔️', desc: '进攻更主动：攻击 +5%。', bonus: { atkPct: 0.05 } },
+  sturdy:  { name: '坚毅', emoji: '🛡️', desc: '更耐打：防御 +5%、生命 +5%。', bonus: { defPct: 0.05, hpPct: 0.05 } },
+  nimble:  { name: '灵巧', emoji: '💨', desc: '身手轻快：速度 +5%、暴击 +2%。', bonus: { spdPct: 0.05, crit: 0.02 } }
+};
+const PET_NATURE_KEYS = Object.keys(PET_NATURES).filter(k => k !== 'neutral');
+
 // 10 章 × 5 关 = 50 关。关底首领提供首次通关奖励与下一章解锁。
 const CHAPTERS = [
   { id: 1, name: '奶油草原', emoji: '🌼', element: 'grass', boss: '棉花糖巨兽', bossEmoji: '🍡', desc: '风吹过奶油色的草浪，空气里都是甜味。', theme: 'cream' },
@@ -2812,6 +2830,7 @@ function sanitizeState(s) {
     for (const k of ['basic', 'a1', 'a2', 'ult']) p.skillLv[k] = clamp(Math.floor(num(p.skillLv[k], 1)), 1, 10);
     p.equipment = p.equipment && typeof p.equipment === 'object' ? p.equipment : {};
     for (const slot of EQUIP_SLOT_KEYS) p.equipment[slot] = p.equipment[slot] || null;
+    p.nature = PET_NATURES[p.nature] ? p.nature : 'neutral';
   }
   s.nextPetId = Math.max(1, Math.floor(num(s.nextPetId, 1)));
   if (!s.petShards || typeof s.petShards !== 'object') s.petShards = {};
@@ -2840,6 +2859,7 @@ function sanitizeState(s) {
       quality: raw.quality,
       level: clamp(Math.floor(num(raw.level, 0)), 0, MAX_ENHANCE),
       affixes: Array.isArray(raw.affixes) ? raw.affixes.filter(a => EQUIP_AFFIXES.some(t => t.id === a.id)).map(a => ({ id: a.id, value: Math.max(0, num(a.value, 0)) })) : [],
+      setId: EQUIP_SETS[raw.setId] ? raw.setId : null,
       equippedBy: raw.equippedBy || null
     };
     if (equipSeen.has(item.id)) continue;
@@ -3053,6 +3073,29 @@ function petArtFrame(templateId, fallbackEmoji, sizeClass) {
   const fb = esc(fallbackEmoji);
   return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
 }
+// 装备 AI 图标：key=槽位_品质；未登记或图片缺失时 equipIcon() 返回 emoji，onerror 自动兜底，绝不白图
+const EQUIP_ART = { weapon_fine:true, armor_fine:true, accessory_fine:true, amulet_fine:true, weapon_epic:true, armor_epic:true, accessory_epic:true, amulet_epic:true };
+function equipmentArtUrl(item) {
+  if (!item) return null;
+  const key = item.slot + '_' + item.quality;
+  return EQUIP_ART[key] ? 'art/gear/' + key + '.jpg' : null;
+}
+function equipIcon(item) {
+  const fb = esc(EQUIP_SLOTS[item.slot].emoji);
+  const url = equipmentArtUrl(item);
+  if (!url) return fb;
+  return `<span class="art-frame art-bagico"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+}
+// 套装/性格的短标签文案
+function equipSetLabel(item) {
+  if (!item.setId || !EQUIP_SETS[item.setId]) return '';
+  const d = EQUIP_SETS[item.setId];
+  return `<span class="chip" style="color:#7a5bd0">${d.emoji}${d.name}</span>`;
+}
+function natureChip(pet) {
+  const n = PET_NATURES[pet.nature] || PET_NATURES.neutral;
+  return `<span class="chip" title="${esc(n.desc)}">${n.emoji}${n.name}</span>`;
+}
 // 主页场景主宠大图：有立绘显示圆形图，缺失回退 emoji
 function homePetArt(pet, tpl) {
   const url = petArtUrl(tpl.id);
@@ -3160,7 +3203,8 @@ function equipmentStatsForPet(pet, s = state) {
   const out = {
     flatHp: 0, flatAtk: 0, flatDef: 0, flatSpd: 0,
     hpPct: 0, atkPct: 0, defPct: 0, spdPct: 0,
-    crit: 0, dr: 0, lifesteal: 0, items: []
+    crit: 0, dr: 0, lifesteal: 0, items: [],
+    setCounts: {}, setBonuses: []
   };
   if (!pet || !pet.equipment) return out;
   for (const slot of EQUIP_SLOT_KEYS) {
@@ -3182,7 +3226,19 @@ function equipmentStatsForPet(pet, s = state) {
       if (affix.id === 'lifesteal') out.lifesteal += value;
       if (affix.id === 'aspd') out.spdPct += value;
     }
+    if (item.setId && EQUIP_SETS[item.setId]) out.setCounts[item.setId] = (out.setCounts[item.setId] || 0) + 1;
     out.items.push(item);
+  }
+  for (const [setId, count] of Object.entries(out.setCounts)) {
+    const setDef = EQUIP_SETS[setId];
+    if (!setDef) continue;
+    const applied = {};
+    if (count >= 2) Object.assign(applied, setDef.bonus2);
+    if (count >= 4) Object.assign(applied, setDef.bonus4);
+    for (const [k, v] of Object.entries(applied)) {
+      if (typeof out[k] === 'number') out[k] += v;
+    }
+    out.setBonuses.push({ setId, count, active: count >= 2, applied });
   }
   return out;
 }
@@ -3244,15 +3300,16 @@ function getPetStats(pet, ctx = null, s = state) {
   const bond = context.bonus || {};
   const codex = codexBonusForState(s);
   const care = careModifiers(pet);
+  const nat = (PET_NATURES[pet.nature] && PET_NATURES[pet.nature].bonus) || {};
   const intimacyTier = intimacyTierOf(pet.intimacy);
   const intimacyScale = (1 + clamp(num(pet.intimacy, 0), 0, 100) * 0.0015) * intimacyTier.mult;
   const allScale = 1 + (starBonus.allPct || 0) + (codex.allPct || 0);
   const stats = {};
-  stats.hp = (base.hp + eq.flatHp) * (1 + starBonus.hpPct + (bond.hpPct || 0) + eq.hpPct + care.hpPct) * allScale * intimacyScale;
-  stats.atk = (base.atk + eq.flatAtk) * (1 + starBonus.atkPct + (bond.atkPct || 0) + eq.atkPct + care.atkPct) * allScale * intimacyScale;
-  stats.def = (base.def + eq.flatDef) * (1 + starBonus.defPct + (bond.defPct || 0) + eq.defPct) * allScale * intimacyScale;
-  stats.spd = (base.spd + eq.flatSpd) * (1 + starBonus.spdPct + (bond.spdPct || 0) + eq.spdPct + care.spdPct) * allScale * intimacyScale;
-  stats.crit = clamp(base.crit + starBonus.crit + eq.crit + (bond.crit || 0) + care.crit, 0, 0.85);
+  stats.hp = (base.hp + eq.flatHp) * (1 + starBonus.hpPct + (bond.hpPct || 0) + eq.hpPct + care.hpPct + (nat.hpPct || 0)) * allScale * intimacyScale;
+  stats.atk = (base.atk + eq.flatAtk) * (1 + starBonus.atkPct + (bond.atkPct || 0) + eq.atkPct + care.atkPct + (nat.atkPct || 0)) * allScale * intimacyScale;
+  stats.def = (base.def + eq.flatDef) * (1 + starBonus.defPct + (bond.defPct || 0) + eq.defPct + (nat.defPct || 0)) * allScale * intimacyScale;
+  stats.spd = (base.spd + eq.flatSpd) * (1 + starBonus.spdPct + (bond.spdPct || 0) + eq.spdPct + care.spdPct + (nat.spdPct || 0)) * allScale * intimacyScale;
+  stats.crit = clamp(base.crit + starBonus.crit + eq.crit + (bond.crit || 0) + care.crit + (nat.crit || 0), 0, 0.85);
   stats.critDmg = base.critDmg;
   stats.dr = clamp(base.dr + starBonus.dr + eq.dr + (bond.dr || 0), 0, 0.70);
   stats.hit = clamp(base.hit, 0, 0.35);
@@ -3467,6 +3524,7 @@ function createPet(templateId, options = {}) {
     shiny: options.shiny != null ? !!options.shiny : chance(SHINY_RATE),
     skillLv: { basic: 1, a1: 1, a2: 1, ult: 1 },
     equipment: { weapon: null, armor: null, accessory: null, amulet: null },
+    nature: options.nature || pick(PET_NATURE_KEYS),
     obtainedAt: Date.now(),
     lastFeed: Date.now()
   };
@@ -3675,6 +3733,7 @@ function makeEquipment(quality = null, slot = null, s = state) {
     quality: qKey,
     level: 0,
     affixes,
+    setId: Math.random() < 0.62 ? pick(EQUIP_SET_KEYS) : null,
     equippedBy: null
   };
   s.equipment.push(item);
@@ -5918,8 +5977,8 @@ function renderPets() {
             const owner = item.equippedBy ? state.pets[item.equippedBy] : null;
             const affix = itemAffixSummary(item);
             return `<div class="eq-row rarity-${equipQualityRarity(item)}">
-              <div class="eq-icon">${EQUIP_SLOTS[item.slot].emoji}</div>
-              <div class="eq-info"><b><span style="color:${q.color}">${q.name}</span> ${esc(item.name)} <span class="chip">+${item.level}</span> ${owner ? `<span class="chip mint">${esc(petDisplayName(owner))}装备中</span>` : ''}</b>
+              <div class="eq-icon">${equipIcon(item)}</div>
+              <div class="eq-info"><b><span style="color:${q.color}">${q.name}</span> ${esc(item.name)} <span class="chip">+${item.level}</span> ${equipSetLabel(item)} ${owner ? `<span class="chip mint">${esc(petDisplayName(owner))}装备中</span>` : ''}</b>
                 <div class="eq-affix">${esc(affix || '无词条')} · 主属性 ${EQUIP_SLOTS[item.slot].label} +${fmt(itemPowerHint(item))}</div>
               </div>
               <div class="eq-actions">
@@ -5930,7 +5989,7 @@ function renderPets() {
             </div>`;
           }).join('') : `<div class="empty"><span class="empty-emoji">🧩</span>仓库还空着。挑战关卡、Boss、奇遇或锻造都会获得装备。</div>`}
         </div>
-        <div class="note lav" style="margin-top:10px">装备强化消耗强化石与金币，每 +1 提升 8.5% 主属性。传说品质最多 4 条随机词条：暴击 / 吸血 / 攻速 / 减伤 / 生命%。</div>
+        <div class="note lav" style="margin-top:10px">装备强化消耗强化石与金币，每 +1 提升 8.5% 主属性。传说品质最多 4 条随机词条：暴击 / 吸血 / 攻速 / 减伤 / 生命%。同名套装穿戴 2 件触发小加成、4 件触发完整加成。</div>
       </div>`;
   } else if (tab === 'codex') {
     const unique = stateUniqueCount();
@@ -6510,13 +6569,20 @@ function openPetModal(uid) {
   const shards = petShardCount(pet.templateId);
   const evo = nextEvolution(pet);
   const accessory = accessoryOf(pet.uid);
+  const eqStats = equipmentStatsForPet(pet);
   const equipmentHtml = EQUIP_SLOT_KEYS.map(slot => {
     const item = equipmentById(pet.equipment[slot]);
     const def = EQUIP_SLOTS[slot];
     if (!item) return `<div class="equip-slot empty"><span class="slot-ico">${def.emoji}</span><div><b>${def.name}</b><p>空槽位 · ${def.label}加成</p></div><button class="btn btn-ghost btn-xs" type="button" data-act="equipPicker" data-uid="${pet.uid}" data-slot="${slot}">装备</button></div>`;
     const q = EQUIP_QUALITIES[item.quality];
-    return `<div class="equip-slot"><span class="slot-ico">${def.emoji}</span><div><b style="color:${q.color}">${esc(item.name)} +${item.level}</b><p>${esc(itemAffixSummary(item) || '无词条')}</p></div><div class="flex"><button class="btn btn-ghost btn-xs" type="button" data-act="equipPicker" data-uid="${pet.uid}" data-slot="${slot}">更换</button><button class="btn btn-ghost btn-xs" type="button" data-act="unequip" data-uid="${pet.uid}" data-slot="${slot}">卸下</button></div></div>`;
+    return `<div class="equip-slot"><span class="slot-ico">${equipIcon(item)}</span><div><b style="color:${q.color}">${esc(item.name)} +${item.level}</b><p>${esc(itemAffixSummary(item) || '无词条')}</p></div><div class="flex"><button class="btn btn-ghost btn-xs" type="button" data-act="equipPicker" data-uid="${pet.uid}" data-slot="${slot}">更换</button><button class="btn btn-ghost btn-xs" type="button" data-act="unequip" data-uid="${pet.uid}" data-slot="${slot}">卸下</button></div></div>`;
   }).join('');
+  const SET_BONUS_LABEL = { hpPct: '生命', atkPct: '攻击', defPct: '防御', spdPct: '速度', crit: '暴击', dr: '减伤', lifesteal: '吸血' };
+  const setHtml = eqStats.setBonuses.filter(b => b.active).map(b => {
+    const d = EQUIP_SETS[b.setId];
+    const parts = Object.entries(b.applied).map(([k, v]) => `${SET_BONUS_LABEL[k] || k} +${Math.round(v * 100)}%`).join('、');
+    return `${d.emoji}${d.name} ${b.count}/4件已激活：${parts}`;
+  }).join('；');
   const skillHtml = (t.skills || []).map((sid, i) => {
     const skill = SKILLS[sid];
     if (!skill) return '';
@@ -6541,7 +6607,7 @@ function openPetModal(uid) {
     <div class="pet-modal-hero rarity-${t.rarity}">
       <div class="pet-modal-avatar ${pet.hunger < 30 ? 'droopy' : ''}">${petArtFrame(t.id, petEmoji(pet), 'art-modal') || `<span>${esc(petEmoji(pet))}</span>`}${accessory ? `<em>${accessory.emoji}</em>` : ''}${pet.shiny ? '<i class="spark s1">✦</i><i class="spark s2">✦</i>' : ''}</div>
       <div class="pet-modal-id">
-        <div class="flex" style="gap:6px;flex-wrap:wrap"><h2>${esc(petDisplayName(pet))}</h2>${rarityTag(t.rarity)}${elementTag(t.element)}<span class="chip gold-text">💗 ${intimacyTier.name}</span>${intimacyTier.at >= 60 ? '<span class="chip mint">开局怒气 +15</span>' : ''}${inTeam ? `<span class="chip mint">${deployedRow(pet.uid) === 'front' ? '前排' : '后排'}</span>` : '<span class="chip">替补</span>'}</div>
+        <div class="flex" style="gap:6px;flex-wrap:wrap"><h2>${esc(petDisplayName(pet))}</h2>${rarityTag(t.rarity)}${elementTag(t.element)}<span class="chip gold-text">💗 ${intimacyTier.name}</span>${intimacyTier.at >= 60 ? '<span class="chip mint">开局怒气 +15</span>' : ''}${natureChip(pet)}${inTeam ? `<span class="chip mint">${deployedRow(pet.uid) === 'front' ? '前排' : '后排'}</span>` : '<span class="chip">替补</span>'}</div>
         <p>${esc(t.title)} · Lv.${pet.level} / ${MAX_LEVEL} · ${EVOLUTIONS[pet.evo].name} · ${starsHTML(pet.star)}</p>
         <div class="flex" style="gap:8px;margin-top:5px"><span class="chip gold-text">战力 ${fmt(power)}</span><span class="chip">图鉴：${esc(t.species)}</span><span class="chip">同名碎片 ${shards}</span></div>
       </div>
@@ -6573,6 +6639,7 @@ function openPetModal(uid) {
     <div class="note" style="margin:8px 0">${esc(evoText)}</div>
     <h3 class="modal-h3">🗡️ 装备</h3>
     <div class="pet-equip-list">${equipmentHtml}</div>
+    ${setHtml ? `<div class="note" style="margin-top:6px">🧩 ${setHtml}</div>` : ''}
     <h3 class="modal-h3">📘 技能</h3>
     <div class="skill-list">${skillHtml}</div>
     <h3 class="modal-h3">📝 名字与故事</h3>
