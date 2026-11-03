@@ -1555,17 +1555,21 @@ const ELEMENTS = {
   water: { name: '水', emoji: '💧', color: '#6daede', soft: '#e5f3ff' },
   light: { name: '光', emoji: '✨', color: '#dcae45', soft: '#fff4d6' },
   dark:  { name: '暗', emoji: '🌙', color: '#957ec2', soft: '#f0eafa' },
-  earth: { name: '土', emoji: '🍂', color: '#bf9468', soft: '#f8ecdd' }
+  earth: { name: '土', emoji: '🍂', color: '#bf9468', soft: '#f8ecdd' },
+  wind:  { name: '风', emoji: '🌬️', color: '#7fc4bd', soft: '#e4f5f3' },
+  ice:   { name: '冰', emoji: '❄️', color: '#7fb6e8', soft: '#e8f3ff' }
 };
 const ELEMENT_KEYS = Object.keys(ELEMENTS);
-// 属性克制环：火→草→水→火；光↔暗互克；土克火、被草克。克制 ×1.5，被克 ×0.75。
+// 8 系克制环：strong=我方攻击时 ×1.5；weak=我方攻击这些系时 ×0.75。
 const ELEMENT_CHART = {
-  fire:  { strong: ['grass'], weak: ['water', 'earth'] },
-  grass: { strong: ['water', 'earth'], weak: ['fire'] },
-  water: { strong: ['fire'], weak: ['grass'] },
-  light: { strong: ['dark'], weak: [] },
-  dark:  { strong: ['light'], weak: [] },
-  earth: { strong: ['fire'], weak: ['grass'] }
+  fire:  { strong: ['grass', 'ice'], weak: ['water', 'earth'] },
+  grass: { strong: ['water', 'earth'], weak: ['fire', 'wind'] },
+  water: { strong: ['fire'], weak: ['grass', 'ice'] },
+  light: { strong: ['dark'], weak: ['wind', 'ice'] },
+  dark:  { strong: ['light'], weak: ['wind', 'ice'] },
+  earth: { strong: ['fire', 'wind'], weak: ['grass', 'ice'] },
+  wind:  { strong: ['grass', 'light', 'dark'], weak: ['earth', 'fire'] },
+  ice:   { strong: ['water', 'earth', 'grass'], weak: ['fire', 'wind'] }
 };
 function elementMultiplier(attackerEl, defenderEl) {
   const chart = ELEMENT_CHART[attackerEl] || { strong: [], weak: [] };
@@ -1584,7 +1588,7 @@ function counterAdviceForElement(enemyEl) {
   if (avoid.length) parts.push(`避开 ${avoid.join('、')}（被克 ×0.75）`);
   return parts.join('，');
 }
-const ELEMENT_ADVICE = '火克草、草克水与水克火；土克火但被草克；光与暗互克。克制伤害 ×1.5，被克 ×0.75。';
+const ELEMENT_ADVICE = '火克草与冰；草克水土但怕火风；水克火却被草冰所制；光暗互克；土挡火风但怕草冰；风卷草云、扰光暗却被土火所阻；冰封水土草但怕火风。克制伤害 ×1.5，被克 ×0.75。';
 
 const RARITIES = {
   N:  { name: 'N',  color: '#b9b5ad', soft: '#f3f0ea', dup: 15, unlock: 20, buy: 6, order: 1 },
@@ -1629,7 +1633,13 @@ const BONDS = [
   { id: 'slowTide', name: '慢潮组合', pets: ['turtle', 'koi'], effect: { hpPct: 0.08, defPct: 0.06 }, emoji: '🐢🎏', desc: '慢慢龟 + 锦鲤同场：全队生命 +8%、防御 +6%。' },
   { id: 'nightForest', name: '夜森林', pets: ['owl', 'deer'], effect: { spdPct: 0.06, dr: 0.05 }, emoji: '🦉🦌', desc: '梟梟 + 鹿鹿同场：全队速度 +6%、减伤 +5%。' },
   { id: 'royalDuo', name: '王与守护', pets: ['lion', 'unicorn'], effect: { atkPct: 0.10, hpPct: 0.06 }, emoji: '🦁🦄', desc: '狮狮 + 独角兽同场：全队攻击 +10%、生命 +6%。' },
-  { id: 'honeyHill', name: '蜜糖山丘', pets: ['bee', 'goat'], effect: { crit: 0.04, defPct: 0.06 }, emoji: '🐝🐐', desc: '嗡嗡蜂 + 山羊同场：全队暴击 +4%、防御 +6%。' }
+  { id: 'honeyHill', name: '蜜糖山丘', pets: ['bee', 'goat'], effect: { crit: 0.04, defPct: 0.06 }, emoji: '🐝🐐', desc: '嗡嗡蜂 + 山羊同场：全队暴击 +4%、防御 +6%。' },
+  { id: 'windTrio', name: '风之翼团', pets: ['gull', 'flysquirrel', 'sparrow'], effect: { spdPct: 0.08 }, emoji: '🐦🐿️🎶', desc: '海鸥 + 飞鼠 + 云雀同场：全队速度 +8%。' },
+  { id: 'iceSquad', name: '霜甲小队', pets: ['penguin', 'polarbear', 'walrus'], effect: { defPct: 0.08, hpPct: 0.06 }, emoji: '🐧🐻‍❄️🦭', desc: '企鹅 + 白熊 + 海象同场：全队防御 +8%、生命 +6%。' },
+  { id: 'tideFamily', name: '水栖伙伴', pets: ['otter', 'octopus', 'jellyfish'], effect: { atkPct: 0.08, hpPct: 0.05 }, emoji: '🦦🐙🪼', desc: '水獭 + 章鱼 + 水母同场：全队攻击 +8%、生命 +5%。' },
+  { id: 'nightCrew', name: '夜行三友', pets: ['owl', 'bat', 'lynx'], effect: { crit: 0.05 }, emoji: '🦉🦇🐆', desc: '梟梟 + 蝙蝠 + 猞猁同场：全队暴击 +5%。' },
+  { id: 'meadowWalk', name: '高原漫步', pets: ['alpaca', 'deer', 'koala'], effect: { hpPct: 0.08, defPct: 0.05 }, emoji: '🦌🦙🐨', desc: '羊驼 + 鹿鹿 + 考拉同场：全队生命 +8%、防御 +5%。' },
+  { id: 'sunDance', name: '光羽同辉', pets: ['golden', 'peacock'], effect: { atkPct: 0.08, spdPct: 0.06 }, emoji: '🐶🦚', desc: '金毛 + 孔雀同场：全队攻击 +8%、速度 +6%。' }
 ];
 const BOND_UNLOCK_MASTERY_COST = 3;
 
@@ -1754,7 +1764,19 @@ const SKILLS = {
   goat_basic: { name: '羊角顶', kind: 'basic', icon: '💢', rageGain: 35, desc: '低头一顶，把前排顶得后退半步。', effects: [{ type: 'damage', mult: 1.00, target: 'enemy_front' }] },
   goat_a1: { name: '倔强站桩', kind: 'active', icon: '🛡️', cooldown: 2, rageGain: 10, desc: '站定不动：为自己套上 22% 生命护盾并提升防御 15%。', effects: [{ type: 'shield', hpPct: 0.22, turns: 2, target: 'self' }, { type: 'buff', stat: 'def', pct: 0.15, turns: 2, target: 'self' }] },
   goat_a2: { name: '反击顶撞', kind: 'active', icon: '⛰️', cooldown: 2, rageGain: 10, desc: '被打了就顶回去：对前排造成 150% 伤害并提升自身攻击 10%。', effects: [{ type: 'damage', mult: 1.50, target: 'enemy_front' }, { type: 'buff', stat: 'atk', pct: 0.10, turns: 2, target: 'self' }] },
-  goat_ult: { name: '山崩之角', kind: 'ult', icon: '🏔️', rageCost: 100, desc: '奥义：把整座山的力量压进角尖，对全体敌人造成 110% 伤害，并为自己套上 20% 生命护盾、防御 +15%。', effects: [{ type: 'damage', mult: 1.10, target: 'enemy_all' }, { type: 'shield', hpPct: 0.20, turns: 2, target: 'self' }, { type: 'buff', stat: 'def', pct: 0.15, turns: 2, target: 'self' }] }
+  goat_ult: { name: '山崩之角', kind: 'ult', icon: '🏔️', rageCost: 100, desc: '奥义：把整座山的力量压进角尖，对全体敌人造成 110% 伤害，并为自己套上 20% 生命护盾、防御 +15%。', effects: [{ type: 'damage', mult: 1.10, target: 'enemy_all' }, { type: 'shield', hpPct: 0.20, turns: 2, target: 'self' }, { type: 'buff', stat: 'def', pct: 0.15, turns: 2, target: 'self' }] },
+
+  /* 风系通用（新增风系伙伴共用招式） */
+  w_basic: { name: '掠风啄击', kind: 'basic', icon: '🌬️', rageGain: 35, desc: '借一阵风加速扑向前排，获得 35 怒气。', effects: [{ type: 'damage', mult: 1.00, target: 'enemy_front' }] },
+  w_a1: { name: '回旋风刃', kind: 'active', icon: '💨', cooldown: 2, rageGain: 10, desc: '一道旋风切向后排，并提升自身速度。', effects: [{ type: 'damage', mult: 1.45, target: 'enemy_back' }, { type: 'buff', stat: 'spd', pct: 0.18, turns: 2, target: 'self' }] },
+  w_a2: { name: '微风传讯', kind: 'active', icon: '🍃', cooldown: 3, rageGain: 10, desc: '拂过全场的风轻伤所有敌人，并让全队更轻快。', effects: [{ type: 'damage', mult: 0.75, target: 'enemy_all' }, { type: 'buff', stat: 'spd', pct: 0.12, turns: 2, target: 'ally_all' }] },
+  w_ult: { name: '风暴之眼', kind: 'ult', icon: '🌀', rageCost: 100, desc: '奥义：卷起风眼扫过敌阵，伤害全体并大幅提速。', effects: [{ type: 'damage', mult: 1.25, target: 'enemy_all' }, { type: 'buff', stat: 'spd', pct: 0.18, turns: 2, target: 'self' }] },
+
+  /* 冰系通用（新增冰系伙伴共用招式） */
+  i_basic: { name: '冰晶啄击', kind: 'basic', icon: '❄️', rageGain: 35, desc: '缀着霜花的一击敲向前排，获得 35 怒气。', effects: [{ type: 'damage', mult: 1.00, target: 'enemy_front' }] },
+  i_a1: { name: '冰甲冲撞', kind: 'active', icon: '🧊', cooldown: 2, rageGain: 10, desc: '裹着薄冰撞向前排，并为自己套上护盾。', effects: [{ type: 'damage', mult: 1.40, target: 'enemy_front' }, { type: 'shield', hpPct: 0.18, turns: 2, target: 'self' }] },
+  i_a2: { name: '寒霜护甲', kind: 'active', icon: '🛡️', cooldown: 3, rageGain: 10, desc: '寒霜凝成甲片：为自己套 22% 生命护盾并提升防御 18%。', effects: [{ type: 'shield', hpPct: 0.22, turns: 2, target: 'self' }, { type: 'buff', stat: 'def', pct: 0.18, turns: 2, target: 'self' }] },
+  i_ult: { name: '凛冬帷幕', kind: 'ult', icon: '🌨️', rageCost: 100, desc: '奥义：凛冬落下，伤害全体敌人，并为全队套盾、提升减伤。', effects: [{ type: 'damage', mult: 1.05, target: 'enemy_all' }, { type: 'shield', hpPct: 0.10, turns: 2, target: 'ally_all' }, { type: 'buff', stat: 'dr', pct: 0.08, turns: 2, target: 'ally_all' }] }
 };
 
 // 20 只萌宠。base 为 1 级基础值，growth 为每级线性成长值。
@@ -1938,6 +1960,189 @@ const PETS = [
     skills: ['goat_basic', 'goat_a1', 'goat_a2', 'goat_ult'],
     lines: ['我不让路，你绕一下。', '顶回去，是礼貌。', '山是我的亲戚，石头是我的枕头。', '别看我胡子长，我才三岁。', '站在这儿，谁也别想过去。', '你打你的，我记着账。'],
     codex: '山羊系的土属性前排，胡子一翘谁也劝不动。它站在最前面替大家挨打，把每一记拳头都记成账，等攒够了力气，就用角一笔一笔顶回去。'
+  },
+  /* ---------- 扩充：风系 5 ---------- */
+  {
+    id: 'gull', name: '海鸥', title: '穿云小信使', species: '海鸥系', element: 'wind', rarity: 'R', role: 'back',
+    emoji: ['🐦', '🕊️', '🌬️'], shiny: '🕊️✨',
+    base: { hp: 440, atk: 62, def: 28, spd: 28, crit: 0.08, critDmg: 0.52, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 22, atk: 4.0, def: 1.6, spd: 0.52 },
+    skills: ['w_basic', 'w_a1', 'w_a2', 'w_ult'],
+    lines: ['风来了，正好赶路！', '我替大家捎来远方的消息。', '翅膀一扇，就有顺风。'],
+    codex: '风系的后排快攻手，翅膀被海风养得结实。飞起来又轻又快，专挑对手后排下手。'
+  },
+  {
+    id: 'flysquirrel', name: '飞鼠', title: '林间滑翔客', species: '飞鼠系', element: 'wind', rarity: 'SR', role: 'back',
+    emoji: ['🐿️', '🐿️', '🍃'], shiny: '🐿️✨',
+    base: { hp: 450, atk: 74, def: 27, spd: 28, crit: 0.13, critDmg: 0.66, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 23, atk: 5.1, def: 1.6, spd: 0.52 },
+    skills: ['w_basic', 'w_a1', 'fox_veil', 'w_ult'],
+    lines: ['张开皮膜，就能滑好远！', '高处看得清，后排藏不住。', '我落地很轻，别担心摔着。'],
+    codex: '风系 SR 后排，借着皮膜在树间滑翔，速度与灵巧兼备，习惯先隐匿再出手。'
+  },
+  {
+    id: 'sparrow', name: '云雀', title: '高歌小旋风', species: '云雀系', element: 'wind', rarity: 'R', role: 'back',
+    emoji: ['🐤', '🎶', '☁️'], shiny: '🎶✨',
+    base: { hp: 435, atk: 60, def: 28, spd: 27, crit: 0.07, critDmg: 0.52, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 21, atk: 3.9, def: 1.7, spd: 0.50 },
+    skills: ['w_basic', 'bee_a1', 'w_a2', 'w_ult'],
+    lines: ['一边唱歌一边吹风！', '我飞得越高，风越给力。', '排队点名啦，全体都有份。'],
+    codex: '风系 R 群攻后排，歌声能带动一阵小旋风，轻轻扫过全场。'
+  },
+  {
+    id: 'moth', name: '风蛾', title: '花雾小向导', species: '飞蛾系', element: 'wind', rarity: 'N', role: 'back',
+    emoji: ['🦋', '🦋', '🌸'], shiny: '🦋✨',
+    base: { hp: 470, atk: 48, def: 32, spd: 22, crit: 0.04, critDmg: 0.45, dr: 0.05, hit: 0.02, dodge: 0.03 },
+    growth: { hp: 27, atk: 2.9, def: 2.2, spd: 0.34 },
+    skills: ['w_basic', 'rabbit_guard', 'sheep_charm', 'w_ult'],
+    lines: ['翅膀上的粉，是淡淡的花香。', '别怕黑，我来帮大家挡一挡。', '顺着花香就能找到同伴。'],
+    codex: '风系 N 辅助，扑扇的翅膀带起花粉与微风，更擅长护佑同伴而非硬拼。'
+  },
+  {
+    id: 'albatross', name: '信天翁', title: '长空巡守者', species: '信天翁系', element: 'wind', rarity: 'SR', role: 'front',
+    emoji: ['🦅', '🕊️', '🪶'], shiny: '🦅✨',
+    base: { hp: 660, atk: 66, def: 46, spd: 18, crit: 0.08, critDmg: 0.55, dr: 0.08, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 40, atk: 3.8, def: 3.2, spd: 0.28 },
+    skills: ['w_basic', 'turtle_a1', 'goat_a1', 'turtle_ult'],
+    lines: ['我在前面挡住风，大家跟紧。', '翅膀展开就是一面墙。', '长途飞行练出来的稳重。'],
+    codex: '风系 SR 前排，宽大的翅膀既能滑翔也能挡在队伍最前，稳扎稳打。'
+  },
+  /* ---------- 扩充：冰系 5 ---------- */
+  {
+    id: 'penguin', name: '企鹅', title: '滑冰小卫士', species: '企鹅系', element: 'ice', rarity: 'R', role: 'front',
+    emoji: ['🐧', '🐧', '🧊'], shiny: '🐧✨',
+    base: { hp: 540, atk: 48, def: 44, spd: 16, crit: 0.04, critDmg: 0.48, dr: 0.08, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 34, atk: 3.0, def: 3.2, spd: 0.26 },
+    skills: ['i_basic', 'turtle_a1', 'i_a2', 'i_ult'],
+    lines: ['滑一下，就撞过来啦！', '肚皮圆圆的，最抗打。', '冰面是我的主场。'],
+    codex: '冰系 R 前排，走路一摇一摆，上了冰面却稳得像块小盾牌。'
+  },
+  {
+    id: 'seal', name: '海豹', title: '雪堆小弹球', species: '海豹系', element: 'ice', rarity: 'R', role: 'front',
+    emoji: ['🦭', '🦭', '❄️'], shiny: '🦭✨',
+    base: { hp: 530, atk: 46, def: 43, spd: 15, crit: 0.03, critDmg: 0.46, dr: 0.08, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 33, atk: 2.9, def: 3.1, spd: 0.24 },
+    skills: ['i_basic', 'hamster_stash', 'i_a2', 'i_ult'],
+    lines: ['我可以在雪地上弹很久。', '胖胖的，撞上去弹回来的是我。', '暖和，就是有点圆。'],
+    codex: '冰系 R 前排，圆滚滚的身体像一枚海豹软弹球，扛伤之余很有韧性。'
+  },
+  {
+    id: 'arcticfox', name: '雪狐', title: '霜色小刺客', species: '雪狐系', element: 'ice', rarity: 'SR', role: 'back',
+    emoji: ['🦊', '🐺', '🌨️'], shiny: '🦊✨',
+    base: { hp: 440, atk: 76, def: 27, spd: 26, crit: 0.13, critDmg: 0.66, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 22, atk: 5.2, def: 1.6, spd: 0.48 },
+    skills: ['i_basic', 'fox_shadow', 'i_a2', 'fox_ult'],
+    lines: ['雪白的毛，最适合悄悄靠近。', '冻住的脚印会出卖对手的位置。', '后排交给我。'],
+    codex: '冰系 SR 后排，毛色如雪，行动轻捷，喜欢先削弱对手再给出致命一击。'
+  },
+  {
+    id: 'polarbear', name: '白熊', title: '雪原小堡垒', species: '白熊系', element: 'ice', rarity: 'SR', role: 'front',
+    emoji: ['🐻‍❄️', '🐻', '🧊'], shiny: '🐻‍❄️✨',
+    base: { hp: 700, atk: 64, def: 50, spd: 14, crit: 0.05, critDmg: 0.50, dr: 0.10, hit: 0.02, dodge: 0.01 },
+    growth: { hp: 44, atk: 3.4, def: 3.6, spd: 0.20 },
+    skills: ['i_basic', 'i_a1', 'goat_a1', 'i_ult'],
+    lines: ['雪很厚，我也很稳。', '一只熊掌挡在最前面。', '别挠我，毛很厚的。'],
+    codex: '冰系 SR 前排坦克，身披厚白毛，血量与防御都很扎实，是队伍移动的雪墙。'
+  },
+  {
+    id: 'walrus', name: '海象', title: '长牙小冰墙', species: '海象系', element: 'ice', rarity: 'R', role: 'front',
+    emoji: ['🦭', '🐋', '⚓'], shiny: '🦭✨',
+    base: { hp: 550, atk: 46, def: 46, spd: 12, crit: 0.03, critDmg: 0.46, dr: 0.10, hit: 0.01, dodge: 0.01 },
+    growth: { hp: 35, atk: 2.8, def: 3.3, spd: 0.22 },
+    skills: ['i_basic', 'turtle_a1', 'i_a2', 'i_ult'],
+    lines: ['两根牙，是用来顶住的。', '我走得慢，但站得最牢。', '浮冰上谁也推不动我。'],
+    codex: '冰系 R 前排，长牙厚重、防御偏高，适合顶在前线吸收伤害。'
+  },
+  /* ---------- 扩充：其余六系 10 ---------- */
+  {
+    id: 'koala', name: '考拉', title: '桉叶小奶妈', species: '考拉系', element: 'grass', rarity: 'R', role: 'back',
+    emoji: ['🐨', '🐨', '🌿'], shiny: '🐨✨',
+    base: { hp: 470, atk: 54, def: 34, spd: 20, crit: 0.05, critDmg: 0.48, dr: 0.05, hit: 0.02, dodge: 0.03 },
+    growth: { hp: 27, atk: 3.4, def: 2.4, spd: 0.32 },
+    skills: ['rabbit_basic', 'rabbit_herb', 'deer_a2', 'rabbit_ult'],
+    lines: ['桉叶嚼一嚼，就有力气照顾大家。', '困了也先把伙伴哄好。', '抱一抱就不疼啦。'],
+    codex: '草系 R 后排辅助，性情温吞，擅长用枝叶为同伴疗伤回复。'
+  },
+  {
+    id: 'flamingo', name: '火烈鸟', title: '绯色小舞者', species: '火烈鸟系', element: 'fire', rarity: 'SR', role: 'back',
+    emoji: ['🦩', '🦩', '🔥'], shiny: '🦩✨',
+    base: { hp: 450, atk: 76, def: 28, spd: 24, crit: 0.12, critDmg: 0.62, dr: 0.03, hit: 0.03, dodge: 0.03 },
+    growth: { hp: 24, atk: 5.0, def: 1.7, spd: 0.46 },
+    skills: ['phoenix_basic', 'phoenix_feather', 'orange_sun', 'phoenix_ult'],
+    lines: ['单脚站立，是在蓄力转圈。', '羽毛像晚霞一样烧起来。', '舞步到最后，火苗最旺。'],
+    codex: '火系 SR 后排，舞姿带动灼热气流，能持续给敌方挂上灼烧压力。'
+  },
+  {
+    id: 'octopus', name: '章鱼', title: '八腕小参谋', species: '章鱼系', element: 'water', rarity: 'SR', role: 'back',
+    emoji: ['🐙', '🐙', '🌊'], shiny: '🐙✨',
+    base: { hp: 460, atk: 72, def: 28, spd: 23, crit: 0.11, critDmg: 0.64, dr: 0.03, hit: 0.03, dodge: 0.03 },
+    growth: { hp: 23, atk: 5.0, def: 1.7, spd: 0.44 },
+    skills: ['otter_basic', 'koi_a1', 'otter_hand', 'koi_ult'],
+    lines: ['八条腕，一次能帮八个忙。', '水流往哪走，我算得准。', '别把我逼急了，墨汁可不客气。'],
+    codex: '水系 SR 后排，触手灵活、头脑清楚，兼顾输出与团队增益。'
+  },
+  {
+    id: 'mushroom', name: '蘑菇精灵', title: '伞盖小盾兵', species: '蘑菇系', element: 'grass', rarity: 'N', role: 'front',
+    emoji: ['🍄', '🍄', '🌱'], shiny: '🍄✨',
+    base: { hp: 520, atk: 46, def: 44, spd: 16, crit: 0.03, critDmg: 0.45, dr: 0.06, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 30, atk: 2.8, def: 2.9, spd: 0.28 },
+    skills: ['hamster_basic', 'hamster_stash', 'hamster_wheel', 'hamster_ult'],
+    lines: ['伞盖撑开，就是一把小伞。', '我个子矮，站前面刚好。', '雨后会冒出好多小伙伴。'],
+    codex: '草系 N 前排，伞盖厚实、性格憨厚，是新手队伍里可靠的第一块肉盾。'
+  },
+  {
+    id: 'bat', name: '蝙蝠', title: '夜巷小回声', species: '蝙蝠系', element: 'dark', rarity: 'R', role: 'back',
+    emoji: ['🦇', '🦇', '🌙'], shiny: '🦇✨',
+    base: { hp: 430, atk: 62, def: 28, spd: 27, crit: 0.09, critDmg: 0.55, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 21, atk: 4.0, def: 1.7, spd: 0.50 },
+    skills: ['owl_basic', 'owl_a1', 'owl_a2', 'owl_ult'],
+    lines: ['回声一响，我就知道你在哪。', '夜里我最精神。', '倒挂着也能出手。'],
+    codex: '暗系 R 后排，靠回声定位锁定目标，夜间反应迅速、专打后排。'
+  },
+  {
+    id: 'lynx', name: '猞猁', title: '雪林小猎手', species: '猞猁系', element: 'dark', rarity: 'SR', role: 'back',
+    emoji: ['🐆', '🐈‍⬛', '🌑'], shiny: '🐆✨',
+    base: { hp: 445, atk: 75, def: 27, spd: 27, crit: 0.13, critDmg: 0.66, dr: 0.03, hit: 0.04, dodge: 0.04 },
+    growth: { hp: 22, atk: 5.1, def: 1.6, spd: 0.50 },
+    skills: ['fox_basic', 'fox_shadow', 'fox_veil', 'fox_ult'],
+    lines: ['耳尖那撮毛，听得更远。', '耐心蹲伏，一击即中。', '影子里最安全。'],
+    codex: '暗系 SR 后排刺客，耳尖灵敏、出手果断，擅长削弱后排后爆发。'
+  },
+  {
+    id: 'alpaca', name: '羊驼', title: '高原小脾气', species: '羊驼系', element: 'earth', rarity: 'R', role: 'front',
+    emoji: ['🦙', '🦙', '⛰️'], shiny: '🦙✨',
+    base: { hp: 535, atk: 49, def: 43, spd: 14, crit: 0.03, critDmg: 0.46, dr: 0.08, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 33, atk: 3.0, def: 3.1, spd: 0.24 },
+    skills: ['goat_basic', 'goat_a1', 'turtle_a2', 'goat_ult'],
+    lines: ['别惹我，我可是会吐口水的。', '高原的风，练出我的稳。', '毛很厚，很扛打。'],
+    codex: '土系 R 前排，高原长大、脾气温和但倔强，防御扎实、顶在前排。'
+  },
+  {
+    id: 'mole', name: '鼹鼠', title: '地下小掘进手', species: '鼹鼠系', element: 'earth', rarity: 'N', role: 'front',
+    emoji: ['🐹', '🐀', '⛏️'], shiny: '🐀✨',
+    base: { hp: 515, atk: 45, def: 43, spd: 15, crit: 0.02, critDmg: 0.44, dr: 0.06, hit: 0.02, dodge: 0.02 },
+    growth: { hp: 29, atk: 2.7, def: 2.8, spd: 0.26 },
+    skills: ['hamster_basic', 'goat_a1', 'hamster_wheel', 'goat_ult'],
+    lines: ['地下很安静，适合想事情。', '爪子一扒，就能顶住。', '我虽然小，挖得很深。'],
+    codex: '土系 N 前排，常年在地下掘进，皮实耐打，是容易获得的入门肉盾。'
+  },
+  {
+    id: 'jellyfish', name: '水母', title: '透明小漂漂', species: '水母系', element: 'water', rarity: 'R', role: 'back',
+    emoji: ['🪼', '🪼', '💧'], shiny: '🪼✨',
+    base: { hp: 465, atk: 55, def: 30, spd: 22, crit: 0.06, critDmg: 0.50, dr: 0.04, hit: 0.02, dodge: 0.03 },
+    growth: { hp: 25, atk: 3.5, def: 2.0, spd: 0.38 },
+    skills: ['otter_basic', 'otter_wave', 'otter_hand', 'otter_ult'],
+    lines: ['我没有骨头，所以很软。', '触手轻轻一摆，水花就来了。', '跟着水流慢慢飘。'],
+    codex: '水系 R 后排，身体柔软、节奏舒缓，偏向治疗与团队辅助。'
+  },
+  {
+    id: 'peacock', name: '孔雀', title: '开屏小光羽', species: '孔雀系', element: 'light', rarity: 'SR', role: 'back',
+    emoji: ['🦚', '🦚', '✨'], shiny: '🦚✨',
+    base: { hp: 455, atk: 73, def: 29, spd: 24, crit: 0.11, critDmg: 0.62, dr: 0.04, hit: 0.03, dodge: 0.02 },
+    growth: { hp: 24, atk: 5.0, def: 1.8, spd: 0.46 },
+    skills: ['golden_basic', 'golden_frisbee', 'unicorn_a1', 'golden_ult'],
+    lines: ['开屏的瞬间，全场都亮了。', '羽毛上有小小的眼睛花纹。', '光鲜是为了给同伴鼓劲。'],
+    codex: '光系 SR 后排，开屏时华光流转，兼顾输出增益与温柔辅助。'
   }
 ];
 const PET_MAP = Object.fromEntries(PETS.map(p => [p.id, p]));
@@ -1992,6 +2197,19 @@ const STAGE_KINDS = [
   { type: 'elite', name: '精英', label: '精英', emoji: '🛡️' },
   { type: 'boss', name: '首领', label: '首领', emoji: '👑' }
 ];
+// 关卡小剧情：每章一段开场 intro、首通一句 winLine（轻量文案，不改战斗判定；围绕猪猪与小金毛结伴推进）
+const CHAPTER_STORY = {
+  1:  { intro: '猪猪和小金毛追着一只会发光的奶油兔跑进草原，草浪里藏着第一群愿意同行的小伙伴。', winLine: '第一片草原被踏平，猪猪拍拍肚皮，小金毛摇起了尾巴。' },
+  2:  { intro: '草莓熟得发红，焦糖狐火在丘陵间一闪一闪，像是在考验队伍的默契。', winLine: '狐火被驱散，草莓的甜香留在了队伍口袋里。' },
+  3:  { intro: '溪水凉丝丝的，小金毛想先下去玩水，猪猪却提醒大家先看看水底的影子。', winLine: '溪谷的水灵安静退去，队伍学会了先观察再出手。' },
+  4:  { intro: '熊王在蜂蜜树下打盹，猪猪放轻脚步，小金毛压低声音替大家带路。', winLine: '没有吵醒熊王就穿过森林，温柔也是一种实力。' },
+  5:  { intro: '月光把爪印照得发亮，夜行的伙伴们陆续加入，队伍在夜色里更清醒。', winLine: '月蚀守卫退入石中，队伍带着月光继续上路。' },
+  6:  { intro: '云朵软得像面包，云海巨鲸翻身时洒下一片光，小金毛看得直摇尾巴。', winLine: '穿过云海，大家的心都变得轻飘飘的。' },
+  7:  { intro: '熔岩像焦糖一样流动，猪猪顶在最前面挡下热浪，为后排争取出手空间。', winLine: '赤焰幼龙被安抚下来，火山口恢复了平静。' },
+  8:  { intro: '退潮的沙滩上铺满小星星，水栖伙伴们在浅滩里互相招呼。', winLine: '星潮退去，队伍捡到了一枚会眨眼的贝壳。' },
+  9:  { intro: '幻彩蝶后振翅抖落彩虹，光系伙伴们在彩光里格外耀眼。', winLine: '蝶后献上一片彩羽，花园重归宁静。' },
+  10: { intro: '所有旅途的尽头，风把故事吹成永恒；猪猪和小金毛并肩站在最高处，身后是一路同行的伙伴。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' }
+};
 const STAGES = [];
 for (const chapter of CHAPTERS) {
   for (let i = 1; i <= 5; i++) {
@@ -2009,7 +2227,9 @@ for (const chapter of CHAPTERS) {
       baseGold,
       baseFruit: Math.max(0.01, Math.round(baseGold * 0.08 * 1000) / 1000),
       desc: chapter.desc,
-      theme: chapter.theme
+      theme: chapter.theme,
+      intro: (CHAPTER_STORY[chapter.id] || {}).intro || '',
+      winLine: (CHAPTER_STORY[chapter.id] || {}).winLine || ''
     });
   }
 }
