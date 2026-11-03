@@ -7,7 +7,7 @@
 
 - [x] `npm test` 三套件（逻辑 / 渲染 / 游戏冒烟）全绿
 - [x] `railway.json`：Nixpacks 构建、`startCommand=node server.js`、健康检查 `/healthz`、失败自动重启
-- [x] `server.js`：监听 `0.0.0.0`、读取 `process.env.PORT`、提供 `/healthz`、`/api/weather`、`/api/sync/*`、静态托管 `public/`
+- [x] `server.js`：监听 `0.0.0.0`、读取 `process.env.PORT`、提供 `/healthz`、`/api/weather`、`/api/sync/*`（可选 `SYNC_SECRET` 口令、白名单含 `ddgame:v1`、单值 256KB）、静态托管 `public/`
 - [x] `.gitignore` 排除 `data/`、`.env`、`node_modules/`、`*.log`；`.nvmrc` 固定 Node 20
 - [x] 已安装 Git 2.56；`main` 分支首次提交 `4e5b417`，共 35 个文件；本地 `data/` 同步数据未入库
 
@@ -52,15 +52,17 @@
 
 若出现 502 / 启动失败，依据 Deploy Logs 定位（重点：是否监听 `0.0.0.0:$PORT`、启动命令是否 `node server.js`）并修复后重新推送。
 
-## ⑤ 推荐（不额外花钱）：跨设备同步数据持久化
+## ⑤ 跨设备同步持久化 + 公开保护（必做）
 
-主应用 `/api/sync/*` 记录写在 `DATA_DIR` 指向目录；不挂 Volume 时每次重新部署会清空。
+同步记录（主应用 `dd:*` 与游戏存档 `ddgame:v1`）写在 `DATA_DIR` 指向目录；不挂 Volume 时每次重新部署会清空。
 
 1. 服务 **Settings → Volumes → Add Volume**，**Mount path 填 `/data`**。
-2. **Variables** 新增 `DATA_DIR = /data`，保存后自动 Redeploy。
-3. 复测 `GET /api/sync/info` 返回 `"storage":"volume"`。
+2. **Variables** 新增 `DATA_DIR = /data`。
+3. **公开站点再加一条 Variables：`SYNC_SECRET = 你自定的一段口令`**（公开部署必设；不设则 `/api/sync/*` 无口令裸奔，任何人可调用生成/保存/读取）。保存后自动 Redeploy。
+4. 复测 `GET /api/sync/info` 返回 `"storage":"volume"`、`"secretRequired":true`。
+5. 主应用设置页填好同一道「服务端口令」再生成同步码；多台设备填相同口令 + 同一同步码即可互通；游戏进度随快照自动后台同步，仍可在游戏设置导出 JSON 做本地备份。
 
-> 小游戏 `ddgame:v1` 存档存在各浏览器 localStorage，不依赖 Volume；换浏览器 / 清缓存才会重置，可用游戏内导出 JSON 备份。
+> 口令是公开部署的统一访问层，同步码是个人记录凭证，两者都不要公开分享；整份快照按时间较新整体覆盖，不逐条合并。
 
 ## 以后更新代码（自动部署）
 

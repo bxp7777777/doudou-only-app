@@ -111,7 +111,12 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const SYNC_DIR = path.join(DATA_DIR, 'sync');
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 const CODE_RE = /^[A-HJ-NP-Z2-9]{6,10}$/;
-const MAX_BODY = 2 * 1024 * 1024; // 日记多了会变大：2MB 够存几百天
+const MAX_BODY = 2 * 1024 * 1024; // 整份快照上限 2MB（日记 + 游戏存档）
+const SYNC_CFG_KEY = 'dd:sync'; // 同步码/口令配置本体，不上传服务端
+const GAME_SAVE_KEY = 'ddgame:v1'; // 主游戏存档键，纳入同步白名单
+const SYNC_VALUE_MAX = 256 * 1024; // 单个键值上限 256KB（游戏存档 JSON 远小于此）
+// 可选服务端口令：设置 SYNC_SECRET 后，/new /save /load 都要带 x-sync-secret；不设则保持兼容（本机/旧部署）
+const SYNC_SECRET = (process.env.SYNC_SECRET || '').trim();
 let storageMode = 'unknown';
 
 try {
@@ -125,6 +130,20 @@ try {
 console.log('[sync] 存储模式 ' + storageMode + ' → ' + SYNC_DIR);
 
 const codePath = (code) => path.join(SYNC_DIR, code + '.json');
+
+function secretProvided(req, body, url) {
+  const h = req.headers && req.headers['x-sync-secret'];
+  if (typeof h === 'string' && h.trim()) return h.trim();
+  if (body && typeof body.secret === 'string' && body.secret.trim()) return body.secret.trim();
+  if (url && url.searchParams && url.searchParams.get('secret')) return url.searchParams.get('secret');
+  return '';
+}
+
+function secretAllowed(req, body, url) {
+  // 未配置 SYNC_SECRET 时不校验：本机与旧部署行为不变；一旦公开部署建议设置口令
+  if (!SYNC_SECRET) return true;
+  return secretProvided(req, body, url) === SYNC_SECRET;
+}
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -151,14 +170,18 @@ async function handleSync(req, res, url) {
   }
 
   if (url.pathname === '/api/sync/new') {
+    if (!secretAllowed(req, null, url)) {
+      sendJson(res, 401, { ok: false, reason: 'bad-secret' });
+      return true;
+    }
     let code = '';
     for (let i = 0; i < 8; i++) code += ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
-    sendJson(res, 200, { ok: true, code, storage: storageMode });
+    sendJson(res, 200, { ok: true, code, storage: storageMode, secretRequired: !!SYNC_SECRET });
     return true;
   }
 
   if (url.pathname === '/api/sync/info') {
-    sendJson(res, 200, { ok: true, storage: storageMode });
+    sendJson(res, 200, { ok: true, storage: storageMode, secretRequired: !!SYNC_SECRET });
     return true;
   }
 
@@ -175,6 +198,11 @@ async function handleSync(req, res, url) {
       return true;
     }
 
+    if (!secretAllowed(req, body, url)) {
+      sendJson(res, 401, { ok: false, reason: 'bad-secret' });
+      return true;
+    }
+
     const code = String(body.code || '').toUpperCase();
     if (!CODE_RE.test(code)) {
       sendJson(res, 400, { ok: false, reason: 'bad-code' });
@@ -186,11 +214,12 @@ async function handleSync(req, res, url) {
       return true;
     }
 
-    // 只收 dd: 开头的键，单值限长，避免变成公共文件柜
+    // 只收 dd: 前缀记录与游戏存档键，单值限长，避免变成公共文件柜
+    const allowedKey = (k) => (k.startsWith('dd:') && k !== SYNC_CFG_KEY) || k === GAME_SAVE_KEY;
     const clean = {};
     for (const k of Object.keys(payload).slice(0, 500)) {
       const v = payload[k];
-      if (!k.startsWith('dd:') || k === 'dd:sync' || typeof v !== 'string' || v.length > 20000) continue;
+      if (!allowedKey(k) || typeof v !== 'string' || v.length > SYNC_VALUE_MAX) continue;
       clean[k] = v;
     }
 
@@ -211,6 +240,10 @@ async function handleSync(req, res, url) {
   }
 
   if (url.pathname === '/api/sync/load') {
+    if (!secretAllowed(req, null, url)) {
+      sendJson(res, 401, { ok: false, reason: 'bad-secret' });
+      return true;
+    }
     const code = String(url.searchParams.get('code') || '').toUpperCase();
     if (!CODE_RE.test(code)) {
       sendJson(res, 400, { ok: false, reason: 'bad-code' });

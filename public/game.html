@@ -3222,6 +3222,7 @@ function saveGame() {
       setTimeout(() => toast('本地存档写入失败，可能是浏览器限制或空间不足。', 'bad'), 200);
     }
   }
+  gameSyncSchedule();
 }
 
 function persist(options = {}) {
@@ -7231,6 +7232,8 @@ function openSettingsModal() {
         <button class="btn btn-lav btn-sm" type="button" data-act="importSave">导入 JSON</button>
       </div>
       <textarea id="saveBox" class="input save-box" rows="5" placeholder="导出的存档会出现在这里；也可以把存档 JSON 粘贴进来后点「导入 JSON」。"></textarea>
+      <div class="settings-row" style="margin-top:7px"><span>云端同步</span><button class="btn btn-ghost btn-xs" type="button" data-act="gameSyncNow">立即同步</button></div>
+      <div class="tiny muted" style="margin-top:5px">由主应用同步码驱动并自动后台同步；战斗或弹窗中不会自动覆盖进度，未配同步码时此按钮无效。</div>
       <div class="tiny muted" style="margin-top:5px">浏览器 localStorage 可能被清理，建议定期导出。导入会覆盖当前进度，请谨慎操作。</div>
     </div>
     <div class="settings-section">
@@ -8476,6 +8479,7 @@ function handleActionClick(event) {
     case 'toggleSfx': toggleSetting('sfx'); break;
     case 'toggleMusic': toggleSetting('music'); break;
     case 'saveNow': saveNow(); break;
+    case 'gameSyncNow': void gameSyncNow(false).then(() => toast('云端同步请求已发出', 'good', 2000)); break;
     case 'exportSave': exportSave(); break;
     case 'importSave': importSave(); break;
     case 'resetRequest': openResetConfirm(); break;
@@ -8489,6 +8493,110 @@ function handleActionClick(event) {
     default:
       break;
   }
+}
+
+/* ========== 7.5 云端自动后台同步（与主应用共享 dd:sync 同步码） ========== */
+const SYNC_CFG_KEY = 'dd:sync';
+const SYNC_VALUE_MAX = 256 * 1024;
+let gameSyncTimer = null;
+let gameBgSyncTimer = null;
+
+function gameSyncCfg() {
+  try {
+    const c = JSON.parse(localStorage.getItem(SYNC_CFG_KEY) || 'null');
+    return c && typeof c === 'object' && c.code ? c : null;
+  } catch (err) { return null; }
+}
+function gameSyncHeaders() {
+  const c = gameSyncCfg() || {};
+  return { 'content-type': 'application/json', 'x-sync-secret': c.secret || '' };
+}
+function gameSyncConfigAt() {
+  const c = gameSyncCfg();
+  return Number(c && c.at) || 0;
+}
+function gameSyncConfigSave(patch) {
+  const c = gameSyncCfg() || {};
+  try { localStorage.setItem(SYNC_CFG_KEY, JSON.stringify(Object.assign({}, c, patch))); } catch (err) { /* 忽略 */ }
+}
+function gameCollectSnapshot() {
+  // 全量快照：本机 dd: 记录 + 游戏存档，保证一次 push 覆盖整份云端记录（整体时间戳覆盖语义）
+  const out = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      const allowed = (k.indexOf('dd:') === 0 && k !== SYNC_CFG_KEY) || k === SAVE_KEY;
+      if (!allowed) continue;
+      const v = localStorage.getItem(k);
+      if (typeof v === 'string' && v.length <= SYNC_VALUE_MAX) out[k] = v;
+    }
+  } catch (err) { /* 读不到就当空 */ }
+  return out;
+}
+async function gameSyncPush(silent) {
+  const cfg = gameSyncCfg();
+  if (!cfg || !cfg.code) return;
+  try {
+    const savedAt = Date.now();
+    const res = await fetch('/api/sync/save', {
+      method: 'POST',
+      headers: gameSyncHeaders(),
+      body: JSON.stringify({ code: cfg.code, payload: gameCollectSnapshot(), savedAt })
+    });
+    const j = await res.json();
+    if (j && j.ok) {
+      gameSyncConfigSave({ at: Number(j.updatedAt || savedAt) });
+    } else if (!silent && j && j.reason === 'bad-secret') {
+      toast('需要先在主应用设置里填服务端口令', 'bad', 2800);
+    }
+  } catch (err) { /* 后台静默：网络不顺不打断游戏 */ }
+}
+async function gameSyncPull() {
+  const cfg = gameSyncCfg();
+  if (!cfg || !cfg.code) return;
+  if (UI.battle || UI.modal || UI.offlineOffer) return; // 战斗/弹窗/离线结算中不自动覆盖
+  try {
+    const res = await fetch('/api/sync/load?code=' + encodeURIComponent(cfg.code), {
+      cache: 'no-store', headers: gameSyncHeaders()
+    });
+    const j = await res.json();
+    if (!j || !j.ok) return;
+    if (Number(j.savedAt || 0) <= gameSyncConfigAt() + 500) return;
+    const remote = j.payload || {};
+    // 主应用键写回本机存储，留给主应用页读取；游戏只接管游戏键
+    Object.keys(remote).forEach((k) => {
+      if ((k.indexOf('dd:') === 0 && k !== SYNC_CFG_KEY) && typeof remote[k] === 'string') {
+        try { localStorage.setItem(k, remote[k]); } catch (err) { /* 忽略 */ }
+      }
+    });
+    if (typeof remote[SAVE_KEY] === 'string') {
+      let parsed = null;
+      try { parsed = JSON.parse(remote[SAVE_KEY]); } catch (err) { return; }
+      if (!parsed || typeof parsed !== 'object' || !parsed.pets) return;
+      try {
+        state = sanitizeState(deepMerge(defaultState(), parsed));
+      } catch (err) { return; }
+      UI.battle = null; UI.modal = null; UI.feedGame = null; UI.offlineOffer = null;
+      UI.lastTick = Date.now(); UI.lastSaveTick = Date.now();
+      UI.tab = ['home', 'adventure', 'pets', 'battle', 'shop', 'quest'].includes(state.lastTab) ? state.lastTab : 'home';
+      saveGame();
+      renderAll();
+    }
+    gameSyncConfigSave({ at: Number(j.savedAt) });
+  } catch (err) { /* 静默 */ }
+}
+async function gameSyncNow(silent) {
+  await gameSyncPull();
+  await gameSyncPush(silent);
+}
+function gameSyncSchedule() {
+  if (!gameSyncCfg()) return;
+  if (gameSyncTimer) clearTimeout(gameSyncTimer);
+  gameSyncTimer = setTimeout(() => {
+    gameSyncTimer = null;
+    gameSyncPush(true);
+  }, 8000);
 }
 
 /* ========== 8. 音频 / 主循环 / 启动 ========== */
@@ -8644,6 +8752,7 @@ function handleVisibilityChange() {
   if (!state) return;
   if (document.hidden) {
     saveGame();
+    gameSyncPush(true);
     stopMusic();
     syncAudio();
     return;
@@ -8664,6 +8773,7 @@ function handleVisibilityChange() {
   refreshHUD();
   syncAudio();
   if (!UI.modal && !UI.battle) renderPage();
+  gameSyncNow(true);
 }
 
 function bindGlobalEvents() {
@@ -8692,6 +8802,11 @@ function bindGlobalEvents() {
 function startGameLoop() {
   if (mainGameTimer) clearInterval(mainGameTimer);
   mainGameTimer = setInterval(gameTick, 1000);
+  if (!gameBgSyncTimer) {
+    gameBgSyncTimer = setInterval(() => {
+      if (!document.hidden && gameSyncCfg()) gameSyncNow(true);
+    }, 120000);
+  }
 }
 
 function bootGame() {
@@ -8723,6 +8838,7 @@ function bootGame() {
     renderAll();
     bindGlobalEvents();
     startGameLoop();
+    if (gameSyncCfg()) setTimeout(() => gameSyncNow(true), 1200);
     if (UI.loadError) toast('存档读取失败，已用新的小镇重新开始。', 'bad', 3600);
     if (offer) setTimeout(() => showOfflineModal(offer), 520);
     if (state.settings.music) setTimeout(() => syncAudio(), 900);

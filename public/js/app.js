@@ -955,7 +955,11 @@ function settingsPage() {
       <div class="row"><label class="row-l" for="sync-code">已有同步码</label>
         <input class="input" id="sync-code" maxlength="10" placeholder="例如 K7QF2M9P" autocapitalize="characters"></div>
       <button class="btn btn-ghost btn-mini" data-act="sync-connect">用这个码连接</button>
-      <p class="hint">数据存在服务端 Volume 里，只认这串码，没有账号密码；不想同步就断开，本机数据照样在。</p>`}
+      <p class="hint">数据存在服务端 Volume 里，只认这串码；不想同步就断开，本机数据照样在。</p>`}
+      <div class="row"><label class="row-l" for="sync-secret">服务端口令</label>
+        <input class="input" id="sync-secret" value="${esc((sc && sc.secret) || '')}" placeholder="服务端开启口令保护时填写，没有可留空"></div>
+      <button class="btn btn-ghost btn-mini" data-act="sync-secret-save">保存口令</button>
+      <p class="hint">口令是服务端统一的一道保护：填写后本机生成码、拉取、保存都会带上它；游戏存档 ddgame:v1 也随这份快照一起同步。</p>
     </section>
 
     <section class="card">
@@ -1381,11 +1385,14 @@ document.addEventListener('click', (e) => {
   }
 
   if (act === 'sync-new') {
-    fetch('/api/sync/new', { cache: 'no-store' })
+    fetch('/api/sync/new', { cache: 'no-store', headers: syncHeaders() })
       .then((r) => r.json())
       .then((j) => {
-        if (!j || !j.ok || !j.code) return toast('服务端存储没开，检查一下 Volume');
-        setSyncCfg({ code: j.code, at: 0 });
+        if (!j || !j.ok || !j.code) {
+          if (j && j.reason === 'bad-secret') return toast('服务端要求口令，请先在下方填写服务端口令');
+          return toast('服务端存储没开，检查一下 Volume');
+        }
+        setSyncCfg({ code: j.code, secret: (syncCfg() || {}).secret, at: 0 });
         render();
         toast('同步码生成好啦，去另一台设备输入');
       })
@@ -1397,7 +1404,7 @@ document.addEventListener('click', (e) => {
     const input = document.getElementById('sync-code');
     const code = String((input && input.value) || '').trim().toUpperCase();
     if (!CODE_RE.test(code)) return toast('同步码是 6–10 位字母数字，再核对一下');
-    setSyncCfg({ code, at: 0 });
+    setSyncCfg({ code, secret: (syncCfg() || {}).secret, at: 0 });
     render();
     return toast('连上了，正在拉另一台的数据…');
   }
@@ -1420,6 +1427,19 @@ document.addEventListener('click', (e) => {
     setSyncCfg(null);
     render();
     return toast('已断开同步，本机数据还在');
+  }
+
+  if (act === 'sync-secret-save') {
+    const input = document.getElementById('sync-secret');
+    const secret = String((input && input.value) || '').trim();
+    const c = syncCfg() || {};
+    if (c.code) setSyncCfg({ code: c.code, secret, at: c.at || 0 });
+    else if (secret) setSyncCfg({ code: '', secret, at: 0 });
+    else setSyncCfg(null);
+    render();
+    toast(secret ? '服务端口令已保存' : '已清空服务端口令');
+    if (syncCfg() && syncCfg().code) scheduleSync();
+    return;
   }
 
   if (act === 'backup-export') return exportBackup();
@@ -1482,6 +1502,8 @@ function applyTheme() {
 /* ------------------------- 跨设备同步 ------------------------- */
 
 const SYNC_KEY = 'dd:sync';
+const SYNC_GAME_KEY = 'ddgame:v1'; // 与 game.html 同源共享的游戏存档键
+const SYNC_VALUE_MAX = 256 * 1024; // 与后端单值上限对齐
 const CODE_RE = /^[A-HJ-NP-Z2-9]{6,10}$/;
 
 function syncCfg() {
@@ -1492,15 +1514,25 @@ function setSyncCfg(cfg) {
   store.set(SYNC_KEY, cfg);
 }
 
-/** 把本机所有 dd: 数据打成一份快照（同步码本身不进去） */
+/** 同步请求头：带上服务端口令（未配置时为空，后端不校验） */
+function syncHeaders() {
+  const c = syncCfg() || {};
+  return { 'content-type': 'application/json', 'x-sync-secret': c.secret || '' };
+}
+
+function syncAllowedKey(k) {
+  return (k && k.indexOf('dd:') === 0 && k !== SYNC_KEY) || k === SYNC_GAME_KEY;
+}
+
+/** 把本机 dd: 记录与游戏存档打成一份快照（同步码/口令配置本身不进去） */
 function snapshot() {
   const out = {};
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (!k || k.indexOf('dd:') !== 0 || k === SYNC_KEY) continue;
+      if (!syncAllowedKey(k)) continue;
       const v = localStorage.getItem(k);
-      if (typeof v === 'string' && v.length <= 20000) out[k] = v;
+      if (typeof v === 'string' && v.length <= SYNC_VALUE_MAX) out[k] = v;
     }
   } catch {
     /* 读不到就当空的 */
@@ -1513,7 +1545,7 @@ function restore(payload) {
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && k.indexOf('dd:') === 0 && k !== SYNC_KEY) keys.push(k);
+      if (k && syncAllowedKey(k)) keys.push(k);
     }
   } catch {
     /* 忽略 */
@@ -1526,7 +1558,7 @@ function restore(payload) {
     }
   });
   Object.keys(payload || {}).forEach((k) => {
-    if (k.indexOf('dd:') !== 0 || k === SYNC_KEY || typeof payload[k] !== 'string') return;
+    if (!syncAllowedKey(k) || typeof payload[k] !== 'string') return;
     try {
       localStorage.setItem(k, payload[k]);
     } catch {
@@ -1574,9 +1606,9 @@ function importBackup() {
         ? data.payload
         : (data && typeof data === 'object' && !Array.isArray(data) ? data : null);
       if (!payload) return toast('备份格式不对，没有可还原的记录');
-      const valid = Object.keys(payload).filter((k) => k.indexOf('dd:') === 0 && k !== SYNC_KEY && typeof payload[k] === 'string');
+      const valid = Object.keys(payload).filter((k) => syncAllowedKey(k) && typeof payload[k] === 'string');
       if (!valid.length) return toast('备份里没有本机认识的记录');
-      if (!window.confirm(`将导入 ${valid.length} 项记录，并覆盖本机现有的喝水、打卡、日记、备忘、课表等（同步码保留）。确定还原吗？`)) return;
+      if (!window.confirm(`将导入 ${valid.length} 项记录，并覆盖本机现有的喝水、打卡、日记、备忘、课表和游戏进度（同步码保留）。确定还原吗？`)) return;
       restore(payload);
       store.ensureDefaults();
       applyTheme();
@@ -1597,13 +1629,13 @@ async function syncNow(silent) {
     return;
   }
   try {
-    const res = await fetch('/api/sync/load?code=' + encodeURIComponent(cfg.code), { cache: 'no-store' });
+    const res = await fetch('/api/sync/load?code=' + encodeURIComponent(cfg.code), { cache: 'no-store', headers: syncHeaders() });
     const json = await res.json();
     const remoteAt = json && json.ok ? Number(json.savedAt || 0) : 0;
 
     if (json && json.ok && remoteAt > Number(cfg.at || 0) + 500) {
       restore(json.payload);
-      setSyncCfg({ code: cfg.code, at: remoteAt });
+      setSyncCfg({ code: cfg.code, secret: cfg.secret, at: remoteAt });
       store.ensureDefaults();
       applyTheme();
       render();
@@ -1614,15 +1646,16 @@ async function syncNow(silent) {
     const savedAt = Date.now();
     const push = await fetch('/api/sync/save', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: syncHeaders(),
       body: JSON.stringify({ code: cfg.code, payload: snapshot(), savedAt })
     });
     const out = await push.json();
     if (out && out.ok) {
-      setSyncCfg({ code: cfg.code, at: Number(out.updatedAt || savedAt) });
+      setSyncCfg({ code: cfg.code, secret: cfg.secret, at: Number(out.updatedAt || savedAt) });
       if (!silent) toast('已经同步到服务端');
     } else if (!silent) {
-      toast('同步失败：' + ((out && out.reason) || '服务不可用'));
+      const why = out && out.reason === 'bad-secret' ? '服务端要求口令，请先在下方填写服务端口令' : ((out && out.reason) || '服务不可用');
+      toast('同步失败：' + why);
     }
   } catch {
     if (!silent) toast('网络不太顺，等会儿再点一次');
