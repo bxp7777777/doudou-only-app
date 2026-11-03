@@ -1,5 +1,5 @@
 /* 简单离线壳：静态资源缓存优先，接口一律走网络 */
-const CACHE = 'doudou-v2';
+const CACHE = 'doudou-v3';
 const SHELL = [
   '/',
   '/index.html',
@@ -16,10 +16,10 @@ const SHELL = [
   '/js/skincare.js',
   '/js/health.js',
   '/js/weather.js',
-  '/art/bg-q1.svg',
-  '/art/bg-q2.svg',
-  '/art/bg-q3.svg',
-  '/art/bg-q4.svg',
+  '/art/bg-ai1.jpg',
+  '/art/bg-ai2.jpg',
+  '/art/bg-ai3.jpg',
+  '/art/bg-ai4.jpg',
   '/art/icon-duo.svg',
   '/manifest.webmanifest',
   '/icons/icon-192.png',

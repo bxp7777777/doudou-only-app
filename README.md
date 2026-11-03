@@ -114,7 +114,7 @@ doudou-app/
 │   ├── index.html / manifest.webmanifest / sw.js
 │   ├── game.html          # 单文件养成小游戏
 │   ├── css/styles.css
-│   ├── art/               # Q 版背景 bg-q1..q4.svg + icon-duo.svg + og-image.png
+│   ├── art/               # AI 背景 bg-ai1..4.jpg（小猪+小金毛）+ icon-duo.svg + og-image.png
 │   ├── icons/             # 图标 192/512/180/32
 │   └── js/
 │       ├── app.js         # 路由、渲染、交互、同步
@@ -134,7 +134,7 @@ doudou-app/
 
 ## 已知边界
 
-- 背景插画是手写矢量图：`public/art/bg-q1.svg`～`bg-q4.svg`（页面背景）、`icon-duo.svg`（图标）。换配色改里面的 `linearGradient` 十六进制值即可；改完想导出 PNG，可用 sharp 从 SVG 出图（本地 `%LOCALAPPDATA%\doudou-raster` 里存过一套）。
+- 主页背景是 4 张 AI 生成的 Q 版小猪+小金毛插画（`public/art/bg-ai1.jpg`～`bg-ai4.jpg`，贴贴 / 打盹 / 散步 / 暖饮），由 `public/js/app.js` 的 `DUO_ARTS` 每日轮换、设置里手动切换；`icon-duo.svg` 为站点图标。
 - 不挂 Volume 就没有持久化：容器重建 → `./data` 清空 → 同步码失效（本机 localStorage 仍在）。
 - 同步是「较新的一份覆盖较旧的一份」，没有逐条合并；两台设备同时改会以最后推上去的为准。
 - 提醒是「打开页面时按当前时间出对应模块」，不是后台推送。要真推送得接 Web Push 或微信服务号/邮件。

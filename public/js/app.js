@@ -1352,8 +1352,8 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-const DUO_ARTS = ['/art/bg-q1.svg', '/art/bg-q2.svg', '/art/bg-q3.svg', '/art/bg-q4.svg', '/art/bg-q5.svg', '/art/bg-q6.svg', '/art/bg-q7.svg', '/art/bg-q8.svg'];
-const DUO_NAMES = ['贴贴', '打盹', '散步', '点心', '雨天小伞', '花田', '晚安窗前', '暖阳'];
+const DUO_ARTS = ['/art/bg-ai1.jpg', '/art/bg-ai2.jpg', '/art/bg-ai3.jpg', '/art/bg-ai4.jpg'];
+const DUO_NAMES = ['贴贴', '打盹', '散步', '暖饮'];
 
 /** 未指定就用「今天第几张」：每天自动换一张，同一天不跳 */
 function dayArtIndex() {

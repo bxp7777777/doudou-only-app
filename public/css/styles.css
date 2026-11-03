@@ -50,7 +50,7 @@ body.theme-wanxia .bg {
 /* 默认背景：Q 版小猪小金毛，四张轮换（--bg-art 由 app.js 设置） */
 body.theme-duo .bg {
   background-color: #fff7f3;
-  background-image: var(--bg-art, url("/art/bg-q1.svg"));
+  background-image: var(--bg-art, url("/art/bg-ai1.jpg"));
   background-repeat: no-repeat;
   background-position: center bottom;
   background-size: min(108vh, 820px) auto;
