@@ -2236,6 +2236,42 @@ const STAGE_KINDS = [
   { type: 'elite', name: '精英', label: '精英', emoji: '🛡️' },
   { type: 'boss', name: '首领', label: '首领', emoji: '👑' }
 ];
+// 独立野生小怪档案：与可收集宠物区分，8 系 × 普通/精英两档共 16 只；emoji 为图片缺失时的兜底
+const MOB_DEFS = [
+  { id: 'moss_slime', name: '青苔史莱姆', emoji: '🟢', element: 'grass', elite: false },
+  { id: 'thorncap',   name: '刺菇精',     emoji: '🍄', element: 'grass', elite: true },
+  { id: 'ember_newt', name: '烬火蝾螈',   emoji: '🦎', element: 'fire',  elite: false },
+  { id: 'flame_imp',  name: '赤焰小魔',   emoji: '👺', element: 'fire',  elite: true },
+  { id: 'bubble_fish',name: '泡泡鱼',     emoji: '🐟', element: 'water', elite: false },
+  { id: 'tide_crab',  name: '铁钳寄居蟹', emoji: '🦀', element: 'water', elite: true },
+  { id: 'glow_wisp',  name: '微光精灵',   emoji: '✨', element: 'light', elite: false },
+  { id: 'prism_sprite',name:'棱镜光灵',   emoji: '🌟', element: 'light', elite: true },
+  { id: 'shade_bat',  name: '暗影蝠',     emoji: '🦇', element: 'dark',  elite: false },
+  { id: 'night_wraith',name:'夜魇幽灵',    emoji: '👻', element: 'dark',  elite: true },
+  { id: 'pebble_golem',name:'砾石石像',   emoji: '🗿', element: 'earth', elite: false },
+  { id: 'rock_boar',  name: '岩甲野猪',   emoji: '🐗', element: 'earth', elite: true },
+  { id: 'gale_chick', name: '疾风雀',     emoji: '🐦', element: 'wind',  elite: false },
+  { id: 'storm_imp',  name: '风雷小精',   emoji: '🌀', element: 'wind',  elite: true },
+  { id: 'frost_pup',  name: '冰霜小犬',   emoji: '🐺', element: 'ice',   elite: false },
+  { id: 'aurora_wolf',name: '极光冰狼',   emoji: '❄️', element: 'ice',   elite: true }
+];
+const MOB_MAP = Object.fromEntries(MOB_DEFS.map(m => [m.id, m]));
+// 10 只章节首领（洛克王国式原创高属性 Boss，不照搬官方专名）；倍率在 createEnemyFormation 缩放时生效
+const BOSS_DEFS = [
+  { chapter: 1,  id: 'slime_king',  name: '青茸史莱姆王', emoji: '🟢', element: 'grass', rarity: 'UR', hpMult: 3.40, atkMult: 1.18, defMult: 1.15, spd: 14, flavor: '草原深处一只巨大的软糖史莱姆，皮糙肉厚。' },
+  { chapter: 2,  id: 'caramel_fox',  name: '焦糖狐火领主', emoji: '🦊', element: 'fire',  rarity: 'UR', hpMult: 3.10, atkMult: 1.32, defMult: 1.05, spd: 24, flavor: '火焰在尾尖盘旋，出手又快又疼。' },
+  { chapter: 3,  id: 'tide_lord',    name: '溪谷潮语领主', emoji: '🐙', element: 'water', rarity: 'UR', hpMult: 3.20, atkMult: 1.22, defMult: 1.20, spd: 18, flavor: '掌握水流的冷静领主，防御滴水不漏。' },
+  { chapter: 4,  id: 'honey_bear',   name: '蜜蜡金甲熊王', emoji: '🐻', element: 'earth', rarity: 'UR', hpMult: 3.80, atkMult: 1.15, defMult: 1.45, spd: 10, flavor: '披了一身蜂蜜甲，极硬且越打越稳。' },
+  { chapter: 5,  id: 'moon_demon',   name: '月蚀幽影魔王', emoji: '🌑', element: 'dark',  rarity: 'UR', hpMult: 3.00, atkMult: 1.42, defMult: 1.12, spd: 26, flavor: '黑夜中第一击又准又狠，谨防被秒前排。' },
+  { chapter: 6,  id: 'cloud_whale',  name: '云海光翼巨鲸', emoji: '🐋', element: 'light', rarity: 'UR', hpMult: 3.50, atkMult: 1.20, defMult: 1.25, spd: 16, flavor: '云海里翻身的光巨兽，血量惊人。' },
+  { chapter: 7,  id: 'magma_drake',  name: '熔核赤焰幼龙', emoji: '🐲', element: 'fire',  rarity: 'UR', hpMult: 3.20, atkMult: 1.38, defMult: 1.18, spd: 22, flavor: '熔岩巨龙的幼崽，吐息灼热。' },
+  { chapter: 8,  id: 'star_beast',    name: '星潮怒涛巨兽', emoji: '🌊', element: 'water', rarity: 'UR', hpMult: 3.40, atkMult: 1.26, defMult: 1.22, spd: 20, flavor: '潮水与星光缠绕的巨兽，攻守均衡。' },
+  { chapter: 9,  id: 'prism_queen', name: '幻光蝶后',     emoji: '🦋', element: 'light', rarity: 'UR', hpMult: 3.10, atkMult: 1.34, defMult: 1.10, spd: 28, flavor: '振翅即是幻光，高速且连击。' },
+  { chapter: 10, id: 'peak_titan',   name: '永恒石心魔神', emoji: '🗿', element: 'earth', rarity: 'UR', hpMult: 4.20, atkMult: 1.30, defMult: 1.55, spd: 12, flavor: '旅途尽头的守护者，血厚防高，需要队伍成型再挑战。' }
+];
+const BOSS_MAP = Object.fromEntries(BOSS_DEFS.map(b => [b.id, b]));
+const BOSS_BY_CHAPTER = Object.fromEntries(BOSS_DEFS.map(b => [b.chapter, b]));
+function bossByChapter(ch) { return BOSS_BY_CHAPTER[ch] || BOSS_DEFS[BOSS_DEFS.length - 1]; }
 // 关卡小剧情：每章一段开场 intro、首通一句 winLine（轻量文案，不改战斗判定；围绕猪猪与小金毛结伴推进）
 const CHAPTER_STORY = {
   1:  { intro: '猪猪和小金毛追着一只会发光的奶油兔跑进草原，草浪里藏着第一群愿意同行的小伙伴。', winLine: '第一片草原被踏平，猪猪拍拍肚皮，小金毛摇起了尾巴。' },
@@ -2256,12 +2292,13 @@ for (const chapter of CHAPTERS) {
     const index = (chapter.id - 1) * 5 + i;
     const recPower = Math.round(650 * Math.pow(1.42, chapter.id - 1) * (1 + 0.16 * (i - 1)));
     const baseGold = Math.round((1.0 + (chapter.id - 1) * 0.9 + i * 0.18) * 10) / 10;
+    const bdef = kind.type === 'boss' ? bossByChapter(chapter.id) : null;
     STAGES.push({
       index, chapter: chapter.id, chapterName: chapter.name,
       sub: i, type: kind.type, typeName: kind.label,
-      name: kind.type === 'boss' ? chapter.boss : `${chapter.emoji} ${chapter.name}·${['初遇', '花间', '林间', '守卫', '王座'][i - 1]}`,
-      emoji: kind.type === 'boss' ? chapter.bossEmoji : kind.emoji,
-      element: chapter.element,
+      name: bdef ? bdef.name : `${chapter.emoji} ${chapter.name}·${['初遇', '花间', '林间', '守卫', '王座'][i - 1]}`,
+      emoji: bdef ? bdef.emoji : kind.emoji,
+      element: bdef ? bdef.element : chapter.element,
       recPower,
       baseGold,
       baseFruit: Math.max(0.01, Math.round(baseGold * 0.08 * 1000) / 1000),
@@ -3076,6 +3113,11 @@ function petEmojiById(templateId, stage = 0) {
 const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true,gull:true,flysquirrel:true,sparrow:true,moth:true,albatross:true,penguin:true,seal:true,arcticfox:true,polarbear:true,walrus:true,koala:true,flamingo:true,octopus:true,mushroom:true,bat:true,lynx:true,alpaca:true,mole:true,jellyfish:true,peacock:true };
 const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth:true,wind:true,ice:true };
 const RES_ART = { gold:true,crystal:true,fruit:true };
+// 敌方独立形象图集：生图入库后逐只置 true；未登记时返回 null，由调用方逐级回退 emoji，绝不白图破版
+const MOB_ART = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
+const BOSS_ART = { slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
+function mobArtUrl(id) { return MOB_ART[id] ? 'art/mobs/' + id + '.jpg' : null; }
+function bossArtUrl(id) { return BOSS_ART[id] ? 'art/bosses/' + id + '.jpg' : null; }
 function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
 function resArtUrl(k) { return RES_ART[k] ? 'art/icons/res_' + k + '.jpg' : null; }
 // 小图标位（元素徽章/资源图标）：有图返回圆形图框并垫 emoji 兜底，无图返回 null
@@ -3093,6 +3135,16 @@ function petArtFrame(templateId, fallbackEmoji, sizeClass) {
   if (!url) return null;
   const fb = esc(fallbackEmoji);
   return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+}
+// 敌方单位头像：Boss 独立图 → 小怪独立图 → 我方宠物立绘 → emoji 兜底；任一缺失自动降级，绝不白图
+function enemyArtFrame(unit) {
+  let url = null;
+  if (unit.artKind === 'boss' && unit.artId) url = bossArtUrl(unit.artId);
+  if (!url && unit.artKind === 'mob' && unit.artId) url = mobArtUrl(unit.artId);
+  if (!url) url = petArtUrl(unit.templateId);
+  if (!url) return null;
+  const fb = esc(unit.emoji);
+  return `<span class="art-frame art-battle"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
 }
 // 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
 // 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
@@ -3812,8 +3864,7 @@ function equipmentInventory(s = state) {
 function getDailyBossInfo() {
   const today = localDateKey();
   const seed = hashString('boss-' + today);
-  const base = BOSS_POOL[seed % BOSS_POOL.length];
-  const rng = seededRandom(seed + 11);
+  const base = BOSS_DEFS[seed % BOSS_DEFS.length];
   const level = 20 + Math.floor(state.stage.maxCleared * 1.5);
   return {
     name: base.name,
@@ -3821,8 +3872,9 @@ function getDailyBossInfo() {
     element: base.element,
     level,
     seed,
-    flavor: ['今天的它有亿点暴躁。', '高生命高防御，12 回合内尽量打出最高伤害。', '它似乎对毛茸茸的东西很感兴趣。'][seed % 3],
-    rotation: BOSS_POOL[(seed + 1) % BOSS_POOL.length].name
+    bossId: base.id,
+    flavor: base.flavor,
+    rotation: BOSS_DEFS[(seed + 1) % BOSS_DEFS.length].name
   };
 }
 function getBossLeaderboard() {
@@ -4290,7 +4342,7 @@ function makeEnemyRuntime(templateId, level, index, options = {}) {
     templateId: template.id,
     name: options.name || template.name,
     emoji: options.emoji || petEmojiById(template.id, options.boss ? 2 : (options.elite ? 1 : 0)),
-    element: template.element,
+    element: options.element || template.element,
     rarity: template.rarity,
     row: options.row || (index < 2 ? 'front' : 'back'),
     level: Math.round(level),
@@ -4316,8 +4368,17 @@ function makeEnemyRuntime(templateId, level, index, options = {}) {
     reviveUsed: false,
     shiny: false,
     isBoss,
+    artKind: options.artKind || null,
+    artId: options.artId || null,
     skills: template.skills.map((id, i) => ({ def: SKILLS[id], level: 1, index: i }))
   };
+}
+
+function pickMob(element, elite) {
+  const arr = MOB_DEFS.filter(m => m.element === element && !!m.elite === !!elite);
+  if (arr.length) return pick(arr);
+  const fallback = MOB_DEFS.filter(m => !!m.elite === !!elite);
+  return pick(fallback.length ? fallback : MOB_DEFS);
 }
 
 function createEnemyFormation(powerTarget, options = {}) {
@@ -4333,28 +4394,51 @@ function createEnemyFormation(powerTarget, options = {}) {
     const source = preferred.length ? preferred : (fallback.length ? fallback : enemyPetPool());
     lineup.push(pick(source).id);
   }
-  const raw = lineup.slice(0, count).map((id, i) => makeEnemyRuntime(id, level, i, {
-    row: i < 2 ? 'front' : 'back',
-    star: options.star || 1,
-    evo: options.evo || 0,
-    elite: options.type === 'elite',
-    boss: !!options.boss && i === 0,
-    isBoss: !!options.boss && i === 0,
-    name: options.name || ((options.boss && i === 0) ? options.bossName : null),
-    emoji: options.emoji || ((options.boss && i === 0) ? options.bossEmoji : null)
-  }));
+  const artFor = (i) => {
+    const isB = !!options.boss && i === 0;
+    if (isB && options.bossDef) {
+      return { artKind: 'boss', artId: options.bossDef.id, element: options.bossDef.element, name: options.bossDef.name, emoji: options.bossDef.emoji };
+    }
+    if (!isB) {
+      const m = pickMob(options.element, options.type === 'elite');
+      return { artKind: 'mob', artId: m.id, element: m.element, name: m.name, emoji: m.emoji };
+    }
+    return {};
+  };
+  const raw = lineup.slice(0, count).map((id, i) => {
+    const art = artFor(i);
+    return makeEnemyRuntime(id, level, i, {
+      row: i < 2 ? 'front' : 'back',
+      star: options.star || 1,
+      evo: options.evo || 0,
+      elite: options.type === 'elite',
+      boss: !!options.boss && i === 0,
+      isBoss: !!options.boss && i === 0,
+      artKind: art.artKind || null,
+      artId: art.artId || null,
+      element: art.element || undefined,
+      name: art.name || options.name || ((options.boss && i === 0) ? options.bossName : null),
+      emoji: art.emoji || options.emoji || ((options.boss && i === 0) ? options.bossEmoji : null)
+    });
+  });
   const rawPower = Math.max(100, sum(raw.map(u => calcPower(u))));
-  const scale = clamp(targetPower * (options.powerFactor || 0.92) / rawPower, 0.12, 25);
+  const scale = clamp(targetPower * (options.powerFactor || 0.95) / rawPower, 0.12, 25);
   raw.forEach((unit, i) => {
     const boss = !!options.boss && i === 0;
-    const bossHp = boss ? (options.bossHpMult || 2.55) : 1;
-    const bossAtk = boss ? 1.13 : 1;
+    const bdef = options.bossDef || null;
+    const bs = options.bossScale || 1;
+    const bossHp = boss ? (bdef ? bdef.hpMult * bs : (options.bossHpMult || 3.0) * bs) : 1;
+    const bossAtk = boss ? (bdef ? bdef.atkMult * bs : 1.20 * bs) : 1;
+    const bossDefMult = boss ? (bdef ? bdef.defMult * bs : 1.25 * bs) : 1;
     unit.maxHp = Math.max(80, Math.round(unit.maxHp * scale * bossHp));
     unit.hp = unit.maxHp;
     unit.atk = Math.max(12, Math.round(unit.atk * scale * bossAtk));
-    unit.def = Math.max(6, Math.round(unit.def * scale * (boss ? 1.2 : 1)));
+    unit.def = Math.max(6, Math.round(unit.def * scale * bossDefMult));
     unit.spd = Math.round(unit.spd * 10) / 10;
-    if (boss) unit.dr = clamp(unit.dr + 0.06, 0, 0.75);
+    if (boss) {
+      if (bdef && bdef.spd) unit.spd = Math.round(bdef.spd * 10) / 10;
+      unit.dr = clamp(unit.dr + (bdef ? 0.07 : 0.08), 0, 0.75);
+    }
   });
   return raw;
 }
@@ -4369,25 +4453,28 @@ function buildDailyBossEnemy() {
   const avgAtk = teamStats.length ? sum(teamStats.map(s => s.atk)) / teamStats.length : 120;
   const avgDef = teamStats.length ? sum(teamStats.map(s => s.def)) / teamStats.length : 60;
   const level = info.level;
+  const def = BOSS_MAP[info.bossId] || BOSS_DEFS[0];
   return {
     uid: 'enemy-boss',
     petUid: null,
     side: 'enemy',
     templateId: template.id,
+    artKind: 'boss',
+    artId: info.bossId,
     name: info.name,
     emoji: info.emoji,
     element: info.element,
-    rarity: 'SSR',
+    rarity: 'UR',
     row: 'front',
     level,
-    maxHp: Math.max(16000, Math.round(allyPower * 26)),
-    hp: Math.max(16000, Math.round(allyPower * 26)),
-    atk: Math.max(180, Math.round(avgAtk * 1.12)),
-    def: Math.max(80, Math.round(avgDef * 2.2)),
-    spd: 22,
-    crit: 0.10,
+    maxHp: Math.max(22000, Math.round(allyPower * 34)),
+    hp: Math.max(22000, Math.round(allyPower * 34)),
+    atk: Math.max(180, Math.round(avgAtk * 1.35)),
+    def: Math.max(80, Math.round(avgDef * 2.8)),
+    spd: def.spd || 24,
+    crit: 0.14,
     critDmg: 0.65,
-    dr: 0.26,
+    dr: 0.32,
     hit: 0.04,
     dodge: 0.01,
     lifesteal: 0,
@@ -4497,7 +4584,7 @@ function battleUnitHTML(unit) {
         <span class="b-lv">Lv.${unit.level}</span>
       </div>
       <div class="b-emoji-wrap">
-        ${petArtFrame(unit.templateId, unit.emoji, 'art-battle') || `<span class="b-emoji">${unit.emoji}</span>`}
+        ${(unit.side === 'enemy' ? enemyArtFrame(unit) : petArtFrame(unit.templateId, unit.emoji, 'art-battle')) || `<span class="b-emoji">${unit.emoji}</span>`}
         <span class="b-shield" style="${unit.shield > 0 ? '' : 'display:none'}">🛡${fmt(unit.shield)}</span>
       </div>
       <div class="b-name">${esc(unit.name)}</div>
@@ -7202,17 +7289,24 @@ function buildStageEnemyOptions(stage) {
   const source = pool.length ? pool : PETS.filter(p => p.element === stage.element);
   const lineup = [];
   for (let i = 0; i < count; i++) lineup.push(pick(source.length ? source : enemyPetPool()).id);
+  // 标准加难：前两章温和不劝退，第 3 章起逐步抬升敌方战力系数；后期需练度与属性克制
+  const diff = stage.chapter <= 2 ? 0.92 : (stage.chapter <= 5 ? 1.02 : (stage.chapter <= 8 ? 1.12 : 1.18));
+  const baseFactor = stage.type === 'boss' ? 1.08 : (stage.type === 'elite' ? 1.00 : 0.92);
+  const bossDef = stage.type === 'boss' ? bossByChapter(stage.chapter) : null;
+  // 章节越早 Boss 档案倍率打折，避免新手首章被高血 Boss 劝退；后期足额高属性
+  const bossScale = bossDef ? (stage.chapter <= 2 ? 0.82 : (stage.chapter <= 5 ? 0.92 : 1)) : 1;
   return {
     count,
     lineup,
     element: stage.element,
     type: stage.type,
     boss: stage.type === 'boss',
-    bossName: stage.name,
-    bossEmoji: stage.emoji,
-    bossHpMult: 2.2,
-    powerFactor: stage.type === 'boss' ? 0.98 : (stage.type === 'elite' ? 0.92 : 0.82),
-    level: Math.max(3, Math.round(2 + stage.index * 1.25)),
+    bossDef,
+    bossScale,
+    bossName: bossDef ? bossDef.name : stage.name,
+    bossEmoji: bossDef ? bossDef.emoji : stage.emoji,
+    powerFactor: baseFactor * diff,
+    level: Math.max(3, Math.round(3 + stage.index * 1.45)),
     star: 1,
     evo: stage.chapter >= 7 ? 1 : 0
   };
@@ -7276,12 +7370,12 @@ function startDungeon() {
   const enemyPool = PETS.filter(p => p.element === elements[modeIndex] && !templateHasHeal(p));
   const enemyLineup = [];
   for (let i = 0; i < 2; i++) enemyLineup.push(pick(enemyPool.length ? enemyPool : enemyPetPool()).id);
-  const enemies = createEnemyFormation(Math.max(calcTeamPower() * 0.92, 2600), {
+  const enemies = createEnemyFormation(Math.max(calcTeamPower() * 1.05, 2800), {
     count: 2,
     lineup: enemyLineup,
     element: elements[modeIndex] || 'grass',
-    powerFactor: 0.62,
-    level: Math.max(8, Math.round(8 + state.stage.maxCleared * 0.8)),
+    powerFactor: 0.80,
+    level: Math.max(9, Math.round(9 + state.stage.maxCleared * 0.9)),
     star: 1,
     evo: 0
   });
@@ -7621,9 +7715,9 @@ function startTower() {
     bossEmoji: '🗼',
     name: `第 ${floor} 层塔灵`,
     emoji: '🗼',
-    bossHpMult: 1.75,
-    powerFactor: isBossFloor ? 0.95 : 0.86,
-    level: Math.max(10, Math.round(floor * 2.2)),
+    bossHpMult: 2.4,
+    powerFactor: isBossFloor ? 1.02 : 0.95,
+    level: Math.max(10, Math.round(floor * 2.3)),
     star: 1,
     evo: floor >= 15 ? 1 : 0
   });

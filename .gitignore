@@ -4,3 +4,6 @@ node_modules/
 .env
 .env.*
 data/
+
+# 生图临时下载映射与下载日志（scripts/*.mjs 工具脚本仍入库）
+scripts/fetch/
