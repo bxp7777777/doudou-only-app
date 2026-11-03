@@ -225,7 +225,7 @@ function moduleHTML(m) {
     extra = `<div class="story-block">
       <p class="story-name">《${esc(m.story.title)}》</p>
       <p class="line">${esc(m.story.body)}</p>
-      <p class="nn">${esc(m.nn || '晚安豆豆大王')}</p>
+      <p class="nn">${esc(m.nn || '今天也被两只小家伙陪着，小开心攒一点')}</p>
     </div>`;
   }
 
@@ -251,7 +251,7 @@ function homeNote(period) {
     afternoon: '起身活动两分钟，再喝一口水',
     evening: '晚饭七分饱，吃完走两圈再回宿舍',
     late: '准备收工，别再刷太久',
-    bedtime: '故事讲完就放下手机',
+    bedtime: '小故事看完啦，让眼睛和心情松一松',
     sleep: '放下手机，好好睡一觉',
     deepnight: '不打扰你，就在旁边安静陪着'
   };
@@ -732,17 +732,16 @@ function storyPage() {
 
   const storyCard = done
     ? `<section class="card">
-        <h2 class="card-head"><span class="card-icon">🌛</span><span class="card-title">晚安豆豆大王</span></h2>
-        <p class="line">故事讲完就安心躺下，把手机轻轻放到手边，梦里有小猪和小金毛守着你。</p>
-        <p class="line">明天小猪还来陪你喝水、吃饭、练琴，安心睡吧。</p>
+        <h2 class="card-head"><span class="card-icon">☀️</span><span class="card-title">今天这篇看完啦</span></h2>
+        <p class="line">小猪和小金毛今天也陪你笑过啦，故事里的小开心先收进口袋。</p>
+        <p class="line">明天还有新故事和新笑话在等你，慢慢攒成一串好心情。</p>
         <button class="btn btn-ghost" data-act="tab" data-tab="home">回到今天的陪伴</button>
       </section>`
     : `<section class="card">
-        <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">《${esc(story.title)}》</span></h2>
+        <h2 class="card-head"><span class="card-icon">☀️</span><span class="card-title">《${esc(story.title)}》</span></h2>
         <p class="line story-body">${esc(story.body)}</p>
-        <p class="nn">晚安豆豆大王</p>
         <div class="btn-row">
-          <button class="btn" data-act="story-done">讲完啦，去睡觉</button>
+          <button class="btn" data-act="story-done">今天这篇看完啦</button>
           <button class="btn btn-ghost" data-act="story-another">换一个故事</button>
         </div>
       </section>`;
@@ -757,10 +756,10 @@ function storyPage() {
     </section>`;
 
   const softCard = `<section class="card">
-      <h2 class="card-head"><span class="card-icon">🌿</span><span class="card-title">睡前轻轻做</span></h2>
-      <p class="line">困了就慢慢放下手机，把房间调暗一点、呼吸放慢一点。</p>
-      <p class="line">睡前只抿两口温温水，润润嗓子就好。</p>
-      <p class="line">手干了补一点护手霜、嘴唇干抹润唇，别让护肤熬成熬夜。</p>
+      <h2 class="card-head"><span class="card-icon">🌿</span><span class="card-title">日常小照顾</span></h2>
+      <p class="line">忙累了就起身活动两分钟，喝几口温温水，让肩膀松一松。</p>
+      <p class="line">手干补一点护手霜、嘴唇干抹润唇，把自己照顾得舒服一点。</p>
+      <p class="line">笑一笑、伸个懒腰，心情轻了，做事情也更有精神。</p>
     </section>`;
 
   return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}</div>`;
@@ -875,7 +874,7 @@ function settingsPage() {
     <section class="card">
       <h2 class="card-head"><span class="card-icon">🌙</span><span class="card-title">睡觉</span></h2>
       <p class="line">困了就慢慢放下手机，让呼吸和身边的小猪小金毛一起软下来。</p>
-      <p class="line">想听故事时就开始讲，讲到眼皮发沉，自然就想睡了。</p>
+      <p class="line">想看每日小故事或笑话时就点开，和两只小家伙轻松一会儿就好。</p>
     </section>
 
     <section class="card">
@@ -1142,7 +1141,7 @@ document.addEventListener('click', (e) => {
       const b = store.getBadges().find((x) => x.key === newOne[0]);
       toast(`🎉 解锁勋章 ${b.emoji} ${b.name}`);
     } else {
-      toast('讲完啦，好好睡个软觉');
+      toast('这篇看完啦，小开心收进口袋');
     }
     return;
   }

@@ -212,7 +212,9 @@ const wedBed = plan.build({
   weatherStatus: 'ok'
 });
 check(wedBed.some((m) => m.id === 'review'), '晚安包缺回顾');
-check(wedBed.some((m) => m.type === 'story' && m.nn === '晚安豆豆大王'), '晚安包缺故事/晚安');
+const bedStory = wedBed.find((m) => m.type === 'story');
+check(!!bedStory && bedStory.title === '每日小故事' && Array.isArray(bedStory.lines) && bedStory.lines.length > 0, '每日收尾包缺每日小故事模块');
+check(!bedStory || !bedStory.nn || !bedStory.nn.includes('晚安'), '故事模块不应再带“晚安”收尾');
 check(wedBed.some((m) => m.id === 'memo'), '晚安包缺备忘录入口');
 check(textOf(wedBed.find((m) => m.id === 'tomorrow')).includes('周四'), '晚安包应预告明天周四');
 
@@ -265,10 +267,16 @@ const j2 = jokeUtil.another('2026-11-03');
 check(j1.total === 1000 && j2.total === 1000, '笑话总数不对');
 check(j1.body !== j2.body, '换一个笑话应得到不同正文');
 
-/* 陪伴勋章数据层：初始两枚均未解锁，结构完整 */
-check(store.getBadges().length === 2, '应有两枚陪伴勋章');
-check(store.getBadges().every((b) => !b.unlocked), '初始状态两枚勋章都不应解锁');
-check(store.getBadges().every((b) => typeof b.progress === 'string' && b.progress.includes('/')), '勋章应显示进度 x/y');
+/* 陪伴勋章数据层：初始五枚均未解锁，结构完整、类型齐全 */
+const badges = store.getBadges();
+check(badges.length === 5, `应有五枚陪伴勋章，实际 ${badges.length}`);
+check(badges.every((b) => !b.unlocked), '初始状态勋章都不应解锁');
+check(badges.every((b) => typeof b.progress === 'string' && b.progress.includes('/')), '勋章应显示进度 x/y');
+const badgeKinds = badges.map((b) => b.kind);
+check(badgeKinds.filter((k) => k === 'storyStreak').length === 2, '应有 2 枚连续天数勋章');
+check(badgeKinds.filter((k) => k === 'jokeCount').length === 2, '应有 2 枚笑话累计勋章');
+check(badgeKinds.includes('storyTotal'), '应有 1 枚故事累计篇数勋章');
+check(badges.some((b) => b.key === 'book' && b.goal === 30), '故事收藏家阈值应为累计 30 篇');
 
 /* 小日子：写、读、标签、搜索、统计、删除 */
 const d1 = date.addDays(today, -2);
@@ -304,4 +312,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log(`✅ 逻辑烟测通过：8 时段 × 3 天气状态、7 天课表、周期 4 相位、${bodySeen.size} 篇故事、${JOKES.length} 条笑话、2 枚勋章`);
+console.log(`✅ 逻辑烟测通过：8 时段 × 3 天气状态、7 天课表、周期 4 相位、${bodySeen.size} 篇故事、${JOKES.length} 条笑话、5 枚勋章`);

@@ -253,12 +253,19 @@ export function setStoryDone(day, flag) {
 
 /* ---------------- 每日小故事 / 每日一笑 · 打卡日志与陪伴勋章 ---------------- */
 
-export const BADGE_STORY_STREAK = 7; // 🌙 连续讲满 7 晚
-export const BADGE_JOKE_COUNT = 14;  // 😄 累计看 14 条笑话
+/* 连续天数 / 累计笑话 / 累计故事篇数 三档阈值（每日开心日常口径，不含“每晚”） */
+export const BADGE_STREAK_3 = 3;
+export const BADGE_STREAK_7 = 7;
+export const BADGE_JOKE_14 = 14;
+export const BADGE_JOKE_50 = 50;
+export const BADGE_TOTAL_30 = 30;
 
 export const BADGES = [
-  { key: 'moon', emoji: '🌙', name: '夜夜有伴', desc: '连续讲满 7 晚每日小故事', goal: BADGE_STORY_STREAK, kind: 'storyStreak' },
-  { key: 'smile', emoji: '😄', name: '开心果', desc: '累计看过 14 条每日一笑', goal: BADGE_JOKE_COUNT, kind: 'jokeCount' }
+  { key: 'sprout', emoji: '🌱', name: '初来乍到', desc: '连续看满 3 天每日小故事', goal: BADGE_STREAK_3, kind: 'storyStreak' },
+  { key: 'sun', emoji: '☀️', name: '天天相伴', desc: '连续看满 7 天每日小故事', goal: BADGE_STREAK_7, kind: 'storyStreak' },
+  { key: 'smile', emoji: '😄', name: '开心一刻', desc: '累计看过 14 条每日一笑', goal: BADGE_JOKE_14, kind: 'jokeCount' },
+  { key: 'laugh', emoji: '🤣', name: '笑话达人', desc: '累计看过 50 条每日一笑', goal: BADGE_JOKE_50, kind: 'jokeCount' },
+  { key: 'book', emoji: '📖', name: '故事收藏家', desc: '累计看完 30 篇每日小故事', goal: BADGE_TOTAL_30, kind: 'storyTotal' }
 ];
 
 function localYmd(d) {
@@ -280,7 +287,7 @@ export function storyStats() {
   return { total: days.length, streak };
 }
 
-// 当天讲完一篇故事：记入打卡晚数（同一天重复操作不重复计数）
+// 当天看完一篇故事：记入打卡天数（同一天重复操作不重复计数）
 export function bumpStoryDone(day) {
   const cur = get(K.storyLog, { days: [] });
   let days = Array.isArray(cur.days) ? cur.days.slice() : [];
@@ -307,7 +314,10 @@ export function getBadges() {
   const s = storyStats();
   const c = jokeCount();
   return BADGES.map((b) => {
-    const value = b.kind === 'storyStreak' ? s.streak : c;
+    let value = 0;
+    if (b.kind === 'storyStreak') value = s.streak;
+    else if (b.kind === 'storyTotal') value = s.total;
+    else value = c;
     const clipped = Math.max(0, Math.min(value, b.goal));
     return { ...b, value: clipped, unlocked: value >= b.goal, progress: clipped + '/' + b.goal };
   });

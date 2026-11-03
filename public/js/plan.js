@@ -464,12 +464,12 @@ function bedtimeModules(ctx, now) {
   const story = storyUtil.current(ctx.today);
   const t = schedule.tomorrow(now || new Date());
   const tomorrowLine = !t.known
-    ? '明天' + t.name + '课表还没填，先照常早点睡，作息别乱。'
+    ? '明天' + t.name + '课表还没填，先按自己舒服的节奏安排就好。'
     : t.first === '08:00'
-      ? '明天' + t.name + '早八，今晚更得早点歇，故事讲完就顺势躺下。'
+      ? '明天' + t.name + '早八，今晚早点收个尾，看完小故事让自己轻松一下。'
       : t.first === '10:00'
-        ? '明天' + t.name + '早十，可以多睡一会儿，但别熬夜。'
-        : '明天' + t.name + '上午没早课，还是照常早点睡，作息别乱。';
+        ? '明天' + t.name + '早十，可以从容一点，把状态调整舒服。'
+        : '明天' + t.name + '上午没早课，也按自己的节奏慢慢来，保持好心情。';
 
   return [
     checkinModule(ctx.today, 'review'),
@@ -488,12 +488,11 @@ function bedtimeModules(ctx, now) {
     {
       id: 'story',
       type: 'story',
-      icon: '🌙',
+      icon: '☀️',
       title: '每日小故事',
       sub: '',
       story: story,
-      lines: ['故事讲完就顺势躺下，把手机轻轻放到手边，梦里有小猪和小金毛。'],
-      nn: '晚安豆豆大王'
+      lines: ['看完今天这篇，把小开心收好，明天还有新的小故事和笑话等着你。']
     },
     memoModule(),
     cycleModule(ctx)
@@ -512,8 +511,8 @@ function lateModules(ctx) {
       title: '收工啦',
       sub: '',
       lines: [
-        '困了就叫小猪开始讲，讲到眼皮发沉，就顺势躺下。',
-        t.known && t.first === '08:00' ? '明天早八，今晚就别熬了。' : '明天也早点歇着，作息别往后拖。',
+        '想看小故事就点开今天这一篇，和小猪小金毛一起松快一会儿。',
+        t.known && t.first === '08:00' ? '明天早八，今晚从容收尾就好。' : '明天也按舒服节奏来，别把状态拖得太累。',
         '今天已经很棒了，剩下的明天再弄。'
       ]
     },
