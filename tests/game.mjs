@@ -278,7 +278,7 @@ const rendered = [...nodes.entries()]
 check(rendered.length > 0 && rendered[0][1] > 200, '启动后没有任何容器渲染出内容');
 if (rendered[0]) console.log('最大渲染容器:', rendered[0][0], rendered[0][1], '字符');
 
-/* 数据量：宠物 12、成就 ≥30、奇遇 ≥15 */
+/* 数据量：宠物 ≥20、成就 200、奇遇 ≥15 */
 function countArray(name) {
   const start = text.indexOf('const ' + name + ' = [');
   if (start < 0) return -1;
@@ -291,7 +291,7 @@ const achs = countArray('ACHIEVEMENTS');
 const encs = countArray('ENCOUNTERS');
 console.log('宠物', pets, '· 成就', achs, '· 奇遇', encs);
 check(pets >= 20, `宠物不足 20：${pets}`);
-check(achs >= 30, `成就不足 30：${achs}`);
+check(achs === 200, `成就应为 200：实际 ${achs}`);
 check(encs >= 15, `奇遇不足 15：${encs}`);
 check(text.includes('ddgame'), '存档没用 ddgame 前缀');
 
