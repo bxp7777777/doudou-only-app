@@ -722,7 +722,6 @@ function storyPage() {
           <button class="btn" data-act="story-done">讲完啦，去睡觉</button>
           <button class="btn btn-ghost" data-act="story-another">换一个故事</button>
         </div>
-        <p class="hint">讲完就不再发长消息，只留一句晚安。</p>
       </section>
 
       <section class="card">
