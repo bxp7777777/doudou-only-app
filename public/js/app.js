@@ -23,7 +23,8 @@ const state = {
   weatherStatus: 'loading',
   lastPeriod: '',
   diaryDate: '',
-  diaryQuery: ''
+  diaryQuery: '',
+  tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0 }
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -191,6 +192,7 @@ function homePage(now, period) {
     ${moodTrendCardHTML()}
     ${milestoneCardHTML()}
     ${wishCardHTML()}
+    ${extraHomeHTML(now)}
     <p class="foot">小猪和小金毛都在这儿，不催不吼，只陪你。</p>
   </div>`;
 }
@@ -303,6 +305,154 @@ function wishCardHTML() {
     ${rows || '<p class="line">随口记下想吃的，方便时再去吃；身体不舒服时不硬吃。</p>'}
     <div style="display:flex;gap:8px;margin-top:8px"><input id="wish-input" class="wish-input" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #e3ddd5;border-radius:8px;background:#fff" placeholder="记下一个想吃的…" /><button class="btn btn-mini" data-act="wish-add">＋ 记下</button></div>
   </section>`;
+}
+
+/* ------------------------- 主页陪伴增强 + 番茄钟 ------------------------- */
+
+const HEAL_LINES = [
+  '有人稳稳陪着你，慢慢来也没关系',
+  '今天也认真生活了，给自己一点掌声',
+  '累了就歇一会儿，不用一直绷着',
+  '你不需要时刻完美，被喜欢的是真实的你',
+  '把一件小事做好，今天就不算白费',
+  '柔软一点也没关系，你值得被好好对待',
+  '往前走就好，方向慢慢会清晰'
+];
+const PERSONA_TAGS = [
+  { t: '细心', d: '总能留意到细节' },
+  { t: '爱笑', d: '笑起来很有感染力' },
+  { t: '会听人说话', d: '让人愿意讲心里话' },
+  { t: '认真', d: '答应的事会放在心上' },
+  { t: '慢热但专一', d: '认定了就很稳' },
+  { t: '温柔', d: '说话让人放松' },
+  { t: '有韧性', d: '难的时候也撑得住' }
+];
+
+function extraHomeHTML(now) {
+  return [
+    healLineHTML(),
+    personalityTagHTML(),
+    careHintHTML(),
+    comfortHTML(),
+    moveCardHTML(now),
+    tomatoCardHTML(),
+    focusStreakHTML(),
+    pledgeCardHTML(now),
+    foodPrefCardHTML()
+  ].join('');
+}
+
+function healLineHTML() {
+  const di = Math.floor(Date.now() / 86400000);
+  return `<section class="card"><p style="margin:0;color:#8a8177;font-size:12px">🌱 今日一句</p><p style="margin:6px 0 0;font-size:14px;line-height:1.6">${esc(HEAL_LINES[di % HEAL_LINES.length])}</p></section>`;
+}
+
+function personalityTagHTML() {
+  const di = Math.floor(Date.now() / 86400000);
+  const c = PERSONA_TAGS[di % PERSONA_TAGS.length];
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🪞</span><span class="card-title">今日小标签</span></h2><p class="line">「${esc(c.t)}」——${esc(c.d)}</p></section>`;
+}
+
+function careHintHTML() {
+  const recent = store.listDiary(7);
+  const unwell = recent.find((e) => ['tired', 'lie', 'sick'].includes(e.body));
+  if (!unwell) return '';
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🩹</span><span class="card-title">身体小提醒</span></h2><p class="line">最近状态一般：温水备好、别硬扛，累了就早点歇；不舒服持续的话，记得好好照顾自己。</p></section>`;
+}
+
+function comfortHTML() {
+  const recent = store.listDiary(7);
+  const low = recent.some((e) => e.mood === 'low' || e.mood === 'bad');
+  if (!low) return '';
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🤍</span><span class="card-title">想抱抱你</span></h2><p class="line">这几天心情有点沉，先把今天过好就够了；喝口温水、早点睡，想说的可以记进小日子。</p></section>`;
+}
+
+function moveCardHTML(now) {
+  const done = !!store.get('dd:move:' + date.dateKey(now), false);
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🚶</span><span class="card-title">今日动一动</span></h2>
+  <p class="line">起身走一走、拉伸两下，出点汗人会轻快些。</p>
+  <button class="btn ${done ? 'btn-mint' : 'btn-ghost'} btn-sm" data-act="moveToggle">${done ? '✓ 今天活动过了' : '点我打个卡'}</button></section>`;
+}
+
+function tomatoCardHTML() {
+  const t = state.tomato;
+  const mm = pad2(Math.floor(t.remain / 60));
+  const ss = pad2(t.remain % 60);
+  const pct = Math.round((1 - t.remain / t.focus) * 100);
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🍅</span><span class="card-title">番茄专注钟</span></h2>
+  <p id="tomato-time" style="text-align:center;font-size:28px;margin:6px 0;font-variant-numeric:tabular-nums">${mm}:${ss}</p>
+  <div style="height:6px;background:#f0ece6;border-radius:6px;overflow:hidden"><div id="tomato-bar" style="height:100%;width:${pct}%;background:#e0898a;transition:width .3s"></div></div>
+  <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+    <button class="btn ${t.running ? 'btn-ghost' : 'btn-primary'} btn-sm" data-act="tomatoToggle">${t.running ? '暂停' : '开始专注'}</button>
+    <button class="btn btn-ghost btn-sm" data-act="tomatoReset">重置</button>
+    <span style="margin-left:auto;font-size:12px;color:#9a948c">今日完成 ${t.done} 轮</span>
+  </div></section>`;
+}
+
+function tomatoTick() {
+  const t = state.tomato;
+  if (!t || !t.running) return;
+  t.remain -= 1;
+  if (t.remain <= 0) {
+    t.remain = 0;
+    t.running = false;
+    t.done += 1;
+    recordFocusRound();
+    toast('一轮专注完成，起身喝口水、看看远处～');
+    render();
+    return;
+  }
+  const timeEl = document.getElementById('tomato-time');
+  if (timeEl) timeEl.textContent = pad2(Math.floor(t.remain / 60)) + ':' + pad2(t.remain % 60);
+  const barEl = document.getElementById('tomato-bar');
+  if (barEl) barEl.style.width = Math.round((1 - t.remain / t.focus) * 100) + '%';
+}
+
+function recordFocusRound() {
+  const today = todayKey();
+  const s = store.get('dd:focusStreak', { lastDate: '', streak: 0 });
+  const y = new Date();
+  y.setDate(y.getDate() - 1);
+  if (s.lastDate !== today) {
+    s.streak = s.lastDate === date.dateKey(y) ? s.streak + 1 : 1;
+    s.lastDate = today;
+  }
+  store.set('dd:focusStreak', s);
+}
+
+function focusStreakHTML() {
+  const s = store.get('dd:focusStreak', { lastDate: '', streak: 0 });
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🔥</span><span class="card-title">专注连续天数</span></h2><p class="line">已连续专注 ${s.streak} 天；每完成一轮番茄钟就记上一笔。</p></section>`;
+}
+
+function pledgeCardHTML(now) {
+  const day = date.dateKey(now);
+  const p = store.get('dd:pledge', { date: '', text: '', done: false });
+  const valid = p.date === day;
+  const body = valid && p.text
+    ? `<p class="line">${p.done ? '✓ 已兑现：' : ''}${esc(p.text)}</p>`
+    : '<p class="line">和自己约好今天要做到的一件小事。</p>';
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🤞</span><span class="card-title">今日小约定</span></h2>
+  ${body}
+  <div style="display:flex;gap:8px"><input id="pledge-input" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #e3ddd5;border-radius:8px;background:#fff" placeholder="如：今天练20分钟琴" />
+  <button class="btn btn-mini" data-act="pledgeSave">记下</button></div>
+  ${valid && p.text ? `<button class="btn btn-ghost btn-sm" data-act="pledgeDone" style="margin-top:8px">${p.done ? '已兑现 ✓' : '标记为已兑现'}</button>` : ''}
+  </section>`;
+}
+
+function foodPrefCardHTML() {
+  const p = store.get('dd:foodPref', { like: [], avoid: [] });
+  const chip = (kind, tag) => `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px;padding:2px 8px;background:#f6f1ea;border-radius:10px;font-size:12px">${esc(tag)}<button data-act="foodDel" data-kind="${kind}" data-tag="${esc(tag)}" style="border:0;background:none;cursor:pointer;color:#b08">×</button></span>`;
+  const like = (p.like || []).map((t) => chip('like', t)).join('');
+  const avoid = (p.avoid || []).map((t) => chip('avoid', t)).join('');
+  return `<section class="card"><h2 class="card-head"><span class="card-icon">🍽️</span><span class="card-title">口味偏好</span></h2>
+  <p class="line">爱吃：${like || '还没记'}</p>
+  <p class="line">不太接受：${avoid || '还没记'}</p>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <input id="food-input" style="flex:1;min-width:0;padding:6px 8px;border:1px solid #e3ddd5;border-radius:8px;background:#fff" placeholder="记一个口味或食物" />
+    <button class="btn btn-mini" data-act="foodAdd" data-kind="like">爱吃+</button>
+    <button class="btn btn-mini" data-act="foodAdd" data-kind="avoid">忌口+</button>
+  </div></section>`;
 }
 
 function weatherHTML(m) {
@@ -961,6 +1111,70 @@ document.addEventListener('click', (e) => {
     return;
   }
 
+  if (act === 'moveToggle') {
+    const day = todayKey();
+    store.set('dd:move:' + day, !store.get('dd:move:' + day, false));
+    render();
+    toast('活动打卡记好啦，舒服就好');
+    return;
+  }
+
+  if (act === 'tomatoToggle') {
+    state.tomato.running = !state.tomato.running;
+    render();
+    return;
+  }
+
+  if (act === 'tomatoReset') {
+    state.tomato.remain = state.tomato.focus;
+    state.tomato.running = false;
+    render();
+    return;
+  }
+
+  if (act === 'pledgeSave') {
+    const box = document.getElementById('pledge-input');
+    const v = box ? box.value : '';
+    if (!v.trim()) return toast('先写一句今天的小约定');
+    store.set('dd:pledge', { date: todayKey(), text: v.trim().slice(0, 40), done: false });
+    render();
+    toast('约定记下啦，今天慢慢做到');
+    return;
+  }
+
+  if (act === 'pledgeDone') {
+    const p = store.get('dd:pledge', { date: '', text: '', done: false });
+    store.set('dd:pledge', { ...p, done: true });
+    render();
+    toast('兑现啦，为你开心');
+    return;
+  }
+
+  if (act === 'foodAdd') {
+    const kind = el.dataset.kind === 'avoid' ? 'avoid' : 'like';
+    const box = document.getElementById('food-input');
+    const v = box ? box.value : '';
+    if (!v.trim()) return toast('先写一个口味或食物');
+    const p = store.get('dd:foodPref', { like: [], avoid: [] });
+    if (!Array.isArray(p.like)) p.like = [];
+    if (!Array.isArray(p.avoid)) p.avoid = [];
+    const tag = v.trim().slice(0, 16);
+    if (!p[kind].includes(tag)) p[kind].push(tag);
+    store.set('dd:foodPref', p);
+    render();
+    toast('记下啦');
+    return;
+  }
+
+  if (act === 'foodDel') {
+    const kind = el.dataset.kind === 'avoid' ? 'avoid' : 'like';
+    const p = store.get('dd:foodPref', { like: [], avoid: [] });
+    p[kind] = (p[kind] || []).filter((t) => t !== el.dataset.tag);
+    store.set('dd:foodPref', p);
+    render();
+    return;
+  }
+
   if (act === 'theme') {
     store.setPrefs({ theme: el.dataset.key });
     applyTheme();
@@ -1189,6 +1403,8 @@ async function init() {
     if (p !== state.lastPeriod && state.tab === 'home') render();
     state.lastPeriod = p;
   }, 60 * 1000);
+
+  setInterval(tomatoTick, 1000);
 
   try {
     const w = await loadWeather();
