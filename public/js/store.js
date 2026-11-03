@@ -305,7 +305,7 @@ export function deleteDiary(day) {
 
 export function hasDiary(day) {
   const e = getDiary(day);
-  return !!e && (!!(e.text || '').trim() || !!e.mood || !!(e.tags || []).length);
+  return !!e && (!!(e.text || '').trim() || !!e.mood || !!e.body || !!(e.tags || []).length);
 }
 
 /** 月份天数、连续天数（今天没写就从昨天数）、总字数、总天数 */

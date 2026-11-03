@@ -412,6 +412,14 @@ img{max-width:100%}
 .pet-avatar.droopy{filter:grayscale(.45) drop-shadow(0 4px 3px rgba(86,62,41,.1));opacity:.83}
 .pet-avatar .spark{position:absolute;font-size:11px;color:#f6bd3b;animation:sparkle 1.5s infinite}
 .pet-avatar .spark.s1{left:-5px;top:3px}.pet-avatar .spark.s2{right:-4px;top:22px;animation-delay:.55s}
+.art-frame{position:relative;display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;line-height:1}
+.art-frame .art-emoji{line-height:1}
+.art-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;background:#fdf3d8}
+.art-card{width:46px;height:46px}
+.art-battle{width:38px;height:38px}
+.art-modal{width:76px;height:76px}
+.b-unit.dead .art-frame img{filter:grayscale(1);opacity:.5}
+.pet-avatar.droopy .art-frame img{filter:grayscale(.45);opacity:.83}
 .pet-name{font-size:13px;font-weight:800;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pet-sub{font-size:9.5px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
 .pet-headline{flex:1;min-width:0}
@@ -1534,6 +1542,17 @@ function elementMultiplier(attackerEl, defenderEl) {
   if (chart.weak.includes(defenderEl)) return 0.75;
   return 1;
 }
+// 针对敌方主属性反推我方建议携带 / 避开的属性（克制 ×1.5，被克 ×0.75）
+function counterAdviceForElement(enemyEl) {
+  if (!enemyEl || !ELEMENT_CHART[enemyEl]) return '';
+  const tag = (k) => (ELEMENTS[k] ? ELEMENTS[k].emoji + ELEMENTS[k].name : k);
+  const good = ELEMENT_KEYS.filter(k => (ELEMENT_CHART[k].strong || []).includes(enemyEl)).map(tag);
+  const avoid = (ELEMENT_CHART[enemyEl].strong || []).map(tag);
+  const parts = [];
+  parts.push(good.length ? `建议带 ${good.join('、')}（克制 ×1.5）` : '没有明显克制属性');
+  if (avoid.length) parts.push(`避开 ${avoid.join('、')}（被克 ×0.75）`);
+  return parts.join('，');
+}
 const ELEMENT_ADVICE = '火克草、草克水与水克火；土克火但被草克；光与暗互克。克制伤害 ×1.5，被克 ×0.75。';
 
 const RARITIES = {
@@ -2469,7 +2488,7 @@ function defaultState() {
     nextEquipId: 1,
     stage: { maxCleared: 0, stars: {} },
     tower: { floor: 1, best: 0 },
-    arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '' },
+    arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0 },
     boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
     encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0 },
     gacha: { normal: 0, rare: 0, total: 0, lastResults: [] },
@@ -2603,6 +2622,7 @@ function sanitizeState(s) {
   s.arena.seasonStart = num(s.arena.seasonStart, Date.now());
   s.arena.season = Math.max(1, Math.floor(num(s.arena.season, 1)));
   s.arena.lastSettleDate = String(s.arena.lastSettleDate || '');
+  s.arena.streakRewardGiven = Math.max(0, Math.floor(num(s.arena.streakRewardGiven, 0)));
   if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' };
   s.boss.attempts = clamp(Math.floor(num(s.boss.attempts, 0)), 0, 3);
   s.boss.bestDamage = Math.max(0, Math.floor(num(s.boss.bestDamage, 0)));
@@ -2758,6 +2778,18 @@ function petEmoji(pet, stage) {
 function petEmojiById(templateId, stage = 0) {
   const t = PET_MAP[templateId] || PETS[0];
   return t.emoji[clamp(stage, 0, 2)] || t.emoji[0];
+}
+// Q版立绘素材：键为 templateId，仅已生成的基础形态；缺图自动回退 emoji，不影响存档结构与战斗数值
+const PET_ART = { pig: true, shiba: true, rabbit: true, golden: true };
+function petArtUrl(templateId) {
+  return PET_ART[templateId] ? 'art/pets/' + templateId + '.jpg' : null;
+}
+// 头像位：有立绘返回圆形图框（底层始终垫 emoji，图片加载失败时自动露出 emoji，保证不破版）；无立绘返回 null 由调用方回退 emoji
+function petArtFrame(templateId, fallbackEmoji, sizeClass) {
+  const url = petArtUrl(templateId);
+  if (!url) return null;
+  const fb = esc(fallbackEmoji);
+  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
 }
 function stateUniqueCount(s = state) {
   return new Set(Object.values(s.pets || {}).map(p => p.templateId)).size;
@@ -3836,7 +3868,8 @@ function buildBattleUnitFromPet(pet, side, ctx) {
     hit: stats.hit,
     dodge: stats.dodge,
     lifesteal: stats.lifesteal,
-    rage: 20,
+    // 亲密档（亲密度≥60）开局额外 +15 怒气的温和被动；敌方伪档案 intimacy=0，不受影响
+    rage: num(pet.intimacy, 0) >= 60 ? 35 : 20,
     alive: true,
     shield: 0,
     shieldTurns: 0,
@@ -4083,7 +4116,7 @@ function battleUnitHTML(unit) {
         <span class="b-lv">Lv.${unit.level}</span>
       </div>
       <div class="b-emoji-wrap">
-        <span class="b-emoji">${unit.emoji}</span>
+        ${petArtFrame(unit.templateId, unit.emoji, 'art-battle') || `<span class="b-emoji">${unit.emoji}</span>`}
         <span class="b-shield" style="${unit.shield > 0 ? '' : 'display:none'}">🛡${fmt(unit.shield)}</span>
       </div>
       <div class="b-name">${esc(unit.name)}</div>
@@ -4244,22 +4277,28 @@ function endRound(b, events = []) {
       if (unit.shieldTurns <= 0) unit.shield = 0;
     }
     // 持续伤害 dot（灼烧等）：每回合按施术者攻击 × 固定比例扣血，不吃暴击/闪避/克制
+    let fatal = false;
     unit.dots = (unit.dots || []).filter(dot => {
       dot.turns -= 1;
       const amount = Math.max(1, Math.round(dot.atk * num(dot.mult, 0.1)));
       unit.hp = Math.max(0, unit.hp - amount);
       events.push({ type: 'dotTick', unitUid: unit.uid, amount, turns: dot.turns, dotKind: dot.kind || 'burn' });
+      if (unit.hp <= 0) fatal = true;
       return dot.turns > 0;
     });
-    // 持续回复 hot：每回合按自身最大生命比例回血
-    unit.hots = (unit.hots || []).filter(hot => {
-      hot.turns -= 1;
-      const amount = Math.max(1, Math.round(unit.maxHp * num(hot.hpPct, 0.03)));
-      unit.hp = Math.min(unit.maxHp, unit.hp + amount);
-      events.push({ type: 'hotTick', unitUid: unit.uid, amount, turns: hot.turns });
-      return hot.turns > 0;
-    });
-    if (unit.hp <= 0) {
+    // 持续回复 hot：每回合按自身最大生命比例回血；若本回合 dot 已致命，不再把单位拉起来
+    if (fatal) {
+      unit.hots = [];
+    } else {
+      unit.hots = (unit.hots || []).filter(hot => {
+        hot.turns -= 1;
+        const amount = Math.max(1, Math.round(unit.maxHp * num(hot.hpPct, 0.03)));
+        unit.hp = Math.min(unit.maxHp, unit.hp + amount);
+        events.push({ type: 'hotTick', unitUid: unit.uid, amount, turns: hot.turns });
+        return hot.turns > 0;
+      });
+    }
+    if (fatal || unit.hp <= 0) {
       unit.alive = false;
       unit.hp = 0;
       unit.rage = 0;
@@ -4294,7 +4333,6 @@ function advanceTurn() {
   }
   const active = chooseSkillIndex(unit);
   executeUnitSkill(unit, active, events);
-  checkBattleEnd(b);
   checkBattleEnd(b);
   if (!b.over && b.idx >= b.queue.length) {
     endRound(b, events);
@@ -4804,6 +4842,31 @@ function starRow(stars) {
   return `<div class="result-stars">${[1, 2, 3].map(i => `<span class="${i <= stars ? '' : 'off'}">★</span>`).join('')}</div>`;
 }
 
+// 竞技场连胜档一次性奖励：达到档位且未领过才发，连败清零重新计数，避免重复发奖
+const ARENA_STREAK_REWARDS = [
+  { streak: 3, reward: { arenaCoin: 30, gold: 600 }, label: '3 连胜' },
+  { streak: 5, reward: { arenaCoin: 60, crystal: 5 }, label: '5 连胜' },
+  { streak: 8, reward: { arenaCoin: 100, crystal: 12 }, label: '8 连胜' }
+];
+// 主线失败时的“变强清单”：依据当前队伍真实状态给可执行提示，纯展示不自动战斗
+function stageWeakTips() {
+  const tips = [];
+  const team = getTeamPets();
+  if (!team.length) { tips.push('先在宠物页上阵至少一只主力伙伴。'); return tips; }
+  const maxLv = Math.max(...team.map(p => num(p.level, 1)));
+  if (maxLv < 15) tips.push(`主力最高 Lv.${maxLv} 偏低，先在主线刷小怪攒经验果升级。`);
+  else if (maxLv < 25) tips.push(`主力 Lv.${maxLv}，可再升几级或给主力升 1–2 星。`);
+  const evolvable = team.filter(p => { const n = nextEvolution(p); return n && p.level >= n.levelReq; });
+  if (evolvable.length) tips.push(`有 ${evolvable.length} 只达到进化等级，进化后属性倍率明显提升（成体 ×1.28、究极 ×1.62）。`);
+  const emptySlots = team.reduce((n, p) => n + EQUIP_SLOT_KEYS.filter(s => !equipmentById((p.equipment || {})[s])).length, 0);
+  if (emptySlots >= 2) tips.push('主力还有空装备槽，可在商店兑换装备并强化，补足攻防生存。');
+  const needy = team.filter(p => num(p.hunger, 80) < 30 || num(p.mood, 80) < 30).length;
+  if (needy) tips.push(`${needy} 只伙伴饱食或心情偏低（<30）会减攻减速，先投喂、摸头回状态。`);
+  const next = nextStageInfo();
+  if (next && next.element) tips.push('按属性克制调整队友：' + counterAdviceForElement(next.element));
+  tips.push('保证主力饱食≥80、心情≥80，可小幅提升攻击 / 生命 / 速度 / 暴击。');
+  return tips;
+}
 function finishBattle() {
   const b = UI.battle;
   if (!b || b.finished) return;
@@ -4821,6 +4884,7 @@ function finishBattle() {
   let resultEmoji = win ? '🎉' : '💧';
   let resultNote = '';
   let resultChips = [];
+  let resultAdvice = null;
   let mainStars = 0;
 
   // 所有出战宠物获得少量亲密度
@@ -4844,7 +4908,8 @@ function finishBattle() {
         ? `第 ${stage.chapter} 章进度推进了，新的挂机上限已更新到 ${stage.chapter}-${stage.sub}。`
         : `扫荡与重复挑战都会继续产出资源。当前最高通关：${Math.floor((state.stage.maxCleared - 1) / 5) + 1}-${((state.stage.maxCleared - 1) % 5) + 1}。`;
     } else {
-      resultNote = '队伍还需要再成长一点。提升等级、进化或调整前后排，再来试试吧。';
+      resultNote = '队伍还需要再成长一点。';
+      resultAdvice = stageWeakTips();
     }
     resultChips = [
       { icon: '❤️', label: '存活', value: `${survived}/${totalAllies}` },
@@ -4873,6 +4938,8 @@ function finishBattle() {
     const opp = b.config.opponent || { name: '对手', rating: 1000 };
     const tier = arenaTierOf(state.arena.rating);
     let delta = 0;
+    let streakExtra = [];
+    let streakNote = '';
     if (win) {
       delta = 24 + rndInt(0, 8);
       state.arena.rating += delta;
@@ -4882,18 +4949,32 @@ function finishBattle() {
       state.hall.arenaWinStreak = Math.max(state.hall.arenaWinStreak || 0, state.hall.arenaStreak);
       state.hall.arenaBest = Math.max(state.hall.arenaBest || 0, state.arena.rating);
       logs = addReward({ arenaCoin: 24 + tier.order * 6, crystal: 8 + tier.order * 3 });
+      // 连胜档一次性奖励：达到 3/5/8 且未领过才发，不重复领取
+      const curStreak = state.hall.arenaStreak;
+      let givenMark = state.arena.streakRewardGiven || 0;
+      for (const r of ARENA_STREAK_REWARDS) {
+        if (curStreak >= r.streak && givenMark < r.streak) {
+          logs = logs.concat(addReward(r.reward));
+          givenMark = r.streak;
+          state.arena.streakRewardGiven = givenMark;
+          streakExtra.push({ icon: '🏆', label: r.label + '奖励', value: '已发放' });
+          streakNote += ` 🏆达成${r.label}，额外发放连胜奖励。`;
+        }
+      }
     } else {
       delta = -Math.min(16, 8 + Math.floor(tier.order * 1.5));
       state.arena.rating = Math.max(0, state.arena.rating + delta);
       state.arena.losses += 1;
       state.hall.arenaStreak = 0;
+      state.arena.streakRewardGiven = 0; // 连败清零，连胜档重新计数
       logs = addReward({ arenaCoin: 5 });
     }
     generateArenaOpponents(true);
-    resultNote = `对 ${opp.name} ${win ? '胜利' : '失败'}，段位分 ${delta > 0 ? '+' : ''}${delta}。当前段位：${arenaTierOf(state.arena.rating).name}。`;
+    resultNote = `对 ${opp.name} ${win ? '胜利' : '失败'}，段位分 ${delta > 0 ? '+' : ''}${delta}。当前段位：${arenaTierOf(state.arena.rating).name}。` + streakNote;
     resultChips = [
       { icon: '🏟️', label: '段位分', value: fmt(state.arena.rating) },
-      { icon: '🎖️', label: '竞技币', value: fmt(state.items.arenaCoin) }
+      { icon: '🎖️', label: '竞技币', value: fmt(state.items.arenaCoin) },
+      ...streakExtra
     ];
   } else if (mode === 'boss') {
     const damage = b.totalDamage;
@@ -4945,7 +5026,7 @@ function finishBattle() {
   renderAll();
   renderBattleResult({
     win, title: resultTitle, emoji: resultEmoji, stars: mainStars,
-    note: resultNote, chips: resultChips, logs,
+    note: resultNote, chips: resultChips, logs, advice: resultAdvice,
     mode
   });
 }
@@ -4965,7 +5046,9 @@ function renderBattleResult(data) {
       <div class="result-rewards">${chips}</div>
       <div class="result-rewards">${rewardLogHTML(data.logs)}</div>
       <p class="result-note">${esc(data.note || '')}</p>
+      ${data.advice && data.advice.length ? `<div class="note" style="margin-top:8px"><b>📋 变强清单</b><ul style="margin:6px 0 0 18px;padding:0">${data.advice.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
       <div class="result-actions">
+        ${data.advice && data.advice.length ? `<button class="btn btn-mint" type="button" data-act="battleGrow">🐾 去养成提升</button>` : ''}
         <button class="btn btn-primary" type="button" data-act="battleClose">收下结果 · 返回小镇</button>
       </div>
     </div>`;
@@ -5190,6 +5273,15 @@ function renderTutorial() {
 }
 
 /* -------- 首页 -------- */
+// 家园陪伴台词：按饱食 / 心情分三档；摸头台词优先级最高
+function moodSpeech(pet) {
+  if (!pet) return '';
+  const h = num(pet.hunger, 80), m = num(pet.mood, 80);
+  if (h < 30) return pick(['肚子咕咕叫，想先吃点东西…', '饿到有点没精神，喂点零食吧。']);
+  if (m < 30) return pick(['今天有点提不起劲，摸摸头哄哄它吧。', '尾巴耷拉着，想被陪着说说话。']);
+  if (h >= 80 && m >= 80) return pick(['吃饱喝足，尾巴摇得停不下来～', '心情好好，想马上跟你去冒险！']);
+  return '';
+}
 function renderHome() {
   const pet = getMainPet();
   const t = pet ? templateOf(pet) : null;
@@ -5201,7 +5293,7 @@ function renderHome() {
   const accessory = pet ? accessoryOf(pet.uid) : null;
   const now = new Date();
   const hello = now.getHours() < 11 ? '早安' : (now.getHours() < 18 ? '午后好' : '晚上好');
-  const line = UI.patLine || (t ? t.lines[0] : '先去抽一只毛茸茸的伙伴吧！');
+  const line = UI.patLine || moodSpeech(pet) || (t ? t.lines[0] : '先去抽一只毛茸茸的伙伴吧！');
   const team = getTeamPets();
   const power = calcTeamPower();
   const chapter = currentChapterNumber();
@@ -5394,6 +5486,7 @@ function renderAdventure() {
     <div class="card">
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>3 小怪 + 1 精英 + 章节首领。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
       <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比推荐值：</span>${next ? `<span class="chip ${teamPower >= next.recPower ? 'mint' : 'pink'}">${teamPower >= next.recPower ? '状态良好' : '建议再养成'}</span>` : '<span class="chip mint">全通关</span>'}</div>
+      ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
         ${Array.from({ length: 5 }, (_, i) => {
           const stage = getStage(stageStart + i + 1);
@@ -5447,7 +5540,7 @@ function petCardHTML(pet, context = 'team') {
        <button class="btn btn-mint btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级</button>`;
   return `<div class="pet-card rarity-${pet.rarity} ${t.rarity === 'SSR' ? 'ssr' : ''} ${row ? 'deployed' : ''}">
     <div class="pet-top">
-      <div class="pet-avatar ${hunger < 30 ? 'droopy' : ''}">${esc(pet.shiny ? t.shiny : petEmoji(pet))}${accessory ? `<span class="acc">${accessory.emoji}</span>` : ''}${pet.shiny ? '<span class="spark s1">✦</span><span class="spark s2">✦</span>' : ''}</div>
+      <div class="pet-avatar ${hunger < 30 ? 'droopy' : ''}">${petArtFrame(t.id, petEmoji(pet), 'art-card') || esc(pet.shiny ? t.shiny : petEmoji(pet))}${accessory ? `<span class="acc">${accessory.emoji}</span>` : ''}${pet.shiny ? '<span class="spark s1">✦</span><span class="spark s2">✦</span>' : ''}</div>
       <div class="pet-headline">
         <div class="pet-name">${esc(petDisplayName(pet))}</div>
         <div class="pet-sub">${elementTag(t.element)} ${rarityTag(t.rarity)}</div>
@@ -6141,9 +6234,9 @@ function openPetModal(uid) {
   const careText = careParts.length ? careParts.join('、') : '状态平稳，无额外加减成';
   const body = `
     <div class="pet-modal-hero rarity-${t.rarity}">
-      <div class="pet-modal-avatar ${pet.hunger < 30 ? 'droopy' : ''}"><span>${esc(petEmoji(pet))}</span>${accessory ? `<em>${accessory.emoji}</em>` : ''}${pet.shiny ? '<i class="spark s1">✦</i><i class="spark s2">✦</i>' : ''}</div>
+      <div class="pet-modal-avatar ${pet.hunger < 30 ? 'droopy' : ''}">${petArtFrame(t.id, petEmoji(pet), 'art-modal') || `<span>${esc(petEmoji(pet))}</span>`}${accessory ? `<em>${accessory.emoji}</em>` : ''}${pet.shiny ? '<i class="spark s1">✦</i><i class="spark s2">✦</i>' : ''}</div>
       <div class="pet-modal-id">
-        <div class="flex" style="gap:6px;flex-wrap:wrap"><h2>${esc(petDisplayName(pet))}</h2>${rarityTag(t.rarity)}${elementTag(t.element)}${inTeam ? `<span class="chip mint">${deployedRow(pet.uid) === 'front' ? '前排' : '后排'}</span>` : '<span class="chip">替补</span>'}</div>
+        <div class="flex" style="gap:6px;flex-wrap:wrap"><h2>${esc(petDisplayName(pet))}</h2>${rarityTag(t.rarity)}${elementTag(t.element)}<span class="chip gold-text">💗 ${intimacyTier.name}</span>${intimacyTier.at >= 60 ? '<span class="chip mint">开局怒气 +15</span>' : ''}${inTeam ? `<span class="chip mint">${deployedRow(pet.uid) === 'front' ? '前排' : '后排'}</span>` : '<span class="chip">替补</span>'}</div>
         <p>${esc(t.title)} · Lv.${pet.level} / ${MAX_LEVEL} · ${EVOLUTIONS[pet.evo].name} · ${starsHTML(pet.star)}</p>
         <div class="flex" style="gap:8px;margin-top:5px"><span class="chip gold-text">战力 ${fmt(power)}</span><span class="chip">图鉴：${esc(t.species)}</span><span class="chip">同名碎片 ${shards}</span></div>
       </div>
@@ -6153,7 +6246,7 @@ function openPetModal(uid) {
       <div class="care"><span>🎈 心情</span>${progressHTML(pet.mood, 100, 'mint', true)}</div>
       <div class="care"><span>💗 亲密</span>${progressHTML(pet.intimacy, 100, 'pink', true)}</div>
     </div>
-    <div class="note" style="margin:8px 0 0">💗 亲密档位「${intimacyTier.name}」（全属性 ×${intimacyTier.mult.toFixed(2)}，亲密度每点再 +0.15%）；当前饱食/心情影响：${careText}。喂饱、哄开心会小幅提升实战发挥，长期冷落则会下降。</div>
+    <div class="note" style="margin:8px 0 0">💗 亲密档位「${intimacyTier.name}」（全属性 ×${intimacyTier.mult.toFixed(2)}，亲密度每点再 +0.15%）${intimacyTier.at >= 60 ? '；达到「亲密」档（≥60）后，首战开局额外 +15 怒气，更容易抢先释放奥义' : ''}；当前饱食/心情影响：${careText}。喂饱、哄开心会小幅提升实战发挥，长期冷落则会下降。</div>
     <div class="pet-stat-panel">
       <div class="stat-cell"><small>HP</small><b>${fmt(stats.hp)}</b></div>
       <div class="stat-cell"><small>攻击</small><b>${fmt(stats.atk)}</b></div>
@@ -7510,6 +7603,7 @@ function handleActionClick(event) {
     case 'battleDouble': battleDouble(); break;
     case 'battleEarlyUlt': battleEarlyUlt(); break;
     case 'battleClose': closeBattle(); break;
+    case 'battleGrow': closeBattle(); navTo('pets'); break;
 
     case 'renamePlayer': renamePlayerAction(); break;
     case 'toggleSfx': toggleSetting('sfx'); break;

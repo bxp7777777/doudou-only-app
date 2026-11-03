@@ -264,6 +264,11 @@ store.saveDiary(d1, { text: '', mood: '', body: '', tags: [] });
 check(!store.getDiary(d1), '清空内容后应把那天删掉');
 store.deleteDiary(d2);
 check(!store.getDiary(d2), 'deleteDiary 没删掉');
+const db = date.addDays(today, -3);
+store.saveDiary(db, { body: 'tired' });
+check(store.hasDiary(db), '只填身体状态 body 也应判定为写过（日历角标要点亮）');
+store.deleteDiary(db);
+check(!store.hasDiary(db), '删除后 hasDiary 应为 false');
 const dStats2 = store.diaryStats(today);
 check(dStats2.total === 1 && dStats2.streak === 1, `删完只剩今天，实际 total=${dStats2.total} streak=${dStats2.streak}`);
 
