@@ -297,6 +297,19 @@ check(text.includes('ddgame'), '存档没用 ddgame 前缀');
 check(text.includes('musicStyle'), '游戏缺背景音乐风格字段');
 check(text.includes('setMusicStyle'), '游戏缺风格切换函数');
 
+/* ⭐ 设为主宠只做重排：不能把同一只同时塞进前排和后排（旧写法会重复，主页出现两只一样的） */
+if (typeof globalThis.createPet === 'function' && typeof globalThis.setMain === 'function') {
+  for (const id of ['pig', 'golden', 'shiba', 'fox', 'rabbit']) globalThis.createPet(id, { autoDeploy: true });
+  const team0 = globalThis.getTeamPets().map((p) => p.uid);
+  check(team0.length === 5, '上阵 5 只后队伍应为 5 只，实际 ' + team0.length);
+  const target = team0[1];
+  globalThis.setMain(target);
+  const team1 = globalThis.getTeamPets().map((p) => p.uid);
+  check(team1[0] === target, '设为主宠后应排到第一位');
+  check(new Set(team1).size === team1.length, '设为主宠后队伍出现重复：' + team1.join(','));
+  check(team1.length === team0.length, '设为主宠后队伍数量应保持不变');
+}
+
 if (problems.length) {
   console.error('❌ 游戏冒烟 ' + problems.length + ' 条问题：');
   problems.slice(0, 20).forEach((p) => console.error(' - ' + p));
