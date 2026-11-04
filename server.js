@@ -366,6 +366,12 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // 浏览器会自动请求根路径的 /favicon.ico，指到已有图标，别留一条 404
+    if (url.pathname === '/favicon.ico') {
+      res.writeHead(302, { location: '/icons/favicon-32.png', 'cache-control': 'public, max-age=86400' }).end();
+      return;
+    }
+
     await serveStatic(req, res, url.pathname);
   } catch (err) {
     console.error('[server]', err);
