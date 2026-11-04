@@ -920,9 +920,9 @@ body.modal-open{overflow:hidden}
 .battle-layer .b-side.enemy .b-unit.attack-forward{transform:translateX(-15px)}
 .battle-layer .b-unit.hit-flash .art-frame img,.battle-layer .b-unit.hit-flash .b-emoji{filter:brightness(1.32) saturate(1.18)}
 @media (max-width:420px){.battle-layer .art-frame.art-battle{width:58px;height:58px}.battle-layer .b-emoji-wrap{min-height:56px}}
-/* 主页立绘：去圆形裁切与浅色圆底，完整立绘自然落地（纯CSS，不做抠图） */
-.home-pet-img{border-radius:0;object-fit:contain;background:transparent;box-shadow:0 12px 16px rgba(111,82,54,.20)}
-.pal-img{border-radius:0;object-fit:contain;background:transparent;box-shadow:none}
+/* 主页立绘：立绘本身就是方图，改成圆形头像——圆形裁切只切掉四角背景，主体完整保留 */
+.home-pet-img{border-radius:50%;object-fit:cover;background:#fff7e7;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 8px 18px rgba(111,82,54,.20)}
+.pal-img{border-radius:50%;object-fit:cover;background:#fff7e7;box-shadow:none}
 /* ===== 表现层增强：奥义冲击环 / Boss置顶血条 / 竞技场剪影 / 结算明细 / 主宠放大落地（纯表现，不碰数值） ===== */
 .ult-flash .ult-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:inset 0 0 22px rgba(255,226,170,.55);opacity:0;pointer-events:none}
 .ult-flash .ult-ring.r1,.ult-flash .ult-ring.r2{width:130px;height:130px}
