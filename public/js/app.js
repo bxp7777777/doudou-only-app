@@ -201,11 +201,35 @@ function homePage(now, period) {
       </div>
       <p class="hero-date">${esc(date.cn(today))} · ${esc(date.weekdayCN(now))} · ${esc(date.PERIOD_LABEL[period] || '')}</p>
       <p class="hero-note">${esc(homeNote(period))}</p>
+      ${todaySummaryHTML(today, cycle)}
     </header>
     ${modules.map(moduleHTML).join('')}
     ${careCardsHTML(now)}
     ${toolsDrawerHTML(now)}
     <p class="foot">小猪和小金毛都在这儿，不催不吼，只陪你。</p>
+  </div>`;
+}
+
+/* 首屏摘要：今天还剩哪几件，一眼看清再往下滑 */
+function todaySummaryHTML(today, cycle) {
+  const water = store.getWater(today);
+  const cups = (water.cups || []).filter(Boolean).length;
+  const chk = store.getCheckin(today) || {};
+  const keys = Object.keys(chk);
+  const doneChk = keys.filter((k) => chk[k]).length;
+  const diary = store.getDiary(today);
+  const tomato = state.tomato || { running: false, remain: 0, done: 0 };
+  const chips = [];
+  chips.push({ key: 'water', on: cups >= 3, text: `💧 ${cups}/3`, label: `喝水 ${cups}/3 杯` });
+  if (tomato.running) chips.push({ key: 'tomato', on: tomato.remain <= 0, text: `🍅 ${Math.max(0, Math.ceil(tomato.remain / 60))} 分`, label: '番茄钟进行中' });
+  else chips.push({ key: 'tomato', on: tomato.done > 0, text: `🍅 ${tomato.done > 0 ? tomato.done + ' 个' : '未开始'}`, label: '番茄钟' });
+  if (keys.length) chips.push({ key: 'check', on: doneChk === keys.length, text: `📌 ${doneChk}/${keys.length}`, label: '小习惯' });
+  chips.push({ key: 'diary', on: !!(diary && diary.text), text: `📖 ${diary && diary.text ? '已写' : '未写'}`, label: '小日子' });
+  if (cycle) chips.push({ key: 'cycle', on: false, text: `🌸 ${cycle.daysToNext >= 0 ? cycle.daysToNext + ' 天' : '晚 ' + Math.abs(cycle.daysToNext) + ' 天'}`, label: '距下次例假' });
+  const left = chips.filter((c) => !c.on && c.key !== 'cycle').length;
+  return `<div class="sum-bar" role="list">
+    ${chips.map((c) => `<span class="sum-chip ${c.on ? 'on' : ''}" role="listitem" title="${esc(c.label)}">${esc(c.text)}</span>`).join('')}
+    <span class="sum-hint">${left ? `还有 ${left} 件没做` : '今天都做完了'}</span>
   </div>`;
 }
 
@@ -734,7 +758,7 @@ function cyclePage() {
     </section>
 
     <section class="card">
-      <h2 class="card-head"><span class="card-icon">🌸</span><span class="card-title">例假与身体</span></h2>
+      <h2 class="card-head"><span class="card-icon">🌸</span><span class="card-title">例假与身体</span>${info ? `<span class="sum-chip">${esc(date.cnShort(info.nextKey))} · ${info.daysToNext >= 0 ? '还有 ' + info.daysToNext + ' 天' : '晚了 ' + Math.abs(info.daysToNext) + ' 天'}</span>` : ''}</h2>
       ${info
         ? `<p class="line">${esc(info.headline)}</p>
       <div class="chips">${info.chips

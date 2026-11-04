@@ -1230,3 +1230,35 @@ body.theme-duo .bg::after {
 .ms-form .btn-mini {
   margin-top: 0;
 }
+
+/* 首屏摘要条：今天还剩哪几件 */
+.sum-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+}
+.sum-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid #f0dcc9;
+  background: #fffaf4;
+  color: #8a6f63;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.sum-chip.on {
+  border-color: #b9e0c8;
+  background: #f1fbf4;
+  color: #4f8a63;
+}
+.sum-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted);
+}
+.card-head .sum-chip { margin-left: 8px; flex: 0 0 auto; }
