@@ -3480,11 +3480,19 @@ function mobArtUrl(id) { return MOB_ART[id] ? 'art/mobs/' + id + '.jpg' : null; 
 function bossArtUrl(id) { return BOSS_ART[id] ? 'art/bosses/' + id + '.jpg' : null; }
 function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
 function resArtUrl(k) { return RES_ART[k] ? 'art/icons/res_' + k + '.jpg' : null; }
-// 小图标位（元素徽章/资源图标）：有图返回圆形图框并垫 emoji 兜底，无图返回 null
+// 小图标位（元素徽章/资源图标）：有图返回圆形图框，图片失败才回退 emoji，无图返回 null
 function artIconFrame(url, fallbackEmoji, sizeClass) {
   if (!url) return null;
-  const fb = esc(fallbackEmoji);
-  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+  return `<span class="art-frame ${sizeClass || ''}"><img src="${url}" alt="${esc(fallbackEmoji)}" loading="lazy" onerror="artImgFallback(this,'${fallbackEmoji}')"></span>`;
+}
+// 立绘/图标图片真正加载失败时，把 <img> 就地替换为 emoji 占位；图片成功时 DOM 不预铺 emoji，杜绝新旧图形叠加（纯表现回退，不改数值）
+function artImgFallback(img, char) {
+  if (!img || img.dataset.artDone) return;
+  img.dataset.artDone = '1';
+  const s = document.createElement('span');
+  s.className = (img.classList && img.classList.contains('pal-img')) ? 'pal-emoji' : 'art-emoji';
+  s.textContent = char;
+  if (img.parentNode) img.replaceWith(s);
 }
 function petArtUrl(templateId) {
   return PET_ART[templateId] ? 'art/pets/' + templateId + '.jpg' : null;
@@ -3493,8 +3501,7 @@ function petArtUrl(templateId) {
 function petArtFrame(templateId, fallbackEmoji, sizeClass) {
   const url = petArtUrl(templateId);
   if (!url) return null;
-  const fb = esc(fallbackEmoji);
-  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+  return `<span class="art-frame ${sizeClass || ''}"><img src="${url}" alt="${esc(fallbackEmoji)}" loading="lazy" onerror="artImgFallback(this,'${fallbackEmoji}')"></span>`;
 }
 // 敌方单位头像：Boss 独立图 → 小怪独立图 → 我方宠物立绘 → emoji 兜底；任一缺失自动降级，绝不白图
 function enemyArtFrame(unit) {
@@ -3503,23 +3510,21 @@ function enemyArtFrame(unit) {
   if (!url && unit.artKind === 'mob' && unit.artId) url = mobArtUrl(unit.artId);
   if (!url) url = petArtUrl(unit.templateId);
   if (!url) return null;
-  const fb = esc(unit.emoji);
-  return `<span class="art-frame art-battle"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+  return `<span class="art-frame art-battle"><img src="${url}" alt="${esc(unit.emoji)}" loading="lazy" onerror="artImgFallback(this,'${unit.emoji}')"></span>`;
 }
-// 我方战斗头像：进化立绘优先 → 基础立绘 → 底层 emoji；仅运行时展示，不参与数值计算与存档
+// 我方战斗头像：进化立绘优先 → 基础立绘；仅图片加载失败才回退 emoji；运行时展示，不参与数值计算与存档
 function allyBattleArtFrame(unit) {
-  const fb = esc(unit.emoji);
   const evoUrl = evoArtUrl(unit.templateId, unit.evo || 0);
   const baseUrl = petArtUrl(unit.templateId);
   const primary = evoUrl || baseUrl;
   if (!primary) return null;
   const chain = (evoUrl && baseUrl)
-    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';}else{this.remove();}"`
-    : 'onerror="this.remove()"';
-  return `<span class="art-frame art-battle"><span class="art-emoji">${fb}</span><img src="${primary}" alt="${fb}" loading="lazy" ${chain}></span>`;
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}artImgFallback(this,'${unit.emoji}')"`
+    : `onerror="artImgFallback(this,'${unit.emoji}')"`;
+  return `<span class="art-frame art-battle"><img src="${primary}" alt="${esc(unit.emoji)}" loading="lazy" ${chain}></span>`;
 }
 // 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
-// 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
+// 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → 图片失败回退 emoji」逐级降级，绝不白图破版
 const PET_EVO_ART = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
 // 二阶进化（evo≥2）立绘就绪登记：已生成并落盘 pets-evo/<id>_s2.jpg；若某键移除/文件缺失则自动回退 s1 再回基础图/emoji，绝不白图
 const PET_EVO_STAGE2 = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
@@ -3553,18 +3558,18 @@ const BOND_ART = {
   sunDance: 'art/bonds/sunDance.jpg'
 };
 function bondArtUrl(bondId) { return BOND_ART[bondId] || null; }
-// 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失自动回退基础图，再由底层 emoji 兜底
+// 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失回退基础图，图片失败才回退 emoji
 function petArtFrameFor(pet, sizeClass) {
   const t = templateOf(pet);
-  const fb = esc(petEmoji(pet));
+  const char = petEmoji(pet);
   const evoUrl = evoArtUrl(t.id, pet.evo || 0);
   const baseUrl = petArtUrl(t.id);
   const primary = evoUrl || baseUrl;
   if (!primary) return null;
   const chain = (evoUrl && baseUrl)
-    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';}else{this.remove();}"`
-    : 'onerror="this.remove()"';
-  return `<span class="art-frame ${sizeClass || ''}"><span class="art-emoji">${fb}</span><img src="${primary}" alt="${fb}" loading="lazy" ${chain}></span>`;
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}artImgFallback(this,'${char}')"`
+    : `onerror="artImgFallback(this,'${char}')"`;
+  return `<span class="art-frame ${sizeClass || ''}"><img src="${primary}" alt="${esc(char)}" loading="lazy" ${chain}></span>`;
 }
 // 装备 AI 图标：key=槽位_品质；未登记或图片缺失时 equipIcon() 返回 emoji，onerror 自动兜底，绝不白图
 const EQUIP_ART = { weapon_fine:true, armor_fine:true, accessory_fine:true, amulet_fine:true, weapon_epic:true, armor_epic:true, accessory_epic:true, amulet_epic:true };
@@ -3574,10 +3579,10 @@ function equipmentArtUrl(item) {
   return EQUIP_ART[key] ? 'art/gear/' + key + '.jpg' : null;
 }
 function equipIcon(item) {
-  const fb = esc(EQUIP_SLOTS[item.slot].emoji);
+  const char = EQUIP_SLOTS[item.slot].emoji;
   const url = equipmentArtUrl(item);
-  if (!url) return fb;
-  return `<span class="art-frame art-bagico"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
+  if (!url) return esc(char);
+  return `<span class="art-frame art-bagico"><img src="${url}" alt="${esc(char)}" loading="lazy" onerror="artImgFallback(this,'${char}')"></span>`;
 }
 // 套装/性格的短标签文案
 function equipSetLabel(item) {
@@ -6156,12 +6161,13 @@ function palArtHTML(pet) {
   const evoUrl = evoArtUrl(t.id, pet.evo || 0);
   const baseUrl = petArtUrl(t.id);
   const src = evoUrl || baseUrl;
-  const emoji = esc(petEmoji(pet));
-  if (!src) return `<span class="pal-art-inner"><span class="pal-emoji">${emoji}</span></span>`;
+  const char = petEmoji(pet);
+  if (!src) return `<span class="pal-art-inner"><span class="pal-emoji">${esc(char)}</span></span>`;
+  // 立绘成功时 DOM 不预铺旧 emoji，杜绝新旧叠加；图片失败（含进化图→基础图二级回退失败）才就地换成 emoji 占位
   const chain = evoUrl && baseUrl
-    ? `if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}this.classList.add('hidden');`
-    : `this.classList.add('hidden');`;
-  return `<span class="pal-art-inner"><span class="pal-emoji pal-emoji-bg">${emoji}</span><img class="pal-img" src="${src}" alt="${emoji}" loading="lazy" onerror="${chain}"></span>`;
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}artImgFallback(this,'${char}')"`
+    : `onerror="artImgFallback(this,'${char}')"`;
+  return `<span class="pal-art-inner"><img class="pal-img" src="${src}" alt="${esc(char)}" loading="lazy" ${chain}></span>`;
 }
 /* 把某只宠置顶为主宠（team[0]）：只重排，维持前排2/后排3与总数上限5，不改任何数值 */
 function setMain(uid) {
