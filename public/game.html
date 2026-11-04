@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fff7e9">
-<meta name="description" content="萌宠小镇：单文件挂机养成对战小游戏">
-<title>萌宠小镇 · 挂机养成对战</title>
+<meta name="description" content="周思汐的小镇：单文件挂机养成对战小游戏">
+<title>周思汐的小镇 · 挂机养成对战</title>
 <style>
 /* ============================================================
-   萌宠小镇 · 视觉层
+   周思汐的小镇 · 视觉层
    奶油底色 + 马卡龙点缀 / 圆角卡片 / Q 弹动效
    ============================================================ */
 :root{
@@ -754,6 +754,8 @@ body.modal-open{overflow:hidden}
 .modal-section:first-child{margin-top:0}
 .modal-section h3{font-size:13px;margin:0 0 7px}
 .settings-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed #f0dfcd;flex-wrap:wrap}
+.music-opt-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.music-opt.on{background:#fdecc8;border-color:#e6b866;color:#8a5a16;font-weight:700}
 .settings-row:last-child{border-bottom:0}
 .settings-row .sr-info{flex:1;min-width:150px}
 .settings-row b{font-size:12px}
@@ -1629,7 +1631,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   <header class="topbar">
     <div class="brand mobile-brand">
       <div class="brand-logo">🐾</div>
-      <div><h1>萌宠小镇</h1><p>治愈挂机养成</p></div>
+      <div><h1>周思汐的小镇</h1><p>治愈挂机养成</p></div>
     </div>
     <div class="res-strip" id="resStrip"></div>
     <div class="top-actions">
@@ -1640,7 +1642,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-logo">🐾</div>
-      <div><h1>萌宠小镇</h1><p>治愈挂机养成</p></div>
+      <div><h1>周思汐的小镇</h1><p>治愈挂机养成</p></div>
     </div>
     <nav class="side-nav" id="sideNav"></nav>
     <div class="side-foot">
@@ -1663,7 +1665,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 <script>
 'use strict';
 /* ============================================================
-   萌宠小镇 · 单文件游戏
+   周思汐的小镇 · 单文件游戏
    分层：0 工具 / 1 DATA 数据表 / 2 存档 / 3 数值 / 4 经济
          5 战斗 / 6 渲染 / 7 动作 / 8 启动
    ============================================================ */
@@ -2645,7 +2647,7 @@ const FRAMES = [
 const FRAME_MAP = Object.fromEntries(FRAMES.map(f => [f.id, f]));
 
 const DAILY_TASKS = [
-  { id: 'd_login', name: '小镇报到', icon: '🐾', desc: '打开萌宠小镇即可完成。', metric: 'login', target: 1, reward: { crystal: 20, fruit: 5 } },
+  { id: 'd_login', name: '小镇报到', icon: '🐾', desc: '打开周思汐的小镇即可完成。', metric: 'login', target: 1, reward: { crystal: 20, fruit: 5 } },
   { id: 'd_battle', name: '热身战斗', icon: '⚔️', desc: '进行 3 场战斗。', metric: 'battles', target: 3, reward: { gold: 900, fruit: 8 } },
   { id: 'd_win', name: '认真赢一场', icon: '🏅', desc: '赢得 1 场战斗。', metric: 'wins', target: 1, reward: { crystal: 35 } },
   { id: 'd_pull', name: '遇见新朋友', icon: '🥚', desc: '抽蛋 1 次。', metric: 'pulls', target: 1, reward: { gold: 500, crystal: 15 } },
@@ -4041,7 +4043,8 @@ function sanitizeState(s) {
   s.settings = s.settings && typeof s.settings === 'object' ? s.settings : { sfx: true, music: false };
   s.settings.sfx = s.settings.sfx !== false;
   s.settings.music = !!s.settings.music;
-  s.settings.musicStyle = ['chord', 'calm'].includes(s.settings.musicStyle) ? s.settings.musicStyle : 'chord';
+  if (s.settings.musicStyle === 'chord') s.settings.musicStyle = 'light';
+  else if (!['light', 'calm', 'breeze', 'lull'].includes(s.settings.musicStyle)) s.settings.musicStyle = 'light';
   s.rebirth = s.rebirth && typeof s.rebirth === 'object' ? s.rebirth : { count: 0 };
   s.rebirth.count = Math.max(0, Math.floor(num(s.rebirth.count, 0)));
   s.eternal = s.eternal && typeof s.eternal === 'object' ? s.eternal : { idle: 0, star: 0, gold: 0 };
@@ -8540,7 +8543,7 @@ function openSettingsModal() {
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
       <div class="settings-row"><span>轻音乐</span><button id="btnToggleMusic" class="btn btn-ghost btn-xs" type="button" data-act="toggleMusic">${state.settings.music ? '开启' : '关闭'}</button></div>
-      <div class="settings-row"><span>风格</span><span style="display:flex;gap:6px"><button id="musicStyleChord" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="chord">轻快小曲${state.settings.musicStyle === 'chord' ? ' · 选' : ''}</button><button id="musicStyleCalm" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="calm">舒缓琶音${state.settings.musicStyle === 'calm' ? ' · 选' : ''}</button></span></div>
+      <div class="settings-row"><span>风格</span><span class="music-opt-row"><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'light' ? ' on' : ''}" type="button" data-act="music-style" data-key="light">轻快小曲</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'calm' ? ' on' : ''}" type="button" data-act="music-style" data-key="calm">舒缓琶音</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'breeze' ? ' on' : ''}" type="button" data-act="music-style" data-key="breeze">清新风铃</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'lull' ? ' on' : ''}" type="button" data-act="music-style" data-key="lull">温柔摇篮</button></span></div>
       <div class="tiny muted">全部由浏览器 WebAudio 实时合成，不加载外部音频。切到后台会自动安静。</div>
     </div>
     <div class="settings-section">
@@ -9681,16 +9684,15 @@ function toggleSetting(key) {
   }
   toast(key === 'sfx' ? `音效已${state.settings.sfx ? '开启' : '关闭'}` : `音乐已${state.settings.music ? '开启' : '关闭'}`, '', 1400);
 }
+const MUSIC_LABELS = { light: '轻快小曲', calm: '舒缓琶音', breeze: '清新风铃', lull: '温柔摇篮' };
 function setMusicStyle(style) {
-  if (!['chord', 'calm'].includes(style)) return;
+  if (!['light', 'calm', 'breeze', 'lull'].includes(style)) return;
   state.settings.musicStyle = style;
   saveGame();
+  stopMusic();
   syncAudio();
-  const chordBtn = $('#musicStyleChord');
-  const calmBtn = $('#musicStyleCalm');
-  if (chordBtn) chordBtn.textContent = style === 'chord' ? '轻快小曲 · 选' : '轻快小曲';
-  if (calmBtn) calmBtn.textContent = style === 'calm' ? '舒缓琶音 · 选' : '舒缓琶音';
-  toast(style === 'calm' ? '背景音乐换成舒缓琶音啦' : '背景音乐换成轻快小曲啦', '', 1200);
+  $$('[data-act="music-style"]').forEach(btn => btn.classList.toggle('on', btn.dataset.key === style));
+  toast(`背景音乐换成${MUSIC_LABELS[style]}啦`, '', 1200);
 }
 function saveNow() {
   saveGame();
@@ -9723,7 +9725,7 @@ function importSave() {
   if (!raw) { toast('先把存档 JSON 粘贴到文本框里', 'bad'); return; }
   let parsed = null;
   try { parsed = JSON.parse(raw); } catch (err) { toast('JSON 格式不正确，无法导入', 'bad'); return; }
-  if (!parsed || typeof parsed !== 'object' || !parsed.pets) { toast('这不是有效的萌宠小镇存档', 'bad'); return; }
+  if (!parsed || typeof parsed !== 'object' || !parsed.pets) { toast('这不是有效的周思汐的小镇存档', 'bad'); return; }
   try {
     let next = sanitizeState(deepMerge(defaultState(), parsed));
     next.savedAt = Date.now();
@@ -10105,40 +10107,84 @@ function playSfx(name) {
   };
   for (const [freq, dur, type, vol, delay] of (map[name] || map.tap)) audioTone(freq, dur, type, vol, delay || 0);
 }
-function playMusicBar() {
-  if (!state || !state.settings.music || document.hidden) return;
-  ensureAudio();
-  const ctx = UI.audioCtx;
-  if (!ctx) return;
-  if (state.settings.musicStyle === 'calm') {
-    const calmSets = [
+// 轻音乐四档：WebAudio 实时合成的连贯乐句，parts=[频率, 起始秒, 时长, 波形, 音量]；len=乐句循环长度（秒）
+const MUSIC_TRACKS = (() => {
+  function light() {
+    const parts = [];
+    const chords = [
+      [261.63, 329.63, 392.00, 523.25],
+      [196.00, 246.94, 293.66, 392.00],
+      [220.00, 261.63, 329.63, 440.00],
+      [174.61, 220.00, 261.63, 349.23]
+    ];
+    const step = 0.275, cell = step * 4;
+    for (let rep = 0; rep < 2; rep++) {
+      chords.forEach((ch, ci) => {
+        const t0 = rep * 4 * cell + ci * cell;
+        parts.push([ch[0] / 2, t0, 1.05, 'sine', 0.0048]);
+        ch.forEach((f, i) => parts.push([f, t0 + i * step, 0.26, 'triangle', 0.0074]));
+      });
+    }
+    const mt = 2 * 4 * cell;
+    [523.25, 659.25, 783.99, 659.25, 523.25].forEach((f, i) => parts.push([f, mt + i * 0.34, 0.42, 'triangle', 0.008]));
+    return { len: mt + 5 * 0.34 + 0.15, parts };
+  }
+  function calm() {
+    const parts = [];
+    const pads = [
       [220.00, 261.63, 329.63],
       [196.00, 246.94, 293.66],
       [174.61, 220.00, 261.63],
       [246.94, 293.66, 349.23]
     ];
-    const seq = pick(calmSets);
-    seq.forEach((freq, i) => audioTone(freq, 3.2, 'sine', 0.0045, i * 0.55));
-    audioTone(seq[0] * 2, 2.4, 'sine', 0.0028, 2.0);
-    return;
+    const cell = 2.1;
+    pads.forEach((ch, ci) => {
+      const t0 = ci * cell;
+      ch.forEach((f, i) => parts.push([f, t0 + i * 0.42, 2.7, 'sine', 0.0042]));
+      parts.push([ch[0] / 2, t0, 2.6, 'sine', 0.003]);
+    });
+    return { len: pads.length * cell, parts };
   }
-  // 轻快小曲：C 大调 I-V-vi-IV 分解琶音，明亮圆润、节奏轻巧
-  const arps = [
-    [261.63, 329.63, 392.00, 523.25],
-    [196.00, 246.94, 293.66, 392.00],
-    [220.00, 261.63, 329.63, 440.00],
-    [174.61, 220.00, 261.63, 349.23]
-  ];
-  const seq = pick(arps);
-  seq.forEach((freq, i) => audioTone(freq, 0.24, 'triangle', 0.007, i * 0.15));
-  audioTone(seq[3] * 2, 0.5, 'sine', 0.0035, 0.66);
+  function breeze() {
+    const parts = [[261.63, 0, 8.6, 'sine', 0.0032]];
+    const pent = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 880.00, 783.99, 659.25, 587.33];
+    pent.forEach((f, i) => parts.push([f, 0.5 + i * 0.8, 0.5, i % 2 ? 'triangle' : 'sine', 0.0058]));
+    return { len: 8.7, parts };
+  }
+  function lull() {
+    const parts = [];
+    const rootPairs = [[220.00, 329.63, 440.00], [174.61, 261.63, 392.00]];
+    const cell = 2.4;
+    for (let rep = 0; rep < 2; rep++) {
+      rootPairs.forEach((ch, ci) => {
+        const t0 = rep * 2 * cell + ci * cell;
+        parts.push([ch[0] / 2, t0, cell * 0.96, 'sine', 0.0036]);
+        parts.push([ch[2], t0 + 0.5, 1.5, 'sine', 0.003]);
+        parts.push([ch[1], t0 + 1.2, 1.2, 'triangle', 0.0028]);
+      });
+    }
+    return { len: 2 * 2 * cell, parts };
+  }
+  return { light: light(), calm: calm(), breeze: breeze(), lull: lull() };
+})();
+function activeMusicKey() {
+  return ['light', 'calm', 'breeze', 'lull'].includes(state.settings.musicStyle) ? state.settings.musicStyle : 'light';
+}
+function playMusicBar() {
+  if (!state || !state.settings.music || document.hidden) return;
+  ensureAudio();
+  const ctx = UI.audioCtx;
+  if (!ctx) return;
+  const track = MUSIC_TRACKS[activeMusicKey()];
+  for (const [freq, start, dur, type, vol] of track.parts) audioTone(freq, dur, type, vol, start);
 }
 function startMusic() {
-  if (!state || !state.settings.music || UI.musicTimer) return;
+  if (!state || !state.settings.music) return;
   const ctx = ensureAudio();
   if (!ctx) return;
+  if (UI.musicTimer) clearInterval(UI.musicTimer);
   playMusicBar();
-  UI.musicTimer = setInterval(playMusicBar, 5200);
+  UI.musicTimer = setInterval(playMusicBar, Math.max(3200, Math.round(MUSIC_TRACKS[activeMusicKey()].len * 1000)));
 }
 function stopMusic() {
   if (UI.musicTimer) clearInterval(UI.musicTimer);
