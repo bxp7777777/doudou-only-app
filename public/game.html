@@ -8540,7 +8540,7 @@ function openSettingsModal() {
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
       <div class="settings-row"><span>轻音乐</span><button id="btnToggleMusic" class="btn btn-ghost btn-xs" type="button" data-act="toggleMusic">${state.settings.music ? '开启' : '关闭'}</button></div>
-      <div class="settings-row"><span>风格</span><span style="display:flex;gap:6px"><button id="musicStyleChord" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="chord">轻柔和弦${state.settings.musicStyle === 'chord' ? ' · 选' : ''}</button><button id="musicStyleCalm" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="calm">舒缓琶音${state.settings.musicStyle === 'calm' ? ' · 选' : ''}</button></span></div>
+      <div class="settings-row"><span>风格</span><span style="display:flex;gap:6px"><button id="musicStyleChord" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="chord">轻快小曲${state.settings.musicStyle === 'chord' ? ' · 选' : ''}</button><button id="musicStyleCalm" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="calm">舒缓琶音${state.settings.musicStyle === 'calm' ? ' · 选' : ''}</button></span></div>
       <div class="tiny muted">全部由浏览器 WebAudio 实时合成，不加载外部音频。切到后台会自动安静。</div>
     </div>
     <div class="settings-section">
@@ -9688,9 +9688,9 @@ function setMusicStyle(style) {
   syncAudio();
   const chordBtn = $('#musicStyleChord');
   const calmBtn = $('#musicStyleCalm');
-  if (chordBtn) chordBtn.textContent = style === 'chord' ? '轻柔和弦 · 选' : '轻柔和弦';
+  if (chordBtn) chordBtn.textContent = style === 'chord' ? '轻快小曲 · 选' : '轻快小曲';
   if (calmBtn) calmBtn.textContent = style === 'calm' ? '舒缓琶音 · 选' : '舒缓琶音';
-  toast(style === 'calm' ? '背景音乐换成舒缓琶音啦' : '背景音乐换成轻柔和弦啦', '', 1200);
+  toast(style === 'calm' ? '背景音乐换成舒缓琶音啦' : '背景音乐换成轻快小曲啦', '', 1200);
 }
 function saveNow() {
   saveGame();
@@ -10080,22 +10080,23 @@ function playSfx(name) {
     tap: [[620, 0.045, 'sine', 0.012]],
     pop: [[920, 0.05, 'triangle', 0.02]],
     pat: [[1040, 0.07, 'sine', 0.016], [1320, 0.06, 'sine', 0.012, 0.05]],
-    hit: [[210, 0.07, 'square', 0.012], [150, 0.06, 'sine', 0.02, 0.02]],
-    crit: [[360, 0.06, 'square', 0.02], [180, 0.1, 'sawtooth', 0.016, 0.04]],
+    hit: [[196, 0.09, 'triangle', 0.013], [147, 0.08, 'sine', 0.014, 0.02]],
+    crit: [[392, 0.1, 'triangle', 0.016], [523, 0.15, 'sine', 0.014, 0.07]],
+    revive: [[392, 0.12, 'sine', 0.015], [523, 0.16, 'sine', 0.013, 0.1]],
     heal: [[520, 0.12, 'sine', 0.018], [780, 0.16, 'sine', 0.016, 0.08]],
     claim: [[660, 0.1, 'triangle', 0.02], [880, 0.16, 'triangle', 0.018, 0.08]],
     buy: [[500, 0.07, 'sine', 0.018], [700, 0.09, 'sine', 0.014, 0.05]],
     level: [[440, 0.08, 'triangle', 0.02], [660, 0.09, 'triangle', 0.018, 0.07], [880, 0.14, 'triangle', 0.016, 0.14]],
     star: [[880, 0.08, 'sine', 0.02], [990, 0.08, 'sine', 0.02, 0.07], [1170, 0.18, 'sine', 0.018, 0.14]],
     evolve: [[330, 0.12, 'triangle', 0.025], [550, 0.12, 'triangle', 0.022, 0.1], [880, 0.22, 'sine', 0.02, 0.2]],
-    equip: [[350, 0.07, 'square', 0.014], [520, 0.07, 'triangle', 0.016, 0.05]],
-    forge: [[280, 0.09, 'sawtooth', 0.016], [420, 0.12, 'triangle', 0.018, 0.08]],
-    enhance: [[520, 0.06, 'square', 0.014], [780, 0.13, 'triangle', 0.018, 0.05]],
-    battle: [[260, 0.12, 'sawtooth', 0.014], [390, 0.16, 'triangle', 0.018, 0.1]],
+    equip: [[330, 0.08, 'triangle', 0.013], [440, 0.09, 'triangle', 0.012, 0.05]],
+    forge: [[294, 0.1, 'triangle', 0.013], [392, 0.12, 'triangle', 0.012, 0.08]],
+    enhance: [[440, 0.08, 'triangle', 0.013], [587, 0.13, 'triangle', 0.012, 0.05]],
+    battle: [[247, 0.12, 'triangle', 0.012], [330, 0.16, 'triangle', 0.013, 0.1]],
     start: [[392, 0.1, 'triangle', 0.018], [523, 0.14, 'triangle', 0.018, 0.1]],
     win: [[523, 0.12, 'triangle', 0.022], [659, 0.12, 'triangle', 0.022, 0.1], [784, 0.28, 'sine', 0.02, 0.2]],
     lose: [[392, 0.16, 'sine', 0.02], [330, 0.16, 'sine', 0.018, 0.14], [262, 0.28, 'sine', 0.016, 0.28]],
-    ult: [[220, 0.16, 'sawtooth', 0.02], [440, 0.18, 'triangle', 0.024, 0.09], [880, 0.3, 'sine', 0.022, 0.19]],
+    ult: [[262, 0.16, 'triangle', 0.014], [392, 0.18, 'triangle', 0.015, 0.09], [523, 0.28, 'sine', 0.013, 0.19]],
     gacha: [[660, 0.1, 'triangle', 0.02], [880, 0.18, 'triangle', 0.018, 0.09]],
     ssr: [[523, 0.08, 'sine', 0.022], [659, 0.08, 'sine', 0.022, 0.07], [784, 0.08, 'sine', 0.022, 0.14], [1046, 0.3, 'sine', 0.02, 0.21]],
     encounter: [[600, 0.1, 'sine', 0.018], [760, 0.16, 'sine', 0.016, 0.08]],
@@ -10109,12 +10110,6 @@ function playMusicBar() {
   ensureAudio();
   const ctx = UI.audioCtx;
   if (!ctx) return;
-  const chords = [
-    [261.63, 329.63, 392.00],
-    [220.00, 261.63, 329.63],
-    [293.66, 349.23, 440.00],
-    [246.94, 293.66, 392.00]
-  ];
   if (state.settings.musicStyle === 'calm') {
     const calmSets = [
       [220.00, 261.63, 329.63],
@@ -10127,10 +10122,16 @@ function playMusicBar() {
     audioTone(seq[0] * 2, 2.4, 'sine', 0.0028, 2.0);
     return;
   }
-  const chord = pick(chords);
-  chord.forEach((freq, i) => audioTone(freq, 2.4, 'sine', 0.006, i * 0.06));
-  audioTone(chord[0] * 2, 1.4, 'triangle', 0.0035, 1.3);
-  audioTone(chord[1] * 2, 1.2, 'triangle', 0.003, 2.5);
+  // 轻快小曲：C 大调 I-V-vi-IV 分解琶音，明亮圆润、节奏轻巧
+  const arps = [
+    [261.63, 329.63, 392.00, 523.25],
+    [196.00, 246.94, 293.66, 392.00],
+    [220.00, 261.63, 329.63, 440.00],
+    [174.61, 220.00, 261.63, 349.23]
+  ];
+  const seq = pick(arps);
+  seq.forEach((freq, i) => audioTone(freq, 0.24, 'triangle', 0.007, i * 0.15));
+  audioTone(seq[3] * 2, 0.5, 'sine', 0.0035, 0.66);
 }
 function startMusic() {
   if (!state || !state.settings.music || UI.musicTimer) return;
