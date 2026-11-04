@@ -470,7 +470,7 @@ function skincareModule(period, weather) {
       extra.push('湿度偏高：洁面后薄涂一层就好，别叠太多层。');
     }
   }
-  const skinExtra = extra.slice(0, 2);
+  const skinExtra = extra.slice(0, 1);
 
   if (period === 'morning') {
     return {
