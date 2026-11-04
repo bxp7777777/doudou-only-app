@@ -3416,8 +3416,19 @@ const SCENE_PHOTOS = {
 };
 function scenePhotoUrl(bgId) { return SCENE_PHOTOS[bgId] || null; }
 // 羁绊同框彩蛋图登记：bondId→图片路径；缺失时仅显示文字彩蛋，onerror 自动移除图片位
-// 羁绊同框图登记：键=羁绊id，值=相对路径；未登记组不渲染图、只显示 emoji 与彩蛋台词，onerror 亦自动移除，绝不白图
-const BOND_ART = { cuteDuo: 'art/bonds/cuteDuo.jpg' };
+// 羁绊同框图登记：键=羁绊id，值=相对路径；已覆盖全部双宠组；未登记的三宠组不渲染图、只显示 emoji 与彩蛋台词，onerror 亦自动移除，绝不白图
+const BOND_ART = {
+  cuteDuo: 'art/bonds/cuteDuo.jpg',
+  cleverDuo: 'art/bonds/cleverDuo.jpg',
+  dragonPhoenix: 'art/bonds/dragonPhoenix.jpg',
+  furryDuo: 'art/bonds/furryDuo.jpg',
+  waterLand: 'art/bonds/waterLand.jpg',
+  slowTide: 'art/bonds/slowTide.jpg',
+  nightForest: 'art/bonds/nightForest.jpg',
+  royalDuo: 'art/bonds/royalDuo.jpg',
+  honeyHill: 'art/bonds/honeyHill.jpg',
+  sunDance: 'art/bonds/sunDance.jpg'
+};
 function bondArtUrl(bondId) { return BOND_ART[bondId] || null; }
 // 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失自动回退基础图，再由底层 emoji 兜底
 function petArtFrameFor(pet, sizeClass) {
