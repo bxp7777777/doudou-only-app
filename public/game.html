@@ -3395,18 +3395,24 @@ function enemyArtFrame(unit) {
 // 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
 // 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
 const PET_EVO_ART = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
-// 二阶进化（evo≥2）立绘就绪登记：未登记时 evo≥2 自动回退 s1，再回退基础图/emoji，绝不白图；文件生成后逐只补键即可
-const PET_EVO_STAGE2 = {};
+// 二阶进化（evo≥2）立绘就绪登记：已生成并落盘 pets-evo/<id>_s2.jpg；若某键移除/文件缺失则自动回退 s1 再回基础图/emoji，绝不白图
+const PET_EVO_STAGE2 = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
 function evoArtUrl(templateId, evo) {
   if (evo < 1 || !PET_EVO_ART[templateId]) return null;
   if (evo >= 2 && PET_EVO_STAGE2[templateId]) return 'art/pets-evo/' + templateId + '_s2.jpg';
   return 'art/pets-evo/' + templateId + '_s1.jpg';
 }
-// 实景场景背景登记：id=存档背景键，值=图片路径；未登记或图片缺失时沿用底层 CSS 渐变场景，不产生白图
-const SCENE_PHOTOS = {};
+// 实景场景背景登记：键=存档背景键(state.cosmetics.background)，值=半透明叠加空景图；未登记或图片缺失时沿用底层 CSS 渐变场景，不产生白图
+const SCENE_PHOTOS = {
+  bg_cream: 'art/scenes/scene_cream.jpg',
+  bg_sakura: 'art/scenes/scene_sakura.jpg',
+  bg_starry: 'art/scenes/scene_starry.jpg',
+  bg_forest: 'art/scenes/scene_forest.jpg'
+};
 function scenePhotoUrl(bgId) { return SCENE_PHOTOS[bgId] || null; }
 // 羁绊同框彩蛋图登记：bondId→图片路径；缺失时仅显示文字彩蛋，onerror 自动移除图片位
-const BOND_ART = {};
+// 羁绊同框图登记：键=羁绊id，值=相对路径；未登记组不渲染图、只显示 emoji 与彩蛋台词，onerror 亦自动移除，绝不白图
+const BOND_ART = { cuteDuo: 'art/bonds/cuteDuo.jpg' };
 function bondArtUrl(bondId) { return BOND_ART[bondId] || null; }
 // 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失自动回退基础图，再由底层 emoji 兜底
 function petArtFrameFor(pet, sizeClass) {
