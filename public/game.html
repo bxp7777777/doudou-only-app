@@ -1105,7 +1105,7 @@ body.modal-open{overflow:hidden}
 /* ---------- 补充组件 ---------- */
 .input{
   min-width:0;width:180px;max-width:100%;border:1.5px solid #e8d3b9;border-radius:11px;
-  padding:8px 10px;background:#fffdf8;color:var(--ink);font:inherit;font-size:12px;outline:0;
+  padding:8px 10px;background:#fffdf8;color:var(--ink);font:inherit;font-size:16px;outline:0;
   transition:border-color .18s, box-shadow .18s;
 }
 .input:focus{border-color:#e7ad8d;box-shadow:0 0 0 3px rgba(240,164,128,.12)}
@@ -1621,6 +1621,97 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   .subnav button{padding:7px 11px;font-size:11px}
   .toast-root{bottom:calc(var(--tab-h) + env(safe-area-inset-bottom) + 10px)}
 }
+
+/* ---------- 可读性补丁：信息类小字统一抬到 10.5~12px（纯视觉，不动任何数值） ---------- */
+.eyebrow{font-size:11.5px}
+.card-head p{font-size:12px}
+.tiny{font-size:12px}
+.chip{font-size:11.5px}
+.pill{font-size:11.5px}
+.rarity-tag{font-size:11px}
+.element-tag{font-size:11px}
+.stars{font-size:11.5px}
+.bar-label{font-size:11.5px}
+.section-title .count{font-size:11.5px}
+.note{font-size:12px}
+.speech{font-size:12px}
+.speech .who{font-size:11px}
+.pet-name-bubble{font-size:11.5px}
+.rate-badge{font-size:11.5px}
+.rate-badge small{font-size:10.5px}
+.idle-stat span{font-size:11.5px}
+.pending-box .pending-nums small{font-size:11px}
+.mini-pet{font-size:11.5px}
+.mini-pet .front-mark{font-size:10px}
+.pal-name{font-size:10.5px}
+.bond-quote-chip{font-size:11px}
+.stage-blurb{font-size:11px}
+.quick-btn{font-size:12px}
+.task-mini{font-size:12px}
+.task-mini .dot{font-size:11px}
+.task-mini .reward{font-size:11px}
+.garden-cell .garden-label{font-size:11px}
+.mini-el b{font-size:11.5px}
+.mini-el-tag{font-size:10.5px}
+.boost-pill{font-size:11.5px}
+.feed-hint{font-size:11.5px}
+.row-label{font-size:11.5px}
+.slot .slot-name{font-size:12px}
+.slot .slot-lv{font-size:10.5px}
+.slot .slot-power{font-size:11px}
+.slot .slot-role{font-size:10px}
+.slot .remove-x{font-size:12px}
+.pet-sub{font-size:11px}
+.pet-card .stats-line{font-size:11px}
+.codex-card p{font-size:11px}
+.codex-card .codex-state{font-size:10.5px}
+.bond-card p{font-size:11px}
+.bag-res span{font-size:11px}
+.eq-affix{font-size:11px}
+.hunger-col .bar-label{font-size:11px}
+.evo-node{font-size:10px}
+.board-name,.board-score{font-size:11.5px}
+.opp-rank{font-size:11.5px}
+.hist{font-size:11.5px}
+.mode-head p{font-size:11.5px}
+.brand p{font-size:11px}
+.tour-tag{font-size:11px}
+.ach-info b{font-size:12px}
+.ach-info p{font-size:11px}
+/* 成就卡原规则是 .achievement-card .ach-info p（特异性更高），这里同样加前缀 */
+.achievement-card .ach-info b{font-size:12px}
+.achievement-card .ach-info p{font-size:11px}
+.ach-progress{font-size:10.5px}
+.rarity-rate{font-size:10.5px}
+.rarity-rate b{font-size:10.5px}
+.stage-type{font-size:10.5px}
+.stage-meta{font-size:11px}
+.task-row .task-main p{font-size:11px}
+.task-row .task-reward{font-size:11px}
+.board-rank{font-size:10.5px}
+.exchange-info b{font-size:12px}
+.exchange-info p{font-size:11px}
+
+/* 顶栏：窄屏不再把体力/挑战券挤出屏幕（只留图标+数字，可点区域不缩） */
+@media (max-width:430px){
+  .res-strip{gap:3px}
+  .res-pill{gap:3px;padding:5px 7px}
+  .res-pill em{display:none}
+  .res-pill .ico{font-size:15px}
+  .res-pill b{font-size:12px}
+}
+
+/* 二级导航：右侧能滑时给个渐隐提示 */
+.subnav{
+  -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent 100%);
+  mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent 100%);
+}
+
+/* 关键操作的可点面积 */
+.icon-btn{width:40px;height:40px}
+.btn-xs{min-height:32px;padding:7px 10px;font-size:11px}
+.pal-setmain{width:26px;height:26px}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
@@ -7264,11 +7355,6 @@ function renderHome() {
           </div>
         </div>
       </div>
-      <div class="idle-stats">
-        <div class="idle-stat"><span>驻守关卡</span><b>${esc(stage.chapter)}-${stage.sub} ${stage.emoji}</b></div>
-        <div class="idle-stat"><span>队伍效率</span><b>${(rate.efficiency * 100).toFixed(0)}%</b></div>
-        <div class="idle-stat"><span>今日任务</span><b>${dailyDone}/${DAILY_TASKS.length}</b></div>
-      </div>
       <div class="pending-box">
         <div class="pending-nums">
           <div><small>待领取金币</small>🪙 <span id="homePendingGold">${fmt(pendingGold)}</span></div>
@@ -7315,7 +7401,7 @@ function renderHome() {
           <div class="divider-dots">✦</div>
           <div class="flex between">
             <button class="btn btn-mint btn-sm" type="button" data-act="nav" data-tab="quest">全部任务</button>
-            <button class="btn ${canSign ? 'btn-primary' : 'btn-ghost'} btn-sm" type="button" data-act="claimSign">${state.signIn.days >= 7 ? '七日礼已完成' : (canSign ? `签到第 ${state.signIn.days + 1} 天` : '明天再签')}</button>
+            <button class="btn ${canSign ? 'btn-mint' : 'btn-ghost'} btn-sm" type="button" data-act="claimSign">${state.signIn.days >= 7 ? '七日礼已完成' : (canSign ? `签到第 ${state.signIn.days + 1} 天` : '明天再签')}</button>
           </div>
         </div>
         <div class="card">
@@ -7423,7 +7509,7 @@ function renderAdventure() {
       <div class="dungeon-card">
         <div class="dungeon-orb">${dungeon.emoji}</div>
         <div class="dungeon-info"><b>${esc(dungeon.rname || dungeon.name)}</b><p>奖励：${esc(rewardLogText(addRewardPreview(dungeonReward)))} · 消耗 ⚡${DUNGEON_STAMINA_COST}</p><div class="tiny muted">副本按星期轮换，每天 0 点刷新次数。体力 <span id="dungeonStamina">${state.stamina.value}/${state.stamina.max}</span></div></div>
-        <button class="btn btn-primary" type="button" data-act="startDungeon" ${state.dungeon.attempts <= 0 ? 'disabled' : ''}>${state.dungeon.attempts > 0 ? '进入副本' : '今日已完成'}</button>
+        <button class="btn btn-mint" type="button" data-act="startDungeon" ${state.dungeon.attempts <= 0 ? 'disabled' : ''}>${state.dungeon.attempts > 0 ? '进入副本' : '今日已完成'}</button>
       </div>
     </div>
   </div>`;
@@ -7603,7 +7689,7 @@ function renderPets() {
               <div class="progress thin" style="margin:5px 0"><i class="mint" style="width:${pet.level / MAX_LEVEL * 100}%"></i></div>
               <p>${elementTag(t.element)} · 经验果消耗 ${fmt(levelCost)} · 同名碎片 ${shards}${starCost ? ` / 升星需 ${starCost}` : ''}${nextEvo ? ` · 进化 Lv.${nextEvo.levelReq} / ${nextEvo.stones}颗${ELEMENTS[t.element].name}石` : ' · 已究极'}</p>
               <div class="pet-actions" style="margin-top:5px">
-                <button class="btn btn-primary btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级 +1</button>
+                <button class="btn btn-mint btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级 +1</button>
                 <button class="btn btn-ghost btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="10">升级 +10</button>
                 <button class="btn btn-lav btn-xs" type="button" data-act="starUp" data-uid="${pet.uid}">升星</button>
                 <button class="btn btn-mint btn-xs" type="button" data-act="evolve" data-uid="${pet.uid}">进化</button>
@@ -7697,7 +7783,7 @@ function renderBattlePage() {
             ${topList.map((row, i) => `<div class="board-row ${row.isPlayer ? 'me' : ''}"><span class="board-rank">${i === 0 ? '👑' : (i + 1)}</span><span class="board-name">${esc(row.name)}${row.isPlayer ? '（你）' : ''}</span><span class="board-score">${fmt(row.score)}</span></div>`).join('')}
           </div>
           <div class="flex between" style="margin-top:8px;gap:6px">
-            <button class="btn btn-primary btn-sm" type="button" data-act="startBoss" ${state.boss.attempts <= 0 || state.challenge.value < BOSS_CHALLENGE_COST ? 'disabled' : ''}>${state.boss.attempts > 0 ? '讨伐 Boss 🎟️1' : '今日次数用完'}</button>
+            <button class="btn btn-mint btn-sm" type="button" data-act="startBoss" ${state.boss.attempts <= 0 || state.challenge.value < BOSS_CHALLENGE_COST ? 'disabled' : ''}>${state.boss.attempts > 0 ? '讨伐 Boss 🎟️1' : '今日次数用完'}</button>
             <button class="btn btn-mint btn-sm" type="button" data-act="claimBossRank" ${state.boss.bestDamage > 0 && !state.boss.claimed ? '' : 'disabled'}>${state.boss.claimed ? '排名奖励已领' : `领取第 ${board.rank || '—'} 名奖励`}</button>
           </div>
           <div class="note pink" style="margin-top:8px">12 回合内尽量打出高伤害。预计排名奖励：${esc(rewardLogText(logsFromReward(rankReward)))}。</div>
@@ -7810,7 +7896,7 @@ function renderShop() {
               <div class="exchange-info"><b>${esc(t.name)} ${owned ? '<span class="chip mint">已拥有</span>' : ''}</b><p>${elementTag(t.element)} ${rarityTag(t.rarity)} · 碎片 ${shards}${owned ? '' : ` / 唤醒需 ${RARITIES[t.rarity].unlock}`}</p></div>
               <div class="exchange-actions">
                 <button class="btn btn-ghost btn-xs" type="button" data-act="buyShards" data-pet="${t.id}">+5 碎片 · 💎${buyCost}</button>
-                ${!owned ? `<button class="btn btn-primary btn-xs" type="button" data-act="unlockPet" data-pet="${t.id}" ${shards >= RARITIES[t.rarity].unlock ? '' : 'disabled'}>唤醒</button>` : ''}
+                ${!owned ? `<button class="btn btn-mint btn-xs" type="button" data-act="unlockPet" data-pet="${t.id}" ${shards >= RARITIES[t.rarity].unlock ? '' : 'disabled'}>唤醒</button>` : ''}
               </div>
             </div>`;
           }).join('')}
@@ -7908,7 +7994,7 @@ function renderQuest() {
               <div class="task-main"><b>${esc(task.name)} ${claimed ? '<span class="chip">已领取</span>' : ''}</b><p>${esc(task.desc)} · 奖励 ${esc(rewardLogText(logsFromReward(task.reward)))}</p>
                 <div class="ach-progress"><span>${progress}/${task.target}</span></div>${progressHTML(progress, task.target, 'mint')}
               </div>
-              <button class="btn ${claimed ? 'btn-ghost' : 'btn-primary'} btn-xs" type="button" data-act="claimDaily" data-id="${task.id}" ${claimed || !done ? 'disabled' : ''}>${claimed ? '已领' : '领取'}</button>
+              <button class="btn ${claimed ? 'btn-ghost' : 'btn-mint'} btn-xs" type="button" data-act="claimDaily" data-id="${task.id}" ${claimed || !done ? 'disabled' : ''}>${claimed ? '已领' : '领取'}</button>
             </div>`;
           }).join('')}
         </div>
