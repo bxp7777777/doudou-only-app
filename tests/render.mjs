@@ -62,7 +62,7 @@ click({ act: 'tab', tab: 'cycle' });
 check(homeHtml().includes('今天的小日子'), '小日子页没渲染日记卡');
 check(homeHtml().includes('今天什么心情'), '小日子页缺心情选择');
 check(homeHtml().includes('身体感觉'), '小日子页缺身体状况');
-check(homeHtml().includes('姨妈与身体'), '小日子页缺周期卡');
+check(homeHtml().includes('例假与身体'), '小日子页缺周期卡');
 
 click({ act: 'diary-mood', mood: 'happy' });
 check(homeHtml().includes('mood-on'), '选了心情没高亮');

@@ -1230,21 +1230,3 @@ body.theme-duo .bg::after {
 .ms-form .btn-mini {
   margin-top: 0;
 }
-
-/* 卡片解释文字折叠：首屏只留一句，其余点开看 */
-.tip-more { margin-top: 8px; }
-.tip-more > summary {
-  cursor: pointer;
-  font-size: 12.5px;
-  color: var(--muted);
-  list-style: none;
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 2px 0;
-}
-.tip-more > summary::-webkit-details-marker { display: none; }
-.tip-more > summary::before { content: "▾ "; font-size: 11px; }
-.tip-more[open] > summary::before { content: "▴ "; }
-.tip-body { display: grid; gap: 4px; padding: 2px 0 4px; }
-.tip-body p { margin: 0; }

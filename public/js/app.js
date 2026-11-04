@@ -28,8 +28,7 @@ const state = {
   diaryQuery: '',
   tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
   musicSleepTimer: null,
-  toolsOpen: false,
-  showHints: false
+  toolsOpen: false
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -163,28 +162,6 @@ function render() {
       <span class="tab-icon" aria-hidden="true">${t.icon}</span><span class="tab-label">${t.label}</span>
     </button>`
   ).join('');
-  foldCardHints(appEl);
-}
-
-// 首页每张卡的解释文字收进「其它小提示」：首屏只留一句，需要时再展开
-function foldCardHints(host) {
-  if (!host || typeof host.querySelectorAll !== 'function') return;
-  if (state.showHints) return;
-  host.querySelectorAll('.card').forEach((card) => {
-    const lines = Array.from(card.querySelectorAll('p.line, p.hint'));
-    if (lines.length < 2) return;
-    const extra = lines.slice(1);
-    const details = document.createElement('details');
-    details.className = 'tip-more';
-    const summary = document.createElement('summary');
-    summary.textContent = `多一句（${extra.length}）`;
-    const body = document.createElement('div');
-    body.className = 'tip-body';
-    extra.forEach((h) => body.appendChild(h));
-    details.appendChild(summary);
-    details.appendChild(body);
-    card.appendChild(details);
-  });
 }
 
 function hero(title, subline) {
@@ -757,7 +734,7 @@ function cyclePage() {
     </section>
 
     <section class="card">
-      <h2 class="card-head"><span class="card-icon">🌸</span><span class="card-title">姨妈与身体</span></h2>
+      <h2 class="card-head"><span class="card-icon">🌸</span><span class="card-title">例假与身体</span></h2>
       ${info
         ? `<p class="line">${esc(info.headline)}</p>
       <div class="chips">${info.chips
@@ -768,7 +745,7 @@ function cyclePage() {
         : `<p class="line">${esc(cycleUtil.ASK_TEXT)}</p>
       <p class="hint">参数没齐之前，小猪不推算任何日期，只做温柔关心。</p>`}
 
-      <div class="row"><label class="row-l" for="cycle-start">最近一次姨妈第一天</label>
+      <div class="row"><label class="row-l" for="cycle-start">最近一次例假第一天</label>
         <input class="input" type="date" id="cycle-start" value="${esc(cfg.lastStart || '')}" max="${today}"></div>
       <div class="row"><label class="row-l" for="cycle-len">大概隔多少天来一次</label>
         <span class="row-r"><input class="input num" type="number" id="cycle-len" min="15" max="60" value="${esc(cfg.cycleLength || 28)}"><span class="unit">天</span></span></div>
