@@ -21,6 +21,8 @@ JOBS = [
     ("bg_sakura",  "https://aka.doubaocdn.com/s/0N0RakUKkU", "scene_sakura.jpg"),
     ("bg_starry",  "https://aka.doubaocdn.com/s/XYuAMxuOfC", "scene_starry.jpg"),
     ("bg_forest",  "https://aka.doubaocdn.com/s/WaGALPWvOT", "scene_forest.jpg"),
+    ("bg_seaside", "https://aka.doubaocdn.com/s/mFpZ2cNV7l", "scene_seaside.jpg"),
+    ("bg_autumn",  "https://aka.doubaocdn.com/s/RPPg2Ucf3c", "scene_autumn.jpg"),
 ]
 
 MAX_EDGE = 1600

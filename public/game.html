@@ -299,6 +299,8 @@ img{max-width:100%}
 .idle-scene.bg-starry .scene-sun{background:#fff4bd;box-shadow:0 0 25px #fff2ae}
 .idle-scene.bg-starry .scene-cloud{opacity:.24}
 .idle-scene.bg-forest{background:linear-gradient(#dff4e8 0%,#f4fff8 42%,#c9ebcf 42%,#a6d8b6 100%)}
+.idle-scene.bg-seaside{background:linear-gradient(#bfe9fb 0%,#eafcff 42%,#fdeec9 42%,#f3cf96 100%)}
+.idle-scene.bg-autumn{background:linear-gradient(#ffdcae 0%,#fff0d8 42%,#f2c78e 42%,#d99a5e 100%)}
 .scene-sun{position:absolute;right:13%;top:11%;width:50px;height:50px;border-radius:50%;background:#fff4bf;box-shadow:0 0 34px rgba(255,241,169,.8)}
 .scene-cloud{position:absolute;background:rgba(255,255,255,.78);border-radius:999px;filter:blur(.2px);opacity:.8;animation:cloudDrift 18s linear infinite}
 .scene-cloud::before,.scene-cloud::after{content:"";position:absolute;background:inherit;border-radius:50%}
@@ -2489,6 +2491,8 @@ const COSMETICS = [
   { id: 'bg_sakura', type: 'bg', name: '樱花庭院', emoji: '🌸', preview: 'sakura', scene: 'bg-sakura', cost: 80, desc: '落樱把庭院铺成柔软的粉色地毯。' },
   { id: 'bg_starry', type: 'bg', name: '星空阁楼', emoji: '🌌', preview: 'starry', scene: 'bg-starry', cost: 150, desc: '在天窗下数星星，数着数着就睡着了。' },
   { id: 'bg_forest', type: 'bg', name: '薄荷森林', emoji: '🌿', preview: 'forest', scene: 'bg-forest', cost: 220, desc: '薄荷味的树影，连梦都是凉的。' },
+  { id: 'bg_seaside', type: 'bg', name: '海风晴滩', emoji: '🌊', scene: 'bg-seaside', cost: 0, desc: '浪声轻拍暖沙，吹到脸上都是咸甜的。' },
+  { id: 'bg_autumn', type: 'bg', name: '金枫小径', emoji: '🍂', scene: 'bg-autumn', cost: 0, desc: '踩着落叶沙沙作响，暖光把树梢染成蜜色。' },
   { id: 'acc_strawberry', type: 'acc', name: '草莓帽', emoji: '🍓', preview: 'acc', cost: 60, desc: '毛茸茸的草莓帽，戴上就想哼哼。' },
   { id: 'acc_scarf', type: 'acc', name: '奶油围巾', emoji: '🧣', preview: 'acc', cost: 80, desc: '被奶油色围巾裹住，风也变温柔了。' },
   { id: 'acc_crown', type: 'acc', name: '星星王冠', emoji: '👑', preview: 'acc', cost: 160, desc: '亮闪闪的小王冠，今天也是小镇主角。' },
@@ -2979,7 +2983,8 @@ const ENCOUNTERS = [
 ];
 
 const COSMETIC_SCENE = {
-  bg_cream: 'bg-cream', bg_sakura: 'bg-sakura', bg_starry: 'bg-starry', bg_forest: 'bg-forest'
+  bg_cream: 'bg-cream', bg_sakura: 'bg-sakura', bg_starry: 'bg-starry', bg_forest: 'bg-forest',
+  bg_seaside: 'bg-seaside', bg_autumn: 'bg-autumn'
 };
 
 /* ========== 2. 存档与核心状态 ========== */
@@ -3412,7 +3417,9 @@ const SCENE_PHOTOS = {
   bg_cream: 'art/scenes/scene_cream.jpg',
   bg_sakura: 'art/scenes/scene_sakura.jpg',
   bg_starry: 'art/scenes/scene_starry.jpg',
-  bg_forest: 'art/scenes/scene_forest.jpg'
+  bg_forest: 'art/scenes/scene_forest.jpg',
+  bg_seaside: 'art/scenes/scene_seaside.jpg',
+  bg_autumn: 'art/scenes/scene_autumn.jpg'
 };
 function scenePhotoUrl(bgId) { return SCENE_PHOTOS[bgId] || null; }
 // 羁绊同框彩蛋图登记：bondId→图片路径；缺失时仅显示文字彩蛋，onerror 自动移除图片位
