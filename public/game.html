@@ -112,7 +112,7 @@ img{max-width:100%}
 .res-pill .sub{font-size:10px;color:var(--muted);margin-left:2px}
 .top-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
 .icon-btn{
-  width:38px;height:38px;border-radius:13px;border:1px solid var(--line);
+  width:44px;height:44px;border-radius:13px;border:1px solid var(--line);
   background:var(--paper);display:grid;place-items:center;font-size:18px;
   box-shadow:var(--shadow-soft);transition:transform .16s ease, box-shadow .16s ease;
 }
@@ -212,7 +212,7 @@ img{max-width:100%}
 .no-wrap{white-space:nowrap}
 .big-number{font-size:31px;font-weight:800;line-height:1.1;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
 .btn{
-  border:1px solid transparent;border-radius:15px;padding:10px 15px;
+  border:1px solid transparent;border-radius:15px;padding:10px 15px;min-height:44px;
   display:inline-flex;align-items:center;justify-content:center;gap:7px;
   font-weight:700;font-size:13px;line-height:1.2;
   background:#fff;color:var(--ink);
@@ -230,8 +230,8 @@ img{max-width:100%}
 .btn-yellow{background:linear-gradient(145deg,#fff4c9,#ffe79a);border-color:#ffe293;color:#7a5b1c;box-shadow:0 4px 0 #e7c45b,0 8px 20px rgba(230,195,97,.2)}
 .btn-ghost{background:rgba(255,255,255,.56);border-color:var(--line);box-shadow:none}
 .btn-danger{background:linear-gradient(145deg,#ffd6d6,#ffb9b9);border-color:#ffc0c0;color:#8f3c3c;box-shadow:0 4px 0 #e79797}
-.btn-sm{padding:7px 11px;font-size:12px;border-radius:12px}
-.btn-xs{padding:5px 8px;font-size:10.5px;border-radius:10px;box-shadow:0 2px 0 rgba(180,149,118,.12)}
+.btn-sm{padding:8px 12px;font-size:12.5px;border-radius:12px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.btn-xs{padding:6px 10px;font-size:11px;border-radius:10px;box-shadow:0 2px 0 rgba(180,149,118,.12);min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:3px}
 .btn-wide{width:100%}
 .btn[disabled],.btn.disabled{filter:grayscale(.55);opacity:.58;cursor:not-allowed;transform:none!important;box-shadow:none}
 .btn .ico{font-size:15px}
@@ -423,6 +423,13 @@ img{max-width:100%}
 .home-bottom-grid{display:grid;grid-template-columns:1.3fr .9fr;gap:14px;margin-top:14px}
 .boost-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
 .garden-card{margin-top:12px}
+.ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;position:relative;flex:0 0 auto;background:conic-gradient(#f0a9c4 calc(var(--p,0) * 1%),#f4e8e3 0)}
+.ring::after{content:'';position:absolute;inset:6px;border-radius:50%;background:var(--paper)}
+.ring>span{position:relative;z-index:1;font-weight:800;font-size:15px;color:#8a5566}
+.garden-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.garden-actions .btn-xs{flex:1 1 auto}
+.garden-actions .btn-xs.is-on{border-color:#8fbfa4;background:#eefaf1;color:#3f7a58}
+.claim-all{width:100%;margin:8px 0 2px;justify-content:center}
 .garden-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .garden-cell{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 6px;border:1px solid var(--line);border-radius:14px;background:#fffdf6;cursor:pointer}
 .garden-cell:disabled{cursor:default}
@@ -1172,6 +1179,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .achievement-card .ach-info{flex:1;min-width:135px}
 .achievement-card .ach-info b{font-size:11.5px;display:block}
 .achievement-card .ach-info p{font-size:9.5px;color:var(--muted);margin:1px 0 3px;line-height:1.45}
+.achievement-card .ach-note{color:#a08a94}
 .achievement-card .btn{flex:0 0 auto}
 
 /* 七日签到 */
@@ -1709,9 +1717,9 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 }
 
 /* 关键操作的可点面积 */
-.icon-btn{width:40px;height:40px}
-.btn-xs{min-height:32px;padding:7px 10px;font-size:11px}
-.pal-setmain{width:26px;height:26px}
+.icon-btn{width:44px;height:44px}
+.btn-xs{min-height:44px;padding:6px 10px;font-size:11px}
+.pal-setmain{width:40px;height:40px}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -5391,6 +5399,129 @@ function pullGacha(type, count) {
 }
 
 /* -------- 每日任务 / 成就 / 签到 -------- */
+/* ---------------- 每周主题：周一 0 点刷新，四周轮换 ---------------- */
+const WEEKLY_THEMES = [
+  {
+    id: 'honey', name: '蜂蜜季', emoji: '🍯',
+    line: '这一周，小镇的甜味比平时多一点点。',
+    goals: [
+      { id: 'w_battle', label: '战斗 20 场', metric: 'battles', target: 20, reward: { gold: 1600, fruit: 40 } },
+      { id: 'w_win', label: '赢下 8 场', metric: 'wins', target: 8, reward: { crystal: 60 } },
+      { id: 'w_garden', label: '收菜 10 次', metric: 'gardens', target: 10, reward: { fruit: 60 } }
+    ]
+  },
+  {
+    id: 'rain', name: '听雨季', emoji: '🌧️',
+    line: '雨声落在窗上，适合打盹，也适合冒险。',
+    goals: [
+      { id: 'w_battle', label: '战斗 15 场', metric: 'battles', target: 15, reward: { gold: 1400, fruit: 35 } },
+      { id: 'w_encounter', label: '探索奇遇 4 次', metric: 'encounters', target: 4, reward: { crystal: 50, fruit: 20 } },
+      { id: 'w_boss', label: '挑战首领 3 次', metric: 'bossAttempts', target: 3, reward: { enhanceStone: 4 } }
+    ]
+  },
+  {
+    id: 'starry', name: '星屑夜', emoji: '✨',
+    line: '星星落进池塘里，捞起来都是软的。',
+    goals: [
+      { id: 'w_win', label: '赢下 10 场', metric: 'wins', target: 10, reward: { crystal: 80 } },
+      { id: 'w_pull', label: '抽蛋 3 次', metric: 'pulls', target: 3, reward: { starShard: 6 } },
+      { id: 'w_level', label: '升级 20 次', metric: 'levelUps', target: 20, reward: { fruit: 70 } }
+    ]
+  },
+  {
+    id: 'petal', name: '花瓣风', emoji: '🌸',
+    line: '风把花瓣吹得到处都是，连队形都排歪了。',
+    goals: [
+      { id: 'w_battle', label: '战斗 12 场', metric: 'battles', target: 12, reward: { gold: 1200, fruit: 30 } },
+      { id: 'w_garden', label: '收菜 14 次', metric: 'gardens', target: 14, reward: { fruit: 80 } },
+      { id: 'w_encounter', label: '探索奇遇 3 次', metric: 'encounters', target: 3, reward: { crystal: 40 } }
+    ]
+  }
+];
+
+function weekIndexNow(d = new Date()) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.floor(((t - yearStart) / 86400000 + 1) / 7);
+}
+function weekKeyNow(d = new Date()) {
+  return `${d.getFullYear()}-W${String(weekIndexNow(d)).padStart(2, '0')}`;
+}
+function weeklyThemeOf(s = state) {
+  ensureWeekly(s);
+  return WEEKLY_THEMES[weekIndexNow() % WEEKLY_THEMES.length];
+}
+function ensureWeekly(s = state) {
+  const key = weekKeyNow();
+  if (!s.weekly || s.weekly.key !== key) {
+    s.weekly = { key, m: {}, claimed: [] };
+  }
+  if (!s.weekly.m) s.weekly.m = {};
+  if (!Array.isArray(s.weekly.claimed)) s.weekly.claimed = [];
+}
+function bumpWeekly(metric, amount = 1) {
+  if (!state || !state.weekly) return;
+  if (!metric) return;
+  state.weekly.m[metric] = Math.max(0, num(state.weekly.m[metric], 0) + amount);
+}
+function weeklyProgressOf(goal, s = state) {
+  ensureWeekly(s);
+  return Math.min(goal.target, Math.floor(num(s.weekly.m[goal.metric], 0)));
+}
+function claimWeekly(goalId) {
+  ensureWeekly();
+  const theme = weeklyThemeOf();
+  const goal = theme.goals.find((g) => g.id === goalId);
+  if (!goal) return;
+  if (state.weekly.claimed.includes(goalId)) { toast('这一周的这份已经领过啦', 'bad'); return; }
+  if (weeklyProgressOf(goal) < goal.target) { toast('这周的目标还没完成哦', 'bad'); return; }
+  state.weekly.claimed.push(goalId);
+  const logs = addReward(goal.reward);
+  saveGame();
+  renderAll();
+  toast(`本周奖励：${rewardLogText(logs)}`, 'good');
+  playSfx('claim');
+}
+function claimAllWeekly() {
+  ensureWeekly();
+  const theme = weeklyThemeOf();
+  let n = 0;
+  for (const goal of theme.goals) {
+    if (state.weekly.claimed.includes(goal.id)) continue;
+    if (weeklyProgressOf(goal) < goal.target) continue;
+    state.weekly.claimed.push(goal.id);
+    addReward(goal.reward);
+    n++;
+  }
+  if (!n) { toast('本周还没有可领取的目标', 'bad'); return; }
+  saveGame();
+  renderAll();
+  toast(`领取本周 ${n} 份主题奖励！`, 'good');
+  playSfx('claim');
+}
+function weeklyCardHTML() {
+  const theme = weeklyThemeOf();
+  const rows = theme.goals.map((goal) => {
+    const cur = weeklyProgressOf(goal);
+    const done = cur >= goal.target;
+    const claimed = state.weekly.claimed.includes(goal.id);
+    return `<div class="task-mini ${done ? 'done' : ''}">
+      <span class="dot">${claimed ? '✓' : done ? '!' : '·'}</span>
+      <span class="txt">${esc(goal.label)} <b>${cur}/${goal.target}</b></span>
+      ${claimed
+        ? '<span class="reward">已领</span>'
+        : `<button class="btn btn-ghost btn-xs" type="button" data-act="claimWeekly" data-goal="${goal.id}"${done ? '' : ' disabled'}>${done ? '领取' : '进行中'}</button>`}
+    </div>`;
+  }).join('');
+  return `<div class="card">
+    <div class="card-head"><div><h2>${theme.emoji} 本周主题 · ${esc(theme.name)}</h2><p>${esc(theme.line)}</p></div><span class="chip">周一 0 点刷新</span></div>
+    <div class="task-mini-list">${rows}</div>
+    <button class="btn btn-mint btn-sm claim-all" type="button" data-act="claimAllWeekly">🎁 领取本周奖励</button>
+  </div>`;
+}
+
 function dailyTaskProgress(taskId) {
   const task = DAILY_TASKS.find(t => t.id === taskId);
   if (!task) return 0;
@@ -5399,6 +5530,7 @@ function dailyTaskProgress(taskId) {
 function bumpMetric(metric, amount = 1, s = state) {
   if (!metric) return;
   s.quests.metrics[metric] = Math.max(0, num(s.quests.metrics[metric], 0) + amount);
+  if (s === state) bumpWeekly(metric, amount);
   for (const task of DAILY_TASKS) {
     if (task.metric === metric) {
       s.daily.progress[task.metric] = Math.min(task.target, Math.floor(num(s.daily.progress[task.metric], 0) + amount));
@@ -6828,6 +6960,49 @@ const ARENA_STREAK_REWARDS = [
   { streak: 8, reward: { arenaCoin: 100, crystal: 12 }, label: '8 连胜' }
 ];
 // 主线失败时的“变强清单”：依据当前队伍真实状态给可执行提示，纯展示不自动战斗
+function stoneLabelOf(element) {
+  return { fire: '火', grass: '草', water: '水', light: '光', dark: '暗', earth: '土' }[element] || '通用';
+}
+// 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
+function stageUpgradePlan(stage) {
+  const lines = [];
+  const team = getTeamPets();
+  const power = Math.round(calcTeamPower(state));
+  const need = Math.round(num(stage && stage.recPower, 0));
+  const gap = Math.max(0, need - power);
+  if (need > 0) {
+    if (gap > 0) lines.push(`当前队伍战力 ${fmt(power)}，本关推荐 ${fmt(need)}，还差 ${fmt(gap)}。`);
+    else lines.push(`战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`);
+  }
+  if (!team.length) { lines.push('先在宠物页上阵至少一只主力，再回来挑战。'); return lines; }
+  const low = [...team].sort((a, b) => num(a.level, 1) - num(b.level, 1))[0];
+  if (num(low.level, 1) < MAX_LEVEL) {
+    let cost = 0;
+    const target = Math.min(MAX_LEVEL, num(low.level, 1) + 5);
+    for (let lv = num(low.level, 1); lv < target; lv++) cost += Math.round(7 + lv * 2.6 + Math.pow(lv, 1.15));
+    const t = templateOf(low);
+    lines.push(`升级最快：把「${t.name}」从 ${num(low.level, 1)} 级升到 ${target} 级要 ${fmt(cost)} 经验果（现有 ${fmt(state.resources.fruit)}）。`);
+  }
+  const evoPet = team.find((p) => {
+    const n = nextEvolution(p);
+    return n && num(p.level, 1) >= n.levelReq && num(state.stones[templateOf(p).element], 0) < n.stones;
+  });
+  if (evoPet) {
+    const n = nextEvolution(evoPet);
+    const el = templateOf(evoPet).element;
+    const lack = n.stones - num(state.stones[el], 0);
+    const ch = Math.min(CHAPTERS.length, Math.max(1, evoPet.evo === 0 ? 1 : 5));
+    lines.push(`进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、爬塔、开图鉴里程碑都会给。`);
+  }
+  const starPet = [...team].sort((a, b) => num(a.star, 1) - num(b.star, 1))[0];
+  if (num(starPet.star, 1) < 10) {
+    const c = starUpCost(starPet) || 0;
+    const lack = Math.max(0, c - num(state.items.starShard, 0));
+    if (lack > 0) lines.push(`升星缺材料：「${templateOf(starPet).name}」升到 ${num(starPet.star, 1) + 1} 星还差 ${fmt(lack)} 星石——首领首通、抽到重复伙伴都会给。`);
+  }
+  return lines;
+}
+
 function stageWeakTips() {
   const tips = [];
   const team = getTeamPets();
@@ -6919,7 +7094,7 @@ function finishBattle() {
       storyLine = pick(FAIL_FEEL);
       resultSub = pick(FAIL_SUB_POOL);
       resultNote = pick(['队伍还需要再成长一点。', '再练练等级、装备与属性克制就好了。', '先养一波状态，回头轻松拿下这关。']);
-      resultAdvice = stageWeakTips();
+      resultAdvice = stageUpgradePlan(stage).concat(stageWeakTips().slice(0, 2));
     }
     resultChips = [
       { icon: '❤️', label: '存活', value: `${survived}/${totalAllies}` },
@@ -7383,19 +7558,33 @@ function gardenHTML() {
     const gold = num(p.gold, t.gold);
     const fruit = num(p.fruit, t.fruit);
     if (st === 'empty') {
-      return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">${t.minutes} 分钟成熟<br>💰${gold} 🍎${fruit} · 点我种</span></button>`;
+      return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">${t.minutes}′ · 💰${gold} 🍎${fruit}</span></button>`;
     }
     if (st === 'growing') {
-      return `<button class="garden-cell plot-growing" type="button" data-act="gardenWater" data-index="${i}"><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟 · 点我浇水<br>💰${gold} 🍎${fruit}</span></button>`;
+      return `<button class="garden-cell plot-growing" type="button" data-act="gardenWater" data-index="${i}"><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} · 💰${gold} 🍎${fruit}</span></button>`;
     }
-    return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">点我收获<br>💰${gold} 🍎${fruit}</span></button>`;
+    return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">可收 · 💰${gold} 🍎${fruit}</span></button>`;
   }).join('');
+  const auto = !!state.garden.auto;
   return `<section class="card garden-card">
-    <div class="card-head"><div><h2>🌱 小菜园</h2><p>6 块地由快到慢：3 / 5 / 10 / 30 / 40 / 60 分钟成熟，种得越久收成越多，不耗体力。</p></div><span class="chip">${readyCount} 块可收</span></div>
+    <div class="card-head"><div><h2>🌱 小菜园</h2><p>3~60 分钟成熟，不耗体力；种得越久收成越多。</p></div><span class="chip">${readyCount} 块可收</span></div>
+    <div class="garden-actions">
+      <button class="btn btn-mint btn-xs" type="button" data-act="gardenHarvestAll"${readyCount ? '' : ' disabled'}>🧺 一键收菜${readyCount ? `（${readyCount}）` : ''}</button>
+      <button class="btn btn-ghost btn-xs" type="button" data-act="gardenPlantAll">🌱 一键补种</button>
+      <button class="btn btn-ghost btn-xs${auto ? ' is-on' : ''}" type="button" data-act="gardenAuto">🔁 自动补种·${auto ? '开' : '关'}</button>
+    </div>
     <div class="garden-grid">${cells}</div>
   </section>`;
 }
 
+// 小镇总进度：主线 / 图鉴 / 成就 / 爬塔 四项各占 1/4
+function townProgressPct() {
+  const stage = Math.min(1, num(state.stage && state.stage.maxCleared, 0) / STAGES.length);
+  const codex = Math.min(1, stateCodexSeenCount() / PETS.length);
+  const ach = Math.min(1, ACHIEVEMENTS.filter((a) => achievementClaimed(a.id)).length / ACHIEVEMENTS.length);
+  const tower = Math.min(1, num(state.tower && state.tower.best, 0) / 30);
+  return Math.round((stage + codex + ach + tower) * 25);
+}
 function renderHome() {
   const pet = getMainPet();
   const t = pet ? templateOf(pet) : null;
@@ -7541,8 +7730,10 @@ function renderHome() {
       </div>
 
       <div class="grid">
+        ${weeklyCardHTML()}
         <div class="card">
           <div class="card-head"><div><h2>📅 每日小确幸</h2><p>任务、签到与副本每天 0 点刷新</p></div><span class="chip">${dailyClaimable ? `${dailyClaimable} 份可领` : '已处理'}</span></div>
+          <button class="btn btn-mint btn-sm claim-all" type="button" data-act="claimAllHome">🎁 一键领取（挂机 · 任务 · 菜园 · 签到）</button>
           <div class="task-mini-list">
             ${DAILY_TASKS.slice(0, 4).map(task => {
               const done = dailyTaskProgress(task.id) >= task.target;
@@ -7556,7 +7747,7 @@ function renderHome() {
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><div><h2>✨ 小镇进度</h2><p>慢慢来，毛茸茸会记得你的努力</p></div></div>
+          <div class="card-head"><div><h2>✨ 小镇进度</h2><p>慢慢来，毛茸茸会记得你的努力</p></div><span class="ring" style="--p:${townProgressPct()}"><span>${townProgressPct()}%</span></span></div>
           <div class="stat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
             <div class="idle-stat"><span>最高关卡</span><b>${esc(maxClearedLabel)}</b></div>
             <div class="idle-stat"><span>图鉴</span><b>${stateCodexSeenCount()} / ${PETS.length}</b></div>
@@ -8122,13 +8313,76 @@ function renderShop() {
 }
 
 /* -------- 任务 -------- */
+/* 成就的「多一句」：按类别轮换的小句子，让 200 条成就描述不再只有干巴巴的目标 */
+const ACH_NOTE_GROUPS = [
+  { key: 'loop', re: /rebirth/, notes: [
+    '轮回不是重来，是带着记忆再来。', '第一次转生，舍不得那身装备。', '重开之后，路走得快多了。',
+    '永恒结晶，换的是下次的从容。', '每轮回一次，小镇就更熟一点。', '新的开局，还是那两只老搭档。',
+    '有些加成，一辈子都在。', '转生那天，会想把每个伙伴都看一遍。'
+  ] },
+  { key: 'arena', re: /arena|hall\.|tower/, notes: [
+    '竞技场的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本。',
+    '连胜那几天，连走路都带风。', '塔里的对手一层比一层难缠。', '爬塔爬到一半，才想起要带奶。',
+    '青铜到白银，隔的不是运气。', '被人反杀一次，就学会留一手。', '塔灵的话很少，但很扎人。',
+    '防守阵容也是要磨的。', '越往上，越知道「差一点」有多远。', '赢下来的名次，才敢截图。',
+    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。'
+  ] },
+  { key: 'gacha', re: /pulls/, notes: [
+    '第十连的保底，是抽卡人的底气。', '重复的伙伴，也换来了碎片。', '开蛋的声音，总能让人安静两秒。', '抽到新伙伴那天，屋子里会亮一下。'
+  ] },
+  { key: 'explore', re: /encounters/, notes: [
+    '奇遇不看等级，只看你走不走。', '每天两次机会，总想留到最后。', '有些故事，走完才想起拍照。', '路口的风，比地图还会指路。'
+  ] },
+  { key: 'labor', re: /feeds|enhancements|dailyClaims|idleSeconds|goldEarned|signIn/, notes: [
+    '投喂和摸头，是最便宜的加成。', '强化石花得比想象快。', '每日任务做顺手了，像刷牙。',
+    '挂机攒下的东西，积少成多。', '金币总是先花完的那一个。', '签到第七天，有仪式感。',
+    '一天天累积，回头看吓一跳。', '离线收益是给忙人的温柔。', '该收的时候不收，就浪费了。',
+    '小习惯做久了，会变成底气。', '今天的活干完，才敢开游戏。', '钻石要花在刀刃上。',
+    '有些奖励，领的时候才想起来。', '重复的动作，也有它的踏实。', '比起肝，还是细水长流舒服。', '仓库满了，才知道自己攒了多少。'
+  ] },
+  { key: 'grow', re: /evolutions|levelUps|starUps|reduce|maxStar|maxIntimacy|fullEquip|calcTeamPower/, notes: [
+    '喂进去的经验果，都长成了本事。', '升星那一下，比抽卡还紧张。', '进化前后的样子，判若两猫。',
+    '等级是熬出来的，不是刷出来的。', '十星那天，值得截个图。', '属性一条条堆上去，才敢打硬仗。',
+    '亲密到某个程度，它会主动贴过来。', '装备齐了，走路都稳。', '战力是数字，也是底气。',
+    '慢慢练，总会长大。', '究极体的毛，比小时候蓬。', '练到后面，才发现前面偷的懒。'
+  ] },
+  { key: 'battle', re: /wins|battles|sweeps|bossAttempts|stage\./, notes: [
+    '第一场胜利总是最难忘的。', '手忙脚乱过，后来就顺手了。', '输过几场，才学会看属性。',
+    '小队的默契是打出来的。', '有时候赢，只因为多撑了一回合。', '首领扑过来的时候，谁都没退。',
+    '打到后来，连节奏都对上了。', '胜利的声音，听多少遍都不腻。', '有几场是靠运气，也有几场是靠算。',
+    '伤药和耐心，缺一不可。', '从「再来一次」到「这次稳了」。', '扫荡键按多了，也有点想念手打。',
+    '队伍越练越顺手，关卡就变矮了。', '每一关都记着，谁在这儿掉过血。', '赢了就笑，输了就再来。'
+  ] },
+  { key: 'collect', re: /$^/, notes: [
+    '每只毛茸茸都有自己的小脾气。', '图鉴一页页翻过去，像在翻相册。', '看起来像同一只，其实都不是。',
+    '收集这件事，急不来。', '名字记不住，就先记花纹。', '同款不同色，也算新手气。',
+    '图鉴点亮的瞬间，最解压。', '羁绊组合，是把朋友凑在一起。', '有些伙伴是抽来的，有些是等来的。',
+    '一只一只攒，屋子里就热闹了。', '每只都记得第一次见面那天。', '凑齐一套的时候，会有点想哭。'
+  ] }
+];
+function achGroupOf(ach) {
+  const src = String(ach.get || '');
+  for (const g of ACH_NOTE_GROUPS) {
+    if (g.key === 'collect') continue;
+    if (g.re.test(src)) return g.key;
+  }
+  return 'collect';
+}
+function achNoteOf(ach) {
+  const key = achGroupOf(ach);
+  const group = ACH_NOTE_GROUPS.find((g) => g.key === key) || ACH_NOTE_GROUPS[ACH_NOTE_GROUPS.length - 1];
+  const peers = ACHIEVEMENTS.filter((a) => achGroupOf(a) === key);
+  const idx = Math.max(0, peers.findIndex((a) => a.id === ach.id));
+  return group.notes[idx % group.notes.length];
+}
+
 function achievementCardHTML(ach) {
   const progress = achievementProgress(ach);
   const claimed = achievementClaimed(ach.id);
   const rewardText = rewardLogText(logsFromReward(ach.reward || {}));
   return `<div class="achievement-card ${progress >= ach.target ? 'ready' : ''} ${claimed ? 'claimed' : ''}">
     <div class="ach-icon">${ach.icon}</div>
-    <div class="ach-info"><b>${esc(ach.name)}</b><p>${esc(ach.desc)}</p>
+    <div class="ach-info"><b>${esc(ach.name)}</b><p>${esc(ach.desc)}<br><span class="ach-note">${esc(achNoteOf(ach))}</span></p>
       <div class="ach-progress"><span>${fmt(progress)} / ${fmt(ach.target)}</span><span>${esc(rewardText)}</span></div>
       ${progressHTML(progress, ach.target, 'lav')}
     </div>
@@ -8484,6 +8738,22 @@ function openGachaResults(results, type, count) {
 }
 
 /* -------- 宠物详情 -------- */
+function petPowerBreakdown(pet) {
+  if (!pet) return [];
+  const powerOf = (over) => calcPower(getPetStats(Object.assign({}, pet, over)));
+  const base = powerOf({ level: 1, star: 1, evo: 0, equipment: {} });
+  const lv = powerOf({ star: 1, evo: 0, equipment: {} });
+  const st = powerOf({ evo: 0, equipment: {} });
+  const ev = powerOf({ equipment: {} });
+  const full = powerOf({});
+  return [
+    { label: '等级', value: lv - base },
+    { label: '星级', value: st - lv },
+    { label: '进化', value: ev - st },
+    { label: '装备', value: full - ev }
+  ].filter((r) => r.value !== 0);
+}
+
 function openPetModal(uid) {
   const pet = state.pets[uid];
   if (!pet) { toast('没有找到这只宠物', 'bad'); return; }
@@ -8550,6 +8820,7 @@ function openPetModal(uid) {
     </div>
     <div class="note" style="margin:8px 0 0">💗 亲密档位「${intimacyTier.name}」（全属性 ×${intimacyTier.mult.toFixed(2)}，亲密度每点再 +0.15%）${intimacyTier.at >= 60 ? '；达到「亲密」档（≥60）后，首战开局额外 +15 怒气，更容易抢先释放奥义' : ''}；当前饱食/心情影响：${careText}。喂饱、哄开心会小幅提升实战发挥，长期冷落则会下降。</div>
     <div class="note lav" style="margin:8px 0 0">💬 ${esc(intimacyLine)}<br><span class="tiny muted">${intimacyNext ? `再攒 ${Math.max(0, intimacyNext.at - Math.floor(pet.intimacy))} 点亲密度，解锁「${intimacyNext.name}」的新台词` : '已经是最深的一档，它把整颗心都交给你了'}</span></div>
+    <div class="note tiny" style="margin:8px 0 0">⚖️ 战力构成：${petPowerBreakdown(pet).map((r) => `${r.label} +${fmt(r.value)}`).join(' · ') || '暂无装备加成'}（合计 ${fmt(getPetPower(pet))}）</div>
     <div class="pet-stat-panel">
       <div class="stat-cell"><small>HP</small><b>${fmt(stats.hp)}</b></div>
       <div class="stat-cell"><small>攻击</small><b>${fmt(stats.atk)}</b></div>
@@ -8913,6 +9184,59 @@ function claimIdle() {
   playSfx('claim');
 }
 
+function claimAllHome() {
+  accrueIdleToNow();
+  const idleGold = Math.floor(num(state.idle.pendingGold, 0));
+  const idleFruit = Math.floor(num(state.idle.pendingFruit, 0));
+  state.idle.pendingGold = 0;
+  state.idle.pendingFruit = 0;
+  ensureDaily();
+  ensureGarden();
+  let tasks = 0;
+  for (const t of DAILY_TASKS) {
+    if (state.daily.claimed.includes(t.id)) continue;
+    if (dailyTaskProgress(t.id) < t.target) continue;
+    state.daily.claimed.push(t.id);
+    addReward(t.reward);
+    state.quests.metrics.dailyClaims += 1;
+    tasks++;
+  }
+  let plots = 0;
+  const now = Date.now();
+  state.garden.plots.forEach((p, i) => {
+    if (gardenPlotStatus(p, now) !== 'ready') return;
+    const t = gardenTier(i);
+    addReward({ gold: num(p.gold, t.gold), fruit: num(p.fruit, t.fruit) });
+    p.state = 'empty';
+    p.readyAt = 0;
+    delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
+    plots++;
+  });
+  if (state.garden.auto) gardenPlantAll(true);
+  let signed = false;
+  if (state.signIn.days < 7 && state.signIn.lastDate !== localDateKey()) {
+    if (!state.signIn.firstDate) state.signIn.firstDate = localDateKey();
+    state.signIn.lastDate = localDateKey();
+    state.signIn.days += 1;
+    addReward(SIGNIN_REWARDS[state.signIn.days - 1] || {});
+    signed = true;
+  }
+  if (idleGold + idleFruit === 0 && !tasks && !plots && !signed) {
+    toast('暂时没有可领的东西，去冒个险吧');
+    return;
+  }
+  advanceTutorial(3);
+  saveGame();
+  renderAll();
+  const parts = [];
+  if (idleGold + idleFruit > 0) parts.push(`挂机 +${fmt(idleGold)} 金币`);
+  if (tasks) parts.push(`任务 ${tasks} 份`);
+  if (plots) parts.push(`菜园 ${plots} 块`);
+  if (signed) parts.push('签到 1 天');
+  toast(`一键领取：${parts.join('、')}`, 'good', 3200);
+  playSfx('claim');
+}
+
 /* ---------------- 小菜园：播种后定时成熟，点击收获金币+经验果，零成本不耗体力 ---------------- */
 const GARDEN_SIZE = 6;
 // 六块地由快到慢分档：成熟时长 3/5/10/30/40/60 分钟递增；收获金币与经验果随档递增，单位时间产出边际递减，避免纯挂机套利
@@ -8927,6 +9251,7 @@ const GARDEN_TIERS = [
 function gardenTier(i) { return GARDEN_TIERS[i] || GARDEN_TIERS[GARDEN_TIERS.length - 1]; }
 function ensureGarden() {
   if (!state.garden || !Array.isArray(state.garden.plots)) state.garden = { plots: [] };
+  if (typeof state.garden.auto !== 'boolean') state.garden.auto = false;
   while (state.garden.plots.length < GARDEN_SIZE) state.garden.plots.push({ state: 'empty' });
 }
 function gardenPlotStatus(p, now = Date.now()) {
@@ -8949,6 +9274,58 @@ function gardenPlant(i) {
   playSfx('pop');
   persist();
 }
+function gardenHarvestAll() {
+  ensureGarden();
+  const now = Date.now();
+  let gold = 0;
+  let fruit = 0;
+  let n = 0;
+  state.garden.plots.forEach((p, i) => {
+    if (gardenPlotStatus(p, now) !== 'ready') return;
+    const t = gardenTier(i);
+    gold += num(p.gold, t.gold);
+    fruit += num(p.fruit, t.fruit);
+    p.state = 'empty';
+    p.readyAt = 0;
+    delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
+    n++;
+  });
+  if (!n) { toast('还没有成熟的菜，再等等～'); return; }
+  addReward({ gold, fruit });
+  bumpMetric('gardens', n);
+  if (state.garden.auto) gardenPlantAll(true);
+  toast(`一键收菜：${n} 块地 +${fmt(gold)} 金币、+${fmt(fruit)} 经验果`, 'good', 2600);
+  playSfx('claim');
+  persist();
+}
+function gardenPlantAll(silent) {
+  ensureGarden();
+  let n = 0;
+  state.garden.plots.forEach((p, i) => {
+    if (p.state !== 'empty') return;
+    const t = gardenTier(i);
+    p.state = 'growing';
+    p.tier = i;
+    p.minutes = t.minutes;
+    p.gold = t.gold;
+    p.fruit = t.fruit;
+    p.readyAt = Date.now() + t.minutes * 60000;
+    n++;
+  });
+  if (!n) { if (!silent) toast('没有空地可以补种'); return; }
+  if (!silent) {
+    toast(`补种 ${n} 块地${state.garden.auto ? '，成熟后会自动续种' : ''}～`, 'good');
+    playSfx('pop');
+  }
+  persist();
+}
+function toggleGardenAuto() {
+  ensureGarden();
+  state.garden.auto = !state.garden.auto;
+  toast(state.garden.auto ? '已开启自动补种：收完自动种回同一块地' : '已关闭自动补种', state.garden.auto ? 'good' : '');
+  persist();
+  renderAll();
+}
 function gardenHarvest(i) {
   ensureGarden();
   const p = state.garden.plots[i];
@@ -8958,11 +9335,13 @@ function gardenHarvest(i) {
   const gold = num(p.gold, t.gold);
   const fruit = num(p.fruit, t.fruit);
   addReward({ gold, fruit });
+  bumpMetric('gardens', 1);
   p.state = 'empty';
   p.readyAt = 0;
   delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
   toast(`菜园丰收：+${gold} 金币、+${fruit} 经验果`, 'good', 2600);
   playSfx('claim');
+  if (state.garden.auto) gardenPlantAll(true);
   persist();
 }
 function gardenWater(i) {
@@ -9207,7 +9586,9 @@ function startStage(index) {
   if (index > state.stage.maxCleared + 1) { toast('请先通关前置关卡', 'bad'); return; }
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
-  const enemies = createEnemyFormation(stage.recPower, buildStageEnemyOptions(stage));
+  // 最终关留 5% 余量：满配战力 25,773 对 25,024 只剩 3%，少练一只或换队就会卡死
+  const enemyPower = stage.index === STAGES.length ? Math.round(stage.recPower * 0.95) : stage.recPower;
+  const enemies = createEnemyFormation(enemyPower, buildStageEnemyOptions(stage));
   if (!spendStamina(STAGE_STAMINA_COST)) { toast('体力不足', 'bad'); return; }
   bumpMetric('battles', 1);
   saveGame();
@@ -10064,6 +10445,12 @@ function handleActionClick(event) {
     case 'gardenPlant': gardenPlant(Number(target.dataset.index)); break;
     case 'gardenHarvest': gardenHarvest(Number(target.dataset.index)); break;
     case 'gardenWater': gardenWater(Number(target.dataset.index)); break;
+    case 'gardenHarvestAll': gardenHarvestAll(); break;
+    case 'gardenPlantAll': gardenPlantAll(false); break;
+    case 'gardenAuto': toggleGardenAuto(); break;
+    case 'claimAllHome': claimAllHome(); break;
+    case 'claimWeekly': claimWeekly(target.dataset.goal); break;
+    case 'claimAllWeekly': claimAllWeekly(); break;
     case 'selfFocus': claimSelfCare('focus'); break;
     case 'selfMove': claimSelfCare('move'); break;
     case 'hugPet': hugPet(); break;
