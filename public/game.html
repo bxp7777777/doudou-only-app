@@ -535,6 +535,11 @@ img{max-width:100%}
 .bond-card p{font-size:10px;color:var(--muted);margin:4px 0 0}
 .bond-card .bond-quote{font-style:italic;color:#9a6ea8;margin-top:3px!important}
 .bond-pets{font-size:16px;letter-spacing:2px}
+/* 羁绊图鉴卡：成员立绘并排同框行；有图显图、无图由调用方回退 emoji，纯展示不影响数值 */
+.bond-mates{display:flex;gap:5px;align-items:center;margin:6px 0 3px}
+.bond-mate-face{width:30px;height:30px;border-radius:50%;overflow:hidden;border:1.5px solid #f3d9ee;background:#fdf3d8;flex:0 0 auto}
+.bond-mate-face .art-emoji{font-size:17px}
+.bond-mate-emoji{font-size:21px;line-height:1;flex:0 0 auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.06))}
 .bag-res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:8px}
 .bag-res{padding:10px;border:1px solid #efddc8;border-radius:13px;background:#fffaf2;display:flex;align-items:center;gap:7px}
 .bag-res .ico{font-size:20px}
@@ -6598,8 +6603,13 @@ function renderPets() {
           const active = activeBondsForTeam().some(x => x.id === b.id);
           const ever = state.bonds.ever.includes(b.id);
           const mastery = Math.floor(num(state.bonds.mastery[b.id], 0));
+          const mates = b.pets.map(pid => {
+            const em = petEmojiById(pid);
+            return petArtFrame(pid, em, 'bond-mate-face') || `<span class="bond-mate-emoji">${em}</span>`;
+          }).join('');
           return `<div class="bond-card ${active ? 'active' : (ever ? 'activated' : '')}">
             <div class="bond-head"><b>${esc(b.name)}</b><span class="bond-pets">${b.emoji}</span></div>
+            <div class="bond-mates">${mates}</div>
             <p>${esc(b.desc)} ${mastery ? `<b>强化 Lv.${mastery}</b>` : ''}</p>
             ${(ever || active) && b.quote ? `<p class="bond-quote">💞 ${esc(b.quote)}</p>` : ''}
             <div class="flex between" style="margin-top:6px"><span class="chip ${active ? 'mint' : ''}">${active ? '当前点亮' : (ever ? '已收录' : '未点亮')}</span>
