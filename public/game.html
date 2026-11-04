@@ -3141,7 +3141,567 @@ const ENCOUNTERS = [
         { w: 15, text: '路人往帽子里丢了几枚钻石。', rewards: { crystal: 40 } }
       ] }
     ]
-  }
+  },
+  {
+    id: 'e_tea', emoji: '🍵', title: '早市茶摊', desc: '巷口支着长桌，粗陶碗冒着白汽，茶博士用油亮的抹布擦着杯沿。',
+    choices: [
+      { label: '坐下喝一盏粗茶', outcomes: [
+        { w: 60, text: '热茶下肚，你精神一振，随身落了些经验果。', rewards: { fruit: 18 } },
+        { w: 28, text: '邻座老者闲聊讲古道经，送你一本技能书。', rewards: { skillBook: 1 } },
+        { w: 12, text: '茶摊铜钱罐滑出一枚钻石。', rewards: { crystal: 38 } },
+      ] },
+      { label: '帮茶博士添柴烧水', outcomes: [
+        { w: 65, text: '他道谢后塞给你一小袋金币。', rewards: { gold: 520 } },
+        { w: 22, text: '柴堆旁滚出几颗强化石。', rewards: { enhanceStone: 3 } },
+        { w: 13, text: '一只蜜蜂跟着茶香飞来，留下羁绊徽章。', rewards: { bondBadge: 1 } },
+      ] },
+      { label: '带两碗热茶汤分给路过的伙伴', cost: { gold: 250 }, outcomes: [
+        { w: 58, text: '伙伴们暖到心里，全队亲密度小幅上升。', rewards: { intimacyAll: 3, fruit: 10 } },
+        { w: 27, text: '旁观者往桌上放了几枚钻石。', rewards: { crystal: 45 } },
+        { w: 15, text: '茶博士回赠一罐茶，折算成竞技币。', rewards: { arenaCoin: 25 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_kite', emoji: '🪁', title: '春风纸鸢', desc: '草坡上空飘着一只没线的纸鸢，棉纸被风鼓成一只飞鸟的形状。',
+    choices: [
+      { label: '追着纸鸢奔跑', outcomes: [
+        { w: 58, text: '跑到高处捡到一颗亮晶晶的星砂。', rewards: { starShard: 2 } },
+        { w: 27, text: '风把一片云吹落身边，变成经验果。', rewards: { fruit: 16 } },
+        { w: 15, text: '纸鸢尾部坠着一枚小装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '学着折一只纸鸢', outcomes: [
+        { w: 62, text: '成品被风带走，却在草丛里留下金币。', rewards: { gold: 460 } },
+        { w: 25, text: '折好的风筝引来自愿打赏的钻石。', rewards: { crystal: 34 } },
+        { w: 13, text: '纸上的纹样唤起回忆，全队心情变好。', rewards: { intimacyAll: 2 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_lantern', emoji: '🏮', title: '夜巷灯笼', desc: '青石板两侧挂满红灯笼，光把墙影拉得很长，远处传来咿呀的念曲声。',
+    choices: [
+      { label: '提着灯笼慢慢逛', outcomes: [
+        { w: 56, text: '灯下挂着灯谜，猜中后得些金币。', rewards: { gold: 560 } },
+        { w: 26, text: '灯笼穗子上垂着羁绊徽章。', rewards: { bondBadge: 1 } },
+        { w: 18, text: '夜色太好，宠物们亲密打闹。', rewards: { intimacyAll: 3, fruit: 8 } },
+      ] },
+      { label: '买下一盏许愿灯', cost: { gold: 300 }, outcomes: [
+        { w: 50, text: '灯飘向夜空，换来一颗进化石。', rewards: { stoneChoice: 1 } },
+        { w: 30, text: '灯商另送一本讲灯俗的技能书。', rewards: { skillBook: 1 } },
+        { w: 20, text: '灯下藏着一枚史诗装备挂饰。', rewards: { equipment: 'epic' } },
+      ] },
+      { label: '坐在桥头看灯河', outcomes: [
+        { w: 66, text: '灯河映着水，你捡到随灯飘来的经验果。', rewards: { fruit: 20 } },
+        { w: 22, text: '河灯里掉出一颗钻石。', rewards: { crystal: 42 } },
+        { w: 12, text: '晚风补给了一些体力。', rewards: { energy: 10 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_painter', emoji: '🖌️', title: '流浪画师', desc: '画师坐在石阶上，调色盘里挤着青黛与赭石，正对着远山落笔。',
+    choices: [
+      { label: '请他画一张小队肖像', cost: { gold: 400 }, outcomes: [
+        { w: 55, text: '画作生动传神，全队亲密度提升。', rewards: { intimacyAll: 4, bondBadge: 1 } },
+        { w: 28, text: '他额外送你一块画作护符（精良装备）。', rewards: { equipment: 'fine' } },
+        { w: 17, text: '画纸背面是旧藏宝图，换成金币。', rewards: { gold: 600 } },
+      ] },
+      { label: '帮他洗笔换颜料', outcomes: [
+        { w: 62, text: '他笑着塞给你一包装备碎片。', rewards: { equipShard: 20 } },
+        { w: 24, text: '洗笔水里沉着几颗星砂。', rewards: { starShard: 2 } },
+        { w: 14, text: '收摊时赠你一本写生技法书。', rewards: { skillBook: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_candyman', emoji: '🍡', title: '糖人摊', desc: '铜锅里熬着琥珀色糖稀，摊主手腕一转便吹出一只栩栩如生的小动物。',
+    choices: [
+      { label: '转一支糖人', cost: { gold: 200 }, outcomes: [
+        { w: 55, text: '甜香满足，还找回一小袋金币。', rewards: { gold: 420 } },
+        { w: 28, text: '转到隐藏款，附赠钻石。', rewards: { crystal: 40 } },
+        { w: 17, text: '糖人架下藏着经验果。', rewards: { fruit: 14 } },
+      ] },
+      { label: '买下一把分给伙伴', cost: { fruit: 6 }, outcomes: [
+        { w: 58, text: '大家甜到眯眼，亲密度上升。', rewards: { intimacyAll: 3, randomShards: 10 } },
+        { w: 26, text: '摊主见你大方，送升星碎片。', rewards: { starShard: 2 } },
+        { w: 16, text: '围观孩童塞来一枚竞技币。', rewards: { arenaCoin: 20 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_rain', emoji: '🫧', title: '雨檐避雨', desc: '骤雨忽至，你躲进老屋檐下，檐角水珠连成细碎的帘子。',
+    choices: [
+      { label: '听雨发呆', outcomes: [
+        { w: 60, text: '心静下来，宠物也放松下来。', rewards: { intimacyAll: 2, fruit: 12 } },
+        { w: 25, text: '檐下石缝里长着一小丛强化石。', rewards: { enhanceStone: 3 } },
+        { w: 15, text: '水洼映出一颗钻石的倒影。', rewards: { crystal: 36 } },
+      ] },
+      { label: '趁雨去摘滴水果', outcomes: [
+        { w: 55, text: '淋着小雨也值，收获满满经验果。', rewards: { fruit: 28 } },
+        { w: 28, text: '泥地里翻出一枚羁绊徽章。', rewards: { bondBadge: 1 } },
+        { w: 17, text: '滑了一跤却捡到金币。', rewards: { gold: 430 } },
+      ] },
+      { label: '把伞借给过路行人', cost: { gold: 150 }, outcomes: [
+        { w: 62, text: '对方感激，留下一枚挑战券。', rewards: { challenge: 1 } },
+        { w: 24, text: '雨停后他回赠钻石。', rewards: { crystal: 44 } },
+        { w: 14, text: '屋檐落下一颗进化石。', rewards: { stoneChoice: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_geese', emoji: '🦢', title: '江畔归雁', desc: '一队大雁排成斜阵掠过江面，翅尖几乎擦到水面的落日。',
+    choices: [
+      { label: '沿着江岸目送雁群', outcomes: [
+        { w: 58, text: '岸边湿泥里埋着几颗星砂。', rewards: { starShard: 2 } },
+        { w: 27, text: '风送来一股清新体力。', rewards: { energy: 12 } },
+        { w: 15, text: '遗落的雁羽可换竞技币。', rewards: { arenaCoin: 28 } },
+      ] },
+      { label: '撒一把谷物喂雁', cost: { fruit: 8 }, outcomes: [
+        { w: 56, text: '雁群低飞盘旋，落下随机宠物碎片。', rewards: { randomShards: 14 } },
+        { w: 29, text: '领头雁像在道谢，丢下钻石。', rewards: { crystal: 48 } },
+        { w: 15, text: '江水退去露出装备碎片。', rewards: { equipShard: 18 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_firefly', emoji: '✨', title: '萤火流萤', desc: '入夜后草丛里浮起点点绿光，像把夏夜的星子揉碎撒在了草尖。',
+    choices: [
+      { label: '轻轻捧一只萤火', outcomes: [
+        { w: 60, text: '手心微光暖融融，亲密度上升。', rewards: { intimacyAll: 3 } },
+        { w: 25, text: '草叶间发现一颗升星碎片。', rewards: { starShard: 3 } },
+        { w: 15, text: '萤火指引出一个精致装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '编织萤火小灯', outcomes: [
+        { w: 55, text: '灯笼做成，换得一把金币。', rewards: { gold: 540 } },
+        { w: 28, text: '旁人以钻石求灯。', rewards: { crystal: 42 } },
+        { w: 17, text: '灯芯凝出一颗进化石。', rewards: { stoneChoice: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_spring', emoji: '💧', title: '山涧清泉', desc: '石壁渗出一泓清泉，水底铺着圆润卵石，捧一口沁凉回甘。',
+    choices: [
+      { label: '掬水解渴', outcomes: [
+        { w: 62, text: '泉水补回不少体力。', rewards: { energy: 14, fruit: 10 } },
+        { w: 25, text: '泉眼边结着强化石。', rewards: { enhanceStone: 4 } },
+        { w: 13, text: '水底沉着一枚羁绊徽章。', rewards: { bondBadge: 1 } },
+      ] },
+      { label: '灌满随身水囊', outcomes: [
+        { w: 55, text: '一路清凉，捡到经验果。', rewards: { fruit: 22 } },
+        { w: 29, text: '石缝中卡在一颗钻石。', rewards: { crystal: 39 } },
+        { w: 16, text: '水囊底混入几颗星砂。', rewards: { starShard: 2 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_bridge', emoji: '🌉', title: '月下古桥', desc: '石拱桥拱出一轮满月，桥下小舟摇过，灯影在波纹里碎成金鳞。',
+    choices: [
+      { label: '凭栏看夜泊', outcomes: [
+        { w: 58, text: '船上船夫随手丢来几枚金币。', rewards: { gold: 500 } },
+        { w: 27, text: '桥栏刻痕里夹着技能书。', rewards: { skillBook: 1 } },
+        { w: 15, text: '夜风拂来一颗钻石。', rewards: { crystal: 41 } },
+      ] },
+      { label: '买一盏河灯放生', cost: { gold: 280 }, outcomes: [
+        { w: 52, text: '心愿被月光记下，得进化石。', rewards: { stoneChoice: 1 } },
+        { w: 30, text: '河畔许愿人群换来竞技币。', rewards: { arenaCoin: 30 } },
+        { w: 18, text: '河灯碰撞出一件史诗装备。', rewards: { equipment: 'epic' } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_bronze', emoji: '🪞', title: '旧物铜镜', desc: '旧货摊摆着一面磨得发亮的铜镜，镜面里隐约映出一个毛茸茸的影子。',
+    choices: [
+      { label: '拿起铜镜细看', outcomes: [
+        { w: 55, text: '镜面微光化作随机宠物碎片。', rewards: { randomShards: 12 } },
+        { w: 28, text: '摊主说有缘，赠你星砂。', rewards: { starShard: 2 } },
+        { w: 17, text: '镜面映出一件精良装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '买下铜镜带回家', cost: { gold: 350 }, outcomes: [
+        { w: 50, text: '护佑全队，亲密度与心情提升。', rewards: { intimacyAll: 4, bondBadge: 1 } },
+        { w: 30, text: '铜镜背面嵌着钻石。', rewards: { crystal: 50 } },
+        { w: 20, text: '鉴价后转手得金币。', rewards: { gold: 720 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_blacksmith', emoji: '🔨', title: '溪边铁匠铺', desc: '炉火正红，锤声叮当，铁屑溅起一粒粒橙红的火星。',
+    choices: [
+      { label: '帮着拉风箱', outcomes: [
+        { w: 58, text: '师傅拍你肩，给几块强化石。', rewards: { enhanceStone: 5 } },
+        { w: 27, text: '炉边放着打造好的精良装备。', rewards: { equipment: 'fine' } },
+        { w: 15, text: '砧上余温凝成一颗星砂。', rewards: { starShard: 2 } },
+      ] },
+      { label: '定制一把小护具', cost: { gold: 600 }, outcomes: [
+        { w: 54, text: '成品趁手，随机获得装备碎片与金币。', rewards: { equipShard: 24, gold: 360 } },
+        { w: 28, text: '师傅心情好，额外送技能书。', rewards: { skillBook: 1 } },
+        { w: 18, text: '打铁余热转化为体力补给。', rewards: { energy: 10 } },
+      ] },
+      { label: '只捡些打铁余料', outcomes: [
+        { w: 66, text: '敲碎铁料得到装备碎片。', rewards: { equipShard: 28 } },
+        { w: 22, text: '边角料里夹着一颗钻石。', rewards: { crystal: 35 } },
+        { w: 12, text: '炉灰埋着竞技币。', rewards: { arenaCoin: 22 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_carpenter', emoji: '🪵', title: '老木匠刨花', desc: '刨子推过原木，卷起一卷卷轻薄的刨花，散着松脂的清香。',
+    choices: [
+      { label: '帮忙打磨木件', outcomes: [
+        { w: 60, text: '木屑堆里翻出金币。', rewards: { gold: 480 } },
+        { w: 26, text: '师傅送你自制经验果木牌。', rewards: { fruit: 18, bondBadge: 1 } },
+        { w: 14, text: '榫卯间卡着强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+      { label: '收一把刨花当引火', outcomes: [
+        { w: 57, text: '刨花晒干可换竞技币。', rewards: { arenaCoin: 26 } },
+        { w: 28, text: '木纹里藏着星砂。', rewards: { starShard: 2 } },
+        { w: 15, text: '木缝露出一枚钻石。', rewards: { crystal: 37 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_fisher', emoji: '🎣', title: '夜渡渔火', desc: '江面几点渔火明灭，老渔夫撒网收网，船舱里传来鳞片的银光。',
+    choices: [
+      { label: '帮渔夫收一网上下', outcomes: [
+        { w: 56, text: '分你一尾鱼，换成经验果。', rewards: { fruit: 24 } },
+        { w: 28, text: '网底兜住几颗强化石。', rewards: { enhanceStone: 3 } },
+        { w: 16, text: '船板下压着金币。', rewards: { gold: 440 } },
+      ] },
+      { label: '买下渔获熬汤', cost: { gold: 300 }, outcomes: [
+        { w: 58, text: '鲜汤暖队，亲密度上升。', rewards: { intimacyAll: 3, randomShards: 10 } },
+        { w: 27, text: '渔夫以钻石回赠。', rewards: { crystal: 46 } },
+        { w: 15, text: '鱼篓夹层是技能书。', rewards: { skillBook: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_field', emoji: '🌾', title: '金色麦田', desc: '麦浪一直铺到天边，风过时整片田翻出深浅不一的金色。',
+    choices: [
+      { label: '在田埂上散步', outcomes: [
+        { w: 60, text: '麦穗沉甸甸，落了些经验果。', rewards: { fruit: 26 } },
+        { w: 25, text: '田埂遗落几粒星砂。', rewards: { starShard: 2 } },
+        { w: 15, text: '稻草人旁压着金币袋。', rewards: { gold: 470 } },
+      ] },
+      { label: '帮忙收割半垄麦', outcomes: [
+        { w: 55, text: '农夫谢你金币和果实。', rewards: { gold: 580, fruit: 12 } },
+        { w: 29, text: '谷粒里夹着钻石。', rewards: { crystal: 43 } },
+        { w: 16, text: '麦秆可编成羁绊小物。', rewards: { bondBadge: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_snow', emoji: '❄️', title: '初雪脚印', desc: '今年第一场雪铺开薄白，一行陌生小脚印歪歪扭扭通向林深处。',
+    choices: [
+      { label: '顺着脚印探过去', outcomes: [
+        { w: 55, text: '脚印尽头埋着宝箱残片，得装备碎片。', rewards: { equipShard: 22 } },
+        { w: 29, text: '雪地里半埋一颗钻石。', rewards: { crystal: 44 } },
+        { w: 16, text: '脚印主人留下竞技币。', rewards: { arenaCoin: 24 } },
+      ] },
+      { label: '堆一只雪团伙伴', outcomes: [
+        { w: 63, text: '雪团融化成清甜经验果。', rewards: { fruit: 20, intimacyAll: 2 } },
+        { w: 24, text: '屋檐冰凌掉进化装袋，得星砂。', rewards: { starShard: 3 } },
+        { w: 13, text: '路人围观打赏金币。', rewards: { gold: 390 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_lotus', emoji: '🪷', title: '荷塘晚风', desc: '荷叶擎着露珠，荷花半开，晚风把荷香送到岸上来。',
+    choices: [
+      { label: '折一片荷叶当伞', outcomes: [
+        { w: 58, text: '荷叶下藏着小鱼蜕，换经验果。', rewards: { fruit: 22 } },
+        { w: 27, text: '泥塘里冒出一颗进化石。', rewards: { stoneChoice: 1 } },
+        { w: 15, text: '莲叶缝隙闪着钻石。', rewards: { crystal: 36 } },
+      ] },
+      { label: '在岸边写生静坐', outcomes: [
+        { w: 60, text: '心境平和，全队亲密上升。', rewards: { intimacyAll: 3 } },
+        { w: 26, text: '观荷记录成了技能书。', rewards: { skillBook: 1 } },
+        { w: 14, text: '蜻蜓停落处有强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_galaxy', emoji: '🌌', title: '银河铺席', desc: '高坡上没有云，银河像一条发光的河，缓缓从头顶淌过。',
+    choices: [
+      { label: '躺下来看星', outcomes: [
+        { w: 52, text: '流星划过，坠下升星碎片。', rewards: { starShard: 3 } },
+        { w: 30, text: '银河光辉凝成钻石。', rewards: { crystal: 52 } },
+        { w: 18, text: '梦见更强力量，得挑战券一张。', rewards: { challenge: 1 } },
+      ] },
+      { label: '对星轨许愿', cost: { gold: 350 }, outcomes: [
+        { w: 48, text: '愿望上达，得一件史诗装备。', rewards: { equipment: 'epic' } },
+        { w: 32, text: '星光化作随机宠物碎片。', rewards: { randomShards: 16 } },
+        { w: 20, text: '星落处存下永恒结晶。', rewards: { eternal: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_dream', emoji: '💤', title: '午后幻梦', desc: '暖阳下你打了个盹，梦里宠物们踏着彩色云朵追逐，醒来嘴角带笑。',
+    choices: [
+      { label: '回味这个梦', outcomes: [
+        { w: 60, text: '美梦养足精神，补回体力。', rewards: { energy: 15 } },
+        { w: 25, text: '梦里摘下的果子留在枕边。', rewards: { fruit: 18 } },
+        { w: 15, text: '梦的余韵让亲密度上升。', rewards: { intimacyAll: 2 } },
+      ] },
+      { label: '把梦讲给伙伴听', outcomes: [
+        { w: 56, text: '大家听得入迷，掉落碎片。', rewards: { randomShards: 12, bondBadge: 1 } },
+        { w: 29, text: '故事被记进技能手记。', rewards: { skillBook: 1 } },
+        { w: 15, text: '梦醒枕下有金币。', rewards: { gold: 410 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_bluebird', emoji: '🐦', title: '送书青鸟', desc: '一只蓝羽小鸟停在枝头，爪上系着细卷，歪着头看你。',
+    choices: [
+      { label: '解下书卷阅读', outcomes: [
+        { w: 55, text: '卷上是古老招式，得技能书。', rewards: { skillBook: 1 } },
+        { w: 28, text: '书夹里掉出钻石。', rewards: { crystal: 45 } },
+        { w: 17, text: '青鸟衔来羁绊徽章。', rewards: { bondBadge: 1 } },
+      ] },
+      { label: '喂它一颗果子答谢', cost: { fruit: 5 }, outcomes: [
+        { w: 58, text: '青鸟飞去又飞回，撒下星砂。', rewards: { starShard: 3 } },
+        { w: 27, text: '它带来一小袋金币。', rewards: { gold: 520 } },
+        { w: 15, text: '羽毛化作精良装备。', rewards: { equipment: 'fine' } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_mushroom', emoji: '🍄', title: '林间菌伞', desc: '树根边挤着一簇红白小点，伞盖饱满，空气里飘着湿润的菌香。',
+    choices: [
+      { label: '谨慎辨认后采摘', outcomes: [
+        { w: 56, text: '安全菌菇煮成汤，补体力。', rewards: { energy: 12, fruit: 14 } },
+        { w: 28, text: '泥下埋着强化石。', rewards: { enhanceStone: 3 } },
+        { w: 16, text: '菌圈中央有颗星砂。', rewards: { starShard: 2 } },
+      ] },
+      { label: '只收成熟的伞盖', outcomes: [
+        { w: 61, text: '铺晒后换得装备碎片。', rewards: { equipShard: 20 } },
+        { w: 24, text: '伞褶里落着金币。', rewards: { gold: 430 } },
+        { w: 15, text: '背篓底藏钻石。', rewards: { crystal: 34 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_bottle', emoji: '🫙', title: '漂流瓶信', desc: '浅滩上扣着一只封蜡玻璃瓶，纸团皱巴巴，却写着鼓励的字句。',
+    choices: [
+      { label: '展开信纸阅读', outcomes: [
+        { w: 57, text: '字句温暖，全队心情与亲密上升。', rewards: { intimacyAll: 3 } },
+        { w: 28, text: '瓶底系着一枚钻石。', rewards: { crystal: 47 } },
+        { w: 15, text: '信纸夹着竞技币。', rewards: { arenaCoin: 28 } },
+      ] },
+      { label: '回写一封瓶中信', outcomes: [
+        { w: 55, text: '投入海中后，浪送回一袋金币。', rewards: { gold: 560 } },
+        { w: 29, text: '回信被回复，得随机碎片。', rewards: { randomShards: 12 } },
+        { w: 16, text: '瓶塞雕成小装备。', rewards: { equipment: 'fine' } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_riddle', emoji: '🧩', title: '灯谜猜会', desc: '彩绸下悬着一串串灯谜，猜中的人能领一份彩头，队伍排得慢悠悠。',
+    choices: [
+      { label: '连猜三道灯谜', cost: { gold: 200 }, outcomes: [
+        { w: 52, text: '猜中两道，领得金币与碎片。', rewards: { gold: 500, equipShard: 14 } },
+        { w: 30, text: '最佳谜底换钻石。', rewards: { crystal: 46 } },
+        { w: 18, text: '猜中大奖得技能书。', rewards: { skillBook: 1 } },
+      ] },
+      { label: '帮旁边的小友解谜', outcomes: [
+        { w: 60, text: '小孩感谢，塞来经验果。', rewards: { fruit: 20, bondBadge: 1 } },
+        { w: 25, text: '摊主送升星碎片。', rewards: { starShard: 2 } },
+        { w: 15, text: '灯笼杆上挂着强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+      { label: '只领一份彩头就走', outcomes: [
+        { w: 68, text: '彩头是实用的挑战券。', rewards: { challenge: 1 } },
+        { w: 20, text: '另有零星金币。', rewards: { gold: 360 } },
+        { w: 12, text: '彩绳上有颗钻石。', rewards: { crystal: 30 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_pottery', emoji: '🏺', title: '柴窑陶器', desc: '窑门透出橘红火光，陶匠正用铁钳夹出一排新出窑的器皿。',
+    choices: [
+      { label: '看陶匠拉坯', outcomes: [
+        { w: 58, text: '手法讲究，记成技能书一页。', rewards: { skillBook: 1 } },
+        { w: 27, text: '窑垫下压着星砂。', rewards: { starShard: 2 } },
+        { w: 15, text: '成品货架搁着精良陶罐装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '亲手拉一只小陶碗', outcomes: [
+        { w: 55, text: '成品带走，换得金币。', rewards: { gold: 480 } },
+        { w: 29, text: '陶土掺着强化石粉。', rewards: { enhanceStone: 4 } },
+        { w: 16, text: '窑火旁落下钻石。', rewards: { crystal: 38 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_tanghulu', emoji: '🍭', title: '转糖画摊', desc: '转盘一格格画着生肖与神兽，铜盘一转全凭手气与运气。',
+    choices: [
+      { label: '转最大奖格', cost: { gold: 250 }, outcomes: [
+        { w: 46, text: '中大奖，得一件精良装备。', rewards: { equipment: 'fine' } },
+        { w: 34, text: '中等奖格换钻石。', rewards: { crystal: 44 } },
+        { w: 20, text: '小奖也有金币补亏。', rewards: { gold: 330 } },
+      ] },
+      { label: '买两串分给伙伴', cost: { fruit: 6 }, outcomes: [
+        { w: 58, text: '酸甜入心，亲密度与体力双补。', rewards: { intimacyAll: 3, energy: 10 } },
+        { w: 27, text: '摊主赠升星碎片。', rewards: { starShard: 2 } },
+        { w: 15, text: '糖纸包着竞技币。', rewards: { arenaCoin: 22 } },
+      ] },
+      { label: '在摊边帮忙收摊', outcomes: [
+        { w: 63, text: '师傅谢你几个经验果。', rewards: { fruit: 22 } },
+        { w: 25, text: '零钱罐边落下金币。', rewards: { gold: 400 } },
+        { w: 12, text: '工作台缝里有钻石。', rewards: { crystal: 32 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_alleycat', emoji: '🐱', title: '打盹巷猫', desc: '一只三花猫团在暖阳里打呼噜，尾巴尖随呼吸轻轻抽动。',
+    choices: [
+      { label: '蹲下来顺毛', outcomes: [
+        { w: 62, text: '呼噜声治愈，全队亲密上升。', rewards: { intimacyAll: 3, fruit: 8 } },
+        { w: 25, text: '猫爪下压着小物件（羁绊徽章）。', rewards: { bondBadge: 1 } },
+        { w: 13, text: '顺手在窝边拾到星砂。', rewards: { starShard: 2 } },
+      ] },
+      { label: '带小鱼干喂它', cost: { fruit: 6 }, outcomes: [
+        { w: 56, text: '猫咪信任你，吐出几枚宠物碎片。', rewards: { randomShards: 14 } },
+        { w: 29, text: '它带你找到遗失的金币。', rewards: { gold: 520 } },
+        { w: 15, text: '丢下一枚钻石玩赏。', rewards: { crystal: 39 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_mist', emoji: '🌫️', title: '晨雾林间', desc: '薄雾把松针染成朦胧的绿，几步外只闻鸟鸣，不见人影。',
+    choices: [
+      { label: '在雾里深呼吸', outcomes: [
+        { w: 60, text: '清新空气补足体力。', rewards: { energy: 13 } },
+        { w: 26, text: '露水滴落，凝成经验果。', rewards: { fruit: 16 } },
+        { w: 14, text: '雾中忽现强化石微光。', rewards: { enhanceStone: 3 } },
+      ] },
+      { label: '循鸟鸣寻路', outcomes: [
+        { w: 54, text: '巢边发现随机碎片。', rewards: { randomShards: 12 } },
+        { w: 30, text: '雾散处露出金币。', rewards: { gold: 490 } },
+        { w: 16, text: '枝头挂着钻石果。', rewards: { crystal: 40 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_honey', emoji: '🍯', title: '荒野蜂巢', desc: '粗壮树干上挂着沉甸甸的蜂巢，金黄蜜油从缝隙里缓缓渗出。',
+    choices: [
+      { label: '借烟熏取蜜', outcomes: [
+        { w: 55, text: '割下纯蜜，全队亲密度大增。', rewards: { intimacyAll: 4, fruit: 18 } },
+        { w: 28, text: '蜂胶可作精良装备材料。', rewards: { equipment: 'fine' } },
+        { w: 17, text: '蜂蜡团里裹着星砂。', rewards: { starShard: 2 } },
+      ] },
+      { label: '只取少量蜜尝鲜', cost: { gold: 350 }, outcomes: [
+        { w: 58, text: '甘甜回劲，补回体力。', rewards: { energy: 16 } },
+        { w: 27, text: '养蜂人回赠竞技币。', rewards: { arenaCoin: 30 } },
+        { w: 15, text: '蜂巢碎屑换金币。', rewards: { gold: 430 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_stele', emoji: '🪨', title: '道旁残碑', desc: '一块断碑半埋在草里，碑文斑驳，隐约能辨出几行古老的训诫。',
+    choices: [
+      { label: '拂尘拓印碑文', outcomes: [
+        { w: 57, text: '碑文招式化成技能书。', rewards: { skillBook: 1 } },
+        { w: 26, text: '碑座埋着强化石。', rewards: { enhanceStone: 4 } },
+        { w: 17, text: '拓片纸背是藏宝图。', rewards: { gold: 620 } },
+      ] },
+      { label: '静读残碑文字', outcomes: [
+        { w: 60, text: '字句警醒，宠物们更有干劲（体力）。', rewards: { energy: 12 } },
+        { w: 25, text: '碑侧压着进化石。', rewards: { stoneChoice: 1 } },
+        { w: 15, text: '瞻仰礼得羁绊徽章。', rewards: { bondBadge: 1 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_opera', emoji: '🎭', title: '草台戏班', desc: '村头空地搭起木板台，锣鼓一响，花脸老生一个亮相惹来满堂彩。',
+    choices: [
+      { label: '点一出武戏', cost: { gold: 300 }, outcomes: [
+        { w: 52, text: '喝彩不断，打赏换金币。', rewards: { gold: 560, arenaCoin: 24 } },
+        { w: 30, text: '戏中身段谱成技能书。', rewards: { skillBook: 1 } },
+        { w: 18, text: '戏服绒球化作精良装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '帮戏班搬道具', outcomes: [
+        { w: 61, text: '班主道谢给经验果与碎片。', rewards: { fruit: 18, randomShards: 10 } },
+        { w: 24, text: '道具箱夹层藏钻石。', rewards: { crystal: 43 } },
+        { w: 15, text: '幕布落下几颗星砂。', rewards: { starShard: 2 } },
+      ] },
+      { label: '站在人群后排看角', outcomes: [
+        { w: 66, text: '曲子悠扬，亲密度上升。', rewards: { intimacyAll: 2 } },
+        { w: 22, text: '散场拾到铜钱。', rewards: { gold: 380 } },
+        { w: 12, text: '灯笼勾落竞技币。', rewards: { arenaCoin: 18 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_windbell', emoji: '🎐', title: '风铃小铺', desc: '木架上挂着百十只风铃，风一过，叮当声像一场清凉的阵雨。',
+    choices: [
+      { label: '买一只挂家门口', cost: { gold: 300 }, outcomes: [
+        { w: 56, text: '清脆声护宅，全队亲密与心情提升。', rewards: { intimacyAll: 3, bondBadge: 1 } },
+        { w: 28, text: '店主附赠一枚挑战券。', rewards: { challenge: 1 } },
+        { w: 16, text: '风铃坠子是小装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '逐只试听最响的那只', outcomes: [
+        { w: 60, text: '对比之间攒下金币。', rewards: { gold: 470 } },
+        { w: 25, text: '窗台上落着钻石。', rewards: { crystal: 36 } },
+        { w: 15, text: '挂绳上串着强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_tide', emoji: '🌊', title: '退潮滩涂', desc: '潮水退去，露出湿漉漉的黑泥滩，贝壳、小蟹和星点银光散落一地。',
+    choices: [
+      { label: '低头拾贝壳', outcomes: [
+        { w: 58, text: '贝壳洗净换得金币。', rewards: { gold: 510 } },
+        { w: 27, text: '贝壳夹层夹着珍珠（钻石）。', rewards: { crystal: 45 } },
+        { w: 15, text: '泥里翻出强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+      { label: '翻看小蟹洞', outcomes: [
+        { w: 55, text: '洞里藏着随机宠物碎片。', rewards: { randomShards: 14 } },
+        { w: 29, text: '被小蟹夹了一下却捡到星砂。', rewards: { starShard: 2 } },
+        { w: 16, text: '潮水退回前留下装备碎片。', rewards: { equipShard: 18 } },
+      ] },
+      { label: '趁凉挖半筐花蛤', cost: { fruit: 5 }, outcomes: [
+        { w: 60, text: '煮成鲜汤，补回体力与亲密度。', rewards: { energy: 14, intimacyAll: 2 } },
+        { w: 26, text: '渔获富余换竞技币。', rewards: { arenaCoin: 28 } },
+        { w: 14, text: '筐底压着金币。', rewards: { gold: 400 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_study', emoji: '📜', title: '桥下温书', desc: '桥洞避风，你摊开卷轴逐字诵读，路过的先生停步颔首。',
+    choices: [
+      { label: '默念一卷心法', outcomes: [
+        { w: 58, text: '融会贯通，得技能书。', rewards: { skillBook: 1 } },
+        { w: 27, text: '卷轴边角藏星砂。', rewards: { starShard: 2 } },
+        { w: 15, text: '桥下小石垒着强化石。', rewards: { enhanceStone: 3 } },
+      ] },
+      { label: '向先生请教一招', cost: { gold: 280 }, outcomes: [
+        { w: 54, text: '点拨后力量思路清晰，体力回满一截。', rewards: { energy: 13, bondBadge: 1 } },
+        { w: 29, text: '先生赠一本图鉴（装备碎片）。', rewards: { equipShard: 22 } },
+        { w: 17, text: '别着的玉佩是精良装备。', rewards: { equipment: 'fine' } },
+      ] },
+      { label: '为过路旅人抄一页字', outcomes: [
+        { w: 63, text: '谢礼是经验果。', rewards: { fruit: 20 } },
+        { w: 24, text: '旅人落下金币。', rewards: { gold: 420 } },
+        { w: 13, text: '纸墨里卷着钻石。', rewards: { crystal: 33 } },
+      ] },
+    ]
+  },
+  {
+    id: 'e_dusk', emoji: '🟠', title: '归墟晚霞', desc: '落日把整片云烧成橘红与胭脂色，远处屋脊的剪影镶了一圈暖金。',
+    choices: [
+      { label: '静坐到暮色合拢', outcomes: [
+        { w: 58, text: '心境舒展，全队亲密度上升。', rewards: { intimacyAll: 3 } },
+        { w: 27, text: '余晖里飘下经验果。', rewards: { fruit: 15 } },
+        { w: 15, text: '天边一颗迟落的钻石。', rewards: { crystal: 38 } },
+      ] },
+      { label: '拍一张晚霞留念', outcomes: [
+        { w: 55, text: '光影灵感凝成技能心得。', rewards: { skillBook: 1 } },
+        { w: 28, text: '镜头反光里藏着星砂。', rewards: { starShard: 2 } },
+        { w: 17, text: '晚风捎来竞技币。', rewards: { arenaCoin: 24 } },
+      ] },
+      { label: '把晚霞讲给伙伴听', cost: { fruit: 4 }, outcomes: [
+        { w: 62, text: '故事哄得大家开心，掉落碎片。', rewards: { randomShards: 11 } },
+        { w: 25, text: '结伴归去，体力补足。', rewards: { energy: 12 } },
+        { w: 13, text: '沿途拾得金币。', rewards: { gold: 390 } },
+      ] },
+    ]
+  },
 ];
 
 const COSMETIC_SCENE = {
