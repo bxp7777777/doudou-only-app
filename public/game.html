@@ -1008,6 +1008,51 @@ body.modal-open{overflow:hidden}
 .battle-log div.log-death{color:#5f5148;font-style:italic}
 .battle-log div.log-round{color:#9b8a78}
 .battle-log div.log-result{color:#a2632d;font-weight:700}
+/* ===== 战斗布局与可读性增强（纯表现，不改数值与机制） ===== */
+.battle-layer .battle-field{overflow:visible}
+.battle-layer .b-team{min-height:206px;align-content:center}
+.battle-layer .b-side{align-items:stretch;justify-content:center}
+.battle-layer .b-slot-empty{border:1.5px dashed rgba(150,130,110,.34);border-radius:15px;min-height:148px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:rgba(122,106,90,.38);font-size:11px;background:rgba(255,255,255,.16)}
+.battle-layer .b-slot-empty .se-emo{font-size:26px;opacity:.55}
+.battle-layer .art-frame.art-battle{width:72px;height:72px}
+.battle-layer .b-emoji-wrap{min-height:64px}
+.battle-layer .b-unit .progress{height:6px;border-radius:999px}
+.battle-layer .b-unit .progress.rage{height:5px}
+.battle-layer .b-unit .bar-label{font-size:8px;margin-bottom:2px}
+.battle-layer .b-unit .b-hp-text{font-weight:800;color:#2f7a58}
+.battle-layer .b-unit .b-rage-text{font-weight:800;color:#b06a1e}
+.b-hp-summary{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:2px 2px 0}
+.b-hp-side{display:flex;flex-direction:column;gap:2px}
+.b-hp-side span{font-size:9px;font-weight:800;letter-spacing:.3px}
+.b-hp-side.ally span{color:#2f7a58}
+.b-hp-side.enemy{text-align:right}
+.b-hp-side.enemy span{color:#b05048}
+.b-hp-track{height:7px;border-radius:999px;background:rgba(120,100,80,.14);overflow:hidden}
+.b-hp-track i{display:block;height:100%;border-radius:999px;transition:width .26s ease}
+#hpAllyBar{background:linear-gradient(90deg,#74d3a6,#4fb884)}
+#hpEnemyBar{background:linear-gradient(90deg,#e88a7d,#d86457)}
+.b-round-mini{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:64px}
+.b-round-mini span{font-size:9px;color:var(--muted);font-weight:700}
+.b-round-track{width:64px;height:5px;border-radius:999px;background:rgba(120,100,80,.14);overflow:hidden}
+#roundProgress{display:block;height:100%;background:linear-gradient(90deg,#f3c978,#e8a94e)}
+.b-q-title{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:1px;align-self:center}
+.b-q-chip{font-weight:600}
+.b-q-chip.now{outline:2px solid #e89a3c;box-shadow:0 0 8px rgba(232,154,60,.35)}
+.battle-layer .float-num{top:-3px;left:50%}
+.battle-layer .battle-controls .btn-ghost{background:rgba(255,255,255,.74);border:1px solid rgba(178,148,118,.38);color:#6b5540;font-weight:700}
+.battle-layer #btnManualSkill,.battle-layer #btnEarlyUlt{background:rgba(255,243,212,.92);border-color:#eec67e;color:#9a6414}
+.battle-layer #btnPause{background:rgba(232,242,255,.88);border-color:#b9cff0;color:#3d5f9e}
+.battle-layer .battle-log{max-height:104px;min-height:58px;overflow-y:auto;font-size:11px;line-height:1.5;padding:9px 11px;scrollbar-width:thin}
+.battle-layer .battle-log div{white-space:normal;overflow:visible;text-overflow:clip;opacity:.86}
+.battle-layer .battle-log div.log-last{opacity:1}
+@media (max-width:420px){
+  .battle-layer .art-frame.art-battle{width:58px;height:58px}
+  .battle-layer .b-team{min-height:176px}
+  .battle-layer .b-slot-empty{min-height:118px}
+  .b-hp-summary{gap:5px}
+  .b-round-track{width:48px}
+  .battle-layer .battle-log{max-height:84px;font-size:10px}
+}
 .battle-result{display:none;position:fixed;inset:0;z-index:130;background:rgba(75,57,43,.3);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
 .battle-result.open{display:flex;animation:fadeIn .2s}
 .result-box{width:min(520px,95vw);max-height:92vh;overflow:auto;background:linear-gradient(160deg,#fffdf8,#fff7ea);border:1px solid #fff;border-radius:26px;padding:22px;box-shadow:0 30px 80px rgba(75,53,36,.24);text-align:center;animation:modalPop .32s cubic-bezier(.2,.9,.3,1.2)}
@@ -5631,8 +5676,13 @@ function renderBattleScreenHTML(battle) {
       </div>
       ${c.storyIntro ? `<div class="battle-story">📖 ${esc(c.storyIntro)}</div>` : ''}
       ${c.bossTaunt ? `<div class="battle-story boss-taunt">👹 ${esc(c.bossTaunt)}</div>` : ''}
-      <div class="b-queue" id="battleQueue"></div>
+      <div class="b-queue" id="battleQueue"><span class="b-q-title">出手顺序</span></div>
       ${bossBarHTML(battle)}
+      <div class="b-hp-summary">
+        <div class="b-hp-side ally"><span id="hpAllyText">我方 0/0</span><div class="b-hp-track"><i id="hpAllyBar"></i></div></div>
+        <div class="b-round-mini"><span id="roundProgressText">0/30</span><div class="b-round-track"><i id="roundProgress"></i></div></div>
+        <div class="b-hp-side enemy"><span id="hpEnemyText">敌方 0/0</span><div class="b-hp-track"><i id="hpEnemyBar"></i></div></div>
+      </div>
       <div class="battle-field">
         ${battleSceneBgHtml(c)}
         ${c.mode === 'arena' ? '<div class="arena-deco left"></div><div class="arena-deco right"></div>' : ''}
@@ -5643,7 +5693,7 @@ function renderBattleScreenHTML(battle) {
         <div class="b-vs">VS</div>
         <div class="b-side enemy">
           <div class="b-side-label">敌方 <span class="power">战力 ${fmt(sum(battle.enemies.map(u => calcPower(u))))}</span></div>
-          <div class="b-team">${battle.enemies.map(battleUnitHTML).join('')}</div>
+          <div class="b-team enemy-team">${battle.enemies.map(battleUnitHTML).join('')}${enemySlotsHtml(battle)}</div>
         </div>
       </div>
       <div class="battle-log" id="battleLog"></div>
@@ -5680,6 +5730,12 @@ function battleUnitHTML(unit) {
     </div>`;
 }
 
+function enemySlotsHtml(b) {
+  const need = Math.max(2, b.allies.length) - b.enemies.length;
+  let html = '';
+  for (let i = 0; i < need; i++) html += '<div class="b-slot-empty"><span class="se-emo">🐾</span><span>待命位</span></div>';
+  return html;
+}
 function getBattleUnitEl(uid) {
   return document.querySelector(`#battleRoot .b-unit[data-uid="${uid}"]`);
 }
@@ -5725,6 +5781,24 @@ function updateBattleUI() {
   renderBattleQueue();
   updateBattleControls();
   syncBossBar();
+  updateSideHpSummary();
+}
+// 敌我总血量对比条 + 回合进度（仅内存展示，不读取/修改任何战斗数值）
+function updateSideHpSummary() {
+  const b = UI.battle;
+  if (!b) return;
+  const sumHp = arr => arr.reduce((a, u) => a + Math.max(0, u.hp), 0);
+  const sumMax = arr => arr.reduce((a, u) => a + Math.max(1, u.maxHp), 0);
+  const setBar = (barSel, textSel, h, m) => {
+    const bar = $(barSel), text = $(textSel);
+    if (bar) bar.style.width = clamp(h / Math.max(1, m) * 100, 0, 100) + '%';
+    if (text) text.textContent = `${h}/${m}`;
+  };
+  setBar('#hpAllyBar', '#hpAllyText', sumHp(b.allies), sumMax(b.allies));
+  setBar('#hpEnemyBar', '#hpEnemyText', sumHp(b.enemies), sumMax(b.enemies));
+  const rp = $('#roundProgress'), rt = $('#roundProgressText');
+  if (rp) rp.style.width = clamp(b.round / Math.max(1, b.maxRounds) * 100, 0, 100) + '%';
+  if (rt) rt.textContent = `${b.round}/${b.maxRounds}`;
 }
 function updateBattleControls() {
   const b = UI.battle;
@@ -5748,7 +5822,7 @@ function renderBattleLog() {
   const b = UI.battle;
   const el = $('#battleLog');
   if (!el || !b) return;
-  const lines = b.log.slice(-7);
+  const lines = b.log.slice(-10);
   el.innerHTML = lines.map((line, i) => {
     const text = typeof line === 'string' ? line : (line && line.text) || '';
     const kind = (line && line.kind) || 'info';
