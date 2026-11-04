@@ -3183,6 +3183,7 @@ function sanitizeState(s) {
   s.settings = s.settings && typeof s.settings === 'object' ? s.settings : { sfx: true, music: false };
   s.settings.sfx = s.settings.sfx !== false;
   s.settings.music = !!s.settings.music;
+  s.settings.musicStyle = ['chord', 'calm'].includes(s.settings.musicStyle) ? s.settings.musicStyle : 'chord';
   s.rebirth = s.rebirth && typeof s.rebirth === 'object' ? s.rebirth : { count: 0 };
   s.rebirth.count = Math.max(0, Math.floor(num(s.rebirth.count, 0)));
   s.eternal = s.eternal && typeof s.eternal === 'object' ? s.eternal : { idle: 0, star: 0, gold: 0 };
@@ -7213,6 +7214,7 @@ function openSettingsModal() {
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
       <div class="settings-row"><span>轻音乐</span><button id="btnToggleMusic" class="btn btn-ghost btn-xs" type="button" data-act="toggleMusic">${state.settings.music ? '开启' : '关闭'}</button></div>
+      <div class="settings-row"><span>风格</span><span style="display:flex;gap:6px"><button id="musicStyleChord" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="chord">轻柔和弦${state.settings.musicStyle === 'chord' ? ' · 选' : ''}</button><button id="musicStyleCalm" class="btn btn-ghost btn-xs" type="button" data-act="music-style" data-key="calm">舒缓琶音${state.settings.musicStyle === 'calm' ? ' · 选' : ''}</button></span></div>
       <div class="tiny muted">全部由浏览器 WebAudio 实时合成，不加载外部音频。切到后台会自动安静。</div>
     </div>
     <div class="settings-section">
@@ -8265,6 +8267,17 @@ function toggleSetting(key) {
   }
   toast(key === 'sfx' ? `音效已${state.settings.sfx ? '开启' : '关闭'}` : `音乐已${state.settings.music ? '开启' : '关闭'}`, '', 1400);
 }
+function setMusicStyle(style) {
+  if (!['chord', 'calm'].includes(style)) return;
+  state.settings.musicStyle = style;
+  saveGame();
+  syncAudio();
+  const chordBtn = $('#musicStyleChord');
+  const calmBtn = $('#musicStyleCalm');
+  if (chordBtn) chordBtn.textContent = style === 'chord' ? '轻柔和弦 · 选' : '轻柔和弦';
+  if (calmBtn) calmBtn.textContent = style === 'calm' ? '舒缓琶音 · 选' : '舒缓琶音';
+  toast(style === 'calm' ? '背景音乐换成舒缓琶音啦' : '背景音乐换成轻柔和弦啦', '', 1200);
+}
 function saveNow() {
   saveGame();
   toast('已保存到浏览器本地存档', 'good', 1600);
@@ -8478,6 +8491,7 @@ function handleActionClick(event) {
     case 'renamePlayer': renamePlayerAction(); break;
     case 'toggleSfx': toggleSetting('sfx'); break;
     case 'toggleMusic': toggleSetting('music'); break;
+    case 'music-style': setMusicStyle(target.dataset.key); break;
     case 'saveNow': saveNow(); break;
     case 'gameSyncNow': void gameSyncNow(false).then(() => toast('云端同步请求已发出', 'good', 2000)); break;
     case 'exportSave': exportSave(); break;
@@ -8677,6 +8691,18 @@ function playMusicBar() {
     [293.66, 349.23, 440.00],
     [246.94, 293.66, 392.00]
   ];
+  if (state.settings.musicStyle === 'calm') {
+    const calmSets = [
+      [220.00, 261.63, 329.63],
+      [196.00, 246.94, 293.66],
+      [174.61, 220.00, 261.63],
+      [246.94, 293.66, 349.23]
+    ];
+    const seq = pick(calmSets);
+    seq.forEach((freq, i) => audioTone(freq, 3.2, 'sine', 0.0045, i * 0.55));
+    audioTone(seq[0] * 2, 2.4, 'sine', 0.0028, 2.0);
+    return;
+  }
   const chord = pick(chords);
   chord.forEach((freq, i) => audioTone(freq, 2.4, 'sine', 0.006, i * 0.06));
   audioTone(chord[0] * 2, 1.4, 'triangle', 0.0035, 1.3);

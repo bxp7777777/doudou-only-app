@@ -53,6 +53,8 @@ const homeHtml = () => nodes.app.innerHTML;
 check(document.body.className === 'theme-duo', '默认背景应为「贴贴」，实际 ' + document.body.className);
 check(homeHtml().includes('小猪盯吃喝'), '首页没渲染 hero');
 check(homeHtml().includes('喝水'), '首页没渲染喝水卡');
+check(homeHtml().includes('音乐氛围'), '首页缺音乐氛围卡');
+check(homeHtml().includes('今日一曲'), '首页缺今日一曲纯文案卡');
 // 天气卡只有部分时段出，出了就必须有兜底文案（不能白卡）
 if (homeHtml().includes('南宁')) check(homeHtml().includes('没查到'), '天气卡失败时应兜底');
 
@@ -132,6 +134,9 @@ check(document.body.className === 'theme-qingzhu', '主题没切到青竹');
 click({ act: 'tab', tab: 'home' });
 click({ act: 'cup', index: '0' });
 check(homeHtml().includes('第2杯'), '喝水卡点击后没重渲染');
+click({ act: 'music-play' });
+click({ act: 'tune-another' });
+check(homeHtml().includes('今日一曲'), '换一首意境后文案卡仍应在');
 check(nodes.tabs.innerHTML.includes('今陪伴'), '底部导航没渲染');
 check(nodes.tabs.innerHTML.includes('养成'), '底部导航缺「养成」入口');
 

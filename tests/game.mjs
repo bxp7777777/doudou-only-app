@@ -294,6 +294,8 @@ check(pets >= 20, `宠物不足 20：${pets}`);
 check(achs === 200, `成就应为 200：实际 ${achs}`);
 check(encs >= 15, `奇遇不足 15：${encs}`);
 check(text.includes('ddgame'), '存档没用 ddgame 前缀');
+check(text.includes('musicStyle'), '游戏缺背景音乐风格字段');
+check(text.includes('setMusicStyle'), '游戏缺风格切换函数');
 
 if (problems.length) {
   console.error('❌ 游戏冒烟 ' + problems.length + ' 条问题：');

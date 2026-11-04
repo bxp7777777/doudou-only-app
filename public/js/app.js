@@ -6,6 +6,7 @@ import * as storyUtil from './story.js';
 import * as jokeUtil from './joke.js';
 import * as schedule from './schedule.js';
 import { load as loadWeather } from './weather.js';
+import * as music from './music.js';
 
 const appEl = document.getElementById('app');
 const tabsEl = document.getElementById('tabs');
@@ -25,7 +26,8 @@ const state = {
   lastPeriod: '',
   diaryDate: '',
   diaryQuery: '',
-  tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 }
+  tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
+  musicSleepTimer: null
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -349,7 +351,9 @@ function extraHomeHTML(now) {
     careHintHTML(),
     comfortHTML(),
     moveCardHTML(now),
+    musicCardHTML(),
     tomatoCardHTML(),
+    dailyTuneCardHTML(),
     pledgeCardHTML(now),
     foodPrefCardHTML()
   ].join('');
@@ -439,6 +443,62 @@ function moveCardHTML(now) {
   <button class="btn ${done ? 'btn-mint' : 'btn-ghost'} btn-sm" data-act="moveToggle">${done ? '✓ 今天活动过了' : '点我打个卡'}</button></section>`;
 }
 
+/* ------------------------- 音乐氛围（纯合成，零音频文件）+ 今日一曲（纯文案） ------------------------- */
+
+function musicCardHTML() {
+  const prefs = music.getPrefs();
+  const playing = music.isPlaying();
+  const playingKey = music.currentKey();
+  const cur = music.presetByKey(playingKey || prefs.preset);
+  const presetChips = music.PRESETS.map((p) => {
+    const on = (playing ? playingKey : prefs.preset) === p.key;
+    return `<button class="tomato-quick" type="button" data-act="music-preset" data-key="${p.key}" title="${esc(p.desc)}">${p.emoji} ${esc(p.name)}${on ? ' ✓' : ''}</button>`;
+  }).join('');
+  const vols = [0.2, 0.4, 0.6, 0.8, 1.0]
+    .map((v, i) => `<button class="btn btn-mini" type="button" data-act="music-vol" data-level="${v}" aria-pressed="${Math.abs(prefs.volume - v) < 0.01}">${i + 1}</button>`)
+    .join('');
+  const sleepOpts = [15, 30, 45]
+    .map((m) => `<button class="btn btn-mini" type="button" data-act="music-sleep" data-min="${m}">${m}′定时</button>`)
+    .join('');
+  return `<section class="card">
+  <h2 class="card-head"><span class="card-icon">🎵</span><span class="card-title">音乐氛围 · ${esc(cur.emoji)} ${esc(cur.name)}</span></h2>
+  <p class="card-sub">${esc(cur.desc)}；浏览器实时合成，不加载音频文件、不占仓库体积</p>
+  <div class="chips" style="flex-wrap:wrap;gap:6px">${presetChips}</div>
+  <div class="btn-row" style="margin-top:8px">
+    <button class="btn ${playing ? 'btn-ghost' : ''}" data-act="music-play">${playing ? '暂停氛围声' : '播放氛围声'}</button>
+    <button class="btn btn-ghost btn-mini" data-act="music-autofocus" aria-pressed="${prefs.autoFocus}">番茄联动：${prefs.autoFocus ? '开' : '关'}</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">
+    <span class="hint" style="margin:0">音量 1小–5大</span>${vols}
+  </div>
+  <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
+    <span class="hint" style="margin:0">睡前定时</span>${sleepOpts}
+  </div>
+  <p class="hint">点过一次播放声音才会出来；暂停即停，切到小游戏也不互相干扰。</p>
+  </section>`;
+}
+
+function dailyTuneCardHTML() {
+  const day = todayKey();
+  const tune = music.currentTune(day);
+  const done = music.isTuneDone(day);
+  const fav = music.isFav(tune.idx);
+  const rec = music.presetByKey(tune.rec);
+  return `<section class="card">
+  <h2 class="card-head"><span class="card-icon">🎼</span><span class="card-title">今日一曲 · 纯文案</span></h2>
+  <p class="joke-name">《${esc(tune.title)}》</p>
+  <p class="line">${esc(tune.vibe)}</p>
+  <p class="card-sub">适合：${esc(tune.scene)} · ${esc(tune.note)}</p>
+  <div class="btn-row" style="margin-top:8px">
+    <button class="btn btn-ghost btn-mini" data-act="music-rec" data-key="${tune.rec}">配一点：${rec.emoji}${esc(rec.name)}</button>
+    <button class="btn btn-ghost btn-mini" data-act="tune-another">换一首意境</button>
+    <button class="btn btn-ghost btn-mini" data-act="tune-fav" aria-pressed="${fav}">${fav ? '♥ 已收藏' : '♡ 收藏'}</button>
+    <button class="btn btn-mini" data-act="tune-done">${done ? '✓ 今天已听' : '今天听一记'}</button>
+  </div>
+  <p class="hint">累计听记 ${music.tuneDoneCount()} 天 · 收藏 ${music.favList().length} 首；只存文字意境，不联网找歌。</p>
+  </section>`;
+}
+
 function focusStreak() {
   const s = store.get('dd:focusStreak', { lastDate: '', streak: 0 });
   return Number(s.streak) || 0;
@@ -479,6 +539,7 @@ function tomatoTick() {
     t.running = false;
     t.done += 1;
     recordFocusRound();
+    music.stop(400);
     toast('一轮专注完成，起身喝口水、看看远处～');
     render();
     return;
@@ -1286,6 +1347,9 @@ document.addEventListener('click', (e) => {
 
   if (act === 'tomatoToggle') {
     state.tomato.running = !state.tomato.running;
+    if (state.tomato.running && music.getPrefs().autoFocus && !music.isPlaying()) {
+      music.start(music.getPrefs().focusPreset || 'focus');
+    }
     render();
     return;
   }
@@ -1323,6 +1387,90 @@ document.addEventListener('click', (e) => {
     store.set('dd:tomatoSet', mins);
     render();
     toast(`专注时长设为 ${mins} 分钟`);
+    return;
+  }
+
+  /* ---- 音乐氛围 ---- */
+  if (act === 'music-play') {
+    if (music.isPlaying()) {
+      music.stop(500);
+      toast('氛围声先歇一会儿');
+    } else {
+      music.start(music.getPrefs().preset);
+      toast('轻轻的氛围声陪你');
+    }
+    render();
+    return;
+  }
+
+  if (act === 'music-preset') {
+    const key = el.dataset.key;
+    music.setPref({ preset: key });
+    if (music.isPlaying()) music.start(key);
+    render();
+    return;
+  }
+
+  if (act === 'music-vol') {
+    const v = Number(el.dataset.level);
+    if ([0.2, 0.4, 0.6, 0.8, 1.0].includes(v)) {
+      music.setPref({ volume: v });
+      music.applyVolume();
+    }
+    return;
+  }
+
+  if (act === 'music-autofocus') {
+    music.setPref({ autoFocus: !music.getPrefs().autoFocus });
+    render();
+    toast(music.getPrefs().autoFocus ? '番茄开始时自动陪一点氛围声' : '番茄联动已关');
+    return;
+  }
+
+  if (act === 'music-sleep') {
+    const m = Number(el.dataset.min);
+    music.setPref({ sleepMin: m });
+    if (!music.isPlaying()) music.start('calm');
+    if (state.musicSleepTimer) clearTimeout(state.musicSleepTimer);
+    state.musicSleepTimer = setTimeout(() => {
+      music.stop(900);
+      toast('定时到啦，声音慢慢停下，晚安');
+    }, m * 60000);
+    render();
+    toast(`${m} 分钟后轻轻停下`);
+    return;
+  }
+
+  if (act === 'music-rec') {
+    const key = el.dataset.key;
+    music.setPref({ preset: key });
+    music.start(key);
+    render();
+    return;
+  }
+
+  if (act === 'tune-another') {
+    music.anotherTune(today);
+    render();
+    return;
+  }
+
+  if (act === 'tune-fav') {
+    const tune = music.currentTune(today);
+    const added = music.toggleFav(tune.idx);
+    render();
+    toast(added ? '收藏好啦，下次翻得快一些' : '已取消收藏');
+    return;
+  }
+
+  if (act === 'tune-done') {
+    if (music.isTuneDone(today)) {
+      toast('今天已经记过啦');
+      return;
+    }
+    music.markTuneDone(today);
+    render();
+    toast('今天的意境收进口袋啦');
     return;
   }
 

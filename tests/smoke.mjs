@@ -306,6 +306,33 @@ check(!store.hasDiary(db), '删除后 hasDiary 应为 false');
 const dStats2 = store.diaryStats(today);
 check(dStats2.total === 1 && dStats2.streak === 1, `删完只剩今天，实际 total=${dStats2.total} streak=${dStats2.streak}`);
 
+/* 音乐氛围：合成预设齐全、今日一曲数据完整且推荐预设合法、配置走 dd: 前缀 */
+const music = await import('../public/js/music.js');
+check(music.PRESETS.length >= 6, `音乐预设应至少 6 个，实际 ${music.PRESETS.length}`);
+check(music.PRESETS.every((p) => p.key && p.emoji && p.name && p.desc), '音乐预设缺字段');
+const presetKeys = new Set(music.PRESETS.map((p) => p.key));
+check(music.PRESETS.every((p) => p.kind === 'noise' || p.kind === 'pad'), '音乐预设类型不合法');
+check(music.DAILY_TUNES.length >= 40, `今日一曲应至少 40 条，实际 ${music.DAILY_TUNES.length}`);
+check(music.DAILY_TUNES.every((t) => t.title && t.vibe && t.scene && t.note && presetKeys.has(t.rec)), '今日一曲字段缺失或推荐预设无效');
+const tuneBodies = music.DAILY_TUNES.map((t) => t.title + t.vibe + t.note).join('');
+for (const b of ['榴莲', '臭豆腐', '螺蛳粉', '穿搭', '外套', '羽绒']) {
+  check(!tuneBodies.includes(b), `今日一曲出现禁用词「${b}」`);
+}
+const mt1 = music.currentTune('2026-11-04');
+const mt1b = music.currentTune('2026-11-04');
+check(mt1.idx === mt1b.idx && mt1.title === mt1b.title, '同一天今日一曲应固定');
+const mt2 = music.anotherTune('2026-11-04');
+check(mt2.idx !== mt1.idx, '换一首意境应得到不同一首');
+const musicPrefs = music.getPrefs();
+check(musicPrefs.autoFocus === true && musicPrefs.volume >= 0.2, '音乐默认偏好结构不对');
+music.setPref({ volume: 0.8 });
+check(Math.abs(music.getPrefs().volume - 0.8) < 0.01, '音乐偏好没存进 dd:music');
+music.markTuneDone('2026-11-04');
+check(music.isTuneDone('2026-11-04') && music.tuneDoneCount() >= 1, '今日一曲打卡没记上');
+const favAdded = music.toggleFav(mt1.idx);
+check(favAdded === true && music.isFav(mt1.idx), '收藏没记上');
+check(music.M_KEYS.prefs.startsWith('dd:') && music.M_KEYS.favs.startsWith('dd:') && music.M_KEYS.tuneLog.startsWith('dd:'), '音乐键必须走 dd: 前缀以便云端同步');
+
 if (problems.length) {
   console.error(`❌ 问题 ${problems.length} 条：`);
   for (const p of problems) console.error(' - ' + p);
