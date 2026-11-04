@@ -333,6 +333,83 @@ function weatherModule(ctx) {
   };
 }
 
+/* -------------- 期末周（2026-12-28 ~ 2027-01-03） ------------- */
+
+const EXAM = {
+  start: '2026-12-28',
+  end: '2027-01-03',
+  /* 考前 7 天 */
+  before: [
+    '把复习切成每天一块，写完打个勾，比一口气啃一整天省力。',
+    '熬夜补不回状态：今天十一点半前躺下，第二天记得反而更牢。',
+    '复习一小时就起身走两分钟，腰和眼睛都会谢谢你。',
+    '考前一晚别再开新章节，翻一遍错题、把笔装好就够。',
+    '书桌收拾干净，水杯放手边，坐下来就能直接开始。',
+    '这几天饭要按时吃，别拿零食顶着复习。'
+  ],
+  /* 考试周内 */
+  during: [
+    '进考场前先吃口热的，别空着肚子硬撑一上午。',
+    '证件、笔、水杯睡前就装进包里，早上能少慌一件。',
+    '考完这一科先别急着对答案，把脑子腾给下一科。',
+    '中场歇的时候喝口温水、站一会儿，别一直低头盯书。',
+    '午休能睡二十分钟就睡，睡过头反而更昏。',
+    '手写多了手腕会僵，进考场前转两圈、捏一捏。'
+  ],
+  after: [
+    '考完了，先把这一觉补回来，别的明天再说。',
+    '不管考得怎么样，这几天你已经很用力了，夸夸自己。',
+    '别急着复盘分数，先把落下的饭和睡眠补上。'
+  ]
+};
+
+function dateDiffKey(aKey, bKey) {
+  const a = new Date(String(aKey) + 'T00:00:00');
+  const b = new Date(String(bKey) + 'T00:00:00');
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
+function examModule(ctx) {
+  const today = ctx.today;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(today || ''))) return null;
+
+  const toStart = dateDiffKey(today, EXAM.start); // 正数＝还有几天
+  const toEnd = dateDiffKey(today, EXAM.end); // 负数＝已结束几天
+  const seed = Number(dayIndex(today)) || 0;
+
+  // 考前一周开始提醒，结束后留两天收个尾，其余时间不出现
+  if (toStart > 7 || toEnd < -2) return null;
+
+  let title = '';
+  let sub = '';
+  let lines = [];
+
+  if (toStart > 0) {
+    title = '期末周 · 还有 ' + toStart + ' 天';
+    sub = '把复习切成小块，一天一块';
+    lines = [rot(EXAM.before, seed), rot(EXAM.before, seed + 2)];
+  } else if (toEnd >= 0) {
+    const examDay = 1 - toStart;
+    title = '期末周 · 第 ' + examDay + ' 天';
+    sub = '考完一科放下一科';
+    lines = [rot(EXAM.during, seed), rot(EXAM.during, seed + 1)];
+    if (toEnd === 0) lines.push('今天就全部考完了，回去好好睡一觉。');
+  } else {
+    title = '考完啦';
+    sub = '先把状态补回来';
+    lines = EXAM.after.slice(0, 2);
+  }
+
+  return {
+    id: 'exam',
+    type: 'text',
+    icon: '📝',
+    title: title,
+    sub: sub,
+    lines: lines
+  };
+}
+
 /* ------------------------- 今天的节奏（课表） ------------------------- */
 
 function scheduleModule(now) {
@@ -776,8 +853,8 @@ function build(ctx) {
     ];
   }
 
-  // 天气卡常驻首页第一张：南宁（学校）+ 深圳（家里）随时能看一眼，不分时段
-  return [weatherModule(ctx)].concat(mods).filter(Boolean);
+  // 天气卡常驻首页第一张：南宁（学校）+ 深圳（家里）随时能看一眼，不分时段；期末周期间紧跟一张期末卡
+  return [weatherModule(ctx), examModule(ctx)].concat(mods).filter(Boolean);
 }
 
 export {

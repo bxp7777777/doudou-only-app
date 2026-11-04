@@ -228,6 +228,35 @@ check(a3.phase === 'normal' && a3.cycleDay === 11, '常规相位错');
 const a4 = cycleUtil.analyze({ lastStart: date.addDays(today, -35), cycleLength: 28, periodLength: 5 }, today);
 check(a4.phase === 'overdue', '推迟相位错');
 
+/* 经期具体照顾动作：四个相位都要有，而且首页卡的头两句要能马上照做 */
+for (const [a, name] of [[a1, '经期'], [a2, '经前'], [a3, '常规'], [a4, '推迟']]) {
+  check(Array.isArray(a.care) && a.care.length >= 3, name + '相位缺具体照顾动作');
+  check(a.lines.length >= a.care.length, name + '相位 lines 应包含照顾动作');
+}
+check(a1.lines[0] === a1.care[0], '经期头一句应来自照顾动作');
+check(a1.care.some((l) => l.includes('敷') || l.includes('热水')), '经期缺热敷类动作');
+check(a2.care.some((l) => l.includes('热敷') || l.includes('温水脚')), '经前缺暖身类动作');
+check(a1.care.some((l) => l.includes('卫生用品')), '经期应提醒勤换卫生用品');
+const a1next = cycleUtil.analyze({ lastStart: date.addDays(today, -1), cycleLength: 28, periodLength: 5 }, date.addDays(today, 1));
+check(a1.care.join('|') !== a1next.care.join('|') || a1.care.length < 2, '照顾动作应隔天轮换');
+
+/* 期末周 2026-12-28 ~ 2027-01-03：考前一周开始出现，结束后两天收尾，平时不出现 */
+const examBuild = (todayKey, period, now) =>
+  plan.build({ today: todayKey, period, now, water: { cups: [false, false, false] }, checkin: {}, cycle: null, weather: weatherOk, weatherStatus: 'ok' });
+const examIn = examBuild('2026-12-29', 'morning', new Date(2026, 11, 29, 8, 0)).find((m) => m.id === 'exam');
+check(!!examIn && examIn.title.includes('期末'), '期末周内应出现期末卡');
+check(!!examIn && examIn.title.includes('第 2 天'), '期末卡应标出考试第几天');
+const examBefore = examBuild('2026-12-24', 'afternoon', new Date(2026, 11, 24, 15, 0)).find((m) => m.id === 'exam');
+check(!!examBefore && examBefore.title.includes('还有 4 天'), '考前一周应显示倒计时');
+const examEve = examBuild('2026-12-27', 'evening', new Date(2026, 11, 27, 20, 0)).find((m) => m.id === 'exam');
+check(!!examEve && examEve.title.includes('还有 1 天'), '考前最后一晚应是「还有 1 天」');
+const examLate = examBuild('2026-12-28', 'morning', new Date(2026, 11, 28, 8, 0)).find((m) => m.id === 'exam');
+check(!!examLate && examLate.title.includes('第 1 天'), '开考当天应切到「第 1 天」');
+const examOff = examBuild('2026-11-04', 'morning', new Date(2026, 10, 4, 8, 0));
+check(!examOff.some((m) => m.id === 'exam'), '非期末周不该出现期末卡');
+const examOver = examBuild('2026-12-30', 'morning', new Date(2026, 11, 30, 8, 0));
+check(examOver.filter((m) => m.id === 'exam').length === 1, '期末卡只应出现一次');
+
 /* 1000 篇每日小故事：全量走一遍，检查字数区间、正文唯一、禁用词；标题允许复用 */
 let lastBody = null;
 const bodySeen = new Set();
