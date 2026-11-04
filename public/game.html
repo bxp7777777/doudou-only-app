@@ -323,6 +323,10 @@ img{max-width:100%}
 .idle-pet{position:relative;display:inline-block;font-size:82px;line-height:1;animation:petFloat 3.3s ease-in-out infinite;transition:transform .2s}
 .idle-pet-wrap:active .idle-pet{transform:scale(.94) rotate(-3deg)}
 .idle-pet-wrap:hover .idle-pet{animation-duration:1.8s}
+#homePetWrap.act-wander .idle-pet{animation:petWander 2.6s ease-in-out infinite}
+#homePetWrap.act-hop .idle-pet{animation:petHop 1.15s ease-out 2}
+#homePetWrap.act-roll .idle-pet{animation:petRoll 1.05s ease-in-out 2}
+.art-frame img,.home-pet-img,.mini-pet-img,.codex-img{animation:artFadeIn .32s ease both}
 .idle-pet .accessory{position:absolute;left:50%;top:-18px;transform:translateX(-50%) rotate(-8deg);font-size:31px;animation:wiggle 2.5s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.12))}
 .idle-pet .shiny-star{position:absolute;font-size:20px;animation:sparkle 1.6s ease-in-out infinite;color:#ffd76a}
 .idle-pet .shiny-star.s1{left:-9px;top:10px}.idle-pet .shiny-star.s2{right:-7px;top:34px;animation-delay:.6s}
@@ -371,7 +375,7 @@ img{max-width:100%}
 .scene-pal.pal-s4{right:16%;bottom:13%}
 .scene-pal.pal-s5{right:27%;bottom:20%}
 .pal-art{position:relative;display:block;line-height:0}
-.pal-img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;animation:petFloat 3.2s ease-in-out infinite;background:#fff7e7}
+.pal-img{position:relative;z-index:1;width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;animation:petFloat 3.2s ease-in-out infinite;background:#fff7e7}
 .pal-emoji{font-size:54px;line-height:1;display:inline-block;animation:petFloat 3.2s ease-in-out infinite}
 .scene-pal.pal-s2 .pal-img,.scene-pal.pal-s2 .pal-emoji{animation-delay:.55s}
 .scene-pal.pal-s3 .pal-img,.scene-pal.pal-s3 .pal-emoji{animation-delay:1.1s}
@@ -460,6 +464,7 @@ img{max-width:100%}
 .slot.filled{border-style:solid;background:linear-gradient(150deg,#fffdf8,#fff4e7);border-color:var(--rarity,#ead6bf);box-shadow:var(--shadow-soft)}
 .slot:hover{transform:translateY(-2px);background:#fffaf2}
 .slot .slot-emoji{font-size:35px;line-height:1.1;position:relative}
+.slot .art-frame{margin:0 auto}
 .slot .slot-name{font-size:11px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slot .slot-lv{font-size:9.5px;color:var(--muted)}
 .slot .slot-power{font-size:10px;color:#ac7435;font-weight:700}
@@ -523,7 +528,8 @@ img{max-width:100%}
 .codex-card:hover{transform:translateY(-2px)}
 .codex-card.locked{background:#f7f1e8;border-color:#e9ddcd}
 .codex-card.locked .codex-emoji{filter:grayscale(1) brightness(.42);opacity:.38}
-.codex-emoji{font-size:41px;line-height:1.15;margin-top:5px}
+.codex-emoji{position:relative;font-size:41px;line-height:1.15;margin-top:5px;display:grid;place-items:center;min-height:48px}
+.codex-img{position:absolute;inset:0;margin:auto;width:46px;height:46px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.85),0 3px 8px rgba(151,118,84,.16)}
 .codex-card.locked .codex-emoji::after{content:"?";position:absolute;left:50%;top:38px;transform:translateX(-50%);font-size:20px;color:#8a7765;font-weight:800;filter:none}
 .codex-card h4{margin:4px 0 2px;font-size:12px}
 .codex-card p{margin:0;font-size:9px;color:var(--muted);line-height:1.45;min-height:25px}
@@ -1105,6 +1111,9 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   background:linear-gradient(150deg,#ffeed2,#f8dcc4);border:1px solid #f0d9bd;position:relative;overflow:hidden;
 }
 .cos-preview.acc-preview{background:linear-gradient(150deg,#fff4e9,#ffe7ef)}
+.cos-preview.bg-seaside{background:linear-gradient(165deg,#bfe8fb 0%,#e7f6ff 46%,#f7e2b8 47%,#efcf94 100%)}
+.cos-preview.bg-autumn{background:linear-gradient(165deg,#ffe3bd 0%,#f8cd8f 48%,#eda85f 100%)}
+.cos-preview.bg-seaside,.cos-preview.bg-autumn{font-size:34px}
 .cos-preview .acc-emoji,.cos-preview span{position:absolute;right:12px;top:9px;font-size:20px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.1))}
 .cos-info b{font-size:11.5px}
 .cos-info p{font-size:9px;color:var(--muted);margin:2px 0 6px;line-height:1.45}
@@ -1303,6 +1312,10 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 /* ---------- 动效 ---------- */
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes petFloat{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-7px) rotate(-2deg)}60%{transform:translateY(-5px) rotate(2deg)}}
+@keyframes artFadeIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes petWander{0%,100%{transform:translateX(0) translateY(0) rotate(0)}25%{transform:translateX(-16px) translateY(-2px) rotate(-4deg)}55%{transform:translateX(15px) translateY(-3px) rotate(3deg)}80%{transform:translateX(-7px) translateY(-1px) rotate(-2deg)}}
+@keyframes petHop{0%,100%{transform:translateY(0)}32%{transform:translateY(-24px)}58%{transform:translateY(0) scale(.95)}82%{transform:translateY(-10px)}}
+@keyframes petRoll{0%{transform:rotate(0deg) translateY(0)}100%{transform:rotate(360deg) translateY(0)}}
 @keyframes shadowPulse{0%,100%{transform:scaleX(1);opacity:.8}50%{transform:scaleX(.88);opacity:.55}}
 @keyframes cloudDrift{0%,100%{transform:translateX(0)}50%{transform:translateX(14px)}}
 @keyframes wiggle{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(3deg)}}
@@ -3402,6 +3415,18 @@ function enemyArtFrame(unit) {
   const fb = esc(unit.emoji);
   return `<span class="art-frame art-battle"><span class="art-emoji">${fb}</span><img src="${url}" alt="${fb}" loading="lazy" onerror="this.remove()"></span>`;
 }
+// 我方战斗头像：进化立绘优先 → 基础立绘 → 底层 emoji；仅运行时展示，不参与数值计算与存档
+function allyBattleArtFrame(unit) {
+  const fb = esc(unit.emoji);
+  const evoUrl = evoArtUrl(unit.templateId, unit.evo || 0);
+  const baseUrl = petArtUrl(unit.templateId);
+  const primary = evoUrl || baseUrl;
+  if (!primary) return null;
+  const chain = (evoUrl && baseUrl)
+    ? `onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';}else{this.remove();}"`
+    : 'onerror="this.remove()"';
+  return `<span class="art-frame art-battle"><span class="art-emoji">${fb}</span><img src="${primary}" alt="${fb}" loading="lazy" ${chain}></span>`;
+}
 // 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
 // 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
 const PET_EVO_ART = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
@@ -3489,7 +3514,7 @@ function homePetArt(pet, tpl) {
 function miniPetArt(pet) {
   const url = petArtUrl(pet.templateId);
   if (!url) return esc(petEmoji(pet));
-  return `<img class="mini-pet-img" src="${url}" alt="" loading="lazy" onerror="this.remove()">`;
+  return `<img class="mini-pet-img" src="${url}" alt="${esc(petEmoji(pet))}" loading="lazy" onerror="this.remove()">`;
 }
 function stateUniqueCount(s = state) {
   return new Set(Object.values(s.pets || {}).map(p => p.templateId)).size;
@@ -4567,6 +4592,7 @@ function buildBattleUnitFromPet(pet, side, ctx) {
     petUid: pet.uid,
     side,
     templateId: template.id,
+    evo: pet.evo || 0,
     name: petDisplayName(pet),
     emoji: pet.shiny ? template.shiny : petEmoji(pet),
     element: template.element,
@@ -4876,7 +4902,7 @@ function battleUnitHTML(unit) {
         <span class="b-lv">Lv.${unit.level}</span>
       </div>
       <div class="b-emoji-wrap">
-        ${(unit.side === 'enemy' ? enemyArtFrame(unit) : petArtFrame(unit.templateId, unit.emoji, 'art-battle')) || `<span class="b-emoji">${unit.emoji}</span>`}
+        ${(unit.side === 'enemy' ? enemyArtFrame(unit) : allyBattleArtFrame(unit)) || `<span class="b-emoji">${unit.emoji}</span>`}
         <span class="b-shield" style="${unit.shield > 0 ? '' : 'display:none'}">🛡${fmt(unit.shield)}</span>
       </div>
       <div class="b-name">${esc(unit.name)}</div>
@@ -6013,7 +6039,7 @@ function palArtHTML(pet) {
   const chain = evoUrl && baseUrl
     ? `if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}this.classList.add('hidden');`
     : `this.classList.add('hidden');`;
-  return `<span class="pal-art-inner"><span class="pal-emoji pal-emoji-bg">${emoji}</span><img class="pal-img" src="${src}" alt="" loading="lazy" onerror="${chain}"></span>`;
+  return `<span class="pal-art-inner"><span class="pal-emoji pal-emoji-bg">${emoji}</span><img class="pal-img" src="${src}" alt="${emoji}" loading="lazy" onerror="${chain}"></span>`;
 }
 /* 把某只宠置顶为主宠（team[0]）：只重排，维持前排2/后排3与总数上限5，不改任何数值 */
 function setMain(uid) {
@@ -6179,10 +6205,34 @@ function renderTutorial() {
 function moodSpeech(pet) {
   if (!pet) return '';
   const h = num(pet.hunger, 80), m = num(pet.mood, 80);
-  if (h < 30) return pick(['肚子咕咕叫，想先吃点东西…', '饿到有点没精神，喂点零食吧。']);
-  if (m < 30) return pick(['今天有点提不起劲，摸摸头哄哄它吧。', '尾巴耷拉着，想被陪着说说话。']);
-  if (h >= 80 && m >= 80) return pick(['吃饱喝足，尾巴摇得停不下来～', '心情好好，想马上跟你去冒险！']);
-  return '';
+  if (h < 30) return pick(['肚子咕咕叫，想先吃点东西…', '饿到有点没精神，喂点零食吧。', '嘴巴一直动，好像在盼投喂。', '再不吃点东西，走路都没力气啦。', '闻到香味，肚子叫得更响了。']);
+  if (m < 30) return pick(['今天有点提不起劲，摸摸头哄哄它吧。', '尾巴耷拉着，想被陪着说说话。', '蔫蔫地蜷着，需要一点温柔。', '有点不开心，你多陪我玩会儿嘛。', '耳朵低低的，想被轻轻顺顺毛。']);
+  if (h >= 80 && m >= 80) return pick(['吃饱喝足，尾巴摇得停不下来～', '心情好好，想马上跟你去冒险！', '浑身暖暖的，想蹦跶两下。', '今天精力满满，啥都想试一试。', '美滋滋眯着眼，幸福得冒泡～']);
+  if (m >= 55) return pick(['东看看西看看，在想今晚玩什么。', '懒洋洋地坐着，偶尔甩甩尾巴。', '有点犯困，但还舍不得睡呢。', '安静陪着你，这样也很好。']);
+  return pick(['在附近溜达一圈，回来看你啦。', '耳朵转了转，像在听什么动静。', '伸了个懒腰，又乖乖坐下啦。']);
+}
+// 摸头专属台词池：按心情/饱食/亲密度加权；纯文案，不改变任何数值
+const PAT_COMMON = {
+  happy: ['舒服～再揉一下脑袋嘛', '尾巴摇成小风扇啦', '咕噜咕噜，心情飞起来了', '被你摸着，尾巴一直晃', '眼睛眯成月牙，好享受'],
+  normal: ['蹭了蹭你的手心～', '诶嘿嘿，这样有点痒', '我乖乖坐着，继续摸吧', '被摸一下，又有力气啦', '尾巴尖轻轻翘起来了'],
+  sad: ['呜…再陪我一会儿好不好', '摸摸头，就没那么难过啦', '靠在你身边，安心多了', '要是有颗小零食就更好了'],
+  hungry: ['摸完可以喂我一点吗', '肚子有点饿，想吃东西啦', '先揉揉头，待会给我加餐好不好'],
+  close: ['我们最要好啦', '你的手心好暖，我记住啦', '蹭蹭脸，这是专属暗号哦', '一直陪着我，好不好嘛']
+};
+function patSpeech(pet) {
+  const h = num(pet.hunger, 80), m = num(pet.mood, 80), int = num(pet.intimacy, 0);
+  const pool = (templateOf(pet).lines || []).slice();
+  if (h < 30) pool.push(...PAT_COMMON.hungry);
+  if (m < 30) pool.push(...PAT_COMMON.sad);
+  if (int >= 60) pool.push(...PAT_COMMON.close);
+  if (m >= 70 && h >= 50) pool.push(...PAT_COMMON.happy);
+  pool.push(...PAT_COMMON.normal);
+  const main = pick(pool);
+  if (int >= 80 && Math.random() < 0.42) {
+    const extra = pick(PAT_COMMON.close);
+    return main.replace(/[。～~!！.。]$/, '') + '，' + extra;
+  }
+  return main;
 }
 function gardenHTML() {
   ensureGarden();
@@ -6523,7 +6573,7 @@ function formationSlotHTML(row, index) {
   const t = templateOf(pet);
   return `<div class="slot filled rarity-${t.rarity}">
     <span class="slot-role">${row === 'front' ? '前排' : '后排'}</span>
-    <button class="btn btn-ghost btn-xs" type="button" data-act="petDetail" data-uid="${pet.uid}" style="border:0;background:transparent;padding:0;flex-direction:column"><span class="slot-emoji">${esc(petEmoji(pet))}</span></button>
+    <button class="btn btn-ghost btn-xs" type="button" data-act="petDetail" data-uid="${pet.uid}" style="border:0;background:transparent;padding:0;flex-direction:column">${petArtFrameFor(pet,'art-battle') || `<span class="slot-emoji">${esc(petEmoji(pet))}</span>`}</button>
     <span class="slot-name">${esc(petDisplayName(pet))}</span>
     <span class="slot-lv">Lv.${pet.level} · ${starsHTML(pet.star, true)}</span>
     <span class="slot-power">战力 ${fmt(petPowerSafe(pet))}</span>
@@ -6594,8 +6644,9 @@ function renderPets() {
         <div class="codex-grid">
           ${PETS.map(t => {
             const recorded = seenIds.has(t.id);
+            const codexArt = recorded && petArtUrl(t.id) ? `<img class="codex-img" src="${petArtUrl(t.id)}" alt="${esc(t.name)}" loading="lazy" onerror="this.remove()">` : '';
             return `<div class="codex-card ${recorded ? '' : 'locked'} rarity-${t.rarity}">
-              <div class="codex-emoji">${t.emoji[0]}</div>
+              <div class="codex-emoji">${esc(t.emoji[0])}${codexArt}</div>
               <h4>${recorded ? esc(t.name) : '？？？'}</h4>
               <p>${recorded ? esc(t.title) : '尚未在旅途中遇见'}</p>
               <div class="codex-state">${recorded ? `${elementTag(t.element)} ${rarityTag(t.rarity)}` : '<span class="chip">剪影</span>'}</div>
@@ -6904,7 +6955,7 @@ function renderShop() {
         <div class="cos-info"><b>${esc(c.name)} ${isActive ? '<span class="chip mint">使用中</span>' : ''}</b><p>${esc(c.desc)}</p></div>
         <div class="cos-actions">
           ${isOwned
-            ? `<button class="btn ${isActive ? 'btn-ghost' : 'btn-mint'} btn-xs" type="button" data-act="equipCosmetic" data-id="${c.id}" ${isActive ? 'disabled' : ''}>${isActive ? (c.type === 'bg' ? '当前场景' : '已佩戴') : (c.type === 'bg' ? '更换场景' : '给主宠戴上')}</button>`
+            ? `<button class="btn ${isActive ? 'btn-ghost' : (c.cost === 0 ? 'btn-ghost' : 'btn-mint')} btn-xs" type="button" data-act="equipCosmetic" data-id="${c.id}" ${isActive ? 'disabled' : ''}>${isActive ? (c.type === 'bg' ? '当前场景' : '已佩戴') : (c.type === 'bg' ? '更换场景' : '给主宠戴上')}</button>`
             : `<button class="btn btn-yellow btn-xs" type="button" data-act="buyCosmetic" data-id="${c.id}" ${state.items.arenaCoin < c.cost ? 'disabled' : ''}>${c.cost > 0 ? `🎖️${c.cost} 解锁` : '免费解锁'}</button>`}
         </div>
       </div>`;
@@ -7851,8 +7902,7 @@ function patPet(uid) {
   UI.comboMax = Math.max(UI.comboMax || 0, UI.comboN);
   pet.mood = clamp(num(pet.mood, 80) + 0.7, 0, 100);
   pet.intimacy = clamp(num(pet.intimacy, 0) + 0.12, 0, 100);
-  const lines = templateOf(pet).lines || ['哼哼～'];
-  const nextLine = pick(lines);
+  const nextLine = patSpeech(pet);
   UI.patLine = nextLine;
   const speech = $('#petSpeechText');
   if (speech) speech.textContent = nextLine;
@@ -7863,7 +7913,7 @@ function patPet(uid) {
   if (isMain) {
     const wrap = $('#homePetWrap');
     if (wrap) {
-      wrap.classList.remove('patted');
+      wrap.classList.remove('patted', 'act-wander', 'act-hop', 'act-roll');
       void wrap.offsetWidth;
       wrap.classList.add('patted');
     }
@@ -7894,6 +7944,18 @@ function patPet(uid) {
   showComboPop(comboEl, UI.comboN);
   saveGame();
   playSfx('pat');
+}
+// 主页主宠自动活泼行为：随机踱步 / 蹦跳 / 打滚，纯表现动画，不触碰数值与存档
+function scheduleHomePetAct() {
+  if (UI.tab !== 'home' || UI.modal || UI.battle || UI.offlineOffer) return;
+  const wrap = $('#homePetWrap');
+  if (!wrap || !wrap.isConnected) return;
+  const act = pick(['wander', 'hop', 'roll']);
+  const dur = act === 'wander' ? 2600 : 2350;
+  wrap.classList.remove('act-wander', 'act-hop', 'act-roll');
+  void wrap.offsetWidth;
+  wrap.classList.add('act-' + act);
+  setTimeout(() => { if (wrap && wrap.isConnected) wrap.classList.remove('act-wander', 'act-hop', 'act-roll'); }, dur);
 }
 function showComboPop(el, n) {
   if (!el || n < 2) return;
@@ -9203,6 +9265,7 @@ function gameTick() {
     const anyReady = gardenJustReady();
     if (anyReady && !UI.gardenReadyPing) { UI.gardenReadyPing = true; renderPage(); }
     else if (!anyReady) UI.gardenReadyPing = false;
+    if (now - (UI.petActAt || 0) > 3600 && Math.random() < 0.5) { UI.petActAt = now; scheduleHomePetAct(); }
   }
   if (now - UI.lastSaveTick >= 10000) {
     UI.lastSaveTick = now;
