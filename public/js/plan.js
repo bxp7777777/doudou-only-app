@@ -575,7 +575,6 @@ function build(ctx) {
       waterModule(p, ctx.today, ctx.water, ctx.weather),
       scheduleModule(now),
       mealModule(p, now),
-      weatherModule(ctx),
       skincareModule(p, ctx.weather),
       checkinModule(ctx.today, 'today')
     ];
@@ -586,7 +585,6 @@ function build(ctx) {
       waterModule(p, ctx.today, ctx.water, ctx.weather),
       mealModule(p, now),
       qinModule(p, now),
-      weatherModule(ctx),
       cycleModule(ctx)
     ];
   } else if (p === 'evening') {
@@ -658,7 +656,8 @@ function build(ctx) {
     ];
   }
 
-  return mods.filter(Boolean);
+  // 天气卡常驻首页第一张：南宁（学校）+ 深圳（家里）随时能看一眼，不分时段
+  return [weatherModule(ctx)].concat(mods).filter(Boolean);
 }
 
 export {
