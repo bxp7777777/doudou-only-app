@@ -798,6 +798,10 @@ body.modal-open{overflow:hidden}
 .battle-layer.theme-night .battle-story{color:#d8d4f2;background:rgba(48,48,92,.62);border-left-color:#9b8fe0}
 .battle-story.boss-taunt{font-style:normal;color:#8a4a3c;background:rgba(255,240,235,.92);border-left-color:#e8927c;font-weight:600}
 .result-story{font-size:12px;color:#8a6f52;font-style:italic;text-align:center;margin:6px 18px 2px;line-height:1.5}
+.chapter-review{margin:8px 14px 2px;padding:9px 12px;border-radius:13px;background:linear-gradient(135deg,rgba(255,246,224,.92),rgba(238,246,255,.9));border:1px solid rgba(230,200,143,.55);text-align:left}
+.cr-title{font-size:12px;font-weight:800;color:#8a6a3a;margin-bottom:5px}
+.cr-line{font-size:11px;color:#6b5a44;line-height:1.6}
+.cr-vibe{font-size:10px;color:#9a8872;font-style:italic;margin-top:4px;line-height:1.5}
 .battle-shell{min-height:100%;max-width:1180px;margin:0 auto;padding:14px 16px 24px;display:flex;flex-direction:column;gap:10px}
 .battle-top{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;position:sticky;top:0;z-index:5;background:rgba(255,250,241,.78);backdrop-filter:blur(12px);padding:9px 10px;border-radius:17px;border:1px solid rgba(255,255,255,.8);box-shadow:0 6px 20px rgba(129,96,68,.1),inset 0 1px 0 rgba(255,255,255,.7)}
 .battle-title{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:800}
@@ -2427,6 +2431,31 @@ const FAIL_FEEL = [
 const WIN_SUB_POOL = ['毛茸茸的胜利！', '伙伴们配合得很漂亮！', '士气正盛，乘胜前进！'];
 const FAIL_SUB_POOL = ['拍拍灰，下次一定扳回来。', '休整一下，好运在下一场等你。', '队伍在偷偷攒力气呢。'];
 const FINAL_CLEAR_FEEL = '走到永恒之巅的那一刻，所有辛苦都化作了光。';
+// 战斗过程伙伴喊话：我方出手按性格蹦短句、低血一句打气；带全局节流不刷屏，纯表现不影响出手与伤害
+const BATTLE_QUIPS = {
+  brave: ['交给我，正面迎上！', '看我顶到最前面！', '上就上，绝不先退。'],
+  sturdy: ['稳住阵型，我来扛。', '别慌，先把防线撑牢。', '这点冲击还扛得住。'],
+  nimble: ['咻——一闪而过。', '趁它不注意先蹭一下。', '脚步轻快，抓不到我。'],
+  neutral: ['稳稳出手，不拖节奏。', '一起拿下它！', '按计划行动就好。']
+};
+const HURT_QUIPS = ['还能再撑一会儿…', '喘口气，但不会倒下。', '这点伤，继续打！', '帮我稳住，下一轮反击。'];
+function allyBattleQuip(b, unit, hurtOnly) {
+  if (!b || b.silent || unit.side !== 'ally') return;
+  const pet = state.pets[unit.petUid];
+  if (hurtOnly) {
+    if (!b._hurtQuipDone) b._hurtQuipDone = {};
+    if (b._hurtQuipDone[unit.petUid]) return;
+    b._hurtQuipDone[unit.petUid] = true;
+    pushBattleLog(b, '💬 ' + pick(HURT_QUIPS));
+    return;
+  }
+  const now = Date.now();
+  if (now - (b._speakAt || 0) < 2500) return;
+  if (Math.random() > 0.32) return;
+  b._speakAt = now;
+  const nat = (pet && BATTLE_QUIPS[pet.nature]) ? pet.nature : 'neutral';
+  pushBattleLog(b, '💬 ' + pick(BATTLE_QUIPS[nat]));
+}
 const STAGES = [];
 for (const chapter of CHAPTERS) {
   for (let i = 1; i <= 5; i++) {
@@ -5263,6 +5292,10 @@ function executeUnitSkill(unit, index, events) {
     unit.cooldowns[index] = Math.max(1, skill.cooldown || 2);
   }
   pushBattleLog(b, `${unit.name} 使用了「${skill.name}」`, 'skill');
+  if (unit.side === 'ally') {
+    if (unit.hp / Math.max(1, unit.maxHp) < 0.35) allyBattleQuip(b, unit, true);
+    else allyBattleQuip(b, unit, false);
+  }
   // 表现层事件：行动高亮、出手动作、主动技横幅（不改动结算逻辑）
   events.push({ type: 'turn', unitUid: unit.uid });
   events.push({ type: 'action', unitUid: unit.uid, kind: skill.kind || 'normal' });
@@ -5845,6 +5878,7 @@ function finishBattle() {
   let mainStars = 0;
   let storyLine = '';
   let resultSub = '';
+  let review = null;
 
   // 所有出战宠物获得少量亲密度
   for (const ally of b.allies) {
@@ -5870,6 +5904,17 @@ function finishBattle() {
         else feels.push(pick(FIRST_CLEAR_FEEL));
         if (stage.chapter === 10 && stage.type === 'boss') feels.push(FINAL_CLEAR_FEEL);
         storyLine = feels.filter(Boolean).join(' ');
+        if (stage.type === 'boss') {
+          const chObj = CHAPTERS.find(c => c.id === stage.chapter);
+          const base = (stage.chapter - 1) * 5;
+          const chStars = [1, 2, 3, 4, 5].reduce((sum, k) => sum + num(state.stage.stars[base + k], 0), 0);
+          review = {
+            title: `第${stage.chapter}章 · ${chObj ? chObj.name : ''} 通关回顾`,
+            stars: `本章星级 ${chStars}/15`,
+            boss: `首领「${stage.name}」已被击退`,
+            vibe: chObj ? chObj.desc : ''
+          };
+        }
       } else {
         storyLine = pick(REPEAT_WIN);
       }
@@ -5998,7 +6043,7 @@ function finishBattle() {
   renderBattleResult({
     win, title: resultTitle, emoji: resultEmoji, stars: mainStars,
     note: resultNote, chips: resultChips, logs, advice: resultAdvice,
-    story: storyLine, sub: resultSub, mode
+    story: storyLine, sub: resultSub, review, mode
   });
 }
 
@@ -6015,6 +6060,7 @@ function renderBattleResult(data) {
       <p class="result-sub">${esc(data.sub || (data.win ? '毛茸茸的胜利！' : '下次一定会更好。'))}</p>
       ${starHtml}
       ${data.story ? `<p class="result-story">📖 ${esc(data.story)}</p>` : ''}
+      ${data.review ? `<div class="chapter-review"><div class="cr-title">${esc(data.review.title)}</div><div class="cr-line">⭐ ${esc(data.review.stars)}</div><div class="cr-line">👑 ${esc(data.review.boss)}</div>${data.review.vibe ? `<div class="cr-vibe">${esc(data.review.vibe)}</div>` : ''}</div>` : ''}
       <div class="result-rewards">${chips}</div>
       <div class="result-rewards">${rewardLogHTML(data.logs)}</div>
       <p class="result-note">${esc(data.note || '')}</p>
@@ -8052,7 +8098,13 @@ function schedulePalAct() {
   for (let k = 0; k < count; k++) {
     const el = pals[k];
     if (!el || !el.isConnected) continue;
-    const act = pick(['hop', 'sway', 'spin']);
+    const uid = el.getAttribute('data-uid');
+    const palPet = state.pets[uid];
+    const nat = palPet && palPet.nature;
+    const cand = (nat === 'brave' || nat === 'nimble') ? ['hop', 'hop', 'spin', 'spin', 'sway']
+      : nat === 'sturdy' ? ['sway', 'sway', 'hop']
+      : ['hop', 'sway', 'spin'];
+    const act = pick(cand);
     const dur = act === 'sway' ? 2600 : (act === 'hop' ? 1700 : 1900);
     setTimeout(() => {
       if (!el.isConnected) return;
