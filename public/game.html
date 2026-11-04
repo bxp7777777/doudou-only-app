@@ -914,9 +914,46 @@ body.modal-open{overflow:hidden}
 /* 主页立绘：去圆形裁切与浅色圆底，完整立绘自然落地（纯CSS，不做抠图） */
 .home-pet-img{border-radius:0;object-fit:contain;background:transparent;box-shadow:0 12px 16px rgba(111,82,54,.20)}
 .pal-img{border-radius:0;object-fit:contain;background:transparent;box-shadow:none}
+/* ===== 表现层增强：奥义冲击环 / Boss置顶血条 / 竞技场剪影 / 结算明细 / 主宠放大落地（纯表现，不碰数值） ===== */
+.ult-flash .ult-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:inset 0 0 22px rgba(255,226,170,.55);opacity:0;pointer-events:none}
+.ult-flash .ult-ring.r1,.ult-flash .ult-ring.r2{width:130px;height:130px}
+.ult-flash .ult-ring.r2{animation-delay:.12s}
+.ult-flash.active .ult-ring{animation:ultRingPulse .8s ease-out both}
+@keyframes ultRingPulse{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(3.4)}}
+.boss-bar{position:relative;z-index:3;margin:2px auto 0;max-width:560px;background:linear-gradient(160deg,rgba(72,52,46,.82),rgba(58,40,38,.86));border:1px solid rgba(255,214,196,.35);border-radius:14px;padding:6px 12px 7px;box-shadow:0 6px 16px rgba(60,34,28,.28)}
+.boss-bar .bb-head{display:flex;align-items:center;gap:7px;color:#ffe7d8;font-size:12px;font-weight:800;margin-bottom:4px}
+.boss-bar .bb-emo{font-size:16px}
+.boss-bar .bb-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.5px}
+.boss-bar .bb-pct{font-variant-numeric:tabular-nums;color:#ffd9a8}
+.boss-bar .bb-track{height:9px;border-radius:9px;background:rgba(255,255,255,.16);overflow:hidden}
+.boss-bar .bb-fill{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#ff9d7e,#ff6f61);transition:width .3s ease}
+.boss-bar.enraged .bb-fill{background:linear-gradient(90deg,#ffcf5e,#ff5a4d);animation:enrageFlash .5s ease-in-out infinite alternate}
+.boss-bar.enraged .bb-head::after{content:"⚠ 首领激愤";font-size:10px;color:#ffd2c8;margin-left:auto}
+@keyframes enrageFlash{from{filter:brightness(1)}to{filter:brightness(1.25)}}
+.arena-deco{position:absolute;bottom:0;top:16%;width:28%;z-index:1;pointer-events:none;opacity:.55}
+.arena-deco.left{left:0;background:linear-gradient(90deg,rgba(84,112,90,.36),transparent 88%)}
+.arena-deco.right{right:0;background:linear-gradient(270deg,rgba(84,112,90,.36),transparent 88%)}
+.perf-panel{margin:12px auto 2px;max-width:430px;text-align:left;background:#fff4e4;border:1px solid #f0dcc0;border-radius:16px;padding:10px 12px}
+.pp-title{font-size:12px;font-weight:900;color:#8a5a36;margin-bottom:3px}
+.pp-meta{font-size:10px;color:#9a744f;margin-bottom:6px}
+.perf-row{display:flex;align-items:center;gap:8px;font-size:11px;padding:4px 6px;border-radius:10px}
+.perf-row.top{background:#ffe9bd}
+.pr-rank{width:16px;height:16px;line-height:16px;text-align:center;border-radius:50%;background:#e6d2b4;color:#7a5330;font-weight:800;font-size:10px;flex:0 0 auto}
+.perf-row.top .pr-rank{background:#f3b94f;color:#fff}
+.pr-emo{font-size:15px;flex:0 0 auto}
+.pr-name{flex:1;font-weight:700;color:#6b4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-stat{color:#8a6a48;white-space:nowrap}
+.battle-layer .b-emoji-wrap{position:relative}
+.battle-layer .b-emoji-wrap::after{content:"";position:absolute;left:50%;bottom:1px;transform:translateX(-50%);width:54px;height:9px;border-radius:50%;background:rgba(70,48,36,.16);filter:blur(2px);z-index:0}
+.battle-layer .art-frame,.battle-layer .b-emoji{position:relative;z-index:1}
+.home-pet-img{width:124px;height:124px;animation:homePetIn .5s cubic-bezier(.2,.9,.3,1.2) both}
+#homePetWrap .pet-shadow{width:116px}
+@keyframes homePetIn{0%{opacity:0;transform:translateY(12px) scale(.84)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@media (max-width:420px){.home-pet-img{width:104px;height:104px}#homePetWrap .pet-shadow{width:96px}.battle-layer .b-emoji-wrap::after{width:42px}}
 @media (prefers-reduced-motion:reduce){
   .b-emoji,.b-unit.boss-unit .b-emoji,.b-unit.active-turn::after,.b-unit.hit-recoil .b-emoji-wrap,
-  .b-unit.dodge-out .b-emoji-wrap,.b-unit.death-fall,.b-skill-banner,.ult-flash.active{animation:none!important}
+  .b-unit.dodge-out .b-emoji-wrap,.b-unit.death-fall,.b-skill-banner,.ult-flash.active,
+  .home-pet-img,.ult-flash .ult-ring{animation:none!important}
 }
 .b-vs{display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#c29a73;text-shadow:0 2px 0 #fff}
 .b-vs::before,.b-vs::after{content:"";display:block;width:1px;height:44px;background:linear-gradient(transparent,#ddc6ad,transparent);position:absolute}
@@ -4941,6 +4978,27 @@ function battleSceneBgHtml(cfg) {
   if (!url) return '';
   return `<div class="bf-bg" style="background-image:url('${url}')"></div><div class="bf-scrim"></div>`;
 }
+// Boss 置顶血条：仅当敌方存在首领时渲染；低血量切“激愤”纯表现提示，不改变任何战斗机制与数值
+function bossBarHTML(battle) {
+  const boss = battle.enemies.find(u => u.isBoss);
+  if (!boss) return '';
+  return `<div class="boss-bar" id="bossBar"><div class="bb-head"><span class="bb-emo">${esc(boss.emoji)}</span><span class="bb-name">👹 ${esc(boss.name)}</span><span class="bb-pct" id="bossBarPct"></span></div><div class="bb-track"><i class="bb-fill" id="bossBarFill"></i></div></div>`;
+}
+function syncBossBar() {
+  const b = UI.battle;
+  if (!b) return;
+  const bar = $('#bossBar');
+  if (!bar) return;
+  const boss = b.enemies.find(u => u.isBoss);
+  if (!boss) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+  const p = clamp(boss.hp / Math.max(1, boss.maxHp) * 100, 0, 100);
+  const fill = $('#bossBarFill');
+  const pct = $('#bossBarPct');
+  if (fill) fill.style.width = p + '%';
+  if (pct) pct.textContent = Math.ceil(p) + '%';
+  bar.classList.toggle('enraged', boss.alive && p <= 30);
+}
 
 /* -------- 战斗开场 -------- */
 function startBattle(config) {
@@ -4972,6 +5030,7 @@ function startBattle(config) {
     timer: null,
     log: [],
     totalDamage: 0,
+    perf: { allies: {} },
     silent: false,
     maxRounds: config.maxRounds || (config.mode === 'boss' ? 12 : 30),
     startedAt: Date.now()
@@ -5013,8 +5072,10 @@ function renderBattleScreenHTML(battle) {
       ${c.storyIntro ? `<div class="battle-story">📖 ${esc(c.storyIntro)}</div>` : ''}
       ${c.bossTaunt ? `<div class="battle-story boss-taunt">👹 ${esc(c.bossTaunt)}</div>` : ''}
       <div class="b-queue" id="battleQueue"></div>
+      ${bossBarHTML(battle)}
       <div class="battle-field">
         ${battleSceneBgHtml(c)}
+        ${c.mode === 'arena' ? '<div class="arena-deco left"></div><div class="arena-deco right"></div>' : ''}
         <div class="b-side ally">
           <div class="b-side-label">我方 <span class="power">战力 ${fmt(sum(battle.allies.map(u => calcPower(u))))}</span></div>
           <div class="b-team">${battle.allies.map(battleUnitHTML).join('')}</div>
@@ -5026,7 +5087,7 @@ function renderBattleScreenHTML(battle) {
         </div>
       </div>
       <div class="battle-log" id="battleLog"></div>
-      <div class="ult-flash" id="ultFlash"><div class="ult-rays"></div><div class="ult-name"></div></div>
+      <div class="ult-flash" id="ultFlash"><div class="ult-ring r1"></div><div class="ult-ring r2"></div><div class="ult-rays"></div><div class="ult-name"></div></div>
       <div class="battle-result" id="battleResult"></div>
     </div>`;
 }
@@ -5103,6 +5164,7 @@ function updateBattleUI() {
   if (roundEl) roundEl.textContent = `第 ${b.round} 回合 / ${b.maxRounds}`;
   renderBattleQueue();
   updateBattleControls();
+  syncBossBar();
 }
 function updateBattleControls() {
   const b = UI.battle;
@@ -5510,7 +5572,7 @@ function damageOne(caster, target, multiplier, events, splash = false) {
   }
   target.hp = Math.max(0, target.hp - damage);
   target.rage = Math.min(100, target.rage + 6);
-  if (caster.side === 'ally') b.totalDamage += damage;
+  if (caster.side === 'ally') { b.totalDamage += damage; perfRecordHit(caster, damage, isCrit); }
   if (caster.lifesteal > 0 && damage > 0) {
     const before = caster.hp;
     caster.hp = Math.min(caster.maxHp, caster.hp + damage * caster.lifesteal);
@@ -5856,6 +5918,15 @@ function healRing(uid) {
   el.classList.add('heal-ring');
   setTimeout(() => el.classList.remove('heal-ring'), Math.round(620 * bSpeedFactor()));
 }
+// 战斗内各伙伴输出统计（仅内存展示，不写入存档、不影响奖励数值）
+function perfRecordHit(caster, damage, crit) {
+  const b = UI.battle;
+  if (!b || !b.perf || caster.side !== 'ally') return;
+  const m = b.perf.allies[caster.uid] ||
+    (b.perf.allies[caster.uid] = { uid: caster.uid, name: caster.name, emoji: caster.emoji, dmg: 0, crit: 0, hits: 0 });
+  m.dmg += damage; m.hits += 1;
+  if (crit) m.crit += 1;
+}
 function critImpact(uid) {
   const el = getBattleUnitEl(uid);
   if (!el) return;
@@ -6087,10 +6158,15 @@ function finishBattle() {
   }
   saveGame();
   renderAll();
+  const perfRows = Object.values(b.perf ? b.perf.allies : {})
+    .filter(m => m.dmg > 0 || m.hits > 0)
+    .sort((a, c) => c.dmg - a.dmg)
+    .map(m => ({ emoji: m.emoji, name: m.name, dmg: Math.round(m.dmg), crit: m.crit, hits: m.hits }));
+  const battleMeta = { rounds: b.round, totalDmg: Math.round(b.totalDamage || 0), top: perfRows[0] ? perfRows[0].name : '—' };
   renderBattleResult({
     win, title: resultTitle, emoji: resultEmoji, stars: mainStars,
     note: resultNote, chips: resultChips, logs, advice: resultAdvice,
-    story: storyLine, sub: resultSub, review, mode
+    story: storyLine, sub: resultSub, review, mode, perfRows, battleMeta
   });
 }
 
@@ -6099,6 +6175,12 @@ function renderBattleResult(data) {
   if (!resultEl) return;
   const starHtml = data.mode === 'stage' || data.mode === 'tower' ? starRow(data.stars) : '';
   const chips = (data.chips || []).map(c => `<span class="reward-chip">${esc(c.icon)} ${esc(c.label)} ${esc(c.value)}</span>`).join('');
+  const perfHtml = (data.perfRows && data.perfRows.length) ? `
+      <div class="perf-panel">
+        <div class="pp-title">📊 战斗明细</div>
+        <div class="pp-meta">🔁 ${data.battleMeta.rounds} 回合 · 💥 全队输出 ${fmt(data.battleMeta.totalDmg)} · 最高输出 ${esc(data.battleMeta.top)}</div>
+        ${data.perfRows.map((m, i) => `<div class="perf-row${i === 0 ? ' top' : ''}"><span class="pr-rank">${i + 1}</span><span class="pr-emo">${esc(m.emoji)}</span><span class="pr-name">${esc(m.name)}</span><span class="pr-stat">💥${fmt(m.dmg)}${m.crit ? ` · 暴击×${m.crit}` : ''} · 出手${m.hits}</span></div>`).join('')}
+      </div>` : '';
   resultEl.classList.add('open');
   resultEl.innerHTML = `
     <div class="result-box">
@@ -6110,6 +6192,7 @@ function renderBattleResult(data) {
       ${data.review ? `<div class="chapter-review"><div class="cr-title">${esc(data.review.title)}</div><div class="cr-line">⭐ ${esc(data.review.stars)}</div><div class="cr-line">👑 ${esc(data.review.boss)}</div>${data.review.vibe ? `<div class="cr-vibe">${esc(data.review.vibe)}</div>` : ''}</div>` : ''}
       <div class="result-rewards">${chips}</div>
       <div class="result-rewards">${rewardLogHTML(data.logs)}</div>
+      ${perfHtml}
       <p class="result-note">${esc(data.note || '')}</p>
       ${data.advice && data.advice.length ? `<div class="note" style="margin-top:8px"><b>📋 变强清单</b><ul style="margin:6px 0 0 18px;padding:0">${data.advice.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
       <div class="result-actions">
