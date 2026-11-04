@@ -245,7 +245,10 @@ body.theme-duo .bg::after {
 
 .btn-mini {
   width: auto;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   padding: 9px 18px;
   font-size: 13.5px;
   margin-top: 14px;
@@ -372,6 +375,7 @@ body.theme-duo .bg::after {
   align-items: center;
   gap: 9px;
   width: 100%;
+  min-height: 44px;
   margin-top: 6px;
   padding: 10px 12px;
   background: #fff9f8;
@@ -1114,7 +1118,7 @@ body.theme-duo .bg::after {
 .tomato-controls .btn { flex: 1; width: auto; margin-top: 0; }
 .tomato-set { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
 .tomato-set-label { font-size: 12.5px; color: var(--muted); }
-.tomato-quick { border: 1px solid #ffd8df; background: #fff5f6; color: #e2788e; border-radius: 999px; padding: 5px 13px; font-size: 13px; cursor: pointer; font-family: inherit; }
+.tomato-quick { border: 1px solid #ffd8df; background: #fff5f6; color: #e2788e; border-radius: 999px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 5px 15px; font-size: 13px; cursor: pointer; font-family: inherit; }
 .tomato-quick:active { transform: scale(.97); }
 .tomato-min { width: 74px; padding: 8px 8px; border: 1px solid #eccfd4; border-radius: 10px; background: #fff; font-family: inherit; font-size: 16px; }
 .tomato-set-apply { margin-top: 0 !important; padding: 7px 15px; font-size: 13px; }
@@ -1127,7 +1131,10 @@ body.theme-duo .bg::after {
 
 /* app.js 里用到、样式表里原本缺失的三个类 */
 .btn-sm {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
   width: auto;
   padding: 11px 18px;
   font-size: 14px;
@@ -1223,3 +1230,21 @@ body.theme-duo .bg::after {
 .ms-form .btn-mini {
   margin-top: 0;
 }
+
+/* 卡片解释文字折叠：首屏只留一句，其余点开看 */
+.tip-more { margin-top: 8px; }
+.tip-more > summary {
+  cursor: pointer;
+  font-size: 12.5px;
+  color: var(--muted);
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 2px 0;
+}
+.tip-more > summary::-webkit-details-marker { display: none; }
+.tip-more > summary::before { content: "▾ "; font-size: 11px; }
+.tip-more[open] > summary::before { content: "▴ "; }
+.tip-body { display: grid; gap: 4px; padding: 2px 0 4px; }
+.tip-body p { margin: 0; }

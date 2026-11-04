@@ -28,7 +28,8 @@ const state = {
   diaryQuery: '',
   tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
   musicSleepTimer: null,
-  toolsOpen: false
+  toolsOpen: false,
+  showHints: false
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -162,6 +163,28 @@ function render() {
       <span class="tab-icon" aria-hidden="true">${t.icon}</span><span class="tab-label">${t.label}</span>
     </button>`
   ).join('');
+  foldCardHints(appEl);
+}
+
+// 首页每张卡的解释文字收进「其它小提示」：首屏只留一句，需要时再展开
+function foldCardHints(host) {
+  if (!host || typeof host.querySelectorAll !== 'function') return;
+  if (state.showHints) return;
+  host.querySelectorAll('.card').forEach((card) => {
+    const lines = Array.from(card.querySelectorAll('p.line, p.hint'));
+    if (lines.length < 2) return;
+    const extra = lines.slice(1);
+    const details = document.createElement('details');
+    details.className = 'tip-more';
+    const summary = document.createElement('summary');
+    summary.textContent = `多一句（${extra.length}）`;
+    const body = document.createElement('div');
+    body.className = 'tip-body';
+    extra.forEach((h) => body.appendChild(h));
+    details.appendChild(summary);
+    details.appendChild(body);
+    card.appendChild(details);
+  });
 }
 
 function hero(title, subline) {
