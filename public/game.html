@@ -1686,6 +1686,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .rarity-rate b{font-size:10.5px}
 .stage-type{font-size:10.5px}
 .stage-meta{font-size:11px}
+.chapter-story{margin:5px 0 0;font-size:11.5px;line-height:1.6;color:#7a6570;max-width:100%}
 .task-row .task-main p{font-size:11px}
 .task-row .task-reward{font-size:11px}
 .board-rank{font-size:10.5px}
@@ -2460,6 +2461,49 @@ const PETS = [
   }
 ];
 const PET_MAP = Object.fromEntries(PETS.map(p => [p.id, p]));
+// 亲密度专属台词：每只宠物 × 6 档（初识/玩伴/贴心/亲密/挚爱/挚友），共 240 句，全部按各自性格手写
+const PET_TIER_LINES = {
+  pig: ['「哼哼…要摸的话，只能摸一下哦。」', '「泥坑分你一半，这是最高的诚意！」', '「你饿不饿？我藏了两颗野栗子。」', '「那条烂泥路我背你过去，我不怕脏。」', '「其实我怕黑…你抱着我，我就不怕了。」', '「以后你的路我在最前面顶着，放心走。」'],
+  golden: ['「汪！…先让我闻闻你的手。」', '「捡回来啦！这根树枝是不是超棒？」', '「你袖口破了，我帮你叼给奶奶。」', '「我不太会说话，但我一直在门口等你。」', '「你难过的时候，把头埋我背上就行。」', '「不管你走多远，我都能顺着味道找到你。」'],
+  shiba: ['「…你笑什么？我脸怎么了。」', '「看我新学的歪头！帅不帅！」', '「刚才那个笑话我记住了，讲给别的狗听。」', '「我不会笑你，你也不用装没事。」', '「我这张脸，在你面前不用摆酷了。」', '「你出事我一定第一个冲上去，跑得比你快。」'],
+  orange: ['「别碰。…好吧，可以碰一下。」', '「这块晒太阳的位置，让给你一半。」', '「你今天回来晚了十分钟，我等了三趟窗台。」', '「我允许你把脸埋进我肚子的毛里。」', '「我不太会撒娇…但你走，我就不睡了。」', '「我的沙发、我的太阳、我的你，都归你。」'],
+  rabbit: ['「草药要碾碎才好用…你要学吗？」', '「我配了薄荷水，分你一点点。」', '「你手上这道小口子，我早就看见了。」', '「夜里睡不着，我给你讲药草的故事。」', '「我不喜欢吵闹，可你说话我不嫌。」', '「你受伤我就守着，守到你好为止。」'],
+  hamster: ['「腮帮子…是存粮，不是胖。」', '「我分你一颗瓜子，就一颗哦！」', '「这袋燕麦我留给你，别告诉别人。」', '「我怕你饿，所以每次都多存一点。」', '「我的秘密粮仓在哪，只告诉你一个人。」', '「只要你在，囤多少都不算多。」'],
+  panda: ['「…有事？没事我继续啃竹子。」', '「竹子分你一段，嫩的。」', '「你坐着歇会儿，我给你剥笋。」', '「别看我慢，你的事我一件没忘。」', '「我其实懒得要命…但为你能爬一趟山。」', '「这辈子就想这么靠着你，啃竹子到老。」'],
+  fox: ['「哦？新来的。…我先看看你有什么本事。」', '「骗到啦！这招叫『装可怜』，学会没？」', '「今天月亮很好，我留了半块糕给你。」', '「我算计过很多人，唯独没算过你。」', '「别怕，我把尾巴借你，暖的。」', '「我的所有秘密，你随便翻。」'],
+  sheep: ['「毛…毛有点乱，别笑我。」', '「我剪了一小团羊毛，给你做挂件。」', '「你今天是不是没睡好？肩都塌了。」', '「靠着我吧，我的毛比枕头软。」', '「被你需要的时候，我才觉得自己有用。」', '「你走到哪儿，我都跟着，像一朵云。」'],
+  otter: ['「水凉，你先别下来…我牵你。」', '「看！我仰泳给你看，肚皮朝上那种！」', '「石头我帮你捂热了，手放上来。」', '「水里我拉过你一百次，一次都不想松。」', '「睡不着就数水花，我数给你听。」', '「以后过河，我的手一直伸着。」'],
+  dragon: ['「哼，本…本龙不需要你照顾。」', '「看见没！刚才那下浪是我掀的！」', '「你今天累了，我把海风关小一点。」', '「其实我力气没那么大，你别走太远。」', '「我这条龙，只在你面前变小。」', '「天塌下来我先盘上去顶着。」'],
+  phoenix: ['「别靠近，我烫…哎，你怎么不怕？」', '「我给你看个绝活！砰——火苗变蓝了！」', '「你手冷吧？我翅膀底下最暖。」', '「我烧过很多东西，就是舍不得烧你的信。」', '「火焰会灭，你别怕，我还在。」', '「你要是冷了，我把整团火都给你。」'],
+  turtle: ['「走…走得慢，你别等我。」', '「壳借你坐，就是有点硬。」', '「我数过了，今天你走了七千步。」', '「慢有慢的好处，不会错过你。」', '「壳里我留了一块地方，是给你的。」', '「你不用跑，我一直在你后面。」'],
+  bee: ['「嗡…我的蜜不卖。…你想尝一口？」', '「这朵花最甜，标好了，归你！」', '「我给你留了一滴蜜，用叶子包好了。」', '「有人惹你，我就去蜇他。真的敢。」', '「我飞得再远，也会回到这朵花。」', '「你是我唯一想绕着飞的人。」'],
+  owl: ['「…安静。这里是书库。」', '「这本给你，不许折页。」', '「我留了灯，等你回来看完最后一章。」', '「书里写了很多告别，我只想留你。」', '「我夜里不睡，其实是在等你消息。」', '「你翻哪一页，我都念给你听。」'],
+  deer: ['「药…药包我背好了，别担心。」', '「看，我角上挂了朵小花，可爱吗？」', '「你膝盖的旧伤，我今天又敷了药。」', '「别逞强，我看得出你在忍。」', '「我照顾过很多人，最想照顾你。」', '「你疼就说话，我一直在林子里。」'],
+  koi: ['「许…许愿要小声，我听见了会实现。」', '「你今天运气不错，我帮你转了三圈。」', '「我把最好运的一片鳞，藏你口袋了。」', '「我逆流上来，就是为了见你一面。」', '「别怕坏事，我的运气都借你。」', '「你许的愿，我一个一个帮你办。」'],
+  lion: ['「吼——…吓到你了？抱歉。」', '「我鬃毛是不是很威风？摸摸也行！」', '「今天你走前面，我垫后。」', '「我不吼你，永远不。」', '「王的软肋，原来是你。」', '「我的鬃毛为你挡风，一辈子。」'],
+  unicorn: ['「光…光是有点晃眼，我收一收。」', '「我角尖会亮，给你当小夜灯。」', '「你今天心里堵着事吧？光都暗了。」', '「我的角只能治愈别人，治不了自己。」', '「你摸摸角，我就能好起来。」', '「愿我的光，一直照着你的路。」'],
+  goat: ['「顶…顶一下试试？我是说握手。」', '「这坡我爬得上去！你看着！」', '「我犟，但你说的话我听。」', '「石头再硬，也没我认准你硬。」', '「我不太会服软，除了对你。」', '「你在我背后，我就不会退。」'],
+  gull: ['「嘎…有信要送吗？我很忙。」', '「我带你去最高的那块礁石！」', '「今天的云像鱼，我特意飞回来给你看。」', '「我飞过很多港口，只想落在你肩上。」', '「风大的时候，我抓着你衣角。」', '「你要去哪儿，我都给你带路。」'],
+  flysquirrel: ['「别…别突然拍我，会掉下去。」', '「看我滑！从这棵树到那棵树，稳！」', '「我给你留了最软的树洞。」', '「我滑下来的时候，只想落在你怀里。」', '「我怕高，但你在下面我就敢跳。」', '「以后你走夜路，我从树上陪你。」'],
+  sparrow: ['「啾！…我唱得响，你别嫌吵。」', '「这首歌是新编的，只唱给你！」', '「你皱眉的时候，我就想唱轻一点。」', '「我的嗓子会哑，但还是想给你唱。」', '「你听，这一段是写你的。」', '「唱到老，我也只给你一个人唱。」'],
+  moth: ['「光…光在那边，跟我走。」', '「我知道一条开满花的小路，去不去？」', '「雾大的时候别怕，我翅膀会发光。」', '「我寿命不长，所以每天都想见你。」', '「别难过，我的光能撑到天亮。」', '「就算只有一夜，我也要绕着你飞。」'],
+  albatross: ['「…我在巡海，有事说。」', '「我飞了一整片海，就为跟你说句话。」', '「风向变了，我算好你出门的时间。」', '「我一年有十个月在天上，只有想你的时侯落下来。」', '「别担心我飞远，我的航线一直朝你。」', '「海再大，我也认得回你身边的路。」'],
+  penguin: ['「冷…你不冷吗？靠过来点。」', '「看我滑！肚皮着地那种！」', '「我给你暖手，我的翅膀下面是热的。」', '「冰面很滑，我牵着你走。」', '「我走路笨，可我从没松开你的手。」', '「南极再远，我也要跟你一起去。」'],
+  seal: ['「咕…我圆滚滚的，别笑。」', '「我从雪坡上滚下来啦！再来一次！」', '「我肚皮最暖，借你靠一会儿。」', '「我拍手给你看，啪、啪、啪。」', '「你摸摸我脑袋，我就整个软掉。」', '「雪化了，我还是赖在你身边。」'],
+  arcticfox: ['「…别看我，我的毛还没顺。」', '「我跑得比风快，你追不上！」', '「我把脚印留给你，顺着走就不会迷路。」', '「我藏了东西在雪里，只告诉你。」', '「霜会化，我不会走。」', '「你冷的话，我整只贴上去。」'],
+  polarbear: ['「吼…抱歉，我嗓门大。」', '「我挖了个雪洞，很暖和，进来！」', '「你走慢点，前面的雪我踩实了。」', '「我块头大，正好给你挡风。」', '「我不太会说话，就抱着你。」', '「这片雪原，我陪你走到尽头。」'],
+  walrus: ['「我的牙…不咬人，真的。」', '「看我用牙顶起这块冰！」', '「风从那边来，我挡着。」', '「我老了，但护着你还够用。」', '「别嫌我笨重，我抱得很稳。」', '「你在我牙后面，谁都过不来。」'],
+  koala: ['「…（睡着了）啊，你来了。」', '「这棵树最好睡，分你一根枝。」', '「桉叶我嚼软了，你吃不吃？」', '「我一天睡二十小时，剩下四小时想你。」', '「抱着我的时候，我就醒了。」', '「你累了就来，我这儿永远软。」'],
+  flamingo: ['「我的羽毛…是天生这个颜色，别盯着看。」', '「看我单腿站！能站一小时！」', '「我跳给你看，这支舞谁都没看过。」', '「我粉色的羽毛，是想你的时候染的。」', '「我跳舞不为别人，只为让你笑。」', '「舞跳完了，我还站在你身边。」'],
+  octopus: ['「我有八只手…但不会乱碰。」', '「看！三只手同时折纸，厉害吧？」', '「你的鞋带松了，我帮你系。」', '「我用八只手抱你，会不会太紧？」', '「墨水我留着写你的名字。」', '「八条腕，都朝你伸着。」'],
+  mushroom: ['「顶…顶我一下，我不会倒。」', '「伞盖给你遮雨！我跑得慢但稳。」', '「雨后我长得最快，你来看我。」', '「我伞下最阴凉，留给你。」', '「我软软的，靠起来不硌。」', '「你淋雨我就撑开，撑到你回家。」'],
+  bat: ['「嘘…我晚上才出门。」', '「我回声定位，能找到你藏在哪！」', '「夜里路黑，我带你走屋檐。」', '「我不怕黑，怕的是你不在。」', '「你怕黑就抓着我的手，我认得路。」', '「整条夜巷，我都替你亮着。」'],
+  lynx: ['「…别动，我在听。」', '「我抓到了！…是只蝴蝶。」', '「雪地里我留了记号，跟着我。」', '「我耳朵尖，你叹气我都听见。」', '「猎人也会累，让我靠一会儿。」', '「猎物归你，路我探。」'],
+  alpaca: ['「…离我远点，我脾气不好。」', '「呸——哈哈，吓到你了吧！」', '「羊毛给你，不许嫌扎。」', '「我脾气是假的，想让你多哄哄。」', '「你别走，我不呸你了。」', '「高原风大，我给你当墙。」'],
+  mole: ['「地下…地下有点黑，你还跟着吗？」', '「我挖了条新地道！通到哪里？保密！」', '「我摸黑挖了三天，给你挖出块水晶。」', '「我看不见，但摸得出你手心的温度。」', '「别怕黑，我在这儿挖了一辈子。」', '「你想去哪儿，我先挖过去。」'],
+  jellyfish: ['「你…你能看见我吗？我有点透明。」', '「我发光给你看！一亮一暗那种。」', '「水流往哪儿，我就飘到哪儿，像你。」', '「我软得没有骨头，也不会伤你。」', '「我飘了很久，第一次想停在原地。」', '「你伸手，我就轻轻贴上去。」'],
+  peacock: ['「别…别看我开屏，我会紧张。」', '「开给你一个人看！满不满意？」', '「我每根羽毛都整理了，就为今天。」', '「我开屏是求偶…你装作不懂吧。」', '「我最美的样子，只想让你看见。」', '「屏收了，我还是站在你面前。」'],
+};
 const RARITY_ORDER = ['N', 'R', 'SR', 'SSR'];
 
 function petTemplate(id) { return PET_MAP[id] || PETS[0]; }
@@ -2591,17 +2635,44 @@ const CHAPTER_STORY = {
   10: { intro: '所有旅途的尽头，风把故事吹成永恒；猪猪和小金毛并肩站在最高处，身后是一路同行的伙伴。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' }
 };
 // 章节首领登场喊话（Boss 战开场展示，纯剧情文案，不影响战斗判定）
+// 章节叙事：进章 / 首领登场 / 通关余韵（纯剧情，不影响任何数值与判定）
+const CHAPTER_NARRATIVE = {
+  1: { enter: '奶油兔在前面蹦跳着带路，草浪一开一合，像有人在耳边说：跟上吧，这里欢迎你。', boss: '草原尽头的王座上，一团巨大的软糖缓缓立起，甜味忽然变得有几分压迫。', clear: '奶油色的草浪重新合拢，风把队伍的脚印轻轻盖住了。' },
+  2: { enter: '丘陵被草莓染成一片粉，甜香里混着淡淡的焦味——有人在远处点火。', boss: '尾尖的火苗照亮半座山丘，焦糖狐火伏着身子，像一团会思考的火焰。', clear: '草莓重新挂上露水，甜味回到了最干净的那一档。' },
+  3: { enter: '溪水凉得像薄荷汽水，水底的影子比水面上的倒影多了一层。', boss: '水流忽然逆着往上走，溪谷领主从瀑布后面浮出来，浑身都是亮晶晶的水纹。', clear: '溪水恢复了原来的流速，倒影里终于只剩下队伍自己。' },
+  4: { enter: '树叶一滴一滴落下蜂蜜，队伍连呼吸都放轻了，怕吵醒垫着肚子午睡的熊。', boss: '蜂蜜甲在阳光下发亮，熊王慢慢站起来，整片森林的影子都矮了一截。', clear: '熊王打了个哈欠，翻身继续睡，蜂蜜一滴滴还是照旧往下落。' },
+  5: { enter: '月光把遗迹照成一整片银蓝，墙上的爪印明明是几十年前留下的，却还在发亮。', boss: '石像的眼窝亮起两点红光，月蚀守卫从墙里走出来，影子比它自己长得多。', clear: '红光熄下去，遗迹的墙重新变回安静的石头。' },
+  6: { enter: '云朵软得像刚出炉的面包，脚下这块是会流动的地板。', boss: '云层忽然往两边分开，光翼巨鲸翻身，洒下来一整片碎金。', clear: '云海合拢，大家的脚步都轻得像踩在棉花上。' },
+  7: { enter: '熔岩像焦糖一样缓慢流动，热浪把空气烤出褶皱。', boss: '火山口喷出一小股赤焰，幼龙从里面探出头，眼睛亮得像两枚火星。', clear: '火山口安静下来，焦糖色的岩浆慢慢凝成暗红。' },
+  8: { enter: '退潮后的沙滩铺满会眨眼的小星星，走一步亮一片。', boss: '潮水毫无预兆地涨起来，星光在水面上聚成一个巨大的轮廓。', clear: '潮水退去，贝壳在沙里轻轻合上，像谁悄悄说了句晚安。' },
+  9: { enter: '花瓣会自己飘起来，颜色在光里一层一层地换。', boss: '蝶后振翅，满园的颜色同时亮起，晃得人分不清哪一朵是真花。', clear: '彩光散去，花园里每一朵花都朝着队伍开。' },
+  10: { enter: '风的尽头是一道很长的石阶，每一级都刻着某个旅人停下的理由。', boss: '守望者从风里显形，没有敌意，只是要确认这支队伍走完这一路的决心。', clear: '风停下来，山巅安静得能听见彼此的心跳。' }
+};
+// 首领战后余韵（首通时展示）
+const BOSS_AFTER = {
+  1: '软糖王一屁股坐回王座，忽然变小了一圈，像泄了气。它把一小块糖塞进猪猪手里：「……带走吧，算是你们的。」草原的风把这句话吹得很远。',
+  2: '焦糖狐火抖了抖尾巴，火苗一点点收进掌心。它蹲下来用鼻尖碰了碰小金毛的额头：「下次别跑那么慢。」说完就跳进草莓丛，只留下一点暖。',
+  3: '潮水退回溪谷，领主把一片水纹凝成的薄膜放进队伍手里：「带着它，过河的时候水会给你们让路。」队伍走远了，溪水还在轻轻打拍子。',
+  4: '熊王翻了个身，蜂蜜甲啪嗒掉下一块。它半睁着眼嘟囔：「拿走拿走，别客气。」队伍捧着那块蜂蜜，谁都没舍得先咬一口。',
+  5: '月蚀守卫靠着墙坐下，红光一点点褪成烛火。它指了指墙上最旧的那排爪印：「很久没人和我说完一整句话了。」语气轻得像在道歉。',
+  6: '光翼巨鲸缓缓沉回云海，只留下一片发亮的鳞。小猪把它举起来对着光：「像一小片会呼吸的太阳。」云层在头顶慢慢合上。',
+  7: '幼龙缩回火山口，岩浆渐渐暗下去。它打了个小小的喷嚏，火星落在队伍脚边烫出几颗亮晶：「……下次再来，我请你们泡温泉。」',
+  8: '潮水退去，星光的轮廓散成一群小鱼。沙滩上多了一枚会眨眼的贝壳，凑近了能听见很小的声音：「谢谢你们没有踩疼星星。」',
+  9: '蝶后落在最高的花上，收拢起所有彩光，只留下一片最素的羽毛：「真正的颜色，你们已经看过了。」花园安静下来，像刚睡醒。',
+  10: '守望者没有倒下，只是让开了最后一级台阶。风重新流动起来，把这句话送进每个人耳朵：「走下去，别回头。」队伍在风里站了很久。'
+};
+
 const BOSS_TAUNTS = {
-  1: '咕嘟——草原的软糖王座，可不是谁都能上来的。',
-  2: '尾巴一晃，火光就追着你们的衣角跑过来啦。',
-  3: '水流会低声说话，它说你们还没完全准备好。',
-  4: '蜂蜜甲又厚又亮，小心你们的小拳头喊疼哦。',
-  5: '夜色就是我的披风，第一击可不会手下留情。',
-  6: '云浪翻涌，渺小的队伍先在云端站稳了。',
-  7: '嗷——热浪先帮你们热热身，再认真较量。',
-  8: '潮水裹着星光压过来，不如趁早退一步？',
-  9: '振翅之间真假幻光纷飞，看你们往哪边躲。',
-  10: '旅人到此为止吧，这趟故事该交还给山顶的风了。'
+  1: '咕嘟——草原的软糖王座，可不是谁都能上来的。你们闻到的甜味，是我融化过的东西。',
+  2: '尾巴一晃，火光就追着你们的衣角跑过来啦。别躲，躲开的那一下最疼。',
+  3: '水流会低声说话，它说你们还没完全准备好。听，它现在就在数你们的心跳。',
+  4: '蜂蜜甲又厚又亮，小心你们的小拳头喊疼哦。我这一身，是吃了一整片森林换来的。',
+  5: '夜色就是我的披风，第一击可不会手下留情。我数到三——你们的影子就不属于自己了。',
+  6: '云浪翻涌，渺小的队伍先在云端站稳了。站稳了再打，这样输得也体面些。',
+  7: '嗷——热浪先帮你们热热身，再认真较量。我这条命，是火山口一口一口喂大的。',
+  8: '潮水裹着星光压过来，不如趁早退一步？退潮的人，我从来不留。',
+  9: '振翅之间真假幻光纷飞，看你们往哪边躲。躲错一次，就会爱上错的那一朵。',
+  10: '旅人到此为止吧，这趟故事该交还给山顶的风了。你们走上来时的脚印，我都看见了。'
 };
 // 结算情绪文案池：让每次胜负不再是同一句话；全部为表现文案，不改奖励与数值
 const FIRST_CLEAR_FEEL = [
@@ -4531,6 +4602,22 @@ function intimacyTierOf(value) {
   let cur = INTIMACY_TIERS[0];
   for (const t of INTIMACY_TIERS) if (num(value, 0) >= t.at) cur = t;
   return cur;
+}
+function tierIndexOf(value) {
+  let idx = 0;
+  for (let k = 0; k < INTIMACY_TIERS.length; k++) if (num(value, 0) >= INTIMACY_TIERS[k].at) idx = k;
+  return idx;
+}
+// 当前亲密度档位对应的专属台词（每只宠物 6 句，见 PET_TIER_LINES）
+function tierLineOf(pet) {
+  if (!pet) return '';
+  const tpl = templateOf(pet);
+  const rows = PET_TIER_LINES[tpl && tpl.id];
+  if (!rows || !rows.length) return '';
+  return rows[tierIndexOf(pet.intimacy)] || '';
+}
+function nextTierOf(value) {
+  return INTIMACY_TIERS[tierIndexOf(value) + 1] || null;
 }
 function getPetStats(pet, ctx = null, s = state) {
   const t = templateOf(pet);
@@ -6746,7 +6833,12 @@ function finishBattle() {
       resultSub = pick(WIN_SUB_POOL);
       if (firstClear) {
         const feels = [stage.winLine].filter(Boolean);
-        if (stage.type === 'boss') feels.push(pick(WIN_BOSS_FEEL));
+        if (stage.type === 'boss') {
+          const bossAfter = BOSS_AFTER[stage.chapter];
+          feels.push(bossAfter || pick(WIN_BOSS_FEEL));
+          const chNarr = CHAPTER_NARRATIVE[stage.chapter];
+          if (bossAfter && chNarr && chNarr.clear) feels.push(chNarr.clear);
+        }
         else feels.push(pick(FIRST_CLEAR_FEEL));
         if (stage.chapter === 10 && stage.type === 'boss') feels.push(FINAL_CLEAR_FEEL);
         storyLine = feels.filter(Boolean).join(' ');
@@ -7209,6 +7301,8 @@ const PAT_COMBO = [
 ];
 function patSpeech(pet, combo = 0) {
   const h = num(pet.hunger, 80), m = num(pet.mood, 80), int = num(pet.intimacy, 0);
+  const tierLine = tierLineOf(pet);
+  if (tierLine && Math.random() < 0.5) return tierLine;
   const pool = (templateOf(pet).lines || []).slice();
   if (h < 30) pool.push(...PAT_COMMON.hungry);
   if (m < 30) pool.push(...PAT_COMMON.sad);
@@ -7219,7 +7313,7 @@ function patSpeech(pet, combo = 0) {
   const main = pick(pool);
   if (int >= 80 && Math.random() < 0.45) {
     const extra = pick(PAT_COMMON.close);
-    return main.replace(/[。～~!！.。]$/, '') + '，' + extra;
+    if (extra && extra !== main) return main.replace(/[。～~!！.。]$/, '') + '，' + extra;
   }
   return main;
 }
@@ -7257,7 +7351,8 @@ function renderHome() {
   const accessory = pet ? accessoryOf(pet.uid) : null;
   const now = new Date();
   const hello = now.getHours() < 11 ? '早安' : (now.getHours() < 18 ? '午后好' : '晚上好');
-  const line = UI.patLine || moodSpeech(pet) || (t ? t.lines[0] : '先去抽一只毛茸茸的伙伴吧！');
+  const tierLine = pet ? tierLineOf(pet) : '';
+  const line = UI.patLine || (tierLine && Math.random() < 0.34 ? tierLine : '') || moodSpeech(pet) || (t ? t.lines[0] : '先去抽一只毛茸茸的伙伴吧！');
   const team = getTeamPets();
   const activeBonds = activeBondsForTeam(team);
   const scenePhoto = scenePhotoUrl(bg);
@@ -7444,6 +7539,13 @@ function addRewardPreview(reward) {
 }
 
 /* -------- 冒险 -------- */
+// 战斗开场的章节叙事：首关给进章旁白，首领关给登场旁白，中间关不重复整章前言
+function stageIntroText(stage) {
+  const c = CHAPTER_NARRATIVE[stage.chapter] || {};
+  if (stage.type === 'boss') return c.boss || '';
+  if (stage.sub === 1) return c.enter || stage.intro || '';
+  return '';
+}
 function renderAdventure() {
   if (!UI.adventureChapter) UI.adventureChapter = currentChapterNumber();
   UI.adventureChapter = clamp(UI.adventureChapter, 1, CHAPTERS.length);
@@ -7471,7 +7573,7 @@ function renderAdventure() {
       }).join('')}
     </div>
     <div class="chapter-banner">
-      <div class="flex"><span class="ch-large">${ch.emoji}</span><div><h2>第 ${ch.id} 章 · ${esc(ch.name)} ${unlocked ? '' : '🔒'}</h2><p>${esc(ch.desc)}</p></div></div>
+      <div class="flex"><span class="ch-large">${ch.emoji}</span><div><h2>第 ${ch.id} 章 · ${esc(ch.name)} ${unlocked ? '' : '🔒'}</h2><p>${esc(ch.desc)}</p>${(CHAPTER_NARRATIVE[ch.id] || {}).enter ? `<p class="chapter-story">📖 ${esc(CHAPTER_NARRATIVE[ch.id].enter)}</p>` : ''}</div></div>
       <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/15</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
     </div>
     <div class="card">
@@ -7682,12 +7784,16 @@ function renderPets() {
           const levelCost = levelCostFor(pet);
           const starCost = starUpCost(pet);
           const shards = petShardCount(pet.templateId);
+          const tier = intimacyTierOf(pet.intimacy);
+          const nextTierName = (nextTierOf(pet.intimacy) || {}).name || '';
+          const nextTierGap = nextTierOf(pet.intimacy) ? Math.max(0, nextTierOf(pet.intimacy).at - Math.floor(num(pet.intimacy, 0))) : 0;
           return `<div class="task-row" style="align-items:flex-start">
             <div class="task-icon" style="font-size:25px">${esc(petEmoji(pet))}</div>
             <div class="task-main">
               <b>${esc(petDisplayName(pet))} <span class="tiny muted">Lv.${pet.level} · ${EVOLUTIONS[pet.evo].name} · ${pet.star}★</span></b>
               <div class="progress thin" style="margin:5px 0"><i class="mint" style="width:${pet.level / MAX_LEVEL * 100}%"></i></div>
               <p>${elementTag(t.element)} · 经验果消耗 ${fmt(levelCost)} · 同名碎片 ${shards}${starCost ? ` / 升星需 ${starCost}` : ''}${nextEvo ? ` · 进化 Lv.${nextEvo.levelReq} / ${nextEvo.stones}颗${ELEMENTS[t.element].name}石` : ' · 已究极'}</p>
+              <p class="tiny muted">💗 ${tier.name} · ${nextTierName ? `距「${nextTierName}」还差 ${nextTierGap} 点` : '已满档，无话不说'}</p>
               <div class="pet-actions" style="margin-top:5px">
                 <button class="btn btn-mint btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级 +1</button>
                 <button class="btn btn-ghost btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="10">升级 +10</button>
@@ -8363,6 +8469,8 @@ function openPetModal(uid) {
   }).join('');
   const evoText = evo ? `下一次进化：${evo.name} · Lv.${evo.levelReq} · ${ELEMENTS[t.element].emoji}${ELEMENTS[t.element].name}石 ${evo.stones} · 🪙${fmt(evo.gold)}` : '已经达到究极体，毛茸茸的最终形态。';
   const intimacyTier = intimacyTierOf(pet.intimacy);
+  const intimacyLine = tierLineOf(pet);
+  const intimacyNext = nextTierOf(pet.intimacy);
   const care = careModifiers(pet);
   const careParts = [];
   if (care.atkPct) careParts.push(`攻击 ${care.atkPct > 0 ? '+' : ''}${Math.round(care.atkPct * 100)}%`);
@@ -8385,6 +8493,7 @@ function openPetModal(uid) {
       <div class="care"><span>💗 亲密</span>${progressHTML(pet.intimacy, 100, 'pink', true)}</div>
     </div>
     <div class="note" style="margin:8px 0 0">💗 亲密档位「${intimacyTier.name}」（全属性 ×${intimacyTier.mult.toFixed(2)}，亲密度每点再 +0.15%）${intimacyTier.at >= 60 ? '；达到「亲密」档（≥60）后，首战开局额外 +15 怒气，更容易抢先释放奥义' : ''}；当前饱食/心情影响：${careText}。喂饱、哄开心会小幅提升实战发挥，长期冷落则会下降。</div>
+    <div class="note lav" style="margin:8px 0 0">💬 ${esc(intimacyLine)}<br><span class="tiny muted">${intimacyNext ? `再攒 ${Math.max(0, intimacyNext.at - Math.floor(pet.intimacy))} 点亲密度，解锁「${intimacyNext.name}」的新台词` : '已经是最深的一档，它把整颗心都交给你了'}</span></div>
     <div class="pet-stat-panel">
       <div class="stat-cell"><small>HP</small><b>${fmt(stats.hp)}</b></div>
       <div class="stat-cell"><small>攻击</small><b>${fmt(stats.atk)}</b></div>
@@ -9054,7 +9163,7 @@ function startStage(index) {
     emoji: stage.emoji,
     enemies,
     theme: stage.theme || '',
-    storyIntro: stage.intro || '',
+    storyIntro: stageIntroText(stage),
     bossTaunt: stage.type === 'boss' ? (BOSS_TAUNTS[stage.chapter] || '') : '',
     staminaCost: STAGE_STAMINA_COST,
     maxRounds: 30
