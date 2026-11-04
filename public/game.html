@@ -6965,23 +6965,34 @@ function stoneLabelOf(element) {
 }
 // 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
 function stageUpgradePlan(stage) {
-  const lines = [];
   const team = getTeamPets();
   const power = Math.round(calcTeamPower(state));
   const need = Math.round(num(stage && stage.recPower, 0));
   const gap = Math.max(0, need - power);
+  let gapLine = '';
   if (need > 0) {
-    if (gap > 0) lines.push(`当前队伍战力 ${fmt(power)}，本关推荐 ${fmt(need)}，还差 ${fmt(gap)}。`);
-    else lines.push(`战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`);
+    gapLine = gap > 0
+      ? `当前队伍战力 ${fmt(power)}，本关推荐 ${fmt(need)}，还差 ${fmt(gap)}。`
+      : `战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`;
   }
-  if (!team.length) { lines.push('先在宠物页上阵至少一只主力，再回来挑战。'); return lines; }
+  // 每条建议带一个"还差多少 / 已经有多少"的比值，越小越接近达成，战败页按它排序
+  const actions = [];
+  if (!team.length) {
+    actions.push({ text: '先在宠物页上阵至少一只主力，再回来挑战。', weight: 0 });
+    return { gapLine, actions };
+  }
   const low = [...team].sort((a, b) => num(a.level, 1) - num(b.level, 1))[0];
   if (num(low.level, 1) < MAX_LEVEL) {
     let cost = 0;
     const target = Math.min(MAX_LEVEL, num(low.level, 1) + 5);
     for (let lv = num(low.level, 1); lv < target; lv++) cost += Math.round(7 + lv * 2.6 + Math.pow(lv, 1.15));
     const t = templateOf(low);
-    lines.push(`升级最快：把「${t.name}」从 ${num(low.level, 1)} 级升到 ${target} 级要 ${fmt(cost)} 经验果（现有 ${fmt(state.resources.fruit)}）。`);
+    const have = num(state.resources.fruit, 0);
+    const lack = Math.max(0, cost - have);
+    actions.push({
+      text: `升级最快：把「${t.name}」从 ${num(low.level, 1)} 级升到 ${target} 级要 ${fmt(cost)} 经验果（现有 ${fmt(have)}${lack > 0 ? `，还差 ${fmt(lack)}` : '，够了'}）。`,
+      weight: lack / (have + 1)
+    });
   }
   const evoPet = team.find((p) => {
     const n = nextEvolution(p);
@@ -6990,17 +7001,27 @@ function stageUpgradePlan(stage) {
   if (evoPet) {
     const n = nextEvolution(evoPet);
     const el = templateOf(evoPet).element;
-    const lack = n.stones - num(state.stones[el], 0);
+    const haveStone = num(state.stones[el], 0);
+    const lack = n.stones - haveStone;
     const ch = Math.min(CHAPTERS.length, Math.max(1, evoPet.evo === 0 ? 1 : 5));
-    lines.push(`进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、爬塔、开图鉴里程碑都会给。`);
+    actions.push({
+      text: `进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、爬塔、开图鉴里程碑都会给。`,
+      weight: lack / (haveStone + 1)
+    });
   }
   const starPet = [...team].sort((a, b) => num(a.star, 1) - num(b.star, 1))[0];
   if (num(starPet.star, 1) < 10) {
-    const c = starUpCost(starPet) || 0;
-    const lack = Math.max(0, c - num(state.items.starShard, 0));
-    if (lack > 0) lines.push(`升星缺材料：「${templateOf(starPet).name}」升到 ${num(starPet.star, 1) + 1} 星还差 ${fmt(lack)} 星石——首领首通、抽到重复伙伴都会给。`);
+    const c2 = starUpCost(starPet) || 0;
+    const haveShard = num(state.items.starShard, 0);
+    const lack = Math.max(0, c2 - haveShard);
+    if (lack > 0) {
+      actions.push({
+        text: `升星缺材料：「${templateOf(starPet).name}」升到 ${num(starPet.star, 1) + 1} 星还差 ${fmt(lack)} 星石——首领首通、抽到重复伙伴都会给。`,
+        weight: lack / (haveShard + 1)
+      });
+    }
   }
-  return lines;
+  return { gapLine, actions };
 }
 
 function stageWeakTips() {
@@ -7094,7 +7115,14 @@ function finishBattle() {
       storyLine = pick(FAIL_FEEL);
       resultSub = pick(FAIL_SUB_POOL);
       resultNote = pick(['队伍还需要再成长一点。', '再练练等级、装备与属性克制就好了。', '先养一波状态，回头轻松拿下这关。']);
-      resultAdvice = stageUpgradePlan(stage).concat(stageWeakTips().slice(0, 2));
+      {
+        const plan = stageUpgradePlan(stage);
+        const ordered = plan.actions.slice().sort((a, b) => a.weight - b.weight);
+        resultAdvice = [];
+        if (plan.gapLine) resultAdvice.push(plan.gapLine);
+        ordered.forEach((a, k) => resultAdvice.push(k === 0 && ordered.length > 1 ? `【最快】${a.text}` : a.text));
+        resultAdvice = resultAdvice.concat(stageWeakTips().slice(0, 2));
+      }
     }
     resultChips = [
       { icon: '❤️', label: '存活', value: `${survived}/${totalAllies}` },
@@ -8318,46 +8346,46 @@ const ACH_NOTE_GROUPS = [
   { key: 'loop', re: /rebirth/, notes: [
     '轮回不是重来，是带着记忆再来。', '第一次转生，舍不得那身装备。', '重开之后，路走得快多了。',
     '永恒结晶，换的是下次的从容。', '每轮回一次，小镇就更熟一点。', '新的开局，还是那两只老搭档。',
-    '有些加成，一辈子都在。', '转生那天，会想把每个伙伴都看一遍。'
+    '有些加成，一辈子都在。', '转生那天，会想把每个伙伴都看一遍。', '轮回一开，路又长又短。'
   ] },
   { key: 'arena', re: /arena|hall\.|tower/, notes: [
     '竞技场的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本。',
     '连胜那几天，连走路都带风。', '塔里的对手一层比一层难缠。', '爬塔爬到一半，才想起要带奶。',
     '青铜到白银，隔的不是运气。', '被人反杀一次，就学会留一手。', '塔灵的话很少，但很扎人。',
     '防守阵容也是要磨的。', '越往上，越知道「差一点」有多远。', '赢下来的名次，才敢截图。',
-    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。'
+    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。', '名次掉下去，再爬回来就好。', '塔里的每一层，都记得谁先倒。', '竞技场也是练习场。', '爬塔爬累了，就看看风景。', '连胜有连胜的打法，连败有连败的教训。', '排行榜上，你比上周高了一点。', '输了不丢人，不上场才丢。'
   ] },
   { key: 'gacha', re: /pulls/, notes: [
-    '第十连的保底，是抽卡人的底气。', '重复的伙伴，也换来了碎片。', '开蛋的声音，总能让人安静两秒。', '抽到新伙伴那天，屋子里会亮一下。'
+    '第十连的保底，是抽卡人的底气。', '保底是给坚持的人的。', '重复的伙伴，也换来了碎片。', '开蛋的声音，总能让人安静两秒。', '抽到新伙伴那天，屋子里会亮一下。', '开出一只重复的，也笑得出来。'
   ] },
   { key: 'explore', re: /encounters/, notes: [
-    '奇遇不看等级，只看你走不走。', '每天两次机会，总想留到最后。', '有些故事，走完才想起拍照。', '路口的风，比地图还会指路。'
+    '奇遇不看等级，只看你走不走。', '奇遇里的话，比奖励记得久。', '每天两次机会，总想留到最后。', '有些故事，走完才想起拍照。', '路口的风，比地图还会指路。', '走过的地方，都会留个印。'
   ] },
   { key: 'labor', re: /feeds|enhancements|dailyClaims|idleSeconds|goldEarned|signIn/, notes: [
     '投喂和摸头，是最便宜的加成。', '强化石花得比想象快。', '每日任务做顺手了，像刷牙。',
     '挂机攒下的东西，积少成多。', '金币总是先花完的那一个。', '签到第七天，有仪式感。',
     '一天天累积，回头看吓一跳。', '离线收益是给忙人的温柔。', '该收的时候不收，就浪费了。',
     '小习惯做久了，会变成底气。', '今天的活干完，才敢开游戏。', '钻石要花在刀刃上。',
-    '有些奖励，领的时候才想起来。', '重复的动作，也有它的踏实。', '比起肝，还是细水长流舒服。', '仓库满了，才知道自己攒了多少。'
+    '有些奖励，领的时候才想起来。', '重复的动作，也有它的踏实。', '比起肝，还是细水长流舒服。', '仓库满了，才知道自己攒了多少。', '每天一点点，比一天全干完舒服。', '金币进账的声音，很轻。', '任务做完，可以安心睡觉了。', '挂机的几小时，也没白费。', '签到是给自己的一点仪式。', '攒着攒着，就够花了。', '该花的别省，该省的别花。', '今天的努力，明天能看见。'
   ] },
   { key: 'grow', re: /evolutions|levelUps|starUps|reduce|maxStar|maxIntimacy|fullEquip|calcTeamPower/, notes: [
     '喂进去的经验果，都长成了本事。', '升星那一下，比抽卡还紧张。', '进化前后的样子，判若两猫。',
     '等级是熬出来的，不是刷出来的。', '十星那天，值得截个图。', '属性一条条堆上去，才敢打硬仗。',
     '亲密到某个程度，它会主动贴过来。', '装备齐了，走路都稳。', '战力是数字，也是底气。',
-    '慢慢练，总会长大。', '究极体的毛，比小时候蓬。', '练到后面，才发现前面偷的懒。'
+    '慢慢练，总会长大。', '究极体的毛，比小时候蓬。', '练到后面，才发现前面偷的懒。', '升级要经验，经验要时间。', '星级是一颗一颗攒的。', '进化以后，尾巴都长了。', '亲密度是每天摸出来的。', '装备齐全，才敢进塔。', '练级最快的方式，是喜欢。'
   ] },
   { key: 'battle', re: /wins|battles|sweeps|bossAttempts|stage\./, notes: [
     '第一场胜利总是最难忘的。', '手忙脚乱过，后来就顺手了。', '输过几场，才学会看属性。',
     '小队的默契是打出来的。', '有时候赢，只因为多撑了一回合。', '首领扑过来的时候，谁都没退。',
     '打到后来，连节奏都对上了。', '胜利的声音，听多少遍都不腻。', '有几场是靠运气，也有几场是靠算。',
     '伤药和耐心，缺一不可。', '从「再来一次」到「这次稳了」。', '扫荡键按多了，也有点想念手打。',
-    '队伍越练越顺手，关卡就变矮了。', '每一关都记着，谁在这儿掉过血。', '赢了就笑，输了就再来。'
+    '队伍越练越顺手，关卡就变矮了。', '每一关都记着，谁在这儿掉过血。', '赢了就笑，输了就再来。', '赢多了会飘，输一场正好。', '小怪也有小怪的脾气。', '一路打过来，路都熟了。', '偶尔翻车，才想起看克制。', 'Boss 的血条，是最好看的进度条。', '打到最后一回合才险胜，手心全是汗。', '有进步，就是最好的奖励。', '同一关打三次，越打越快。'
   ] },
   { key: 'collect', re: /$^/, notes: [
     '每只毛茸茸都有自己的小脾气。', '图鉴一页页翻过去，像在翻相册。', '看起来像同一只，其实都不是。',
     '收集这件事，急不来。', '名字记不住，就先记花纹。', '同款不同色，也算新手气。',
     '图鉴点亮的瞬间，最解压。', '羁绊组合，是把朋友凑在一起。', '有些伙伴是抽来的，有些是等来的。',
-    '一只一只攒，屋子里就热闹了。', '每只都记得第一次见面那天。', '凑齐一套的时候，会有点想哭。'
+    '一只一只攒，屋子里就热闹了。', '每只都记得第一次见面那天。', '凑齐一套的时候，会有点想哭。', '有的伙伴，是一眼就喜欢的。', '图鉴不是任务，是回忆。', '皮肤不同，叫声也不同。', '攒齐的时候，屋子会很吵。', '第一只和最后一只，都值得记着。', '名字起得越随意，越像家人。'
   ] }
 ];
 function achGroupOf(ach) {
