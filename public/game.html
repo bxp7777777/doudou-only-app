@@ -359,13 +359,44 @@ img{max-width:100%}
 .mini-pet .front-mark{font-size:8px;color:var(--muted);font-weight:500}
 .home-pet-img{width:96px;height:96px;border-radius:50%;object-fit:cover;display:inline-block;box-shadow:0 0 0 2px rgba(255,255,255,.92),0 6px 14px rgba(111,82,54,.18)}
 .mini-pet-img{width:25px;height:25px;border-radius:50%;object-fit:cover;display:block;box-shadow:0 0 0 1px rgba(255,255,255,.85)}
-.scene-pal{position:absolute;bottom:23%;z-index:3;filter:drop-shadow(0 4px 6px rgba(111,82,54,.14))}
-.scene-pal.pal-left{left:9%}
-.scene-pal.pal-right{right:9%}
-.pal-img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;animation:petFloat 3.2s ease-in-out infinite}
-.pal-emoji{font-size:54px;line-height:1;display:inline-block}
-.scene-pal.pal-right .pal-img{animation-delay:.55s}
-@media (max-width:420px){.scene-pal{display:none}}
+.scene-pal{position:absolute;bottom:23%;z-index:3;filter:drop-shadow(0 4px 6px rgba(111,82,54,.14));transition:transform .18s ease}
+.scene-pal.pal-click{cursor:pointer;user-select:none}
+.scene-pal.pal-click:hover{transform:scale(1.12)}
+.scene-pal.pal-click:active{transform:scale(.9)}
+.scene-pal.pal-s1{left:7%;bottom:34%}
+.scene-pal.pal-s2{right:7%;bottom:38%}
+.scene-pal.pal-s3{left:16%;bottom:13%}
+.scene-pal.pal-s4{right:16%;bottom:13%}
+.scene-pal.pal-s5{right:27%;bottom:20%}
+.pal-art{position:relative;display:block;line-height:0}
+.pal-img{width:54px;height:54px;border-radius:50%;object-fit:cover;display:block;animation:petFloat 3.2s ease-in-out infinite;background:#fff7e7}
+.pal-emoji{font-size:54px;line-height:1;display:inline-block;animation:petFloat 3.2s ease-in-out infinite}
+.scene-pal.pal-s2 .pal-img,.scene-pal.pal-s2 .pal-emoji{animation-delay:.55s}
+.scene-pal.pal-s3 .pal-img,.scene-pal.pal-s3 .pal-emoji{animation-delay:1.1s}
+.scene-pal.pal-s4 .pal-img,.scene-pal.pal-s4 .pal-emoji{animation-delay:1.6s}
+.pal-acc{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:18px;animation:wiggle 2.6s ease-in-out infinite;filter:drop-shadow(0 2px 1px rgba(0,0,0,.12))}
+.pal-spark{position:absolute;top:-3px;right:1px;color:#ffd76a;font-size:13px;animation:sparkle 1.5s ease-in-out infinite}
+.pal-name{position:absolute;left:50%;bottom:-13px;transform:translateX(-50%);font-size:9px;font-weight:700;background:rgba(255,255,255,.88);padding:1px 6px;border-radius:999px;white-space:nowrap;color:#7a5a44;box-shadow:0 1px 4px rgba(136,101,71,.12)}
+.pal-setmain{position:absolute;top:-8px;right:-7px;width:20px;height:20px;border-radius:50%;border:1px solid #f0d9a8;background:#fff7df;font-size:11px;line-height:1;padding:0;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.14)}
+.pal-extra .pal-img,.pal-extra .pal-emoji{outline:2px dashed #c9a8e8;outline-offset:1px}
+.pal-art-inner{position:relative;width:54px;height:54px;display:grid;place-items:center}
+.pal-emoji-bg{position:absolute;inset:0;display:grid;place-items:center;animation:none!important}
+.pal-img.hidden{display:none}
+.bond-echo{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:5;display:flex;flex-direction:column;gap:4px;align-items:center;max-width:94%;pointer-events:none}
+.bond-quote-chip{background:rgba(255,255,255,.84);border:1px solid #f3d9ee;border-radius:999px;padding:3px 11px;font-size:10px;color:#8a5a86;box-shadow:0 3px 10px rgba(136,101,140,.14);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;animation:speechPop .4s ease}
+.scene-photo{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.scene-photo img{width:100%;height:100%;object-fit:cover;opacity:.5}
+.bond-photo{width:46px;height:30px;object-fit:cover;border-radius:8px;border:1px solid #f3d9ee;box-shadow:0 2px 8px rgba(136,101,140,.18)}
+.bond-quote-chip b{color:#b4559f}
+@media (max-width:420px){.bond-quote-chip{font-size:9px;max-width:86vw}}
+.pal-heart{left:50%;top:4px;font-size:15px}
+.scene-pal.pal-patted{animation:palBounce .36s ease}
+@keyframes palBounce{0%{transform:scale(1)}35%{transform:scale(1.2) rotate(-5deg)}100%{transform:scale(1)}}
+.combo-pop{position:absolute;left:50%;top:2px;transform:translateX(-50%);z-index:8;font-weight:800;font-size:13px;color:#ff6fa5;text-shadow:0 1px 0 #fff,0 2px 6px rgba(255,111,165,.35);pointer-events:none;white-space:nowrap;animation:comboRise .95s ease forwards}
+@keyframes comboRise{0%{opacity:0;transform:translate(-50%,8px) scale(.7)}22%{opacity:1;transform:translate(-50%,-6px) scale(1.12)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
+.idle-pet-wrap.hero-evo .idle-pet{animation:petFloat 3.3s ease-in-out infinite,heroGlow 2.8s ease-in-out infinite}
+@keyframes heroGlow{0%,100%{filter:drop-shadow(0 15px 10px rgba(111,82,54,.16))}50%{filter:drop-shadow(0 16px 16px rgba(255,214,106,.42))}}
+@media (max-width:420px){.scene-pal.pal-s1{left:3%}.scene-pal.pal-s2{right:3%}.scene-pal.pal-s3{left:10%}.scene-pal.pal-s4{right:10%}.scene-pal.pal-s5{right:20%}.pal-art-inner{width:38px;height:38px}.pal-img{width:38px;height:38px}.pal-emoji{font-size:38px}.pal-name{display:none}.pal-acc{font-size:14px}.pal-setmain{width:17px;height:17px;font-size:9px}}
 .quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .quick-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:16px;border:1px solid #f0dfca;background:rgba(255,255,255,.6);padding:12px 5px;font-size:11px;font-weight:700;color:var(--ink-soft);transition:transform .2s,background .2s}
 .quick-btn:hover{transform:translateY(-2px);background:#fff9f0}
@@ -387,7 +418,26 @@ img{max-width:100%}
 .garden-cell.plot-growing{background:#f3fbf0}
 .garden-cell.plot-ready{background:#fff3ec;border-color:#f2b58a;animation:gardenPulse 1.5s ease-in-out infinite}
 @keyframes gardenPulse{0%,100%{box-shadow:0 0 0 0 rgba(242,158,107,0)}50%{box-shadow:0 0 0 4px rgba(242,158,107,.16)}}
-@media (max-width:420px){.garden-grid{grid-template-columns:repeat(2,1fr)}}
+.garden-cell{position:relative}
+.garden-cell.plot-growing .garden-emoji{animation:growSway 2.6s ease-in-out infinite}
+@keyframes growSway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg) translateY(-1px)}}
+.water-drop{position:absolute;top:2px;right:6px;font-size:15px;pointer-events:none;animation:dropRise .9s ease forwards}
+@keyframes dropRise{0%{opacity:0;transform:translateY(4px) scale(.6)}30%{opacity:1}100%{opacity:0;transform:translateY(-10px) scale(1)}}
+.mini-arena{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0}
+.mini-foe{display:flex;flex-direction:column;gap:2px;align-items:center;background:#fff3ec;border:1px solid #f2c7a8;border-radius:14px;padding:10px 14px}
+.mini-foe-emoji{font-size:30px;line-height:1}
+.mini-foe-tip{font-size:9.5px;color:var(--muted);max-width:230px;text-align:center;line-height:1.4}
+.mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.mini-el{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 6px;border-radius:13px;border:1px solid var(--line);background:var(--el-soft,#fff);cursor:pointer;transition:transform .15s ease}
+.mini-el:hover{transform:translateY(-2px)}
+.mini-el-emoji{font-size:20px;line-height:1}
+.mini-el b{font-size:11px;color:var(--ink)}
+.mini-el-tag{font-size:9px;color:var(--muted)}
+.mini-el.beats{border-color:#8fd3ae;box-shadow:0 0 0 2px rgba(143,211,174,.25)}
+.mini-msg{margin-top:10px;padding:9px 12px;border-radius:12px;font-size:12px;font-weight:600;line-height:1.4}
+.mini-msg.ok{background:#e6f7ec;color:#2e7b5f;border:1px solid #b9e6c9}
+.mini-msg.no{background:#fdeeee;color:#b15050;border:1px solid #f4c4c4}
+@media (max-width:420px){.garden-grid{grid-template-columns:repeat(2,1fr)}.mini-grid{grid-template-columns:repeat(3,1fr)}}
 .boost-pill{font-size:10.5px;padding:6px 9px;border-radius:11px;background:#fff1dc;border:1px dashed #f0cf9f;color:#95652d;font-weight:700}
 .boost-pill.active{background:#daf7e9;border-color:#9edcbf;color:#2e7b5f}
 .feed-hint{font-size:10.5px;color:var(--muted);margin-top:6px}
@@ -483,6 +533,7 @@ img{max-width:100%}
 .bond-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .bond-head b{font-size:12px}
 .bond-card p{font-size:10px;color:var(--muted);margin:4px 0 0}
+.bond-card .bond-quote{font-style:italic;color:#9a6ea8;margin-top:3px!important}
 .bond-pets{font-size:16px;letter-spacing:2px}
 .bag-res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:8px}
 .bag-res{padding:10px;border:1px solid #efddc8;border-radius:13px;background:#fffaf2;display:flex;align-items:center;gap:7px}
@@ -844,6 +895,20 @@ body.modal-open{overflow:hidden}
 .float-num.energy{color:#e0a334;font-size:10px;font-weight:800}
 .b-buffs .mark-dot{color:#d2602e}
 .b-buffs .mark-hot{color:#2f9b75}
+.b-buffs .mark-buff-up{color:#2f9b75;font-weight:700}
+.b-buffs .mark-buff-down{color:#c05a5a;font-weight:700}
+.b-buffs .mark-focus{color:#e08a2e;font-weight:800}
+.b-queue{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:4px 2px 0}
+.b-q-chip{font-size:10px;padding:2px 8px;border-radius:999px;background:#f3eee7;color:#6b5a48;border:1px solid #e7dccb;white-space:nowrap}
+.b-q-chip.ally{background:#e8f6ee;color:#2e7b5f;border-color:#bfe6cf}
+.b-q-chip.enemy{background:#fdecec;color:#a84f4f;border-color:#f4c8c8}
+.b-q-chip.now{outline:2px solid #f0b45f;font-weight:800}
+.b-q-chip.empty{background:transparent;color:var(--muted);border-style:dashed}
+.b-unit.focus-target{outline:2px solid #f0b45f;box-shadow:0 0 12px rgba(240,180,95,.4)}
+.b-unit.heal-ring{animation:healRingPulse .62s ease}
+@keyframes healRingPulse{0%{box-shadow:0 0 0 0 rgba(94,205,143,.55)}100%{box-shadow:0 0 0 14px rgba(94,205,143,0)}}
+.b-unit.crit-impact{animation:critImpactPulse .34s ease}
+@keyframes critImpactPulse{0%{transform:scale(1)}40%{transform:scale(1.13)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){
   .b-unit .b-hp-fill,.b-unit .b-rage-fill{transition:none}
 }
@@ -1645,22 +1710,22 @@ const EVOLUTIONS = [
 ];
 
 const BONDS = [
-  { id: 'cuteDuo', name: '可爱二人组', pets: ['pig', 'golden'], effect: { hpPct: 0.10 }, emoji: '🐷🐶', desc: '猪猪 + 金毛同场：全队生命 +10%。' },
-  { id: 'fluffyTrio', name: '软乎乎三宝', pets: ['rabbit', 'hamster', 'sheep'], effect: { defPct: 0.10 }, emoji: '🐰🐹🐑', desc: '垂耳兔 + 仓鼠 + 绵羊同场：全队防御 +10%。' },
-  { id: 'cleverDuo', name: '机灵鬼组合', pets: ['shiba', 'fox'], effect: { spdPct: 0.08 }, emoji: '🐕🦊', desc: '柴犬 + 狐狸同场：全队速度 +8%。' },
-  { id: 'dragonPhoenix', name: '龙凤呈祥', pets: ['dragon', 'phoenix'], effect: { atkPct: 0.12, hpPct: 0.08 }, emoji: '🐉🐦', desc: '小龙 + 小凤同场：全队攻击 +12%、生命 +8%。' },
-  { id: 'furryDuo', name: '毛球拍档', pets: ['orange', 'shiba'], effect: { crit: 0.05 }, emoji: '🐱🐕', desc: '橘猫 + 柴犬同场：全队暴击 +5%。' },
-  { id: 'waterLand', name: '水陆双宝', pets: ['panda', 'otter'], effect: { atkPct: 0.08, hpPct: 0.06 }, emoji: '🐼🦦', desc: '熊猫 + 水獭同场：全队攻击 +8%、生命 +6%。' },
-  { id: 'slowTide', name: '慢潮组合', pets: ['turtle', 'koi'], effect: { hpPct: 0.08, defPct: 0.06 }, emoji: '🐢🎏', desc: '慢慢龟 + 锦鲤同场：全队生命 +8%、防御 +6%。' },
-  { id: 'nightForest', name: '夜森林', pets: ['owl', 'deer'], effect: { spdPct: 0.06, dr: 0.05 }, emoji: '🦉🦌', desc: '梟梟 + 鹿鹿同场：全队速度 +6%、减伤 +5%。' },
-  { id: 'royalDuo', name: '王与守护', pets: ['lion', 'unicorn'], effect: { atkPct: 0.10, hpPct: 0.06 }, emoji: '🦁🦄', desc: '狮狮 + 独角兽同场：全队攻击 +10%、生命 +6%。' },
-  { id: 'honeyHill', name: '蜜糖山丘', pets: ['bee', 'goat'], effect: { crit: 0.04, defPct: 0.06 }, emoji: '🐝🐐', desc: '嗡嗡蜂 + 山羊同场：全队暴击 +4%、防御 +6%。' },
-  { id: 'windTrio', name: '风之翼团', pets: ['gull', 'flysquirrel', 'sparrow'], effect: { spdPct: 0.08 }, emoji: '🐦🐿️🎶', desc: '海鸥 + 飞鼠 + 云雀同场：全队速度 +8%。' },
-  { id: 'iceSquad', name: '霜甲小队', pets: ['penguin', 'polarbear', 'walrus'], effect: { defPct: 0.08, hpPct: 0.06 }, emoji: '🐧🐻‍❄️🦭', desc: '企鹅 + 白熊 + 海象同场：全队防御 +8%、生命 +6%。' },
-  { id: 'tideFamily', name: '水栖伙伴', pets: ['otter', 'octopus', 'jellyfish'], effect: { atkPct: 0.08, hpPct: 0.05 }, emoji: '🦦🐙🪼', desc: '水獭 + 章鱼 + 水母同场：全队攻击 +8%、生命 +5%。' },
-  { id: 'nightCrew', name: '夜行三友', pets: ['owl', 'bat', 'lynx'], effect: { crit: 0.05 }, emoji: '🦉🦇🐆', desc: '梟梟 + 蝙蝠 + 猞猁同场：全队暴击 +5%。' },
-  { id: 'meadowWalk', name: '高原漫步', pets: ['alpaca', 'deer', 'koala'], effect: { hpPct: 0.08, defPct: 0.05 }, emoji: '🦌🦙🐨', desc: '羊驼 + 鹿鹿 + 考拉同场：全队生命 +8%、防御 +5%。' },
-  { id: 'sunDance', name: '光羽同辉', pets: ['golden', 'peacock'], effect: { atkPct: 0.08, spdPct: 0.06 }, emoji: '🐶🦚', desc: '金毛 + 孔雀同场：全队攻击 +8%、速度 +6%。' }
+  { id: 'cuteDuo', name: '可爱二人组', pets: ['pig', 'golden'], effect: { hpPct: 0.10 }, emoji: '🐷🐶', desc: '猪猪 + 金毛同场：全队生命 +10%。', quote: '你拱一下、我摇一下尾巴，今天也要黏在一起。' },
+  { id: 'fluffyTrio', name: '软乎乎三宝', pets: ['rabbit', 'hamster', 'sheep'], effect: { defPct: 0.10 }, emoji: '🐰🐹🐑', desc: '垂耳兔 + 仓鼠 + 绵羊同场：全队防御 +10%。', quote: '三只软毛挤成一团，谁都不想先散开。' },
+  { id: 'cleverDuo', name: '机灵鬼组合', pets: ['shiba', 'fox'], effect: { spdPct: 0.08 }, emoji: '🐕🦊', desc: '柴犬 + 狐狸同场：全队速度 +8%。', quote: '一个歪头一个眯眼，坏主意总是同步达成。' },
+  { id: 'dragonPhoenix', name: '龙凤呈祥', pets: ['dragon', 'phoenix'], effect: { atkPct: 0.12, hpPct: 0.08 }, emoji: '🐉🐦', desc: '小龙 + 小凤同场：全队攻击 +12%、生命 +8%。', quote: '你腾云我点火，天生就是一对好搭档。' },
+  { id: 'furryDuo', name: '毛球拍档', pets: ['orange', 'shiba'], effect: { crit: 0.05 }, emoji: '🐱🐕', desc: '橘猫 + 柴犬同场：全队暴击 +5%。', quote: '胖橘趴上柴犬的背，呼噜和摇尾一起响。' },
+  { id: 'waterLand', name: '水陆双宝', pets: ['panda', 'otter'], effect: { atkPct: 0.08, hpPct: 0.06 }, emoji: '🐼🦦', desc: '熊猫 + 水獭同场：全队攻击 +8%、生命 +6%。', quote: '一个抱着竹子啃，一个追着水花玩，快乐各有姿势。' },
+  { id: 'slowTide', name: '慢潮组合', pets: ['turtle', 'koi'], effect: { hpPct: 0.08, defPct: 0.06 }, emoji: '🐢🎏', desc: '慢慢龟 + 锦鲤同场：全队生命 +8%、防御 +6%。', quote: '你慢慢游、我稳稳爬，脚步不同也能同行。' },
+  { id: 'nightForest', name: '夜森林', pets: ['owl', 'deer'], effect: { spdPct: 0.06, dr: 0.05 }, emoji: '🦉🦌', desc: '梟梟 + 鹿鹿同场：全队速度 +6%、减伤 +5%。', quote: '月光下你放哨、我引路，夜路也不慌。' },
+  { id: 'royalDuo', name: '王与守护', pets: ['lion', 'unicorn'], effect: { atkPct: 0.10, hpPct: 0.06 }, emoji: '🦁🦄', desc: '狮狮 + 独角兽同场：全队攻击 +10%、生命 +6%。', quote: '你负责威严，我负责发光，并肩就是气场。' },
+  { id: 'honeyHill', name: '蜜糖山丘', pets: ['bee', 'goat'], effect: { crit: 0.04, defPct: 0.06 }, emoji: '🐝🐐', desc: '嗡嗡蜂 + 山羊同场：全队暴击 +4%、防御 +6%。', quote: '嗡嗡采蜜、咩咩守山，甜蜜和稳妥都在身边。' },
+  { id: 'windTrio', name: '风之翼团', pets: ['gull', 'flysquirrel', 'sparrow'], effect: { spdPct: 0.08 }, emoji: '🐦🐿️🎶', desc: '海鸥 + 飞鼠 + 云雀同场：全队速度 +8%。', quote: '借一阵风，三只伙伴一起飞向高处。' },
+  { id: 'iceSquad', name: '霜甲小队', pets: ['penguin', 'polarbear', 'walrus'], effect: { defPct: 0.08, hpPct: 0.06 }, emoji: '🐧🐻‍❄️🦭', desc: '企鹅 + 白熊 + 海象同场：全队防御 +8%、生命 +6%。', quote: '挤一挤就暖和，霜天里我们是一家。' },
+  { id: 'tideFamily', name: '水栖伙伴', pets: ['otter', 'octopus', 'jellyfish'], effect: { atkPct: 0.08, hpPct: 0.05 }, emoji: '🦦🐙🪼', desc: '水獭 + 章鱼 + 水母同场：全队攻击 +8%、生命 +5%。', quote: '水里手牵着手，泡泡里都是悄悄话。' },
+  { id: 'nightCrew', name: '夜行三友', pets: ['owl', 'bat', 'lynx'], effect: { crit: 0.05 }, emoji: '🦉🦇🐆', desc: '梟梟 + 蝙蝠 + 猞猁同场：全队暴击 +5%。', quote: '夜幕一落，三位夜巡伙伴准时会合。' },
+  { id: 'meadowWalk', name: '高原漫步', pets: ['alpaca', 'deer', 'koala'], effect: { hpPct: 0.08, defPct: 0.05 }, emoji: '🦌🦙🐨', desc: '羊驼 + 鹿鹿 + 考拉同场：全队生命 +8%、防御 +5%。', quote: '高原上慢慢散步，谁掉队了就停下来等谁。' },
+  { id: 'sunDance', name: '光羽同辉', pets: ['golden', 'peacock'], effect: { atkPct: 0.08, spdPct: 0.06 }, emoji: '🐶🦚', desc: '金毛 + 孔雀同场：全队攻击 +8%、速度 +6%。', quote: '你阳光开朗，我开屏助兴，热闹直接加倍。' }
 ];
 const BOND_UNLOCK_MASTERY_COST = 3;
 
@@ -2422,7 +2487,13 @@ const COSMETICS = [
   { id: 'acc_strawberry', type: 'acc', name: '草莓帽', emoji: '🍓', preview: 'acc', cost: 60, desc: '毛茸茸的草莓帽，戴上就想哼哼。' },
   { id: 'acc_scarf', type: 'acc', name: '奶油围巾', emoji: '🧣', preview: 'acc', cost: 80, desc: '被奶油色围巾裹住，风也变温柔了。' },
   { id: 'acc_crown', type: 'acc', name: '星星王冠', emoji: '👑', preview: 'acc', cost: 160, desc: '亮闪闪的小王冠，今天也是小镇主角。' },
-  { id: 'acc_flower', type: 'acc', name: '小花发夹', emoji: '🌼', cost: 100, preview: 'acc', desc: '一朵不会凋谢的小雏菊发夹。' }
+  { id: 'acc_flower', type: 'acc', name: '小花发夹', emoji: '🌼', cost: 100, preview: 'acc', desc: '一朵不会凋谢的小雏菊发夹。' },
+  { id: 'acc_cap', type: 'acc', name: '棒球帽', emoji: '🧢', cost: 0, preview: 'acc', desc: '元气满满的小棒球帽，出门探险专用。' },
+  { id: 'acc_ribbon', type: 'acc', name: '蝴蝶结', emoji: '🎀', cost: 0, preview: 'acc', desc: '软软的大蝴蝶结，摇起来一晃一晃。' },
+  { id: 'acc_clover', type: 'acc', name: '四叶草', emoji: '🍀', cost: 0, preview: 'acc', desc: '别在耳边的幸运四叶草。' },
+  { id: 'acc_starpin', type: 'acc', name: '星星发夹', emoji: '⭐', cost: 0, preview: 'acc', desc: '一闪一闪的小星星发夹。' },
+  { id: 'acc_sparkle', type: 'acc', name: '微光光环', emoji: '✨', cost: 0, preview: 'acc', desc: '头顶一圈柔和的小星光。' },
+  { id: 'acc_tophat', type: 'acc', name: '小礼帽', emoji: '🎩', cost: 0, preview: 'acc', desc: '一本正经的迷你小礼帽。' }
 ];
 const COSMETIC_MAP = Object.fromEntries(COSMETICS.map(c => [c.id, c]));
 
@@ -2941,6 +3012,10 @@ const UI = {
   patLine: '',
   patCount: 0,
   patTimer: 0,
+  patTimerBy: {},
+  comboN: 0,
+  comboAt: 0,
+  comboMax: 0,
   feedGame: null,
   scrollReset: false,
   saveWarned: false,
@@ -2999,6 +3074,7 @@ function defaultState() {
     bonds: { mastery: {}, ever: [] },
     idle: { pendingGold: 0, pendingFruit: 0, offlineSlots: 0, boostUntil: 0, lastCare: now },
     garden: { plots: [] },
+    mini: { date: '', done: false, wins: 0 },
     cosmetics: { owned: ['bg_cream'], background: 'bg_cream', petAccessory: {} },
     tutorial: { step: 1, done: false },
     settings: { sfx: true, music: false },
@@ -3145,6 +3221,11 @@ function sanitizeState(s) {
   s.dungeon = s.dungeon && typeof s.dungeon === 'object' ? s.dungeon : {};
   s.dungeon.date = String(s.dungeon.date || '');
   s.dungeon.attempts = clamp(Math.floor(num(s.dungeon.attempts, DUNGEON_ATTEMPTS_PER_DAY)), 0, DUNGEON_ATTEMPTS_PER_DAY);
+
+  if (!s.mini || typeof s.mini !== 'object') s.mini = { date: '', done: false, wins: 0 };
+  s.mini.date = String(s.mini.date || '');
+  s.mini.done = !!s.mini.done;
+  s.mini.wins = Math.max(0, Math.floor(num(s.mini.wins, 0)));
 
   s.quests = s.quests && typeof s.quests === 'object' ? s.quests : {};
   s.quests.claimedAchievements = s.quests.claimedAchievements && typeof s.quests.claimedAchievements === 'object' ? s.quests.claimedAchievements : {};
@@ -3314,9 +3395,19 @@ function enemyArtFrame(unit) {
 // 关键主角 / SSR 的进化立绘：文件位于 art/pets-evo/<id>_s1.jpg（stage2 复用 s1）；
 // 未生成或加载失败时沿「进化图 → 基础图 art/pets/<id>.jpg → art-frame 底层 emoji」逐级回退，绝不白图破版
 const PET_EVO_ART = { pig: true, golden: true, dragon: true, lion: true, unicorn: true };
+// 二阶进化（evo≥2）立绘就绪登记：未登记时 evo≥2 自动回退 s1，再回退基础图/emoji，绝不白图；文件生成后逐只补键即可
+const PET_EVO_STAGE2 = {};
 function evoArtUrl(templateId, evo) {
-  return (evo >= 1 && PET_EVO_ART[templateId]) ? 'art/pets-evo/' + templateId + '_s1.jpg' : null;
+  if (evo < 1 || !PET_EVO_ART[templateId]) return null;
+  if (evo >= 2 && PET_EVO_STAGE2[templateId]) return 'art/pets-evo/' + templateId + '_s2.jpg';
+  return 'art/pets-evo/' + templateId + '_s1.jpg';
 }
+// 实景场景背景登记：id=存档背景键，值=图片路径；未登记或图片缺失时沿用底层 CSS 渐变场景，不产生白图
+const SCENE_PHOTOS = {};
+function scenePhotoUrl(bgId) { return SCENE_PHOTOS[bgId] || null; }
+// 羁绊同框彩蛋图登记：bondId→图片路径；缺失时仅显示文字彩蛋，onerror 自动移除图片位
+const BOND_ART = {};
+function bondArtUrl(bondId) { return BOND_ART[bondId] || null; }
 // 实例头像（卡片 / 详情）：按当前 evo 选进化立绘，缺失自动回退基础图，再由底层 emoji 兜底
 function petArtFrameFor(pet, sizeClass) {
   const t = templateOf(pet);
@@ -4683,6 +4774,9 @@ function startBattle(config) {
     stars: 0,
     speed: 1,
     earlyUltUsed: false,
+    paused: false,
+    focusUid: null,
+    manualSkill: {},
     timer: null,
     log: [],
     totalDamage: 0,
@@ -4716,11 +4810,15 @@ function renderBattleScreenHTML(battle) {
         </div>
         <div class="battle-controls">
           <button class="btn btn-ghost" type="button" data-act="battleEarlyUlt" id="btnEarlyUlt">⚡ 提前大招</button>
+          <button class="btn btn-ghost" type="button" data-act="battleManualSkill" id="btnManualSkill">🎯 就绪技</button>
+          <button class="btn btn-ghost" type="button" data-act="battlePause" id="btnPause">⏸ 暂停</button>
+          <button class="btn btn-ghost" type="button" data-act="battleStep" id="btnStep">⏭ 单步</button>
           <button class="btn btn-ghost" type="button" data-act="battleDouble" id="btnBattleSpeed">⏩ 2 倍速</button>
           <button class="btn btn-yellow" type="button" data-act="battleSkip">⏭ 跳过</button>
         </div>
       </div>
       ${c.storyIntro ? `<div class="battle-story">📖 ${esc(c.storyIntro)}</div>` : ''}
+      <div class="b-queue" id="battleQueue"></div>
       <div class="battle-field">
         <div class="b-side ally">
           <div class="b-side-label">我方 <span class="power">战力 ${fmt(sum(battle.allies.map(u => calcPower(u))))}</span></div>
@@ -4743,7 +4841,7 @@ function battleUnitHTML(unit) {
   const hpPct = clamp(unit.hp / Math.max(1, unit.maxHp) * 100, 0, 100);
   const ragePct = clamp(unit.rage, 0, 100);
   return `
-    <div class="b-unit ${unit.row} rarity-${unit.rarity} ${unit.alive ? '' : 'dead'} ${unit.isBoss ? 'boss-unit' : ''}" data-uid="${esc(unit.uid)}">
+    <div class="b-unit ${unit.row} rarity-${unit.rarity} ${unit.alive ? '' : 'dead'} ${unit.isBoss ? 'boss-unit' : ''}" data-uid="${esc(unit.uid)}" data-act="${unit.side === 'enemy' ? 'battleFocus' : ''}">
       <div class="b-top">
         <span class="b-role">${unit.row === 'front' ? '前排' : '后排'}</span>
         <span class="b-lv">Lv.${unit.level}</span>
@@ -4787,13 +4885,16 @@ function updateBattleUnit(unit) {
     shield.style.display = unit.shield > 0 ? '' : 'none';
     shield.textContent = '🛡' + fmt(unit.shield);
   }
+  el.classList.toggle('focus-target', !!(UI.battle && UI.battle.focusUid === unit.uid));
   const buffRoot = el.querySelector('.b-buffs');
   if (buffRoot) {
     const marks = unit.buffs.map(b => {
       const arrow = b.pct >= 0 ? '↑' : '↓';
       const icon = ({ atk: '⚔️', def: '🛡️', spd: '💨', dr: '🧿' })[b.stat] || '✨';
-      return `<span title="${b.turns}回合">${icon}${arrow}</span>`;
+      const cls = b.pct >= 0 ? 'mark-buff-up' : 'mark-buff-down';
+      return `<span class="${cls}" title="${b.stat} ${arrow} · ${b.turns}回合">${icon}${arrow}</span>`;
     });
+    if (UI.battle && UI.battle.focusUid === unit.uid) marks.unshift('<span class="mark-focus" title="集火目标">🎯</span>');
     for (const dot of (unit.dots || [])) marks.push(`<span class="mark-dot" title="持续伤害剩余 ${dot.turns} 回合">🔥${dot.turns}</span>`);
     for (const hot of (unit.hots || [])) marks.push(`<span class="mark-hot" title="持续回复剩余 ${hot.turns} 回合">💚${hot.turns}</span>`);
     buffRoot.innerHTML = marks.join('');
@@ -4805,6 +4906,7 @@ function updateBattleUI() {
   for (const unit of [...b.allies, ...b.enemies]) updateBattleUnit(unit);
   const roundEl = $('#battleRoundText');
   if (roundEl) roundEl.textContent = `第 ${b.round} 回合 / ${b.maxRounds}`;
+  renderBattleQueue();
   updateBattleControls();
 }
 function updateBattleControls() {
@@ -4818,6 +4920,12 @@ function updateBattleControls() {
   }
   const speed = $('#btnBattleSpeed');
   if (speed) speed.textContent = b.speed >= 2 ? '⏪ 1 倍速' : '⏩ 2 倍速';
+  const pause = $('#btnPause');
+  if (pause) pause.textContent = b.paused ? '▶ 继续' : '⏸ 暂停';
+  const step = $('#btnStep');
+  if (step) step.disabled = !b.paused || b.over;
+  const manual = $('#btnManualSkill');
+  if (manual) manual.disabled = !!b.over;
 }
 function renderBattleLog() {
   const b = UI.battle;
@@ -4862,6 +4970,11 @@ function resolveTargets(target, caster, b) {
   const allies = sideOf(b, unitOfBattleSide(caster.side, b)).filter(u => u.alive);
   const allAllies = sideOf(b, unitOfBattleSide(caster.side, b));
   if (!target) return [];
+  // 集火仅作用于我方单体敌方技能；AoE（enemy_all）与友方技能不被改写
+  if (b && caster.side === 'ally' && b.focusUid && ['enemy_front', 'enemy_back', 'enemy_lowest', 'enemy_random'].includes(target)) {
+    const f = b.enemies.find(u => u.uid === b.focusUid && u.alive);
+    if (f) return [f];
+  }
   if (target === 'self') return [caster];
   if (target === 'enemy_front') {
     const fronts = foes.filter(u => u.row === 'front');
@@ -4983,6 +5096,11 @@ function skillEffectsOf(index, unit) {
 function chooseSkillIndex(unit) {
   const b = UI.battle;
   if (!b) return 0;
+  if (b.manualSkill && b.manualSkill[unit.uid] != null) {
+    const mi = b.manualSkill[unit.uid];
+    delete b.manualSkill[unit.uid];
+    if (unit.skills[mi] && (mi === 1 || mi === 2) && unit.cooldowns[mi] <= 0) return mi;
+  }
   const allies = sideOf(b, unit).filter(u => u.alive);
   const hurt = allies.some(u => u.hp / Math.max(1, u.maxHp) < 0.76);
   const fallen = allies.length < sideOf(b, unit).length;
@@ -5253,6 +5371,7 @@ function battleLoop() {
   if (!b.silent) applyBattleEvents(events);
   updateBattleUI();
   if (b.over) { finishBattle(); return; }
+  if (b.paused) { b.timer = null; return; }
   b.timer = setTimeout(battleLoop, b.speed >= 2 ? 340 : 760);
 }
 
@@ -5269,7 +5388,7 @@ function applyBattleEvents(events) {
       showSkillBanner(event.unitUid, event.name, event.skill);
     } else if (event.type === 'damage') {
       showBattleFloat(event.unitUid, '-' + fmt(event.amount), 'dmg' + (event.crit ? ' crit' : ''));
-      if (event.crit) showBattleFloat(event.unitUid, '暴击!', 'crit-tag');
+      if (event.crit) { showBattleFloat(event.unitUid, '暴击!', 'crit-tag'); critImpact(event.unitUid); }
       if (event.elemMult > 1) showBattleFloat(event.unitUid, '克制 ×1.5', 'elem-strong');
       else if (event.elemMult && event.elemMult < 1) showBattleFloat(event.unitUid, '抵抗 ×0.75', 'elem-weak');
       else if (event.elemText) showBattleFloat(event.unitUid, event.elemText, 'effect');
@@ -5277,7 +5396,7 @@ function applyBattleEvents(events) {
       flashBattleUnit(event.unitUid);
       playSfx(event.crit ? 'crit' : 'hit');
     } else if (event.type === 'heal') {
-      if (!event.small) showBattleFloat(event.unitUid, '+' + fmt(event.amount), 'heal');
+      if (!event.small) { showBattleFloat(event.unitUid, '+' + fmt(event.amount), 'heal'); healRing(event.unitUid); }
       playSfx('heal');
     } else if (event.type === 'miss') {
       showBattleFloat(event.unitUid, event.label || '闪避', event.dodged ? 'dodge' : 'miss');
@@ -5375,7 +5494,7 @@ function resetDeathFall(uid) {
   if (!el) return;
   el.classList.remove('death-fall');
 }
-const B_TRANSIENT_CLASSES = ['attack-forward', 'cast-raise', 'ult-lunge', 'hit-flash', 'damage-shake', 'hit-recoil', 'dodge-out', 'death-fall', 'active-turn'];
+const B_TRANSIENT_CLASSES = ['attack-forward', 'cast-raise', 'ult-lunge', 'hit-flash', 'damage-shake', 'hit-recoil', 'dodge-out', 'death-fall', 'active-turn', 'heal-ring', 'crit-impact'];
 function clearBattleFx() {
   $$('#battleRoot .b-unit').forEach(el => el.classList.remove(...B_TRANSIENT_CLASSES));
   $$('#battleRoot .b-skill-banner, #battleRoot .float-num').forEach(el => el.remove());
@@ -5471,6 +5590,80 @@ function battleEarlyUlt() {
   checkBattleEnd(b);
   if (b.over) { finishBattle(); return; }
   b.timer = setTimeout(battleLoop, 520);
+}
+
+/* -------- 战斗手动介入（只改节奏/目标选择/技能优先级，不改结算公式与伤害系数） -------- */
+function battlePause() {
+  const b = UI.battle;
+  if (!b || b.over) return;
+  b.paused = !b.paused;
+  if (b.timer) { clearTimeout(b.timer); b.timer = null; }
+  if (!b.paused) b.timer = setTimeout(battleLoop, b.speed >= 2 ? 340 : 760);
+  updateBattleUI();
+  toast(b.paused ? '已暂停：可用「单步」逐回合观察' : '继续自动战斗');
+}
+function battleStep() {
+  const b = UI.battle;
+  if (!b || b.over || !b.paused) return;
+  if (b.timer) { clearTimeout(b.timer); b.timer = null; }
+  const events = advanceTurn();
+  applyBattleEvents(events);
+  updateBattleUI();
+  if (b.over) finishBattle();
+}
+function battleFocus(uid) {
+  const b = UI.battle;
+  if (!b || b.over) return;
+  const t = (b.enemies || []).find(u => u.uid === uid);
+  if (!t || t.side !== 'enemy') { toast('只能集火敌方目标', 'bad'); return; }
+  b.focusUid = (b.focusUid === uid) ? null : uid;
+  updateBattleUI();
+  playSfx('tap');
+  toast(b.focusUid ? `已集火 ${t.name}（仅作用于我方单体技能，群体技不改变目标）` : '已取消集火');
+}
+function battleManualSkill() {
+  const b = UI.battle;
+  if (!b || b.over) return;
+  for (let i = b.idx; i < b.queue.length; i++) {
+    const u = b.queue[i];
+    if (!u || !u.alive || u.side !== 'ally') continue;
+    const ready = [1, 2].find(k => u.skills[k] && u.cooldowns[k] <= 0);
+    if (ready != null) {
+      b.manualSkill[u.uid] = ready;
+      updateBattleControls();
+      const nm = (u.skills[ready] && u.skills[ready].def && u.skills[ready].def.name) || '主动技';
+      toast(`已为 ${u.name} 指定「${nm}」，下次行动优先释放`);
+      playSfx('equip');
+      return;
+    }
+  }
+  toast('暂无可就绪的友方主动技（冷却未结束）', 'bad');
+}
+function renderBattleQueue() {
+  const b = UI.battle;
+  const root = $('#battleQueue');
+  if (!b || !root) return;
+  const upcoming = b.queue.slice(b.idx).filter(u => u.alive).slice(0, 6);
+  root.innerHTML = upcoming.map((u, i) => {
+    const e = ELEMENTS[u.element] || ELEMENTS.light;
+    return `<span class="b-q-chip ${u.side} ${i === 0 ? 'now' : ''}">${e.emoji}${esc(u.name)}</span>`;
+  }).join('') || '<span class="b-q-chip empty">回合未开始，等待出手顺序…</span>';
+}
+function healRing(uid) {
+  const el = getBattleUnitEl(uid);
+  if (!el) return;
+  el.classList.remove('heal-ring');
+  void el.offsetWidth;
+  el.classList.add('heal-ring');
+  setTimeout(() => el.classList.remove('heal-ring'), Math.round(620 * bSpeedFactor()));
+}
+function critImpact(uid) {
+  const el = getBattleUnitEl(uid);
+  if (!el) return;
+  el.classList.remove('crit-impact');
+  void el.offsetWidth;
+  el.classList.add('crit-impact');
+  setTimeout(() => el.classList.remove('crit-impact'), Math.round(340 * bSpeedFactor()));
 }
 
 function computeBattleStars(b) {
@@ -5730,7 +5923,7 @@ const SHOP_SUBTABS = [
   { id: 'gacha', name: '抽蛋' }, { id: 'exchange', name: '兑换' }, { id: 'cosmetic', name: '装扮' }
 ];
 const QUEST_SUBTABS = [
-  { id: 'daily', name: '每日' }, { id: 'achievements', name: '成就' }, { id: 'signin', name: '签到' }
+  { id: 'daily', name: '每日' }, { id: 'achievements', name: '成就' }, { id: 'signin', name: '签到' }, { id: 'mini', name: '小游戏' }
 ];
 
 function starsHTML(star, compact = false) {
@@ -5778,6 +5971,37 @@ function deployedRow(uid) {
   if (state.team.front.includes(uid)) return 'front';
   if (state.team.back.includes(uid)) return 'back';
   return null;
+}
+/* 主页伙伴小像：进化图优先，缺失逐级回退到 emoji，不白图 */
+function palArtHTML(pet) {
+  if (!pet) return '';
+  const t = templateOf(pet);
+  const evoUrl = evoArtUrl(t.id, pet.evo || 0);
+  const baseUrl = petArtUrl(t.id);
+  const src = evoUrl || baseUrl;
+  const emoji = esc(petEmoji(pet));
+  if (!src) return `<span class="pal-art-inner"><span class="pal-emoji">${emoji}</span></span>`;
+  const chain = evoUrl && baseUrl
+    ? `if(!this.dataset.f){this.dataset.f=1;this.src='${baseUrl}';return;}this.classList.add('hidden');`
+    : `this.classList.add('hidden');`;
+  return `<span class="pal-art-inner"><span class="pal-emoji pal-emoji-bg">${emoji}</span><img class="pal-img" src="${src}" alt="" loading="lazy" onerror="${chain}"></span>`;
+}
+/* 把某只宠置顶为主宠（team[0]）：只重排，维持前排2/后排3与总数上限5，不改任何数值 */
+function setMain(uid) {
+  const pet = state.pets[uid];
+  if (!pet) return;
+  const wasIn = deployedRow(uid) != null;
+  if (!wasIn && teamPetsOf(state).length >= maxTeamSize()) {
+    toast('队伍已满 5 只，先在队伍页让一只下阵，再设为主宠', 'bad'); return;
+  }
+  const rest = [...state.team.front, ...state.team.back].filter(id => id !== uid);
+  state.team.front = [uid, ...rest].slice(0, 2);
+  state.team.back = rest.slice(0, 3);
+  noteBonds();
+  saveGame();
+  renderAll();
+  toast(`⭐ ${petDisplayName(pet)} 已站到 C 位主宠`, 'good');
+  playSfx('claim');
 }
 function petPowerSafe(pet) {
   try { return getPetPower(pet); } catch (err) { return 0; }
@@ -5944,7 +6168,7 @@ function gardenHTML() {
       return `<button class="garden-cell plot-empty" type="button" data-act="gardenPlant" data-index="${i}"><span class="garden-emoji">🟫</span><span class="garden-label">${t.minutes} 分钟成熟<br>💰${gold} 🍎${fruit} · 点我种</span></button>`;
     }
     if (st === 'growing') {
-      return `<button class="garden-cell plot-growing" type="button" data-index="${i}" disabled><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟<br>💰${gold} 🍎${fruit}</span></button>`;
+      return `<button class="garden-cell plot-growing" type="button" data-act="gardenWater" data-index="${i}"><span class="garden-emoji">🌱</span><span class="garden-label">${fmtClock(Math.max(0, num(p.readyAt, 0) - now))} 后熟 · 点我浇水<br>💰${gold} 🍎${fruit}</span></button>`;
     }
     return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">点我收获<br>💰${gold} 🍎${fruit}</span></button>`;
   }).join('');
@@ -5967,6 +6191,15 @@ function renderHome() {
   const hello = now.getHours() < 11 ? '早安' : (now.getHours() < 18 ? '午后好' : '晚上好');
   const line = UI.patLine || moodSpeech(pet) || (t ? t.lines[0] : '先去抽一只毛茸茸的伙伴吧！');
   const team = getTeamPets();
+  const activeBonds = activeBondsForTeam(team);
+  const scenePhoto = scenePhotoUrl(bg);
+  const bondPhotos = activeBonds.map(b => {
+    const u = bondArtUrl(b.id);
+    return u ? `<img class="bond-photo" src="${u}" alt="${esc(b.name)}" loading="lazy" onerror="this.remove()">` : '';
+  }).join('');
+  const bondEchoHTML = activeBonds.length
+    ? `<div class="bond-echo">${activeBonds.map(b => `<span class="bond-quote-chip">${b.emoji} <b>${esc(b.name)}</b> · ${esc(b.quote)}</span>`).join('')}${bondPhotos}</div>`
+    : '';
   const power = calcTeamPower();
   const chapter = currentChapterNumber();
   const next = nextStageInfo();
@@ -5980,15 +6213,26 @@ function renderHome() {
   const pendingFruit = Math.floor(state.idle.pendingFruit);
   const mainAccessory = accessory ? `<span class="accessory">${accessory.emoji}</span>` : '';
   const shinyStars = pet && pet.shiny ? '<span class="shiny-star s1">✦</span><span class="shiny-star s2">✦</span>' : '';
-  // 场景内左右伙伴：取队伍中除主宠外最多两只，图优先回退 emoji
-  const palsHTML = team.slice(1, 3).map((p, i) => {
-    const art = petArtUrl(p.templateId)
-      ? `<img class="pal-img" src="${petArtUrl(p.templateId)}" alt="" loading="lazy" onerror="this.remove()">`
-      : `<span class="pal-emoji">${esc(petEmoji(p))}</span>`;
-    return `<div class="scene-pal ${i === 0 ? 'pal-left' : 'pal-right'}" title="${esc(petDisplayName(p))}">${art}</div>`;
+  // 主页伙伴位：战斗队(上限5)里除主宠外的伙伴 + 至多1只纯观赏位，视觉上主宠1 + 伙伴≤5；观赏位不参战、不影响战力与羁绊
+  const mainUid = pet ? pet.uid : null;
+  const teamPals = team.filter(p => p.uid !== mainUid);
+  const shownUids = new Set(team.map(p => p.uid));
+  const ornamental = ownedPets().find(p => !shownUids.has(p.uid) && p.uid !== mainUid) || null;
+  const palList = (ornamental ? teamPals.concat([ornamental]) : teamPals).slice(0, 5);
+  const palSlots = ['pal-s1', 'pal-s2', 'pal-s3', 'pal-s4', 'pal-s5'];
+  const palsHTML = palList.map((p, i) => {
+    const acc = accessoryOf(p.uid);
+    const isExtra = ornamental && p.uid === ornamental.uid;
+    const accHtml = acc ? `<span class="pal-acc">${acc.emoji}</span>` : '';
+    const spark = p.shiny ? '<span class="pal-spark">✦</span>' : '';
+    const setMainBtn = (mainUid && p.uid !== mainUid)
+      ? `<button class="pal-setmain" type="button" data-act="setMain" data-uid="${p.uid}" title="设为主宠">⭐</button>` : '';
+    return `<div class="scene-pal pal-click ${palSlots[i] || 'pal-s5'}${isExtra ? ' pal-extra' : ''}" data-act="palPat" data-uid="${p.uid}" title="点我摸摸 ${esc(petDisplayName(p))}">`
+      + palArtHTML(p) + accHtml + spark
+      + `<span class="pal-name">${esc(petDisplayName(p))}</span>${setMainBtn}</div>`;
   }).join('');
   const petHtml = pet ? `
-    <div class="idle-pet-wrap" id="homePetWrap" data-act="pat" title="摸摸头">
+    <div class="idle-pet-wrap ${pet.evo > 0 || t.rarity === 'SSR' ? 'hero-evo' : ''}" id="homePetWrap" data-act="pat" title="摸摸头">
       <span class="idle-pet">${homePetArt(pet, t)}${mainAccessory}${shinyStars}</span>
       <div class="pet-shadow"></div>
       <div class="pet-name-bubble">${esc(petDisplayName(pet))} · Lv.${pet.level}</div>
@@ -6023,6 +6267,7 @@ function renderHome() {
         </div>
       </div>
       <div class="idle-scene ${sceneClass}" id="idleScene">
+        ${scenePhoto ? `<div class="scene-photo"><img src="${scenePhoto}" alt="" loading="lazy" onerror="this.parentNode.remove()"></div>` : ''}
         <div class="scene-sun"></div>
         <div class="scene-cloud c1"></div>
         <div class="scene-cloud c2"></div>
@@ -6030,6 +6275,7 @@ function renderHome() {
         <div class="grass"></div><div class="rug"></div>
         ${petHtml}
         ${palsHTML}
+        ${bondEchoHTML}
         <div class="idle-hud">
           <div class="rate-badge">
             <b id="homeRateGold">${fmtRate(rate.gold)} /秒</b>
@@ -6349,6 +6595,7 @@ function renderPets() {
           return `<div class="bond-card ${active ? 'active' : (ever ? 'activated' : '')}">
             <div class="bond-head"><b>${esc(b.name)}</b><span class="bond-pets">${b.emoji}</span></div>
             <p>${esc(b.desc)} ${mastery ? `<b>强化 Lv.${mastery}</b>` : ''}</p>
+            ${(ever || active) && b.quote ? `<p class="bond-quote">💞 ${esc(b.quote)}</p>` : ''}
             <div class="flex between" style="margin-top:6px"><span class="chip ${active ? 'mint' : ''}">${active ? '当前点亮' : (ever ? '已收录' : '未点亮')}</span>
             <button class="btn btn-ghost btn-xs" type="button" data-act="bondMastery" data-id="${b.id}" ${active && mastery < 3 && state.items.bondBadge >= BOND_UNLOCK_MASTERY_COST ? '' : 'disabled'}>强化 · 🔗${BOND_UNLOCK_MASTERY_COST} → Lv.${mastery + 1}</button></div>
           </div>`;
@@ -6624,7 +6871,7 @@ function renderShop() {
         <div class="cos-actions">
           ${isOwned
             ? `<button class="btn ${isActive ? 'btn-ghost' : 'btn-mint'} btn-xs" type="button" data-act="equipCosmetic" data-id="${c.id}" ${isActive ? 'disabled' : ''}>${isActive ? (c.type === 'bg' ? '当前场景' : '已佩戴') : (c.type === 'bg' ? '更换场景' : '给主宠戴上')}</button>`
-            : `<button class="btn btn-yellow btn-xs" type="button" data-act="buyCosmetic" data-id="${c.id}" ${state.items.arenaCoin < c.cost ? 'disabled' : ''}>🎖️${c.cost} 解锁</button>`}
+            : `<button class="btn btn-yellow btn-xs" type="button" data-act="buyCosmetic" data-id="${c.id}" ${state.items.arenaCoin < c.cost ? 'disabled' : ''}>${c.cost > 0 ? `🎖️${c.cost} 解锁` : '免费解锁'}</button>`}
         </div>
       </div>`;
     };
@@ -6719,6 +6966,8 @@ function renderQuest() {
         ${filterBar}
         <div class="achievement-grid">${gridHTML}</div>
       </div>`;
+  } else if (tab === 'mini') {
+    body = miniGameHTML();
   } else {
     const canSign = canSignInToday();
     body = `
@@ -6767,10 +7016,106 @@ function renderQuest() {
             ['⏳', '累计挂机', fmt(state.quests.metrics.idleSeconds) + '秒']
           ].map(([icon, label, value]) => `<div class="bag-res"><span class="ico">${icon}</span><div><b>${fmt(value)}</b><span>${label}</span></div></div>`).join('')}
         </div>
-      </div>`;
+      </div>
+      ${profileHighlightsHTML()}`;
   }
   return `<div class="page">${pageHead('QUEST · 小镇手账', `<span class="emoji">📜</span>任务`, `每日任务 ${state.daily.claimed.length}/${DAILY_TASKS.length} · 成就 ${ACHIEVEMENTS.filter(a => achievementClaimed(a.id)).length}/${ACHIEVEMENTS.length}`, `<button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="home">回到家园</button>`)}${subnav}${body}</div>`;
 }
+function profileHighlightsHTML() {
+  const m = state.quests.metrics || {};
+  const b = state.hall || {};
+  const battles = num(m.battles, 0), wins = num(m.wins, 0);
+  const winRate = battles ? Math.round(wins / battles * 100) : 0;
+  const rating = state.arena ? num(state.arena.rating, 1000) : 1000;
+  const tier = (typeof arenaTierOf === 'function') ? arenaTierOf(rating) : null;
+  const evo = num(m.evolutions, 0), enh = num(m.enhancements, 0), feed = num(m.feeds, 0);
+  const star = num(m.starUps, 0), tower = num(m.towerClears, 0), streak = num(b.arenaWinStreak, 0);
+  const rows = [
+    ['🎯', '战斗胜率', battles ? winRate + '%' : '—', `胜 ${fmt(wins)} / 战 ${fmt(battles)}`],
+    ['🔥', '最长连胜', '×' + fmt(streak), '竞技场'],
+    ['🏅', '当前段位', tier ? tier.name : '—', `段位分 ${fmt(rating)}`],
+    ['🦕', '宠物进化', '×' + fmt(evo), '形态解锁'],
+    ['💪', '装备强化', '×' + fmt(enh), '战力淬炼'],
+    ['🍖', '亲手喂食', '×' + fmt(feed), '亲密度积累'],
+    ['⭐', '星级提升', '×' + fmt(star), '闪亮突破'],
+    ['🪜', '爬塔通关', '×' + fmt(tower), '守层记录']
+  ];
+  let title = '萌芽驯兽师';
+  if (wins >= 100) title = '百战驯兽师';
+  if (evo >= 5) title = '进化引导者';
+  if (streak >= 5) title = '连胜旋风';
+  if (tower >= 10) title = '高塔征服者';
+  return `<div class="card">
+    <div class="card-head"><div><h2>🌟 战绩亮点</h2><p>只汇总已有记录做展示，不影响成就与奖励。</p></div><span class="chip gold">${esc(title)}</span></div>
+    <div class="bag-res-grid">
+      ${rows.map(([icon, label, value, sub]) => `<div class="bag-res"><span class="ico">${icon}</span><div><b>${value}</b><span>${label} · ${esc(sub)}</span></div></div>`).join('')}
+    </div>
+  </div>`;
+}
+/* -------- 每日元素试炼（轻小游戏：固定低额奖励，不入抽卡概率池） -------- */
+const MINI_REWARD = { gold: 20, fruit: 2 };
+function miniEnsure() { if (!state.mini || typeof state.mini !== 'object') state.mini = { date: '', done: false, wins: 0 }; }
+function miniTodayDone() { miniEnsure(); return state.mini.date === localDateKey() && !!state.mini.done; }
+function miniEnemy() { if (!UI.miniEnemy || !ELEMENT_CHART[UI.miniEnemy]) UI.miniEnemy = pick(ELEMENT_KEYS); return UI.miniEnemy; }
+function miniGameHTML() {
+  miniEnsure();
+  const done = miniTodayDone();
+  const enemy = miniEnemy();
+  const e = ELEMENTS[enemy];
+  const advice = counterAdviceForElement(enemy);
+  const rows = ELEMENT_KEYS.map(k => {
+    const ex = ELEMENTS[k];
+    const beats = (ELEMENT_CHART[k].strong || []).includes(enemy);
+    const countered = (ELEMENT_CHART[enemy].strong || []).includes(k);
+    return `<button class="mini-el ${beats ? 'beats' : ''}" type="button" data-act="miniPick" data-el="${k}" style="--el-soft:${ex.soft};--el-color:${ex.color}">
+      <span class="mini-el-emoji">${ex.emoji}</span><b>${ex.name}</b>
+      <span class="mini-el-tag">${beats ? '克制' : (countered ? '被克' : '平级')}</span></button>`;
+  }).join('');
+  const msg = UI.miniMsg || '';
+  return `<div class="card">
+    <div class="card-head"><div><h2>🎯 元素试炼</h2><p>选一个克制今日对手的元素即可获胜；今日首次获胜领固定小奖励，之后可免费练习。</p></div><span class="chip ${done ? 'mint' : ''}">${done ? '今日已完成' : '今日未完成'}</span></div>
+    <div class="mini-arena">
+      <div class="mini-foe"><span class="mini-foe-emoji">${e.emoji}</span><b>今日对手 · ${e.name}</b><span class="mini-foe-tip">${esc(advice)}</span></div>
+      <button class="btn btn-ghost btn-xs" type="button" data-act="miniDeal">🔄 换一个对手（练习）</button>
+    </div>
+    <div class="mini-grid">${rows}</div>
+    ${msg ? `<div class="mini-msg ${UI.miniMsgOk ? 'ok' : 'no'}">${esc(msg)}</div>` : ''}
+    <div class="note" style="margin-top:9px">固定奖励 🪙20 金币 + 🍎2 经验果，每日最多领一次，不进入抽卡概率池；累计获胜 ${fmt(num(state.mini.wins, 0))} 次。</div>
+  </div>`;
+}
+function miniDeal() { UI.miniEnemy = pick(ELEMENT_KEYS); UI.miniMsg = ''; renderPage(); }
+function miniPick(el) {
+  miniEnsure();
+  const enemy = miniEnemy();
+  const beats = (ELEMENT_CHART[el].strong || []).includes(enemy);
+  const countered = (ELEMENT_CHART[enemy].strong || []).includes(el);
+  if (beats) {
+    if (!miniTodayDone()) {
+      state.mini.date = localDateKey();
+      state.mini.done = true;
+      state.mini.wins = num(state.mini.wins, 0) + 1;
+      addReward(MINI_REWARD);
+      UI.miniMsgOk = true;
+      UI.miniMsg = '克制成功！领取固定奖励 🪙20 金币 + 🍎2 经验果（今日奖励已领，之后为免费练习）。';
+      playSfx('win');
+      persist();
+    } else {
+      UI.miniMsgOk = true;
+      UI.miniMsg = '练习命中克制！今日奖励已领，继续熟悉克制关系吧。';
+      playSfx('pop');
+    }
+  } else if (countered) {
+    UI.miniMsgOk = false;
+    UI.miniMsg = `被 ${ELEMENTS[enemy].emoji}${ELEMENTS[enemy].name} 克制了，换一个元素再试。`;
+    playSfx('hit');
+  } else {
+    UI.miniMsgOk = false;
+    UI.miniMsg = `属性平级，选到克制 ${ELEMENTS[enemy].emoji}${ELEMENTS[enemy].name} 的元素才能获胜。`;
+    playSfx('tap');
+  }
+  renderPage();
+}
+
 function encounterById(id) {
   return ENCOUNTERS.find(e => e.id === id) || ENCOUNTERS[0];
 }
@@ -7365,6 +7710,7 @@ function gardenPlant(i) {
   p.fruit = t.fruit;
   p.readyAt = Date.now() + t.minutes * 60000;
   toast(`种下啦，约 ${t.minutes} 分钟成熟，收成 ${t.gold} 金币 + ${t.fruit} 经验果～`);
+  playSfx('pop');
   persist();
 }
 function gardenHarvest(i) {
@@ -7380,7 +7726,23 @@ function gardenHarvest(i) {
   p.readyAt = 0;
   delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
   toast(`菜园丰收：+${gold} 金币、+${fruit} 经验果`, 'good', 2600);
+  playSfx('claim');
   persist();
+}
+function gardenWater(i) {
+  ensureGarden();
+  const p = state.garden.plots[i];
+  if (!p || gardenPlotStatus(p) !== 'growing') return;
+  // 纯表现互动：只播水滴声与水珠动画，不修改成熟时间 readyAt、不修改收成 gold/fruit、不写奖励
+  playSfx('heal');
+  const btn = document.querySelector(`.garden-cell[data-index="${i}"]`);
+  if (btn) {
+    const drop = document.createElement('span');
+    drop.className = 'water-drop';
+    drop.textContent = '💧';
+    btn.appendChild(drop);
+    setTimeout(() => drop.remove(), 900);
+  }
 }
 function gardenJustReady() {
   if (!state.garden || !Array.isArray(state.garden.plots)) return false;
@@ -7442,13 +7804,17 @@ function careCardHTML() {
   </section>`;
 }
 
-function patPet() {
-  const pet = getMainPet();
+function patPet(uid) {
+  const pet = uid ? state.pets[uid] : getMainPet();
   if (!pet) { toast('先去抽一只宠物吧'); return; }
   const now = Date.now();
-  if (now - UI.patTimer < 180) return;
+  if (now - (UI.patTimerBy[pet.uid] || UI.patTimer || 0) < 180) return;
+  UI.patTimerBy[pet.uid] = now;
   UI.patTimer = now;
   UI.patCount += 1;
+  if (now - (UI.comboAt || 0) < 2500) UI.comboN = (UI.comboN || 0) + 1; else UI.comboN = 1;
+  UI.comboAt = now;
+  UI.comboMax = Math.max(UI.comboMax || 0, UI.comboN);
   pet.mood = clamp(num(pet.mood, 80) + 0.7, 0, 100);
   pet.intimacy = clamp(num(pet.intimacy, 0) + 0.12, 0, 100);
   const lines = templateOf(pet).lines || ['哼哼～'];
@@ -7456,24 +7822,52 @@ function patPet() {
   UI.patLine = nextLine;
   const speech = $('#petSpeechText');
   if (speech) speech.textContent = nextLine;
-  const wrap = $('#homePetWrap');
-  if (wrap) {
-    wrap.classList.remove('patted');
-    void wrap.offsetWidth;
-    wrap.classList.add('patted');
+  const who = document.querySelector('#petSpeech .who');
+  if (who) who.textContent = petDisplayName(pet);
+  const main = getMainPet();
+  const isMain = main && main.uid === pet.uid;
+  if (isMain) {
+    const wrap = $('#homePetWrap');
+    if (wrap) {
+      wrap.classList.remove('patted');
+      void wrap.offsetWidth;
+      wrap.classList.add('patted');
+    }
+    const scene = $('#idleScene');
+    if (scene) {
+      const heart = document.createElement('span');
+      heart.className = 'heart-pop';
+      heart.textContent = pick(['💗', '💕', '🌸', '✨']);
+      heart.style.left = (32 + Math.random() * 36) + '%';
+      heart.style.bottom = '34%';
+      scene.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
+    }
+  } else {
+    const el = document.querySelector('.scene-pal[data-uid="' + pet.uid + '"]');
+    if (el) {
+      el.classList.remove('pal-patted');
+      void el.offsetWidth;
+      el.classList.add('pal-patted');
+      const heart = document.createElement('span');
+      heart.className = 'heart-pop pal-heart';
+      heart.textContent = pick(['💗', '💕', '✨']);
+      el.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
+    }
   }
-  const scene = $('#idleScene');
-  if (scene) {
-    const heart = document.createElement('span');
-    heart.className = 'heart-pop';
-    heart.textContent = pick(['💗', '💕', '🌸', '✨']);
-    heart.style.left = (32 + Math.random() * 36) + '%';
-    heart.style.bottom = '34%';
-    scene.appendChild(heart);
-    setTimeout(() => heart.remove(), 1000);
-  }
+  const comboEl = isMain ? $('#homePetWrap') : document.querySelector('.scene-pal[data-uid="' + pet.uid + '"]');
+  showComboPop(comboEl, UI.comboN);
   saveGame();
   playSfx('pat');
+}
+function showComboPop(el, n) {
+  if (!el || n < 2) return;
+  const pop = document.createElement('span');
+  pop.className = 'combo-pop';
+  pop.textContent = n >= 5 ? `🔥 摸摸 ×${n}` : `摸摸 ×${n}`;
+  el.appendChild(pop);
+  setTimeout(() => pop.remove(), 950);
 }
 
 function buyBoost(kind) {
@@ -8395,11 +8789,14 @@ function handleActionClick(event) {
     case 'claimIdle': claimIdle(); break;
     case 'gardenPlant': gardenPlant(Number(target.dataset.index)); break;
     case 'gardenHarvest': gardenHarvest(Number(target.dataset.index)); break;
+    case 'gardenWater': gardenWater(Number(target.dataset.index)); break;
     case 'selfFocus': claimSelfCare('focus'); break;
     case 'selfMove': claimSelfCare('move'); break;
     case 'hugPet': hugPet(); break;
     case 'goodnightPet': goodnightPet(); break;
     case 'pat': patPet(); break;
+    case 'palPat': patPet(uid); break;
+    case 'setMain': setMain(uid); break;
     case 'buyBoost': buyBoost(target.dataset.kind); break;
     case 'buyOfflineSlot': buyOfflineSlot(); break;
     case 'claimOffline': claimOfflineOffer(); break;
@@ -8424,6 +8821,8 @@ function handleActionClick(event) {
       UI.questTab = target.dataset.tab || 'daily';
       renderPage();
       break;
+    case 'miniDeal': miniDeal(); break;
+    case 'miniPick': miniPick(target.dataset.el); break;
     case 'achFilter':
       UI.achFilter = target.dataset.filter || 'all';
       renderPage();
@@ -8485,6 +8884,11 @@ function handleActionClick(event) {
     case 'battleSkip': skipBattle(); break;
     case 'battleDouble': battleDouble(); break;
     case 'battleEarlyUlt': battleEarlyUlt(); break;
+    case 'battlePause': battlePause(); break;
+    case 'battleStep': battleStep(); break;
+    case 'battleFocus': battleFocus(target.dataset.uid); break;
+    case 'battleManualSkill': battleManualSkill(); break;
+    case '': break;
     case 'battleClose': closeBattle(); break;
     case 'battleGrow': closeBattle(); navTo('pets'); break;
 
