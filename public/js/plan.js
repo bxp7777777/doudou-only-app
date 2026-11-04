@@ -17,12 +17,12 @@ const GREETING = {
 };
 
 const CUP_HEADS = {
-  morning: ['上午这一杯', '起床后的第一杯', '早自习先来一口', '早晨慢慢润一杯'],
-  noon: ['午间也来一口', '饭前先抿两口温水', '午后补一杯', '午饭前后喝两口'],
-  afternoon: ['午后这一杯', '犯困时来一口', '下午慢慢补一杯', '课间喝两口温水'],
-  evening: ['晚间这一杯', '晚饭前后润一口', '傍晚再来一杯', '收工前补一杯'],
-  late: ['睡前只抿两口', '夜里口干抿一小口'],
-  bedtime: ['睡前只抿两口', '润润喉咙就好']
+  morning: ['上午这一杯', '起床后的第一杯', '早自习先来一口', '早晨慢慢润一杯', '刷完牙之后这一杯', '出门前补半杯'],
+  noon: ['午间也来一口', '饭前先抿两口温水', '午后补一杯', '午饭前后喝两口', '吃完饭这一杯', '回教室路上这一杯'],
+  afternoon: ['午后这一杯', '犯困时来一口', '下午慢慢补一杯', '课间喝两口温水', '趴在桌上之前这一杯', '练琴前先润一口'],
+  evening: ['晚间这一杯', '晚饭前后润一口', '傍晚再来一杯', '收工前补一杯', '洗澡前这一杯', '坐下歇的时候这一杯'],
+  late: ['睡前只抿两口', '夜里口干抿一小口', '这会儿润个嘴就好', '临睡前这一小口'],
+  bedtime: ['睡前只抿两口', '润润喉咙就好', '躺下之前抿一口', '别喝完再躺']
 };
 
 function rot(arr, seed) {
@@ -55,12 +55,19 @@ function waterModule(period, day, water, weather) {
         '3杯全搞定啦！小金毛尾巴摇成小风扇，夸夸你！',
         '今天的水量很棒，人也会跟着轻快，继续保持就好。',
         '喝够啦，想喝就小口抿一点，别一口气灌。',
-        '三杯打卡完成，小猪悄悄把水杯又添满了。'
+        '三杯打卡完成，小猪悄悄把水杯又添满了。',
+        '3杯满了，嘴唇不干、嗓子也舒服，这份状态留到明天。',
+        '水喝够了，头也没那么沉，做事都顺手一点。',
+        '今天的杯子都亮灯啦，小猪给你记一笔大大的好。',
+        '三杯稳稳喝下来，这才是最省事的自我照顾。'
       ], seed),
       rot([
         '还想喝就小口抿一点，别灌。',
         '温水慢慢喝，身体会记得这份舒服。',
-        '多出来的那口慢慢抿，不追求喝完一整杯。'
+        '多出来的那口慢慢抿，不追求喝完一整杯。',
+        '后面渴了再补，别为了凑数硬喝。',
+        '喝够了就停，撑着一肚子水也不舒服。',
+        '杯子放回桌角，想起来再抿一口就好。'
       ], seed + 1)
     ];
   } else if (period === 'late' || period === 'bedtime') {
@@ -68,7 +75,10 @@ function waterModule(period, day, water, weather) {
       rot([
         '睡前这杯只抿两口润润嘴，喝多了夜里要起夜。',
         '夜里口干就抿一小口温水，别一大杯灌下去。',
-        '临睡前别喝太猛，润一润就好，安安稳稳睡。'
+        '临睡前别喝太猛，润一润就好，安安稳稳睡。',
+        '这会儿喝水只求嘴里不干，别贪那半杯。',
+        '躺下前把杯子放远一点，省得半夜想喝又不敢喝。',
+        '要是觉着嘴干，先抿一口再慢慢咽，别一口闷。'
       ], seed),
       '今天已经喝了 ' + done + '/3 杯，剩下的明天小猪接着陪。'
     ];
@@ -78,15 +88,24 @@ function waterModule(period, day, water, weather) {
     if (done === 0) lines.push(rot([
       '先喝半杯就好，小猪已经把温水端过来了。',
       '还没开始也不急，先倒一杯放手边，想起来就喝一口。',
-      '第一杯最关键，慢慢喝，不用有压力。'
+      '第一杯最关键，慢慢喝，不用有压力。',
+      '一整天还没动杯子，先喝两口润润喉咙再忙。',
+      '先去接杯温水，坐下来喝两口，比一直干着嘴强。',
+      '今天的第一杯不用多，半杯就够开个头。'
     ], seed));
     if (done === 1) lines.push(rot([
       '已经1杯啦，还差2杯，小猪陪你慢慢喝。',
-      '进度三分之一啦，下午记得再补一口温水。'
+      '进度三分之一啦，下午记得再补一口温水。',
+      '一杯下肚，嗓子舒服多了，下一杯隔一会儿再补。',
+      '一杯到手，别等口渴了才想起第二杯。',
+      '喝了1杯，杯子里留一点，路过就抿两口。'
     ], seed + 1));
     if (done === 2) lines.push(rot([
       '就差最后一杯，小猪陪你一起喝掉它。',
-      '只差临门一脚，把最后一杯喝完就达标啦。'
+      '只差临门一脚，把最后一杯喝完就达标啦。',
+      '两杯了，最后这杯慢点喝，别一下灌完。',
+      '就差一口杯的事，想起来顺手喝掉就好。',
+      '两杯在手，最后一杯分成几口喝完更舒服。'
     ], seed + 2));
   }
 
@@ -141,8 +160,12 @@ function mealModule(period, now) {
           : '今天不早八，可以慢慢吃，吃完再晃过去。',
         rot([
           '别用冰饮开胃，配温水更舒服。',
-          '早餐来一口主食垫肚子，上午不容易发慌。',
-          '哪怕只买个热乎的包子豆浆，也比空着肚子强。'
+          '早餐来点热乎的垫肚子，上午不容易发慌。',
+          '哪怕只买个热乎的带在手上，也比空着肚子强。',
+          '食堂人多就早点去，别为了排队干脆不吃。',
+          '早饭吃到七分饱，留点余地，上课不犯困。',
+          '起来先喝半杯温水，再去吃早饭，肠胃会舒服些。',
+          '赶时间也别边走边吃，找个位置坐下吃两口。'
         ], seed)
       ]
     },
@@ -153,12 +176,18 @@ function mealModule(period, now) {
         '去食堂打热的菜，一荤一素，七分饱。',
         rot([
           '吃完饭慢慢走两分钟，别马上趴桌睡。',
-          '饭后别立刻瘫着，站一站、走两步更舒服。'
+          '饭后别立刻瘫着，站一站、走两步更舒服。',
+          '吃完先坐着缓一缓，再起身去自习。',
+          '饭后想睡就靠一会儿，别直接趴桌上压着胃。',
+          '吃完把碗筷归位，顺手走两步，人反而清醒。'
         ], seed + 1),
         rot([
           '少冷饮，少重油重辣。',
           '今天也记得配口热汤或温水，别只用冰的下饭。',
-          '七分饱就停筷子，下午不容易犯困。'
+          '七分饱就停筷子，下午不容易犯困。',
+          '打菜挑热的、看着清爽的，胃会舒服很多。',
+          '辣的就少量尝一点，别拿它当主菜。',
+          '一边看手机一边吃容易吃多，先放下再看。'
         ], seed)
       ]
     },
@@ -168,11 +197,17 @@ function mealModule(period, now) {
       lines: [
         rot([
           '饿了就在食堂或小卖部垫一小份温的，别用零食顶一顿。',
-          '下午有点饿，选个温热的小份点心垫一下就好。'
+          '下午有点饿，选个温热的小份点心垫一下就好。',
+          '饿到心慌就先吃点东西，别硬撑到晚饭。',
+          '课间饿就垫一口，量不用多，别把晚饭吃掉。',
+          '嘴馋的时候先喝两口水，常常就不那么想吃了。'
         ], seed),
         rot([
           '不饿也别硬塞，等晚饭好好吃。',
-          '不饿就多喝两口温水，别边忙边无意识地吃。'
+          '不饿就多喝两口温水，别边忙边无意识地吃。',
+          '这会儿不饿就略过，晚饭再好好吃一顿热的。',
+          '想拿零食当消遣时，先起来走两步再决定。',
+          '下午犯困未必是饿，先喝口水、动一动看。'
         ], seed + 1)
       ]
     },
@@ -183,11 +218,18 @@ function mealModule(period, now) {
         '晚饭七分饱，热的菜多打一点。',
         rot([
           '吃完走两圈，别直接回宿舍躺。',
-          '晚饭别拖到太晚，也别只拿零食凑合。'
+          '晚饭别拖到太晚，也别只拿零食凑合。',
+          '饭点过了也别将就，热的吃一口比空着强。',
+          '吃完把桌面收拾一下，顺手活动两分钟。',
+          '晚饭慢慢吃，别一边赶作业一边往嘴里塞。'
         ], seed),
         rot([
           '少冰、少重油重辣。',
-          '晚饭吃舒服点，肠胃不闹脾气，夜里才睡得香。'
+          '晚饭吃舒服点，肠胃不闹脾气，夜里才睡得香。',
+          '菜的份量按胃口来，吃完不撑是最舒服的量。',
+          '热菜配热汤，比冰饮下饭舒服得多。',
+          '吃到七分饱就停，夜里不容易反酸。',
+          '饭后别马上喝一大杯冰的，缓一缓再说。'
         ], seed + 1)
       ]
     },
@@ -197,11 +239,17 @@ function mealModule(period, now) {
       lines: [
         rot([
           '这会儿不饿就别吃了，最多抿两口温水。',
-          '睡前别再找东西吃啦，胃也要歇一歇。'
+          '睡前别再找东西吃啦，胃也要歇一歇。',
+          '夜里的饿常常是一阵，喝两口温水等一等就过去了。',
+          '真想吃先刷牙，刷完往往就不想再动嘴了。',
+          '今天吃得够不够，回想一下再决定要不要加餐。'
         ], seed),
         rot([
           '胃也要睡觉，留着明天好好吃早饭。',
-          '真饿到睡不着，就抿一小口温水，别开零食袋。'
+          '真饿到睡不着，就抿一小口温水，别开零食袋。',
+          '想开零食袋的时候先坐五分钟，多数时候就过去了。',
+          '半夜吃多了夜里容易反酸，明天早上也不舒服。',
+          '实在胃里空得难受，喝点温水垫着，别吃硬的。'
         ], seed + 1)
       ]
     }
@@ -217,7 +265,7 @@ function mealModule(period, now) {
 function weatherModule(ctx) {
   const list = ctx.weather || [];
   const status = ctx.weatherStatus || (list.length ? 'ok' : 'loading');
-  const lines = [];
+  let lines = [];
 
   if (status === 'fail' || (!list.length && status !== 'loading')) {
     lines.push('小猪没查到今天的天气，出门前自己看一眼窗外。');
@@ -238,14 +286,39 @@ function weatherModule(ctx) {
         lines.push('南宁今天温差不大 ' + nn.diff + ' 度，照样记着喝温水。');
       }
     }
-    if (nn && nn.humidity >= 80) lines.push('湿度偏高，出汗及时擦干，别对着风口吹。');
-    if (nn && nn.humidity !== null && nn.humidity <= 40) lines.push('有点干：护手霜、润唇带上，少量多次补水。');
-
+    // 先说要紧的（温差、要不要带伞），其余提示排在后面，最多留四条，别把卡片撑成一堵字墙
     list.forEach(function (c) {
-      if (c.rain !== null && c.rain >= 50) {
+      if (c.rain !== null && c.rain !== undefined && c.rain >= 50) {
         lines.push(c.name + '可能下雨（降水概率 ' + c.rain + '%），伞放进包里。');
+      } else if (c.rain !== null && c.rain !== undefined && c.rain >= 30) {
+        lines.push(c.name + '有点可能下阵雨（' + c.rain + '%），出门顺手把伞塞包里。');
       }
     });
+
+    if (nn && nn.humidity >= 80) lines.push('湿度偏高，出汗及时擦干，别对着风口吹。');
+    if (nn && nn.humidity !== null && nn.humidity <= 40) lines.push('有点干：护手霜、润唇带上，少量多次补水。');
+    if (nn && nn.temp !== null && nn.temp !== undefined && nn.temp >= 32) {
+      lines.push('南宁今天偏热，正午那阵尽量待在阴凉处，回来先喝两口温水。');
+    }
+    if (nn && String(nn.text || '').includes('晴')) {
+      lines.push('出太阳了：晒的时候走阴凉那边，帽子和伞顺手带上。');
+    }
+    if (nn && nn.rain !== null && nn.rain !== undefined && nn.rain >= 80) {
+      lines.push('南宁降水概率很高，鞋袜备一双干的，别湿着坐一下午。');
+    }
+
+    // 两座城市差得多，来回跑的时候身体最容易不舒服
+    const szCity = list.filter(function (c) {
+      return c && c.key === 'shenzhen';
+    })[0];
+    if (nn && szCity && nn.temp !== null && nn.temp !== undefined && szCity.temp !== null && szCity.temp !== undefined) {
+      const cityGap = Math.abs(Number(nn.temp) - Number(szCity.temp));
+      if (cityGap >= 4) {
+        lines.push('南宁和深圳差 ' + cityGap + ' 度，两头跑的时候慢慢适应当地的温度，别一落地就灌冰的。');
+      }
+    }
+
+    if (lines.length > 4) lines = lines.slice(0, 4);
   }
 
   return {
@@ -304,19 +377,63 @@ function scheduleModule(now) {
 
 /* ------------------------- 练琴 · 护手 ------------------------- */
 
+/* 练琴拆成「练前 / 练中 / 练后 / 护手」四组轮换：每天只说同一句，她会看腻 */
+const QIN = {
+  before: [
+    '练前洗手擦干，琴放稳了再坐下。',
+    '先把谱子摊开，翻到今天要练的那一页，别一坐下就到处找。',
+    '先调好音，耳朵定下来，手也会跟着稳。',
+    '松香、肩托、调音器摆到手边，练起来才不打断。',
+    '先弹两分钟空弦，让手和琴都对上。',
+    '练前松一松手腕，慢慢热起来再上手。'
+  ],
+  during: [
+    '慢练比硬练有用：一小段一小段过，弹顺了再连起来。',
+    '卡住的地方慢一半再弹，别硬冲过去。',
+    '难的四个小节单独抠三遍，比整首过五遍有用。',
+    '每练二十分钟歇一歇，甩甩手、看看远处。',
+    '录一段下来听听，比一直弹更容易发现哪里不对。',
+    '手开始发酸就停一停，酸着练只会越来越僵。'
+  ],
+  after: [
+    '练完检查好东西：琴谱、弓、松香、调音器、水杯、钥匙，一样样收进琴盒和包里。',
+    '练完把弓毛松一松，琴擦一遍再合盖，别带着松香灰过夜。',
+    '练完别马上用冷水洗手，温水冲一冲，再涂层护手霜。',
+    '收琴前看一眼肩托和小件，别落在琴房。',
+    '练完坐两分钟再起身，手别一松就去拎重东西。',
+    '谱子夹回原位、琴盒扣好，下次打开就能接着练。',
+    '走出琴房前摸一遍：手机、门卡、水杯，别到了楼下才折回去。'
+  ],
+  hand: [
+    '指甲修短一点，按弦才不顶手指。',
+    '护手霜薄涂一层就够，涂太厚手会滑。',
+    '手腕酸就轻轻转两圈，别用力掰。',
+    '洗过手擦干再碰琴，别用冷水泡手。',
+    '手凉的时候先捂暖，冷手按弦容易僵。'
+  ]
+};
+
 function qinModule(period, now) {
-  const s = schedule.of(now);
+  const d = now || new Date();
+  const s = schedule.of(d);
+  const seed = Math.floor(d.getTime() / 86400000);
   let lines = [];
 
   if (period === 'afternoon') {
     lines = [
       s.wd === 2 ? '下午很空，正好练30分钟。' : '有空档就练30分钟，慢练比硬练有用。',
-      '练前洗手擦干，练完涂护手霜、手指拉伸两下。'
+      rot(QIN.before, seed),
+      rot(QIN.during, seed + 1),
+      rot(QIN.after, seed + 2)
     ];
   } else if (period === 'evening') {
-    lines = ['今天练琴了吗？练完别马上冲凉水。', '睡前给手抹点护手霜，明天按弦才不疼。'];
+    lines = [
+      '今天练琴了吗？练完别马上冲凉水。',
+      rot(QIN.after, seed + 3),
+      rot(QIN.hand, seed + 4)
+    ];
   } else {
-    lines = ['洗过手擦干再碰琴，别用冷水泡手。', '弹完涂一层护手霜，指甲修短一点更好按弦。'];
+    lines = [rot(QIN.before, seed + 1), rot(QIN.hand, seed + 2)];
   }
 
   return {
@@ -332,6 +449,9 @@ function qinModule(period, now) {
 /* ------------------------- 敏感肌护肤 ------------------------- */
 
 function skincareModule(period, weather) {
+  const skinSeed = Math.floor(Date.now() / 86400000);
+  const dailySkin = SKINCARE.daily && SKINCARE.daily.length ? rot(SKINCARE.daily, skinSeed) : '';
+  const dayTips = [dailySkin, rot(SKINCARE.extras || [], skinSeed + 1)].filter(Boolean);
   const nn = (Array.isArray(weather) ? weather : []).filter(function (c) {
     return c && c.key === 'nanning';
   })[0] || null;
@@ -359,7 +479,7 @@ function skincareModule(period, weather) {
       icon: '🧴',
       title: SKINCARE.morning.title,
       sub: '敏感肌越简单越稳',
-      lines: SKINCARE.morning.steps.concat([SKINCARE.morning.note]).concat(skinExtra)
+      lines: SKINCARE.morning.steps.concat([SKINCARE.morning.note]).concat(dayTips).concat(skinExtra)
     };
   }
   if (period === 'evening' || period === 'late') {
@@ -369,7 +489,7 @@ function skincareModule(period, weather) {
       icon: '🧴',
       title: SKINCARE.evening.title,
       sub: '不刷酸、不去角质、不上猛药',
-      lines: SKINCARE.evening.steps.concat([SKINCARE.evening.note]).concat(skinExtra)
+      lines: SKINCARE.evening.steps.concat([SKINCARE.evening.note]).concat(dayTips).concat(skinExtra)
     };
   }
   if (period === 'afternoon') {
@@ -379,7 +499,7 @@ function skincareModule(period, weather) {
       icon: '🧴',
       title: '护肤 · 下午补一下',
       sub: '',
-      lines: ['太阳还在的话，帽子、伞、口罩别落下，物理遮挡最省事。', '脸干了就薄涂一点保湿修护，别用手一直摸。'].concat(skinExtra)
+      lines: ['太阳还在的话，帽子、伞、口罩别落下，物理遮挡最省事。', '脸干了就薄涂一点保湿修护，别用手一直摸。'].concat(dayTips).concat(skinExtra)
     };
   }
   if (period === 'bedtime' || period === 'sleep') {
@@ -389,7 +509,7 @@ function skincareModule(period, weather) {
       icon: '🧴',
       title: '护肤 · 睡前一步',
       sub: '',
-      lines: ['嘴唇干就补一层润唇，其他都留给明天早上。'].concat(skinExtra)
+      lines: ['嘴唇干就补一层润唇，其他都留给明天早上。'].concat(dayTips).concat(skinExtra)
     };
   }
   return null;
