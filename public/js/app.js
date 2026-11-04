@@ -27,7 +27,8 @@ const state = {
   diaryDate: '',
   diaryQuery: '',
   tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
-  musicSleepTimer: null
+  musicSleepTimer: null,
+  toolsOpen: false
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -157,8 +158,8 @@ function render() {
       : settingsPage();
 
   tabsEl.innerHTML = TABS.map(
-    (t) => `<button class="tab ${state.tab === t.key ? 'on' : ''}" data-act="tab" data-tab="${t.key}">
-      <span class="tab-icon">${t.icon}</span><span class="tab-label">${t.label}</span>
+    (t) => `<button class="tab ${state.tab === t.key ? 'on' : ''}" data-act="tab" data-tab="${t.key}"${state.tab === t.key ? ' aria-current="page"' : ''}>
+      <span class="tab-icon" aria-hidden="true">${t.icon}</span><span class="tab-label">${t.label}</span>
     </button>`
   ).join('');
 }
@@ -202,10 +203,8 @@ function homePage(now, period) {
       <p class="hero-note">${esc(homeNote(period))}</p>
     </header>
     ${modules.map(moduleHTML).join('')}
-    ${moodTrendCardHTML()}
-    ${milestoneCardHTML()}
-    ${wishCardHTML()}
-    ${extraHomeHTML(now)}
+    ${careCardsHTML(now)}
+    ${toolsDrawerHTML(now)}
     <p class="foot">小猪和小金毛都在这儿，不催不吼，只陪你。</p>
   </div>`;
 }
@@ -307,7 +306,11 @@ function milestoneCardHTML() {
   return `<section class="card">
     <h2 class="card-head"><span class="card-icon">📌</span><span class="card-title">重要日子 · 倒计时</span></h2>
     ${rows || '<p class="line">记一个想记住的日子（考试、见面、生日都行），小猪帮你数着。</p>'}
-    <div style="margin-top:8px"><button class="btn btn-mini" data-act="ms-add">＋ 添加一个日子</button></div>
+    <div class="ms-form">
+      <input id="ms-label" class="wish-input" maxlength="24" placeholder="叫什么（如：期末考试）">
+      <input id="ms-date" class="wish-input" type="date">
+      <button class="btn btn-mini" data-act="ms-add">＋ 记下</button>
+    </div>
   </section>`;
 }
 
@@ -342,14 +345,20 @@ const PERSONA_TAGS = [
   { t: '有韧性', d: '难的时候也撑得住' }
 ];
 
-function extraHomeHTML(now) {
-  return [
-    birthdayBlessingHTML(),
+/* 「关心型」小卡：只在真的需要时才出现，不进抽屉 */
+function careCardsHTML(now) {
+  return [birthdayBlessingHTML(), careHintHTML(), comfortHTML()].join('');
+}
+
+/* 其余附加小卡收进一张折叠抽屉：首页只留当段时间的主信息 */
+function toolsDrawerHTML(now) {
+  const body = [
+    moodTrendCardHTML(),
+    milestoneCardHTML(),
+    wishCardHTML(),
     dailySignCardHTML(),
     healLineHTML(),
     personalityTagHTML(),
-    careHintHTML(),
-    comfortHTML(),
     moveCardHTML(now),
     musicCardHTML(),
     tomatoCardHTML(),
@@ -357,6 +366,17 @@ function extraHomeHTML(now) {
     pledgeCardHTML(now),
     foodPrefCardHTML()
   ].join('');
+  return `<section class="card tools-card">
+    <details id="tools-drawer" ${state.toolsOpen ? 'open' : ''}>
+      <summary class="tools-sum">
+        <span class="card-icon" aria-hidden="true">🧰</span>
+        <span class="card-title">更多小工具</span>
+        <span class="tools-count">心情 · 日子 · 番茄 · 音乐</span>
+        <span class="tools-chevron" aria-hidden="true">▾</span>
+      </summary>
+      <div class="tools-body">${body}</div>
+    </details>
+  </section>`;
 }
 
 /* ---- 生日（7/15）：底层只在当天露出祝福，平时主页不显示生日内容 ---- */
@@ -666,21 +686,6 @@ function cyclePage() {
   const listHTML = hit.length
     ? hit.slice(0, 40).map(diaryItem).join('')
     : `<p class="hint">${q ? '没找到，换个词试试。' : '还没有写过的日子，今天就从两句开始吧。'}</p>`;
-
-  const infoHTML = info
-    ? `<section class="card">
-        <h2 class="card-head"><span class="card-icon">🌸</span><span class="card-title">${esc(info.headline)}</span></h2>
-        <div class="chips">${info.chips
-          .map((c) => `<div class="chip"><span class="chip-v">${esc(c.value)}</span><span class="chip-l">${esc(c.label)}</span></div>`)
-          .join('')}</div>
-        ${info.lines.map((l) => `<p class="line">${esc(l)}</p>`).join('')}
-        <p class="hint">${esc(info.reference)}</p>
-      </section>`
-    : `<section class="card">
-        <h2 class="card-head"><span class="card-icon">🌷</span><span class="card-title">小猪帮你记小日子</span></h2>
-        <p class="line">${esc(cycleUtil.ASK_TEXT)}</p>
-        <p class="hint">参数没齐之前，小猪不推算任何日期，只做温柔关心。</p>
-      </section>`;
 
   return `<div class="wrap">
     ${hero('小日子', date.cnShort(today) + ' · 想写就写，小猪都接着')}
@@ -1054,6 +1059,10 @@ function toast(msg) {
     el.className = 'toast';
     document.body.appendChild(el);
   }
+  if (typeof el.setAttribute === 'function' && !(el.getAttribute && el.getAttribute('role'))) {
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-live', 'polite');
+  }
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
@@ -1303,15 +1312,16 @@ document.addEventListener('click', (e) => {
   }
 
   if (act === 'ms-add') {
-    if (typeof window.prompt !== 'function') return toast('请在浏览器里添加');
-    const label = window.prompt('这个日子叫什么？（如：期末考试）');
-    if (label == null) return;
-    const dateStr = window.prompt('日期：格式 YYYY-MM-DD（如 2026-12-31）');
-    if (dateStr == null) return;
+    const labelBox = document.getElementById('ms-label');
+    const dateBox = document.getElementById('ms-date');
+    const label = String((labelBox && labelBox.value) || '').trim();
+    const dateStr = String((dateBox && dateBox.value) || '').trim();
+    if (!label) return toast('先写一下这个日子叫什么呀');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return toast('先选一下日期呀');
     const before = store.getMilestones().length;
     store.addMilestone(label, dateStr);
     render();
-    toast(store.getMilestones().length > before ? '记好啦，小猪帮你数着日子' : '日期格式不对，要用 YYYY-MM-DD');
+    toast(store.getMilestones().length > before ? '记好啦，小猪帮你数着日子' : '这条好像重复了，看看列表里是不是已经有了');
     return;
   }
 
@@ -1416,6 +1426,7 @@ document.addEventListener('click', (e) => {
     if ([0.2, 0.4, 0.6, 0.8, 1.0].includes(v)) {
       music.setPref({ volume: v });
       music.applyVolume();
+      render();
     }
     return;
   }
@@ -1619,6 +1630,16 @@ document.addEventListener('keydown', (e) => {
     if (again) again.focus();
   }
 });
+
+/* 折叠抽屉：重新渲染时保持展开状态 */
+document.addEventListener(
+  'toggle',
+  (e) => {
+    const t = e.target;
+    if (t && t.id === 'tools-drawer') state.toolsOpen = !!t.open;
+  },
+  true
+);
 
 const DUO_ARTS = ['/art/bg-ai1.jpg', '/art/bg-ai2.jpg', '/art/bg-ai3.jpg', '/art/bg-ai4.jpg'];
 const DUO_NAMES = ['贴贴', '打盹', '散步', '暖饮'];

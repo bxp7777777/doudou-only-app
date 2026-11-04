@@ -5,7 +5,7 @@
   --accent-strong: #ef7f8f;
   --line: #ffeeec;
   --card: #fffdfb;
-  --muted: #b19195;
+  --muted: #7d636a;
   --radius: 20px;
   --tab-h: 62px;
 }
@@ -155,6 +155,14 @@ body.theme-duo .bg::after {
   opacity: 0.8;
 }
 
+.gear {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .gear-space {
   width: 34px;
 }
@@ -190,7 +198,7 @@ body.theme-duo .bg::after {
 .card-sub {
   margin: 0 0 6px;
   font-size: 12.5px;
-  color: #aa8b90;
+  color: var(--muted);
 }
 
 .line {
@@ -202,13 +210,13 @@ body.theme-duo .bg::after {
 .hint {
   margin: 10px 0 0;
   font-size: 12px;
-  color: #bda3a6;
+  color: var(--muted);
 }
 
 .foot {
   text-align: center;
   font-size: 12px;
-  color: #c4a7aa;
+  color: var(--muted);
   padding: 6px 0 10px;
 }
 
@@ -294,8 +302,8 @@ body.theme-duo .bg::after {
 }
 
 .cup-txt {
-  font-size: 11px;
-  color: #b58a8f;
+  font-size: 11.5px;
+  color: var(--muted);
 }
 
 .cup-on .cup-txt {
@@ -336,8 +344,8 @@ body.theme-duo .bg::after {
 }
 
 .wx-note {
-  font-size: 10.5px;
-  color: #c1a3a6;
+  font-size: 11.5px;
+  color: var(--muted);
 }
 
 .wx-temp {
@@ -351,7 +359,7 @@ body.theme-duo .bg::after {
 .wx-sub {
   margin: 2px 0 0;
   font-size: 11.5px;
-  color: #a3858a;
+  color: var(--muted);
 }
 
 /* 打卡 */
@@ -509,8 +517,8 @@ body.theme-duo .bg::after {
 }
 
 .chip-l {
-  font-size: 11px;
-  color: #b39195;
+  font-size: 11.5px;
+  color: var(--muted);
 }
 
 .row {
@@ -539,7 +547,7 @@ body.theme-duo .bg::after {
 
 .input {
   font-family: inherit;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--accent);
   font-weight: 600;
   padding: 6px 10px;
@@ -555,7 +563,7 @@ body.theme-duo .bg::after {
 
 .unit {
   font-size: 13px;
-  color: #a3858a;
+  color: var(--muted);
 }
 
 .row-today .row-l {
@@ -597,7 +605,7 @@ body.theme-duo .bg::after {
   border-radius: 999px;
   border: 1px solid #ffe0e4;
   background: #fff5f6;
-  color: #a3858a;
+  color: var(--muted);
   font-size: 13px;
   font-family: inherit;
   cursor: pointer;
@@ -656,7 +664,7 @@ body.theme-duo .bg::after {
   background: #fff9f8;
   color: var(--ink-soft);
   font-family: inherit;
-  font-size: 14.5px;
+  font-size: 16px;
   line-height: 1.7;
   resize: vertical;
 }
@@ -719,17 +727,19 @@ body.theme-duo .bg::after {
 
 .memo-time {
   display: block;
-  font-size: 10.5px;
-  color: #c1a6a9;
+  font-size: 11.5px;
+  color: var(--muted);
   margin-top: 3px;
 }
 
 .memo-del {
   border: 0;
   background: none;
-  color: #d99aa5;
+  color: #cf8a97;
   font-size: 12px;
   font-family: inherit;
+  min-width: 36px;
+  min-height: 36px;
   padding: 2px 4px;
   cursor: pointer;
 }
@@ -761,8 +771,8 @@ body.theme-duo .bg::after {
   border: 0;
   background: none;
   font-family: inherit;
-  color: #bfa2a5;
-  font-size: 11.5px;
+  color: #7d636a;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -809,7 +819,7 @@ body.theme-duo .bg::after {
 
 .sched-row {
   display: grid;
-  grid-template-columns: 54px 96px auto minmax(0, 1fr) auto;
+  grid-template-columns: 54px 112px auto minmax(0, 1fr) auto;
   gap: 6px;
   align-items: center;
   padding: 6px 0;
@@ -828,8 +838,8 @@ body.theme-duo .bg::after {
 
 .sched-sel {
   min-width: 0;
-  padding: 4px 6px;
-  font-size: 12px;
+  padding: 3px 4px;
+  font-size: 16px;
 }
 
 .sched-aft {
@@ -838,8 +848,8 @@ body.theme-duo .bg::after {
   border-radius: 999px;
   padding: 5px 8px;
   font: inherit;
-  font-size: 12px;
-  color: #a8838a;
+  font-size: 13px;
+  color: var(--muted);
   white-space: nowrap;
 }
 
@@ -851,8 +861,8 @@ body.theme-duo .bg::after {
 
 .sched-note {
   min-width: 0;
-  font-size: 12px;
-  padding: 4px 8px;
+  font-size: 16px;
+  padding: 3px 6px;
 }
 
 .sched-pill {
@@ -881,7 +891,7 @@ body.theme-duo .bg::after {
 
 @media (max-width: 420px) {
   .sched-row {
-    grid-template-columns: 48px 90px auto minmax(0, 1fr);
+    grid-template-columns: 46px 98px auto minmax(0, 1fr);
   }
   .sched-pill {
     display: none;
@@ -986,7 +996,7 @@ body.theme-duo .bg::after {
 .diary-meta {
   margin-top: 6px;
   font-size: 12px;
-  color: #b39aa0;
+  color: var(--muted);
   text-align: right;
 }
 
@@ -1066,8 +1076,8 @@ body.theme-duo .bg::after {
 
 .diary-del {
   align-self: center;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 0;
   background: #fff4f6;
@@ -1103,12 +1113,113 @@ body.theme-duo .bg::after {
 .tomato-controls { display: flex; gap: 10px; margin-top: 12px; }
 .tomato-controls .btn { flex: 1; width: auto; margin-top: 0; }
 .tomato-set { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
-.tomato-set-label { font-size: 12.5px; color: #9a8488; }
+.tomato-set-label { font-size: 12.5px; color: var(--muted); }
 .tomato-quick { border: 1px solid #ffd8df; background: #fff5f6; color: #e2788e; border-radius: 999px; padding: 5px 13px; font-size: 13px; cursor: pointer; font-family: inherit; }
 .tomato-quick:active { transform: scale(.97); }
-.tomato-min { width: 66px; padding: 6px 8px; border: 1px solid #eccfd4; border-radius: 10px; background: #fff; font-family: inherit; font-size: 13px; }
+.tomato-min { width: 74px; padding: 8px 8px; border: 1px solid #eccfd4; border-radius: 10px; background: #fff; font-family: inherit; font-size: 16px; }
 .tomato-set-apply { margin-top: 0 !important; padding: 7px 15px; font-size: 13px; }
 #app .card { transition: box-shadow .2s ease; }
 @media (hover: hover) {
   #app .card:hover { box-shadow: 0 10px 24px rgba(226, 167, 170, .22); }
+}
+
+/* ---------------- 可读性与交互补丁 ---------------- */
+
+/* app.js 里用到、样式表里原本缺失的三个类 */
+.btn-sm {
+  display: inline-block;
+  width: auto;
+  padding: 11px 18px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.btn-mint {
+  background: linear-gradient(180deg, #abe4ca, #88d6b3);
+  color: #2f6b53;
+  box-shadow: 0 6px 16px rgba(136, 214, 179, 0.36);
+}
+
+.wish-input {
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink-soft);
+  border: 1px solid #ffe0e6;
+  border-radius: 10px;
+  background: #fffaf9;
+  padding: 9px 11px;
+}
+
+/* 首页「更多小工具」抽屉：附加小卡都收进去，需要时再展开 */
+.tools-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.tools-sum {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 17px;
+  min-height: 52px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--accent);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.tools-sum::-webkit-details-marker {
+  display: none;
+}
+
+.tools-sum .tools-count {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.tools-sum .tools-chevron {
+  font-size: 13px;
+  color: var(--muted);
+  transition: transform 0.2s ease;
+}
+
+.tools-card details[open] .tools-chevron {
+  transform: rotate(180deg);
+}
+
+.tools-body {
+  padding: 0 0 2px;
+}
+
+.tools-body .card {
+  margin: 0 12px 12px;
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.tools-body .card:first-child {
+  margin-top: 4px;
+}
+
+/* 重要日子：内置小表单（替代原来的两次系统弹窗） */
+.ms-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ms-form .wish-input {
+  flex: 1 1 132px;
+  min-width: 0;
+}
+
+.ms-form .btn-mini {
+  margin-top: 0;
 }
