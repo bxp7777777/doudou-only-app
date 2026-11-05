@@ -349,7 +349,7 @@ img{max-width:100%}
   padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.86);border:1px solid #f2deca;
   font-size:10.5px;font-weight:700;white-space:nowrap;color:var(--ink-soft);
 }
-.idle-hud{position:absolute;right:12px;bottom:12px;left:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.idle-hud{position:relative;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:7px 9px;border-radius:15px;background:rgba(255,253,248,.9);border:1px solid #f1ddc7}
 .rate-badge{background:rgba(255,253,248,.9);border:1px solid #f1ddc7;border-radius:14px;padding:7px 11px;font-size:11px;box-shadow:0 5px 14px rgba(135,99,68,.09);backdrop-filter:blur(5px)}
 .rate-badge b{font-size:13px;color:#b46e35;font-variant-numeric:tabular-nums}
 .rate-badge small{display:block;color:var(--muted);font-size:9.5px;margin-top:1px}
@@ -1568,7 +1568,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   .speech{left:auto;right:-4px;bottom:58%;font-size:10px;min-width:110px;max-width:145px;padding:7px 8px}
   .rate-badge{font-size:10px;padding:5px 8px}
   .rate-badge b{font-size:11px}
-  .idle-hud{left:8px;right:8px;bottom:8px}
+  .idle-hud{margin-top:8px;padding:6px 8px}
   .idle-stats{gap:5px;margin-top:8px}
   .idle-stat{padding:7px}
   .idle-stat b{font-size:13px}
@@ -8015,15 +8015,15 @@ function renderHome() {
         ${petHtml}
         ${palsHTML}
         ${bondEchoHTML}
-        <div class="idle-hud">
-          <div class="rate-badge">
-            <b id="homeRateGold">${fmtRate(rate.gold)} /秒</b>
-            <small>金币 · 经验果 <span id="homeRateFruit">${fmtRate(rate.fruit)} /秒</span> · 效率 ${(rate.efficiency * 100).toFixed(0)}% <span id="homeCareChip" class="chip ${selfCareDoneToday() ? 'mint' : ''}" style="font-size:10px">${selfCareDoneToday() ? '🤝 陪伴 +10%' : '🤝 陪伴未完成'}</span></small>
-          </div>
-          <div class="buttons">
-            ${pet ? `<button class="btn btn-pink btn-xs" type="button" data-act="openFeed" data-uid="${pet.uid}">🍓 投喂</button>` : ''}
-            <button class="btn btn-mint btn-xs" type="button" data-act="nav" data-tab="pets">🐾 队伍</button>
-          </div>
+      </div>
+      <div class="idle-hud">
+        <div class="rate-badge">
+          <b id="homeRateGold">${fmtRate(rate.gold)} /秒</b>
+          <small>金币 · 经验果 <span id="homeRateFruit">${fmtRate(rate.fruit)} /秒</span> · 效率 ${(rate.efficiency * 100).toFixed(0)}% <span id="homeCareChip" class="chip ${selfCareDoneToday() ? 'mint' : ''}" style="font-size:10px">${selfCareDoneToday() ? '🤝 陪伴 +10%' : '🤝 陪伴未完成'}</span></small>
+        </div>
+        <div class="buttons">
+          ${pet ? `<button class="btn btn-pink btn-xs" type="button" data-act="openFeed" data-uid="${pet.uid}">🍓 投喂</button>` : ''}
+          <button class="btn btn-mint btn-xs" type="button" data-act="nav" data-tab="pets">🐾 队伍</button>
         </div>
       </div>
       <div class="pending-box">
@@ -9826,6 +9826,20 @@ const CARE_COOLDOWN_MS = 30 * 60 * 1000;
 const PRAISE_LINES = [
   '真棒，毛茸茸为你鼓掌', '又向前一步，继续保持', '这份努力被记住啦', '做得漂亮，再接再厉', '慢慢来，稳稳地变好'
 ];
+// 三项小自律 + 两次互动 = 今天的陪伴值（5 点）
+const CARE_TASKS = [
+  { id: 'focus', emoji: '📖', label: '专注25分钟', act: 'selfFocus' },
+  { id: 'move', emoji: '🚶', label: '活动10分钟', act: 'selfMove' },
+  { id: 'sun', emoji: '🌞', label: '出门走走10分钟', act: 'selfSun' }
+];
+// 连陪里程碑：达标一天给一次性奖励 + 称号
+const CARE_MILESTONES = [
+  { days: 3, title: '初识的默契', reward: { crystal: 20 } },
+  { days: 7, title: '养成好习惯', reward: { crystal: 40, skillBook: 1 } },
+  { days: 14, title: '心有灵犀', reward: { crystal: 60, starShard: 5 } },
+  { days: 21, title: '老搭档', reward: { crystal: 80, stonesRandom: 2 } },
+  { days: 30, title: '像家人一样', reward: { crystal: 120, starShard: 10 } }
+];
 function selfCareReward() {
   const p = Math.max(0, num(state.stage.maxCleared, 0));
   return { gold: 40 + p * 6, fruit: 1 + Math.floor(p / 14) };
@@ -9834,53 +9848,90 @@ function selfCareToday() {
   if (!state.selfCare || state.selfCare.date !== localDateKey()) {
     const prev = state.selfCare || {};
     state.selfCare = {
-      date: localDateKey(), focus: false, move: false, doneReward: false,
+      date: localDateKey(), focus: false, move: false, sun: false,
+      doneReward: false, perfect: false,
       streak: clamp(Math.floor(num(prev.streak, 0)), 0, 9999),
+      bestStreak: clamp(Math.floor(num(prev.bestStreak, 0)), 0, 9999),
       lastDoneDate: String(prev.lastDoneDate || ''),
+      claimed: (prev.claimed && typeof prev.claimed === 'object') ? prev.claimed : {},
       hugAt: 0, nightAt: 0
     };
   }
   const sc = state.selfCare;
   if (typeof sc.doneReward !== 'boolean') sc.doneReward = false;
+  if (typeof sc.perfect !== 'boolean') sc.perfect = false;
+  if (typeof sc.sun !== 'boolean') sc.sun = false;
   sc.streak = clamp(Math.floor(num(sc.streak, 0)), 0, 9999);
+  sc.bestStreak = clamp(Math.floor(num(sc.bestStreak, 0)), 0, 9999);
   if (typeof sc.lastDoneDate !== 'string') sc.lastDoneDate = '';
+  if (!sc.claimed || typeof sc.claimed !== 'object') sc.claimed = {};
   sc.hugAt = num(sc.hugAt, 0);
   sc.nightAt = num(sc.nightAt, 0);
   return sc;
 }
-// 两项自律都完成 → 今日陪伴达成：挂机收益 +10%，并累计连陪天数
+function selfCarePoints() {
+  const sc = selfCareToday();
+  const tasks = [sc.focus, sc.move, sc.sun].filter(Boolean).length;
+  const hug = sc.hugAt > 0 ? 1 : 0;
+  const night = sc.nightAt > 0 ? 1 : 0;
+  return { tasks, hug, night, total: tasks + hug + night };
+}
+// 三项自律都完成 → 今日陪伴达成：挂机收益 +10%
 function selfCareDoneToday() {
   const sc = selfCareToday();
-  return !!(sc.focus && sc.move);
+  return !!(sc.focus && sc.move && sc.sun);
 }
 function selfCareBonusMult() {
   return selfCareDoneToday() ? 1.1 : 1;
+}
+function careTitleOf(streak) {
+  const hit = CARE_MILESTONES.filter(m => streak >= m.days);
+  return hit.length ? hit[hit.length - 1].title : '刚刚开始';
+}
+function careNextMilestone() {
+  const sc = selfCareToday();
+  return CARE_MILESTONES.find(m => !sc.claimed['d' + m.days]) || null;
 }
 function careCooldownLeft(kind) {
   const sc = selfCareToday();
   const last = num(sc[kind + 'At'], 0);
   return Math.max(0, last + CARE_COOLDOWN_MS - Date.now());
 }
+// 陪伴值满 5 点：今天的满分礼包（每天一次）
+function selfCareCheckPerfect() {
+  const sc = selfCareToday();
+  if (sc.perfect || selfCarePoints().total < 5) return [];
+  sc.perfect = true;
+  return addReward({ crystal: 15, starShard: 3 });
+}
 function claimSelfCare(kind) {
   const sc = selfCareToday();
+  const task = CARE_TASKS.find(t => t.id === kind) || { label: '陪伴' };
   if (sc[kind]) { toast('今天这项已经完成啦，明天再来'); return; }
   sc[kind] = true;
   const reward = selfCareReward();
   let logs = addReward(reward);
   let extra = '';
-  if (sc.focus && sc.move && !sc.doneReward) {
+  if (selfCareDoneToday() && !sc.doneReward) {
     sc.doneReward = true;
     const today = localDateKey();
     const yesterday = localDateKey(new Date(Date.now() - DAY_MS));
     sc.streak = sc.lastDoneDate === yesterday ? clamp(num(sc.streak, 0) + 1, 1, 9999) : 1;
     sc.lastDoneDate = today;
+    sc.bestStreak = Math.max(num(sc.bestStreak, 0), sc.streak);
     logs = logs.concat(addReward({ crystal: 10, starShard: 2 }));
-    if (sc.streak % 7 === 0) logs = logs.concat(addReward({ crystal: 40, skillBook: 1 }));
     extra = ' · 今日陪伴达成，今天挂机 +10%（连陪 ' + sc.streak + ' 天）';
+    const ms = CARE_MILESTONES.find(m => sc.streak >= m.days && !sc.claimed['d' + m.days]);
+    if (ms) {
+      sc.claimed['d' + ms.days] = true;
+      logs = logs.concat(addReward(ms.reward));
+      extra += ' · 🏅连陪 ' + ms.days + ' 天，解锁称号「' + ms.title + '」';
+    }
   }
+  logs = logs.concat(selfCareCheckPerfect());
   saveGame();
   renderAll();
-  toast((kind === 'focus' ? '专注完成' : '活动完成') + '：' + rewardLogText(logs) + extra, 'good', 3200);
+  toast(task.label + '完成：' + rewardLogText(logs) + extra, 'good', 3200);
 }
 function hugPet() {
   const pet = getMainPet();
@@ -9891,9 +9942,10 @@ function hugPet() {
   sc.hugAt = Date.now();
   pet.intimacy = clamp(num(pet.intimacy, 0) + 1.2, 0, 100);
   pet.mood = clamp(num(pet.mood, 80) + 4, 0, 100);
+  const perfect = selfCareCheckPerfect();
   saveGame();
   renderAll();
-  toast(`你抱住了${petDisplayName(pet)}，它舒服地蹭了蹭你 💗`, 'good');
+  toast(`你抱住了${petDisplayName(pet)}，它舒服地蹭了蹭你 💗${perfect.length ? ' · 今日陪伴值满 5！' + rewardLogText(perfect) : ''}`, 'good', 2600);
 }
 function goodnightPet() {
   const pet = getMainPet();
@@ -9904,26 +9956,37 @@ function goodnightPet() {
   sc.nightAt = Date.now();
   pet.mood = clamp(num(pet.mood, 80) + 3, 0, 100);
   pet.intimacy = clamp(num(pet.intimacy, 0) + 0.8, 0, 100);
+  const perfect = selfCareCheckPerfect();
   saveGame();
   renderAll();
-  toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你入梦 🌙`, 'good');
+  toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你入梦 🌙${perfect.length ? ' · 今日陪伴值满 5！' + rewardLogText(perfect) : ''}`, 'good', 2600);
 }
 function careCardHTML() {
   const sc = selfCareToday();
   const reward = selfCareReward();
-  const done = sc.focus && sc.move;
+  const points = selfCarePoints();
+  const done = selfCareDoneToday();
   const hugLeft = careCooldownLeft('hug');
   const nightLeft = careCooldownLeft('night');
-  const btn = (act, label, disabled) => `<button class="btn btn-ghost btn-sm" type="button" data-act="${act}" ${disabled ? 'disabled' : ''}>${label}</button>`;
+  const nextMs = careNextMilestone();
+  const title = careTitleOf(sc.streak);
+  const pct = Math.round(points.total / 5 * 100);
+  const btn = (act, label, disabled, cls) => `<button class="btn ${cls || 'btn-ghost'} btn-sm" type="button" data-act="${act}" ${disabled ? 'disabled' : ''}>${label}</button>`;
+  const taskBtn = t => sc[t.id] ? btn(t.act, t.emoji + ' ' + t.label.split('分钟')[0].replace('出门走走', '出门') + ' ✓', true, 'btn-mint') : btn(t.act, `${t.emoji} ${t.label} · +${fmt(reward.gold)}`, false);
   return `<section class="card care-card">
-    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>完成专注 + 活动两项，今天挂机 +10%；抱抱和晚安每 30 分钟一次。</p></div><span class="chip ${done ? 'mint' : ''}">${done ? '今日已达成' : '未达成'}</span></div>
+    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>三项小自律 + 抱抱/晚安 = 今日陪伴值，满 3 项自律今天挂机 +10%。</p></div><span class="chip ${points.total >= 5 ? 'yellow' : (done ? 'mint' : '')}">${points.total}/5 · ${title}</span></div>
+    <div style="display:flex;align-items:center;gap:8px;margin:2px 0 9px">
+      <div style="flex:1;height:8px;border-radius:999px;background:#f2e6d8;overflow:hidden">
+        <div style="height:100%;width:${pct}%;border-radius:999px;background:linear-gradient(90deg,#ffd28f,#ffb072)"></div>
+      </div>
+      <span style="font-size:10.5px;color:var(--muted)">${pct}%</span>
+    </div>
     <div class="care-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${btn('selfFocus', sc.focus ? '📖 专注 ✓' : `📖 专注25分钟 · +${fmt(reward.gold)}`, sc.focus)}
-      ${btn('selfMove', sc.move ? '🚶 活动 ✓' : `🚶 活动10分钟 · +${fmt(reward.gold)}`, sc.move)}
+      ${CARE_TASKS.map(taskBtn).join('')}
       ${btn('hugPet', hugLeft > 0 ? `🤗 ${fmtClock(hugLeft)}` : '🤗 抱抱', hugLeft > 0)}
       ${btn('goodnightPet', nightLeft > 0 ? `🌙 ${fmtClock(nightLeft)}` : '🌙 说晚安', nightLeft > 0)}
     </div>
-    <div class="note" style="margin-top:8px">连陪 <b>${sc.streak}</b> 天${done ? ` · 今天挂机收益 ×1.1` : ''} · 每完成两项额外 +10 钻石 +2 星尘，连陪满 7 天再送 40 钻石 + 技能书${done ? '' : ` · 每项 +${fmt(reward.gold)} 金币 +${reward.fruit} 经验果`}</div>
+    <div class="note" style="margin-top:8px">连陪 <b>${sc.streak}</b> 天（最长 ${sc.bestStreak}）${done ? ' · 今天挂机收益 ×1.1' : ''} · 陪伴值满 5 送 +15 钻石 +3 星尘${nextMs ? ` · 再连陪 ${Math.max(0, nextMs.days - sc.streak)} 天解锁「${nextMs.title}」` : ' · 所有称号已解锁'}</div>
   </section>`;
 }
 
@@ -11013,6 +11076,7 @@ function handleActionClick(event) {
     case 'claimAllWeekly': claimAllWeekly(); break;
     case 'selfFocus': claimSelfCare('focus'); break;
     case 'selfMove': claimSelfCare('move'); break;
+    case 'selfSun': claimSelfCare('sun'); break;
     case 'hugPet': hugPet(); break;
     case 'goodnightPet': goodnightPet(); break;
     case 'pat': patPet(); break;

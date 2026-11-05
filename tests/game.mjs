@@ -415,6 +415,10 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   // 小陪伴：进度奖励、连陪、陪伴加成
   check(text.includes('function selfCareReward') && text.includes('function selfCareBonusMult'), '缺少陪伴奖励/加成逻辑');
   check(text.includes('function careCooldownLeft'), '抱抱/晚安缺少冷却');
+  check(text.includes('const CARE_TASKS = [') && text.includes('function selfCarePoints'), '陪伴缺少三项自律/陪伴值');
+  check(text.includes('const CARE_MILESTONES = [') && text.includes('function careNextMilestone'), '陪伴缺少连陪里程碑');
+  check(text.includes("case 'selfSun'"), '陪伴缺少晒太阳事件分发');
+  check(text.includes('.idle-hud{position:relative'), '挂机信息条应移出场景以免与宠物重叠');
   // 菜地：进度缩放（金币）、稀有掉落、自动收获
   check(text.includes('function gardenProgressMult') && text.includes('function gardenDropBonus'), '菜园缺少进度缩放/掉落');
   check(text.includes('function buyGardenAutoHarvest') && text.includes("case 'gardenAutoHarvest'"), '菜园缺少自动收获解锁');
