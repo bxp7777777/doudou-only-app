@@ -339,7 +339,7 @@ if (typeof globalThis.petArtCandidates === 'function') {
   }
 }
 
-/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；第 1 章难度系数 2.0×，前两关再软 0.82 */
+/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；第 1 章难度系数 3.4×，开局 5 只宠也能感到阻力 */
 if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPower === 'function') {
   let total = 0;
   for (let i = 1; i <= 100; i++) {
@@ -362,8 +362,8 @@ if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPow
     check(list.filter((s) => s.type === 'mob').length === 4, '第 ' + ch + ' 章应有 4 个小怪关');
   }
   const s11 = globalThis.getStage(1);
-  const expect11 = Math.round(s11.recPower * 2.0 * 0.92);
-  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×2.0×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
+  const expect11 = Math.round(s11.recPower * 3.4 * 0.92);
+  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×3.4×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
   const s1070 = globalThis.getStage(70);
   const expectFinal = Math.round(s1070.recPower * 0.84 * 1.08);
   check(globalThis.stageEnemyPower(s1070) === expectFinal, '第 10 章首领敌人战力应为 recPower×0.84×首领系数，实际 ' + globalThis.stageEnemyPower(s1070));
@@ -402,6 +402,8 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function starGoldCost'), '升星应额外消耗金币');
   check(text.includes('function levelUpTeam') && text.includes('data-act="levelTeam"'), '缺少一键升级队伍');
   check(text.includes('function stageAdvice') && text.includes('推荐强度'), '缺少关卡推荐强度提示');
+  check(text.includes('参考需求'), '战力对比应给出参考需求战力');
+  check(text.includes('const count = 3;'), '关卡敌人应统一 3 只，避免单只怪物吃掉全部战力');
   check(text.includes("metric: 'stageClears'"), '每日清剿任务应可用通关完成');
   check(text.includes('wantPower / got'), '敌人战力应按真实战力二次校准');
 }
