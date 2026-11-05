@@ -321,6 +321,14 @@ if (typeof globalThis.petArtCandidates === 'function') {
   const missing = ids.filter((id) => !fs.existsSync(path.join(artDir, id + '.png')));
   check(missing.length === 0, '缺少抠图 PNG：' + missing.join(','));
   check(text.includes('.home-pet-img{border-radius:50%;object-fit:cover;background:transparent'), '主页主宠头像不应再铺奶白底（抠图后会在四周露白）');
+  // 小怪 / Boss 走同一套候选链：透明底 PNG 优先，缺图自动回退 JPG
+  if (typeof globalThis.mobArtCandidates === 'function' && typeof globalThis.bossArtCandidates === 'function') {
+    const mc = globalThis.mobArtCandidates('aurora_wolf');
+    const bc = globalThis.bossArtCandidates('caramel_fox');
+    check(mc[0] === 'art/mobs/aurora_wolf.png' && mc[1] === 'art/mobs/aurora_wolf.jpg', '小怪立绘应优先 PNG 再回退 JPG：' + mc.join(','));
+    check(bc[0] === 'art/bosses/caramel_fox.png' && bc[1] === 'art/bosses/caramel_fox.jpg', 'Boss 立绘应优先 PNG 再回退 JPG：' + bc.join(','));
+    check(globalThis.mobArtCandidates('__none__').length === 0, '未登记的小怪不应返回候选链');
+  }
 }
 
 if (problems.length) {
