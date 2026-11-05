@@ -339,7 +339,7 @@ if (typeof globalThis.petArtCandidates === 'function') {
   }
 }
 
-/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；前期难度系数把敌人抬到 2.2× */
+/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；第 1 章难度系数 2.0×，前两关再软 0.82 */
 if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPower === 'function') {
   let total = 0;
   for (let i = 1; i <= 100; i++) {
@@ -362,8 +362,8 @@ if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPow
     check(list.filter((s) => s.type === 'mob').length === 4, '第 ' + ch + ' 章应有 4 个小怪关');
   }
   const s11 = globalThis.getStage(1);
-  const expect11 = Math.round(s11.recPower * 2.2 * 0.92);
-  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×2.2×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
+  const expect11 = Math.round(s11.recPower * 2.0 * 0.92);
+  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×2.0×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
   const s1070 = globalThis.getStage(70);
   const expectFinal = Math.round(s1070.recPower * 0.84 * 1.08);
   check(globalThis.stageEnemyPower(s1070) === expectFinal, '第 10 章首领敌人战力应为 recPower×0.84×首领系数，实际 ' + globalThis.stageEnemyPower(s1070));
@@ -390,6 +390,20 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function arenaShopReset') && text.includes('shopCount'), '竞技商店缺少每日限购计数');
   check(text.includes('lastWinBonusDate'), '竞技场缺少每日首胜记录字段');
   check(text.includes('const factors = [0.85, 0.95, 1.05]'), '竞技场对手战力档位应为 85%/95%/105%');
+}
+
+/* 经济与手感打包：挂机 ÷15、扫荡 2 体力、经验果转化、升星要金币、一键升级、关卡推荐强度 */
+{
+  check(text.includes('const IDLE_RATE_DIVISOR = 15;'), '挂机产出应除以 15');
+  check(text.includes('/ IDLE_RATE_DIVISOR'), '挂机金币与果实都要除以 15');
+  check(text.includes('const SWEEP_STAMINA_COST = 2;'), '扫荡应只消耗 2 体力');
+  check(text.includes('spendStamina(SWEEP_STAMINA_COST)'), '扫荡扣体力应使用扫荡消耗');
+  check(text.includes("id: 'fruitStar'") && text.includes('function exchangeFruit'), '经验果转化功能缺失');
+  check(text.includes('function starGoldCost'), '升星应额外消耗金币');
+  check(text.includes('function levelUpTeam') && text.includes('data-act="levelTeam"'), '缺少一键升级队伍');
+  check(text.includes('function stageAdvice') && text.includes('推荐强度'), '缺少关卡推荐强度提示');
+  check(text.includes("metric: 'stageClears'"), '每日清剿任务应可用通关完成');
+  check(text.includes('wantPower / got'), '敌人战力应按真实战力二次校准');
 }
 
 if (problems.length) {

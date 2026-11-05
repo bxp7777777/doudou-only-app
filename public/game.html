@@ -1798,6 +1798,8 @@ function fmt(n) {
 }
 function fmtRate(n) {
   if (n >= 10000) return fmt(n);
+  // 挂机速率下调后会出现 0.25 这种小数，保留两位才看得出差别
+  if (n < 10) return (Math.round(n * 100) / 100).toLocaleString('zh-CN');
   return (Math.round(n * 10) / 10).toLocaleString('zh-CN');
 }
 function fmtTime(seconds) {
@@ -2772,7 +2774,7 @@ function getStage(index) {
 function stageIndex(chapter, sub) { return (chapter - 1) * STAGES_PER_CHAPTER + sub; }
 // 难度系数：敌人实际战力 = recPower × 章系数 × 关卡类型系数。只影响敌人强度与展示，不改奖励公式
 // 章系数保持"前期明显加压、后期收敛"的走向；第 10 章少于 1 是为了抵消 7 关布局带来的 recPower 抬升
-const STAGE_DIFFICULTY = { 1: 2.2, 2: 1.9, 3: 1.7, 4: 1.45, 5: 1.0, 6: 0.98, 7: 0.98, 8: 0.95, 9: 0.88, 10: 0.84 };
+const STAGE_DIFFICULTY = { 1: 2.0, 2: 1.85, 3: 1.68, 4: 1.45, 5: 1.0, 6: 0.98, 7: 0.98, 8: 0.95, 9: 0.88, 10: 0.84 };
 const STAGE_TYPE_POWER = { mob: 0.92, elite: 1.0, boss: 1.08 };
 function stageEnemyPower(stage) {
   if (!stage) return 0;
@@ -2853,7 +2855,7 @@ const DAILY_TASKS = [
   { id: 'd_win', name: '认真赢一场', icon: '🏅', desc: '赢得 1 场战斗。', metric: 'wins', target: 1, reward: { crystal: 35 } },
   { id: 'd_pull', name: '遇见新朋友', icon: '🥚', desc: '抽蛋 1 次。', metric: 'pulls', target: 1, reward: { gold: 500, crystal: 15 } },
   { id: 'd_feed', name: '爱心投喂', icon: '🍓', desc: '喂食 3 次。', metric: 'feeds', target: 3, reward: { fruit: 20, bondBadge: 1 } },
-  { id: 'd_sweep', name: '扫荡专家', icon: '🧹', desc: '扫荡 1 次已满星关卡。', metric: 'sweeps', target: 1, reward: { gold: 700, equipShard: 10 } },
+  { id: 'd_sweep', name: '清剿一回', icon: '🧹', desc: '扫荡或通关任意关卡 1 次。', metric: 'stageClears', target: 1, reward: { gold: 700, equipShard: 10 } },
   { id: 'd_arena', name: '竞技场露脸', icon: '🏟️', desc: '参加 1 场竞技场。', metric: 'arenaBattles', target: 1, reward: { arenaCoin: 20, crystal: 20 } },
   { id: 'd_level', name: '成长一点点', icon: '🌱', desc: '宠物升级 5 次。', metric: 'levelUps', target: 5, reward: { fruit: 25, skillBook: 1 } },
   { id: 'd_enhance', name: '装备保养', icon: '🔨', desc: '强化装备 1 次。', metric: 'enhancements', target: 1, reward: { enhanceStone: 3, gold: 600 } }
@@ -4018,8 +4020,11 @@ const SAVE_KEY = 'ddgame:v1';
 const MAX_STAMINA = 100;
 const MAX_CHALLENGE = 10;
 const STAMINA_REGEN_MS = 5 * 60 * 1000;
+const IDLE_RATE_DIVISOR = 15;
 const CHALLENGE_REGEN_MS = 30 * 60 * 1000;
 const STAGE_STAMINA_COST = 6;
+// 扫荡只是省时间，不该和真打一样贵
+const SWEEP_STAMINA_COST = 2;
 const TOWER_CHALLENGE_COST = 1;
 const ARENA_CHALLENGE_COST = 1;
 const BOSS_CHALLENGE_COST = 1;
@@ -5364,8 +5369,9 @@ function calcIdleRates(ignoreBoost = false) {
   const idleCareMult = (avgHunger >= 80 ? 1.05 : (avgHunger < 30 ? 0.90 : 1))
     * (avgMood >= 80 ? 1.03 : (avgMood < 30 ? 0.95 : 1));
   return {
-    gold: stage.baseGold * efficiency * eternalBonus * boostMult * idleCareMult,
-    fruit: stage.baseFruit * efficiency * eternalBonus * boostMult * idleCareMult,
+    // 挂机产出 ÷15：原来 1 小时挂机 ≈ 60 关的金币、120 关的果实，把关卡经济彻底淹掉了
+    gold: stage.baseGold * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
+    fruit: stage.baseFruit * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
     stage,
     teamPower,
     efficiency,
@@ -5977,6 +5983,20 @@ function createEnemyFormation(powerTarget, options = {}) {
       unit.dr = clamp(unit.dr + (bdef ? 0.07 : 0.08), 0, 0.75);
     }
   });
+  // 缩放只作用于 hp/atk/def，速度与暴击不随缩放变化，所以上面一次缩放算出来的战力会偏（人数少的关偏低、多的偏高）。
+  // 这里按真实战力再校 2~3 次，保证每关敌人数值都和关卡目标战力对得上，难度曲线才是顺的。
+  const wantPower = targetPower * (options.powerFactor || 0.95);
+  for (let pass = 0; pass < 3; pass++) {
+    const got = sum(raw.map(u => calcPower(u)));
+    if (!got || Math.abs(got / wantPower - 1) < 0.02) break;
+    const k = clamp(wantPower / got, 0.5, 2);
+    raw.forEach(u => {
+      u.maxHp = Math.max(80, Math.round(u.maxHp * k));
+      u.hp = u.maxHp;
+      u.atk = Math.max(12, Math.round(u.atk * k));
+      u.def = Math.max(6, Math.round(u.def * k));
+    });
+  }
   return raw;
 }
 
@@ -7078,6 +7098,51 @@ function arenaShopBought(id, s = state) {
   const counts = arenaShopReset(s);
   return Math.max(0, Math.floor(num(counts[id], 0)));
 }
+const FRUIT_EXCHANGE = [
+  { id: 'fruitStar', icon: '🌟', name: '星尘碎片 ×10', cost: 1200, reward: { starShard: 10 }, desc: '通用升星材料，缺碎片时的替补。' },
+  { id: 'fruitStone', icon: '🔨', name: '强化石 ×5', cost: 900, reward: { enhanceStone: 5 }, desc: '装备强化必备材料。' },
+  { id: 'fruitBook', icon: '📘', name: '技能书 ×1', cost: 2000, reward: { skillBook: 1 }, desc: '提升一只宠物的技能等级。' }
+];
+const FRUIT_EXCHANGE_MAP = Object.fromEntries(FRUIT_EXCHANGE.map(x => [x.id, x]));
+function exchangeFruit(key) {
+  const row = FRUIT_EXCHANGE_MAP[key];
+  if (!row) return;
+  if (state.resources.fruit < row.cost) { toast(`经验果不足，需要 ${fmt(row.cost)}`, 'bad'); return; }
+  state.resources.fruit -= row.cost;
+  const logs = addReward(row.reward);
+  saveGame();
+  renderAll();
+  toast(`转化「${row.name}」：${rewardLogText(logs)}`, 'good', 2600);
+  playSfx('buy');
+}
+function levelUpTeam() {
+  const team = getTeamPets();
+  if (!team.length) { toast('先上阵一只宠物吧', 'bad'); return; }
+  if (team.every(p => p.level >= MAX_LEVEL)) { toast('队伍已经全员满级啦', 'bad'); return; }
+  let spent = 0, ups = 0, guard = 0;
+  while (guard++ < 2000) {
+    const pool = getTeamPets().filter(p => p.level < MAX_LEVEL).sort((a, b) => a.level - b.level);
+    if (!pool.length) break;
+    const pet = pool[0];
+    const cost = levelCostFor(pet);
+    if (!cost || state.resources.fruit < cost) break;
+    state.resources.fruit -= cost;
+    pet.level += 1;
+    spent += cost;
+    ups += 1;
+  }
+  if (!ups) {
+    const low = getTeamPets().filter(p => p.level < MAX_LEVEL).sort((a, b) => a.level - b.level)[0];
+    toast(`经验果不足，下一级要 ${low ? fmt(levelCostFor(low)) : 0}`, 'bad');
+    return;
+  }
+  bumpMetric('levelUps', ups);
+  saveGame();
+  renderAll();
+  toast(`一键升级：共升 ${ups} 级，花掉 ${fmt(spent)} 经验果`, 'good', 3000);
+  playSfx('level');
+}
+// 竞技场每日兑换
 function buyArenaItem(id) {
   const item = ARENA_SHOP_MAP[id];
   if (!item) return;
@@ -7100,16 +7165,27 @@ function stoneLabelOf(element) {
   return { fire: '火', grass: '草', water: '水', light: '光', dark: '暗', earth: '土' }[element] || '通用';
 }
 // 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
+// 关卡推荐强度：把敌人战力换算成"等级/星级/进化"这类玩家看得懂的目标
+function stageAdvice(stage) {
+  const need = stageDisplayPower(stage);
+  if (need < 3000) return 'Lv.10 · ★1 · 幼体';
+  if (need < 6000) return 'Lv.20 · ★2 · 幼体';
+  if (need < 10000) return 'Lv.30 · ★4 · 成体';
+  if (need < 15000) return 'Lv.40 · ★6 · 成体';
+  if (need < 21000) return 'Lv.50 · ★8 · 成体';
+  if (need < 28000) return 'Lv.60 · ★9 · 究极体';
+  return 'Lv.60 · ★10 · 究极体';
+}
 function stageUpgradePlan(stage) {
   const team = getTeamPets();
   const power = Math.round(calcTeamPower(state));
   const need = stageDisplayPower(stage);
   const gap = Math.max(0, need - power);
-  let gapLine = '';
+  let gapLine = `参考强度：${stageAdvice(stage)}。`;
   if (need > 0) {
-    gapLine = gap > 0
+    gapLine = (gap > 0
       ? `当前队伍战力 ${fmt(power)}，本关推荐 ${fmt(need)}，还差 ${fmt(gap)}。`
-      : `战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`;
+      : `战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`) + ` 参考强度：${stageAdvice(stage)}。`;
   }
   // 每条建议带一个"还差多少 / 已经有多少"的比值，越小越接近达成，战败页按它排序
   const actions = [];
@@ -7217,6 +7293,7 @@ function finishBattle() {
       logs = addReward(rewards);
       state.stage.maxCleared = Math.max(state.stage.maxCleared, stage.index);
       state.stage.stars[stage.index] = Math.max(num(state.stage.stars[stage.index], 0), b.stars);
+      bumpMetric('stageClears', 1);
       resultTitle = firstClear ? '首通成功！' : pick(['再次胜利！', '漂亮取胜！', '稳稳拿下！']);
       resultSub = pick(WIN_SUB_POOL);
       if (firstClear) {
@@ -8006,7 +8083,7 @@ function renderAdventure() {
     </div>
     <div class="card">
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>4 小怪 + 2 精英 + 章节首领（每章 7 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
-      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageDisplayPower(next) ? 'mint' : 'pink'}">${teamPower >= stageDisplayPower(next) ? '状态良好' : '建议再养成'}</span>` : '<span class="chip mint">全通关</span>'}</div>
+      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageDisplayPower(next) ? 'mint' : 'pink'}">${teamPower >= stageDisplayPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
         ${Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => {
@@ -8015,7 +8092,7 @@ function renderAdventure() {
           const isCleared = state.stage.maxCleared >= stage.index;
           const stars = state.stage.stars[stage.index] || 0;
           const isNext = stage.index === state.stage.maxCleared + 1;
-          const canSweep = stars >= 3 && state.stamina.value >= STAGE_STAMINA_COST;
+          const canSweep = stars >= 3 && state.stamina.value >= SWEEP_STAMINA_COST;
           return `<div class="stage-card ${isLocked ? 'locked' : ''} ${isCleared ? 'cleared' : ''} ${isNext && !isLocked ? 'next' : ''}">
             <div class="stage-top"><span class="stage-no">${stage.chapter}-${stage.sub}</span><span class="stage-type">${stage.typeName}</span></div>
             <div class="stage-emoji">${isLocked ? '🔒' : stage.emoji}</div>
@@ -8107,7 +8184,7 @@ function renderPets() {
     body = `
       <div class="card">
         <div class="card-head"><div><h2>🛏️ 出战队伍</h2><p>前排优先承受普攻，后排更容易受到溅射/穿击。最多 5 只。</p></div>
-          <div class="flex"><span class="chip mint">队伍战力 ${fmt(teamPower)}</span><button class="btn btn-mint btn-sm" type="button" data-act="autoTeam">一键上阵</button><button class="btn btn-ghost btn-sm" type="button" data-act="clearTeam">清空</button></div>
+          <div class="flex"><span class="chip mint">队伍战力 ${fmt(teamPower)}</span><button class="btn btn-lav btn-sm" type="button" data-act="levelTeam">🍎 一键升级</button><button class="btn btn-mint btn-sm" type="button" data-act="autoTeam">一键上阵</button><button class="btn btn-ghost btn-sm" type="button" data-act="clearTeam">清空</button></div>
         </div>
         <div class="team-board">
           <div class="formation-row"><div class="row-label">前排 · 承伤</div>${[0, 1].map(i => formationSlotHTML('front', i)).join('')}</div>
@@ -8460,6 +8537,15 @@ function renderShop() {
         <div class="flex between" style="gap:10px;align-items:center">
           <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
           <button class="btn btn-lav btn-xs" type="button" data-act="buyChallengeTicket" ${state.challenge.value >= state.challenge.max || state.resources.crystal < CHALLENGE_TICKET_PRICE ? 'disabled' : ''}>💎${CHALLENGE_TICKET_PRICE} 换 1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>🍎 经验果转化</h2><p>等级到顶后经验果会堆着没用，这里换成养成材料。</p></div><span class="chip">🍎 ${fmt(state.resources.fruit)}</span></div>
+        <div class="grid three">
+          ${FRUIT_EXCHANGE.map(row => `<div class="shop-item">
+            <span class="shop-ico">${row.icon}</span><b>${row.name}</b><p>${esc(row.desc)}</p>
+            <button class="btn btn-ghost btn-xs" type="button" data-act="exchangeFruit" data-key="${row.id}" ${state.resources.fruit < row.cost ? 'disabled' : ''}>🍎 ${fmt(row.cost)}</button>
+          </div>`).join('')}
         </div>
       </div>`;
   } else if (tab === 'arena') {
@@ -9043,7 +9129,7 @@ function openPetModal(uid) {
     <div class="modal-actions-grid">
       <button class="btn btn-primary" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1" ${pet.level >= MAX_LEVEL || state.resources.fruit < nextLv ? 'disabled' : ''}>升级 +1 · 🍎${fmt(nextLv)}</button>
       <button class="btn btn-mint" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="10" ${pet.level >= MAX_LEVEL ? 'disabled' : ''}>升级 +10</button>
-      <button class="btn btn-lav" type="button" data-act="starUp" data-uid="${pet.uid}" ${!nextStar ? 'disabled' : ''}>${nextStar ? `升星 · ${shards}/${nextStar} 🧩` : '已满星'}</button>
+      <button class="btn btn-lav" type="button" data-act="starUp" data-uid="${pet.uid}" ${!nextStar ? 'disabled' : ''}>${nextStar ? `升星 · ${shards}/${nextStar} 🧩 · 🪙${fmt(starGoldCost(pet))}` : '已满星'}</button>
       <button class="btn btn-yellow" type="button" data-act="evolve" data-uid="${pet.uid}" ${!evo ? 'disabled' : ''}>${evo ? '✨ 进化' : '已究极'}</button>
       <button class="btn btn-pink" type="button" data-act="openFeed" data-uid="${pet.uid}">🍓 喂食</button>
     </div>
@@ -9780,7 +9866,8 @@ function buildStageEnemyOptions(stage) {
     bossScale,
     bossName: bossDef ? bossDef.name : stage.name,
     bossEmoji: bossDef ? bossDef.emoji : stage.emoji,
-    powerFactor: 1,
+    // 前两关是教学关：一只敌人单挑，纯按战力算会劝退，这里再软一档
+    powerFactor: (stage.chapter === 1 && stage.sub <= 2) ? 0.82 : 1,
     level: Math.max(3, Math.round(3 + stage.index * 1.45)),
     star: 1,
     evo: stage.chapter >= 7 ? 1 : 0
@@ -9823,8 +9910,8 @@ function sweepStage(index) {
   const stage = getStage(index);
   if ((state.stage.stars[index] || 0) < 3) { toast('三星通关后才能扫荡', 'bad'); return; }
   if (state.stage.maxCleared < index) { toast('还没有通关这一关', 'bad'); return; }
-  if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足', 'bad'); return; }
-  spendStamina(STAGE_STAMINA_COST);
+  if (state.stamina.value < SWEEP_STAMINA_COST) { toast('体力不足', 'bad'); return; }
+  spendStamina(SWEEP_STAMINA_COST);
   const logs = addReward(makeStageRewards(stage, false));
   bumpMetric('sweeps', 1);
   saveGame();
@@ -9961,6 +10048,10 @@ function levelUpPet(uid, count = 1) {
   toast(`${petDisplayName(pet)} 升到 Lv.${pet.level}`, 'good');
   playSfx('level');
 }
+function starGoldCost(pet) {
+  const star = num(pet.star, 1);
+  return star >= 10 ? 0 : 200 * star;
+}
 function starUpPet(uid) {
   const pet = state.pets[uid];
   if (!pet) return;
@@ -9970,10 +10061,16 @@ function starUpPet(uid) {
   const useShards = Math.min(shards, cost);
   const missing = cost - useShards;
   const starNeeded = missing * 2;
+  const costGold = starGoldCost(pet);
   if (state.items.starShard < starNeeded) {
     toast(`碎片不足：还缺 ${missing} 枚同名碎片或 ${starNeeded - state.items.starShard} 枚升星碎片`, 'bad');
     return;
   }
+  if (state.resources.gold < costGold) {
+    toast(`金币不足：升星还要 ${fmt(costGold)} 金币`, 'bad');
+    return;
+  }
+  state.resources.gold -= costGold;
   state.petShards[pet.templateId] = shards - useShards;
   state.items.starShard -= starNeeded;
   pet.star = Math.min(10, pet.star + 1);
@@ -10738,6 +10835,8 @@ function handleActionClick(event) {
     case 'buyStone': buyStone(target.dataset.el); break;
     case 'buyCosmetic': buyCosmetic(target.dataset.id); break;
       case 'buyArenaItem': buyArenaItem(target.dataset.id); break;
+      case 'levelTeam': levelUpTeam(); break;
+      case 'exchangeFruit': exchangeFruit(target.dataset.key); break;
     case 'equipCosmetic': equipCosmetic(target.dataset.id); break;
 
     case 'claimDaily': claimDailyTask(target.dataset.id); break;
