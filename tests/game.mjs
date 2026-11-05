@@ -310,6 +310,19 @@ if (typeof globalThis.createPet === 'function' && typeof globalThis.setMain === 
   check(team1.length === team0.length, '设为主宠后队伍数量应保持不变');
 }
 
+/* 透明底抠图：立绘优先 art/pets/<id>.png（四周无白边），缺失才退回 .jpg；40 只必须都有 png */
+if (typeof globalThis.petArtCandidates === 'function') {
+  const cand = globalThis.petArtCandidates('pig');
+  check(cand[0] === 'art/pets/pig.png', '立绘应优先透明底 PNG，实际 ' + cand[0]);
+  check(cand[1] === 'art/pets/pig.jpg', 'PNG 缺失时应回退 JPG，实际 ' + cand[1]);
+  check(globalThis.petArtCandidates('__none__').length === 0, '未登记立绘不应返回候选链');
+  const artDir = path.join(process.cwd(), 'public', 'art', 'pets');
+  const ids = ['pig', 'golden', 'shiba', 'orange', 'rabbit', 'hamster', 'panda', 'fox', 'sheep', 'otter', 'dragon', 'phoenix', 'turtle', 'bee', 'owl', 'deer', 'koi', 'lion', 'unicorn', 'goat', 'gull', 'flysquirrel', 'sparrow', 'moth', 'albatross', 'penguin', 'seal', 'arcticfox', 'polarbear', 'walrus', 'koala', 'flamingo', 'octopus', 'mushroom', 'bat', 'lynx', 'alpaca', 'mole', 'jellyfish', 'peacock'];
+  const missing = ids.filter((id) => !fs.existsSync(path.join(artDir, id + '.png')));
+  check(missing.length === 0, '缺少抠图 PNG：' + missing.join(','));
+  check(text.includes('.home-pet-img{border-radius:50%;object-fit:cover;background:transparent'), '主页主宠头像不应再铺奶白底（抠图后会在四周露白）');
+}
+
 if (problems.length) {
   console.error('❌ 游戏冒烟 ' + problems.length + ' 条问题：');
   problems.slice(0, 20).forEach((p) => console.error(' - ' + p));
