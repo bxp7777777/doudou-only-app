@@ -325,8 +325,10 @@ if (typeof globalThis.petArtCandidates === 'function') {
   if (typeof globalThis.mobArtCandidates === 'function' && typeof globalThis.bossArtCandidates === 'function') {
     const mc = globalThis.mobArtCandidates('aurora_wolf');
     const bc = globalThis.bossArtCandidates('caramel_fox');
-    check(mc[0] === 'art/mobs/aurora_wolf.png' && mc[1] === 'art/mobs/aurora_wolf.jpg', '小怪立绘应优先 PNG 再回退 JPG：' + mc.join(','));
-    check(bc[0] === 'art/bosses/caramel_fox.png' && bc[1] === 'art/bosses/caramel_fox.jpg', 'Boss 立绘应优先 PNG 再回退 JPG：' + bc.join(','));
+    // 目前小怪 / Boss 还没有抠图，候选链应只有 JPG（不能白 404 一次）；登记后自动变 PNG 优先
+    check(mc.length === 1 && mc[0] === 'art/mobs/aurora_wolf.jpg', '小怪未登记抠图时应只走 JPG：' + mc.join(','));
+    check(bc.length === 1 && bc[0] === 'art/bosses/caramel_fox.jpg', 'Boss 未登记抠图时应只走 JPG：' + bc.join(','));
+    check(text.includes('const MOB_ART_PNG = {}') && text.includes('const BOSS_ART_PNG = {}') && text.includes('const PET_ART_PNG = {'), '缺少 PNG 抠图就绪登记表');
     check(globalThis.mobArtCandidates('__none__').length === 0, '未登记的小怪不应返回候选链');
   }
 }

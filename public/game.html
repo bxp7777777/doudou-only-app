@@ -4368,8 +4368,14 @@ const RES_ART = { gold:true,crystal:true,fruit:true };
 const MOB_ART = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
 const BOSS_ART = { slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
 // 小怪 / Boss 立绘同样优先透明底 PNG（四周无白边），缺失才退回原 JPG
-function mobArtCandidates(id) { return MOB_ART[id] ? ['art/mobs/' + id + '.png', 'art/mobs/' + id + '.jpg'] : []; }
-function bossArtCandidates(id) { return BOSS_ART[id] ? ['art/bosses/' + id + '.png', 'art/bosses/' + id + '.jpg'] : []; }
+function mobArtCandidates(id) {
+  if (!MOB_ART[id]) return [];
+  return MOB_ART_PNG[id] ? ['art/mobs/' + id + '.png', 'art/mobs/' + id + '.jpg'] : ['art/mobs/' + id + '.jpg'];
+}
+function bossArtCandidates(id) {
+  if (!BOSS_ART[id]) return [];
+  return BOSS_ART_PNG[id] ? ['art/bosses/' + id + '.png', 'art/bosses/' + id + '.jpg'] : ['art/bosses/' + id + '.jpg'];
+}
 function mobArtUrl(id) { const l = mobArtCandidates(id); return l.length ? l[0] : null; }
 function bossArtUrl(id) { const l = bossArtCandidates(id); return l.length ? l[0] : null; }
 function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
@@ -4388,9 +4394,22 @@ function artImgFallback(img, char) {
   s.textContent = char;
   if (img.parentNode) img.replaceWith(s);
 }
-// 立绘候选链：优先透明底 PNG（抠好的图，四周无白边），没有就退回原 JPG；调用方按链逐级降级，最后才回 emoji
+// 透明底 PNG 就绪登记：只有登记过的才优先试 PNG，其余直接走 JPG，避免每张图白白 404 一次
+// 以后把小怪 / Boss 的抠图放进 art/mobs|bosses/*.png 时，把对应 id 加进下面两个表即可生效
+const PET_ART_PNG = {
+  pig: true, golden: true, shiba: true, orange: true, rabbit: true, hamster: true, panda: true, fox: true, sheep: true, otter: true,
+  dragon: true, phoenix: true, turtle: true, bee: true, owl: true, deer: true, koi: true, lion: true, unicorn: true, goat: true,
+  gull: true, flysquirrel: true, sparrow: true, moth: true, albatross: true, penguin: true, seal: true, arcticfox: true, polarbear: true, walrus: true,
+  koala: true, flamingo: true, octopus: true, mushroom: true, bat: true, lynx: true, alpaca: true, mole: true, jellyfish: true, peacock: true
+};
+const MOB_ART_PNG = {};
+const BOSS_ART_PNG = {};
+const EVO_ART_PNG = {};
 function petArtCandidates(templateId) {
-  return PET_ART[templateId] ? ['art/pets/' + templateId + '.png', 'art/pets/' + templateId + '.jpg'] : [];
+  if (!PET_ART[templateId]) return [];
+  return PET_ART_PNG[templateId]
+    ? ['art/pets/' + templateId + '.png', 'art/pets/' + templateId + '.jpg']
+    : ['art/pets/' + templateId + '.jpg'];
 }
 function petArtUrl(templateId) {
   const list = petArtCandidates(templateId);
@@ -4437,7 +4456,8 @@ function evoArtCandidates(templateId, evo) {
   if (evo < 1 || !PET_EVO_ART[templateId]) return [];
   const stage = evo >= 2 && PET_EVO_STAGE2[templateId] ? '_s2' : '_s1';
   const base = 'art/pets-evo/' + templateId + stage;
-  return [base + '.png', base + '.jpg'];
+  const key = templateId + stage;
+  return EVO_ART_PNG[key] ? [base + '.png', base + '.jpg'] : [base + '.jpg'];
 }
 function evoArtUrl(templateId, evo) {
   const list = evoArtCandidates(templateId, evo);
