@@ -404,6 +404,8 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function stageAdvice') && text.includes('推荐强度'), '缺少关卡推荐强度提示');
   check(text.includes('参考需求'), '战力对比应给出参考需求战力');
   check(text.includes('function stageNeedPower'), '缺少实战需求战力换算 stageNeedPower');
+  check(text.includes('const GOLD_EXCHANGE = [') && text.includes('function buyGoldExchange'), '缺少金币转化出口');
+  check(text.includes("case 'buyGoldExchange'"), '金币转化缺少事件分发');
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');
   check(text.includes("const SAVE_KEY = 'ddgame:v1';"), '存档键名不应改变');

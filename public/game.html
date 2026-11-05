@@ -4269,6 +4269,8 @@ function sanitizeState(s) {
   s.daily.date = String(s.daily.date || '');
   s.daily.progress = s.daily.progress && typeof s.daily.progress === 'object' ? s.daily.progress : {};
   s.daily.claimed = Array.isArray(s.daily.claimed) ? s.daily.claimed.map(String) : [];
+  s.daily.shopDay = String(s.daily.shopDay || '');
+  s.daily.shopCount = s.daily.shopCount && typeof s.daily.shopCount === 'object' ? s.daily.shopCount : {};
   s.signIn = s.signIn && typeof s.signIn === 'object' ? s.signIn : {};
   s.signIn.firstDate = String(s.signIn.firstDate || '');
   s.signIn.lastDate = String(s.signIn.lastDate || '');
@@ -7126,6 +7128,35 @@ function exchangeFruit(key) {
   toast(`转化「${row.name}」：${rewardLogText(logs)}`, 'good', 2600);
   playSfx('buy');
 }
+// 金币出口：挂机金币到后期会越攒越多，给两条"花得出去"的路，同时缓解卡关时的体力荒
+const GOLD_EXCHANGE = [
+  { id: 'energy10', icon: '⚡', name: '体力 ×10', cost: 400, reward: { energy: 10 }, limit: 3, desc: '卡在首领关时补一手，继续刷关。' },
+  { id: 'fruit25', icon: '🍎', name: '经验果 ×25', cost: 600, reward: { fruit: 25 }, limit: 3, desc: '金币堆着没处花时，换成升级口粮。' }
+];
+const GOLD_EXCHANGE_MAP = Object.fromEntries(GOLD_EXCHANGE.map(x => [x.id, x]));
+function goldShopReset(s = state) {
+  const today = localDateKey();
+  if (s.daily.shopDay !== today) { s.daily.shopDay = today; s.daily.shopCount = {}; }
+  return s.daily.shopCount || (s.daily.shopCount = {});
+}
+function goldShopBought(id, s = state) {
+  return Math.max(0, Math.floor(num(goldShopReset(s)[id], 0)));
+}
+function buyGoldExchange(key) {
+  const row = GOLD_EXCHANGE_MAP[key];
+  if (!row) return;
+  const bought = goldShopBought(key);
+  if (bought >= row.limit) { toast('今天这项已经换满了，明天再来', 'bad'); return; }
+  if (state.resources.gold < row.cost) { toast(`金币不足，需要 ${fmt(row.cost)}`, 'bad'); return; }
+  if (row.reward.energy && state.stamina.value >= state.stamina.max) { toast('体力已经满了，先打两场再来换', 'bad'); return; }
+  state.resources.gold -= row.cost;
+  goldShopReset()[key] = bought + 1;
+  const logs = addReward(row.reward);
+  saveGame();
+  renderAll();
+  toast(`兑换「${row.name}」：${rewardLogText(logs)}`, 'good', 2400);
+  playSfx('buy');
+}
 function levelUpTeam() {
   const team = getTeamPets();
   if (!team.length) { toast('先上阵一只宠物吧', 'bad'); return; }
@@ -8565,6 +8596,20 @@ function renderShop() {
             <span class="shop-ico">${row.icon}</span><b>${row.name}</b><p>${esc(row.desc)}</p>
             <button class="btn btn-ghost btn-xs" type="button" data-act="exchangeFruit" data-key="${row.id}" ${state.resources.fruit < row.cost ? 'disabled' : ''}>🍎 ${fmt(row.cost)}</button>
           </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>🪙 金币转化</h2><p>后期金币会越攒越多，这里换成体力或口粮，每天各限 3 次。</p></div><span class="chip">🪙 ${fmt(state.resources.gold)}</span></div>
+        <div class="grid three">
+          ${GOLD_EXCHANGE.map(row => {
+            const bought = goldShopBought(row.id);
+            const soldOut = bought >= row.limit;
+            return `<div class="shop-item">
+            <span class="shop-ico">${row.icon}</span><b>${row.name}</b><p>${esc(row.desc)}</p>
+            <button class="btn btn-ghost btn-xs" type="button" data-act="buyGoldExchange" data-key="${row.id}" ${soldOut || state.resources.gold < row.cost ? 'disabled' : ''}>${soldOut ? '今日已换满' : '🪙 ' + fmt(row.cost)}</button>
+            <span class="tiny muted">今日 ${bought}/${row.limit}</span>
+          </div>`;
+          }).join('')}
         </div>
       </div>`;
   } else if (tab === 'arena') {
@@ -10853,6 +10898,7 @@ function handleActionClick(event) {
       case 'buyArenaItem': buyArenaItem(target.dataset.id); break;
       case 'levelTeam': levelUpTeam(); break;
       case 'exchangeFruit': exchangeFruit(target.dataset.key); break;
+    case 'buyGoldExchange': buyGoldExchange(target.dataset.key); break;
     case 'equipCosmetic': equipCosmetic(target.dataset.id); break;
 
     case 'claimDaily': claimDailyTask(target.dataset.id); break;
