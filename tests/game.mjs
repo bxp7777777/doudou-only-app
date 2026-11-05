@@ -320,6 +320,12 @@ if (typeof globalThis.petArtCandidates === 'function') {
   const ids = ['pig', 'golden', 'shiba', 'orange', 'rabbit', 'hamster', 'panda', 'fox', 'sheep', 'otter', 'dragon', 'phoenix', 'turtle', 'bee', 'owl', 'deer', 'koi', 'lion', 'unicorn', 'goat', 'gull', 'flysquirrel', 'sparrow', 'moth', 'albatross', 'penguin', 'seal', 'arcticfox', 'polarbear', 'walrus', 'koala', 'flamingo', 'octopus', 'mushroom', 'bat', 'lynx', 'alpaca', 'mole', 'jellyfish', 'peacock'];
   const missing = ids.filter((id) => !fs.existsSync(path.join(artDir, id + '.png')));
   check(missing.length === 0, '缺少抠图 PNG：' + missing.join(','));
+  // 立绘统一 640×640：低于这个尺寸在 2x 屏会发虚，高了白白増体积
+  const badSize = ids.filter((id) => {
+    const buf = fs.readFileSync(path.join(artDir, id + '.png'));
+    return buf.readUInt32BE(16) !== 640 || buf.readUInt32BE(20) !== 640;
+  });
+  check(badSize.length === 0, '抠图 PNG 尺寸应为 640×640：' + badSize.join(','));
   check(text.includes('.home-pet-img{border-radius:50%;object-fit:cover;background:transparent'), '主页主宠头像不应再铺奶白底（抠图后会在四周露白）');
   // 小怪 / Boss 走同一套候选链：透明底 PNG 优先，缺图自动回退 JPG
   if (typeof globalThis.mobArtCandidates === 'function' && typeof globalThis.bossArtCandidates === 'function') {
