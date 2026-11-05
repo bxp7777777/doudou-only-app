@@ -406,6 +406,19 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function stageNeedPower'), '缺少实战需求战力换算 stageNeedPower');
   check(text.includes('const GOLD_EXCHANGE = [') && text.includes('function buyGoldExchange'), '缺少金币转化出口');
   check(text.includes("case 'buyGoldExchange'"), '金币转化缺少事件分发');
+
+  // 爬塔重做：曲线对齐主线、每周重置、连战、3 只塔灵
+  check(/function towerFloorPower/.test(text) && text.includes('1150 * Math.pow(1.118'), '爬塔战力曲线应为 1150×1.118^(层-1)');
+  check(text.includes('function ensureTowerWeek') && text.includes('function towerRush'), '缺少爬塔每周重置 / 连战');
+  check(text.includes("case 'towerRush'"), '爬塔连战缺少事件分发');
+  check(text.includes('function makeTowerReward(floor, repeat)'), '爬塔重复层应打折结算');
+  // 小陪伴：进度奖励、连陪、陪伴加成
+  check(text.includes('function selfCareReward') && text.includes('function selfCareBonusMult'), '缺少陪伴奖励/加成逻辑');
+  check(text.includes('function careCooldownLeft'), '抱抱/晚安缺少冷却');
+  // 菜地：进度缩放（金币）、稀有掉落、自动收获
+  check(text.includes('function gardenProgressMult') && text.includes('function gardenDropBonus'), '菜园缺少进度缩放/掉落');
+  check(text.includes('function buyGardenAutoHarvest') && text.includes("case 'gardenAutoHarvest'"), '菜园缺少自动收获解锁');
+
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');
   check(text.includes("const SAVE_KEY = 'ddgame:v1';"), '存档键名不应改变');

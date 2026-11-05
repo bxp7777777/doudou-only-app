@@ -4104,7 +4104,7 @@ function defaultState() {
     equipment: [],
     nextEquipId: 1,
     stage: { maxCleared: 0, stars: {}, layout: STAGES_PER_CHAPTER },
-    tower: { floor: 1, best: 0 },
+    tower: { floor: 1, best: 0, weekStart: 0, weekClears: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
     boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
     encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0 },
@@ -4235,6 +4235,8 @@ function sanitizeState(s) {
   s.tower = s.tower && typeof s.tower === 'object' ? s.tower : {};
   s.tower.floor = clamp(Math.floor(num(s.tower.floor, 1)), 1, 31);
   s.tower.best = clamp(Math.floor(num(s.tower.best, 0)), 0, 30);
+  s.tower.weekStart = num(s.tower.weekStart, 0);
+  s.tower.weekClears = clamp(Math.floor(num(s.tower.weekClears, 0)), 0, 30);
 
   s.arena = s.arena && typeof s.arena === 'object' ? s.arena : {};
   s.arena.rating = Math.max(0, Math.floor(num(s.arena.rating, 1000)));
@@ -5380,7 +5382,8 @@ function calcIdleRates(ignoreBoost = false) {
   const avgHunger = sum(team.map(p => num(p.hunger, 80))) / team.length;
   const avgMood = sum(team.map(p => num(p.mood, 80))) / team.length;
   const idleCareMult = (avgHunger >= 80 ? 1.05 : (avgHunger < 30 ? 0.90 : 1))
-    * (avgMood >= 80 ? 1.03 : (avgMood < 30 ? 0.95 : 1));
+    * (avgMood >= 80 ? 1.03 : (avgMood < 30 ? 0.95 : 1))
+    * selfCareBonusMult();
   return {
     // 挂机产出 ÷15：原来 1 小时挂机 ≈ 60 关的金币、120 关的果实，把关卡经济彻底淹掉了
     gold: stage.baseGold * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
@@ -5760,14 +5763,17 @@ function makeStageRewards(stage, firstClear) {
   }
   return reward;
 }
-function makeTowerReward(floor) {
+// repeat=true 表示这层以前通过过（每周重置后的重复挑战），基础收益 5 折、里程碑奖励不再重复发放
+function makeTowerReward(floor, repeat) {
+  const k = repeat ? 0.5 : 1;
   const reward = {
-    gold: Math.round(520 + floor * 180),
-    crystal: 15 + floor * 2,
-    stonesRandom: 2,
-    fruit: 8 + floor
+    gold: Math.round((520 + floor * 180) * k),
+    // 钻石只在首通给：每周重复清层如果也给钻，会让钻石通胀到没有意义
+    crystal: repeat ? 0 : (15 + floor * 2),
+    stonesRandom: repeat ? 1 : 2,
+    fruit: Math.round((8 + floor) * k)
   };
-  if (floor % 5 === 0) {
+  if (floor % 5 === 0 && !repeat) {
     reward.starShard = 4;
     reward.skillBook = 1;
     reward.equipment = floor >= 15 ? 'epic' : 'fine';
@@ -7395,14 +7401,18 @@ function finishBattle() {
     const floor = b.config.floor || 1;
     mainStars = win ? b.stars : 0;
     if (win) {
-      logs = addReward(makeTowerReward(floor));
+      const repeat = floor <= num(state.tower.best, 0);
+      logs = addReward(makeTowerReward(floor, repeat));
       if (floor >= state.tower.floor) {
         state.tower.floor = floor + 1;
         state.tower.best = Math.max(state.tower.best, floor);
+        state.tower.weekClears = Math.max(num(state.tower.weekClears, 0), floor);
       }
       bumpMetric('towerClears', 1);
       resultTitle = `第 ${floor} 层通过！`;
-      resultNote = `塔灵消散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。塔的奖励包含进化石与钻石。`;
+      resultNote = repeat
+        ? `重复挑战的收益是首通的 5 折。本周已推进到第 ${Math.min(30, state.tower.floor)} 层。`
+        : `塔灵消散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。`;
     } else {
       resultNote = '塔灵亮出了更强的姿态。强化装备、升星或试试属性克制再来吧。';
     }
@@ -7522,6 +7532,8 @@ function finishBattle() {
 }
 
 function renderBattleResult(data) {
+  // 连战模式下逐层静默结算，只在最后汇总一次
+  if (UI.towerRush) return;
   const resultEl = $('#battleResult');
   if (!resultEl) return;
   const starHtml = data.mode === 'stage' || data.mode === 'tower' ? starRow(data.stars) : '';
@@ -7740,6 +7752,12 @@ function refreshHUD() {
   const rate = calcIdleRates();
   setText('#homeRateGold', fmtRate(rate.gold) + ' /秒');
   setText('#homeRateFruit', fmtRate(rate.fruit) + ' /秒');
+  const careChip = $('#homeCareChip');
+  if (careChip) {
+    const on = selfCareDoneToday();
+    careChip.textContent = on ? '🤝 陪伴加成 ×1.1' : '🤝 今日陪伴未完成';
+    careChip.className = 'chip ' + (on ? 'mint' : '');
+  }
   setText('#homePendingGold', fmt(state.idle.pendingGold));
   setText('#homePendingFruit', fmt(state.idle.pendingFruit));
   const boostEl = $('#homeBoostTimer');
@@ -7867,14 +7885,19 @@ function gardenHTML() {
     return `<button class="garden-cell plot-ready" type="button" data-act="gardenHarvest" data-index="${i}"><span class="garden-emoji">🍅</span><span class="garden-label">可收 · 💰${gold} 🍎${fruit}</span></button>`;
   }).join('');
   const auto = !!state.garden.auto;
+  const autoHarvest = !!state.garden.autoHarvest;
+  const perHour = gardenPerHour();
+  const mult = gardenProgressMult();
   return `<section class="card garden-card">
-    <div class="card-head"><div><h2>🌱 小菜园</h2><p>3~60 分钟成熟，不耗体力；种得越久收成越多。</p></div><span class="chip">${readyCount} 块可收</span></div>
+    <div class="card-head"><div><h2>🌱 小菜园</h2><p>3~60 分钟成熟，不耗体力；收成随主线进度成长（当前 ×${mult.toFixed(2)}）。</p></div><span class="chip">${readyCount} 块可收</span></div>
     <div class="garden-actions">
       <button class="btn btn-mint btn-xs" type="button" data-act="gardenHarvestAll"${readyCount ? '' : ' disabled'}>🧺 一键收菜${readyCount ? `（${readyCount}）` : ''}</button>
       <button class="btn btn-ghost btn-xs" type="button" data-act="gardenPlantAll">🌱 一键补种</button>
       <button class="btn btn-ghost btn-xs${auto ? ' is-on' : ''}" type="button" data-act="gardenAuto">🔁 自动补种·${auto ? '开' : '关'}</button>
+      ${autoHarvest ? '<span class="chip mint">🤖 自动收获已开</span>' : `<button class="btn btn-ghost btn-xs" type="button" data-act="gardenAutoHarvest" ${state.resources.gold < GARDEN_AUTO_COST ? 'disabled' : ''}>🤖 解锁自动收获 · 🪙${fmt(GARDEN_AUTO_COST)}</button>`}
     </div>
     <div class="garden-grid">${cells}</div>
+    <div class="note" style="margin-top:8px">满种产出约 🪙${fmt(perHour.gold)}/时 · 🍎${fmt(perHour.fruit)}/时；收菜有几率掉 🌟星尘 / 💠进化石。</div>
   </section>`;
 }
 
@@ -7995,7 +8018,7 @@ function renderHome() {
         <div class="idle-hud">
           <div class="rate-badge">
             <b id="homeRateGold">${fmtRate(rate.gold)} /秒</b>
-            <small>金币 · 经验果 <span id="homeRateFruit">${fmtRate(rate.fruit)} /秒</span> · 效率 ${(rate.efficiency * 100).toFixed(0)}%</small>
+            <small>金币 · 经验果 <span id="homeRateFruit">${fmtRate(rate.fruit)} /秒</span> · 效率 ${(rate.efficiency * 100).toFixed(0)}% <span id="homeCareChip" class="chip ${selfCareDoneToday() ? 'mint' : ''}" style="font-size:10px">${selfCareDoneToday() ? '🤝 陪伴 +10%' : '🤝 陪伴未完成'}</span></small>
           </div>
           <div class="buttons">
             ${pet ? `<button class="btn btn-pink btn-xs" type="button" data-act="openFeed" data-uid="${pet.uid}">🍓 投喂</button>` : ''}
@@ -8368,17 +8391,42 @@ function renderPets() {
 }
 
 /* -------- 对战 -------- */
+// 塔层战力：1.118 的指数和主线成长对齐，第 30 层约 29,200（满配队 32,000 上下，需要装备补齐）
+// 旧曲线 1.18^29 ≈ 79,664 是全游戏战力天花板的 2.5 倍，玩家实际只能到第 10 层
 function towerFloorPower(floor) {
-  return Math.round(1500 * Math.pow(1.18, clamp(floor, 1, 30) - 1));
+  return Math.round(1150 * Math.pow(1.118, clamp(floor, 1, 30) - 1));
+}
+// 每周重置：周一 0 点开新一周，历史最高（best）永久保留，层数回到第 1 层
+function towerWeekStart(now = Date.now()) {
+  const d = new Date(now);
+  const day = (d.getDay() + 6) % 7;
+  d.setHours(0, 0, 0, 0);
+  return d.getTime() - day * DAY_MS;
+}
+function ensureTowerWeek(s = state) {
+  const start = towerWeekStart();
+  if (num(s.tower.weekStart, 0) === start) return false;
+  s.tower.weekStart = start;
+  s.tower.weekClears = 0;
+  // 全新存档（从没爬过）不动；已爬过的重置到第 1 层，best 保留
+  if (num(s.tower.best, 0) > 0) s.tower.floor = 1;
+  return true;
+}
+function towerWeekRemainMs(now = Date.now()) {
+  return Math.max(0, towerWeekStart(now) + 7 * DAY_MS - now);
 }
 function seasonRemainMs() {
   return Math.max(0, 7 * DAY_MS - (Date.now() - state.arena.seasonStart));
 }
 function renderBattlePage() {
   generateArenaOpponents(false);
+  ensureTowerWeek();
   const towerDone = state.tower.floor > 30;
   const towerFloor = Math.min(30, state.tower.floor);
   const towerPower = towerFloorPower(towerFloor);
+  const towerRepeat = towerFloor <= num(state.tower.best, 0);
+  const towerMark = [5, 10, 15, 20, 25, 30].find(x => x >= towerFloor) || 30;
+  const towerRemain = fmtClock(towerWeekRemainMs());
   const tier = arenaTierOf(state.arena.rating);
   const boss = getDailyBossInfo();
   const board = getBossLeaderboard();
@@ -8398,15 +8446,19 @@ function renderBattlePage() {
       <button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">调整队伍</button>`)}
     <div class="mode-grid">
       <div class="mode-card tower">
-        <div class="mode-head"><div class="mode-icon">🗼</div><div><h2>月影爬塔</h2><p>逐层挑战塔灵，每 5 层额外掉落装备与技能书。</p></div><span class="chip">${towerDone ? '已登顶' : `第 ${towerFloor} / 30 层`}</span></div>
+        <div class="mode-head"><div class="mode-icon">🗼</div><div><h2>月影爬塔</h2><p>30 层塔灵，周一重置。每 5 层掉装备与技能书，第 30 层有塔顶宝箱。</p></div><span class="chip">${towerDone ? '本周已登顶' : `本周第 ${towerFloor} / 30 层`}</span></div>
         <div class="mode-body">
           <div class="idle-stats" style="margin:0 0 8px">
             <div class="idle-stat"><span>推荐战力</span><b>${fmt(towerPower)}</b></div>
             <div class="idle-stat"><span>历史最高</span><b>${state.tower.best} / 30</b></div>
-            <div class="idle-stat"><span>今日钥匙</span><b>🎟️ ${state.challenge.value}/${state.challenge.max}</b></div>
+            <div class="idle-stat"><span>本周钥匙</span><b>🎟️ ${state.challenge.value}/${state.challenge.max}</b></div>
           </div>
-          <div class="reward-chips">${rewardLogHTML([{ icon: '🪙', label: '金币', amount: 520 + towerFloor * 180 }, { icon: '💎', label: '钻石', amount: 15 + towerFloor * 2 }, { icon: '💠', label: '进化石', amount: 2 }])}</div>
-          <button class="btn btn-primary btn-wide" type="button" data-act="startTower" ${towerDone ? 'disabled' : ''}>${towerDone ? '塔顶已被征服' : `挑战第 ${towerFloor} 层 · 🎟️ ${TOWER_CHALLENGE_COST}`}</button>
+          <div class="note" style="margin:0 0 8px">下个节点 <b>第 ${towerMark} 层</b>：${towerMark % 5 === 0 ? (towerMark >= 15 ? '史诗装备 + 技能书 + 星尘' : '精良装备 + 技能书 + 星尘') : '普通层奖励'}${towerRepeat ? ' · <span class="chip pink">这层已通关，收益 5 折</span>' : ''} · 本周剩余 ${towerRemain}</div>
+          <div class="reward-chips">${rewardLogHTML([{ icon: '🪙', label: '金币', amount: Math.round((520 + towerFloor * 180) * (towerRepeat ? 0.5 : 1)) }, { icon: '💎', label: '钻石', amount: Math.round((15 + towerFloor * 2) * (towerRepeat ? 0.5 : 1)) }, { icon: '💠', label: '进化石', amount: towerRepeat ? 1 : 2 }])}</div>
+          <div class="flex" style="gap:8px">
+            <button class="btn btn-primary" style="flex:1" type="button" data-act="startTower" ${towerDone ? 'disabled' : ''}>${towerDone ? '本周已登顶' : `挑战第 ${towerFloor} 层 · 🎟️ ${TOWER_CHALLENGE_COST}`}</button>
+            <button class="btn btn-lav" style="flex:1" type="button" data-act="towerRush" ${towerDone || state.challenge.value < 1 ? 'disabled' : ''}>🎯 连战到底（自动打）</button>
+          </div>
         </div>
       </div>
 
@@ -9607,9 +9659,31 @@ const GARDEN_TIERS = [
   { minutes: 60,  gold: 260, fruit: 28 }
 ];
 function gardenTier(i) { return GARDEN_TIERS[i] || GARDEN_TIERS[GARDEN_TIERS.length - 1]; }
+// 金币收成随主线温和成长（最高 ×1.42），经验果不缩放：果实是稀缺资源，不能靠种地无限刷
+function gardenProgressMult() {
+  return 1 + clamp(num(state.stage.maxCleared, 0), 0, 70) * 0.006;
+}
+// 收菜时的稀有掉落：星尘碎片 / 进化石，让菜园也是养成材料来源
+function gardenDropBonus() {
+  const bonus = {};
+  if (chance(0.06)) bonus.starShard = 1;
+  if (chance(0.04)) bonus.stonesRandom = 1;
+  return bonus;
+}
+function gardenPerHour() {
+  const mult = gardenProgressMult();
+  let gold = 0, fruit = 0;
+  for (let i = 0; i < GARDEN_SIZE; i++) {
+    const t = gardenTier(i);
+    gold += Math.round(t.gold * mult) * (60 / t.minutes);
+    fruit += t.fruit * (60 / t.minutes);
+  }
+  return { gold: Math.round(gold), fruit: Math.round(fruit) };
+}
 function ensureGarden() {
   if (!state.garden || !Array.isArray(state.garden.plots)) state.garden = { plots: [] };
   if (typeof state.garden.auto !== 'boolean') state.garden.auto = false;
+  if (typeof state.garden.autoHarvest !== 'boolean') state.garden.autoHarvest = false;
   while (state.garden.plots.length < GARDEN_SIZE) state.garden.plots.push({ state: 'empty' });
 }
 function gardenPlotStatus(p, now = Date.now()) {
@@ -9632,28 +9706,32 @@ function gardenPlant(i) {
   playSfx('pop');
   persist();
 }
-function gardenHarvestAll() {
+function gardenHarvestAll(silent) {
   ensureGarden();
   const now = Date.now();
+  const mult = gardenProgressMult();
   let gold = 0;
   let fruit = 0;
   let n = 0;
   state.garden.plots.forEach((p, i) => {
     if (gardenPlotStatus(p, now) !== 'ready') return;
     const t = gardenTier(i);
-    gold += num(p.gold, t.gold);
-    fruit += num(p.fruit, t.fruit);
+    gold += Math.round(num(p.gold, t.gold) * mult);
+    fruit += Math.round(num(p.fruit, t.fruit));
     p.state = 'empty';
     p.readyAt = 0;
     delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
     n++;
   });
-  if (!n) { toast('还没有成熟的菜，再等等～'); return; }
-  addReward({ gold, fruit });
+  if (!n) { if (!silent) toast('还没有成熟的菜，再等等～'); return; }
+  const bonus = gardenDropBonus();
+  const logs = addReward({ gold, fruit, ...bonus });
   bumpMetric('gardens', n);
   if (state.garden.auto) gardenPlantAll(true);
-  toast(`一键收菜：${n} 块地 +${fmt(gold)} 金币、+${fmt(fruit)} 经验果`, 'good', 2600);
-  playSfx('claim');
+  if (!silent) {
+    toast(`一键收菜：${n} 块地 ${rewardLogText(logs)}`, 'good', 2800);
+    playSfx('claim');
+  }
   persist();
 }
 function gardenPlantAll(silent) {
@@ -9677,6 +9755,24 @@ function gardenPlantAll(silent) {
   }
   persist();
 }
+const GARDEN_AUTO_COST = 40000;
+function buyGardenAutoHarvest() {
+  ensureGarden();
+  if (state.garden.autoHarvest) { toast('自动收获已经解锁啦', ''); return; }
+  if (state.resources.gold < GARDEN_AUTO_COST) { toast(`金币不足，需要 ${fmt(GARDEN_AUTO_COST)}`, 'bad'); return; }
+  state.resources.gold -= GARDEN_AUTO_COST;
+  state.garden.autoHarvest = true;
+  saveGame();
+  renderAll();
+  toast('自动收获已解锁：菜熟了就自己收，配合自动补种就是一块稳定收入', 'good', 3200);
+  playSfx('buy');
+}
+function gardenAutoTick(now) {
+  if (!state.garden || !state.garden.autoHarvest) return;
+  if (!Array.isArray(state.garden.plots)) return;
+  if (!state.garden.plots.some(p => p && gardenPlotStatus(p, now) === 'ready')) return;
+  gardenHarvestAll(true);
+}
 function toggleGardenAuto() {
   ensureGarden();
   state.garden.auto = !state.garden.auto;
@@ -9690,9 +9786,10 @@ function gardenHarvest(i) {
   if (!p) return;
   if (gardenPlotStatus(p) !== 'ready') { toast('还没成熟，再等等哦'); return; }
   const t = gardenTier(i);
-  const gold = num(p.gold, t.gold);
-  const fruit = num(p.fruit, t.fruit);
-  addReward({ gold, fruit });
+  const mult = gardenProgressMult();
+  const gold = Math.round(num(p.gold, t.gold) * mult);
+  const fruit = Math.round(num(p.fruit, t.fruit));
+  addReward({ gold, fruit, ...gardenDropBonus() });
   bumpMetric('gardens', 1);
   p.state = 'empty';
   p.readyAt = 0;
@@ -9724,32 +9821,76 @@ function gardenJustReady() {
 }
 
 /* ---------------- 今日小陪伴：自律打卡（低额奖励，不超模）+ 抱抱/晚安互动 ---------------- */
-const SELF_CARE_REWARD = { gold: 12, fruit: 1 };
+// 陪伴奖励随主线进度成长：第 1 章约 46 金币，通关后约 460，仍远低于一次挂机或一关奖励
+const CARE_COOLDOWN_MS = 30 * 60 * 1000;
 const PRAISE_LINES = [
   '真棒，毛茸茸为你鼓掌', '又向前一步，继续保持', '这份努力被记住啦', '做得漂亮，再接再厉', '慢慢来，稳稳地变好'
 ];
+function selfCareReward() {
+  const p = Math.max(0, num(state.stage.maxCleared, 0));
+  return { gold: 40 + p * 6, fruit: 1 + Math.floor(p / 14) };
+}
 function selfCareToday() {
   if (!state.selfCare || state.selfCare.date !== localDateKey()) {
-    state.selfCare = { date: localDateKey(), focus: false, move: false };
+    const prev = state.selfCare || {};
+    state.selfCare = {
+      date: localDateKey(), focus: false, move: false, doneReward: false,
+      streak: clamp(Math.floor(num(prev.streak, 0)), 0, 9999),
+      lastDoneDate: String(prev.lastDoneDate || ''),
+      hugAt: 0, nightAt: 0
+    };
   }
-  return state.selfCare;
+  const sc = state.selfCare;
+  if (typeof sc.doneReward !== 'boolean') sc.doneReward = false;
+  sc.streak = clamp(Math.floor(num(sc.streak, 0)), 0, 9999);
+  if (typeof sc.lastDoneDate !== 'string') sc.lastDoneDate = '';
+  sc.hugAt = num(sc.hugAt, 0);
+  sc.nightAt = num(sc.nightAt, 0);
+  return sc;
+}
+// 两项自律都完成 → 今日陪伴达成：挂机收益 +10%，并累计连陪天数
+function selfCareDoneToday() {
+  const sc = selfCareToday();
+  return !!(sc.focus && sc.move);
+}
+function selfCareBonusMult() {
+  return selfCareDoneToday() ? 1.1 : 1;
+}
+function careCooldownLeft(kind) {
+  const sc = selfCareToday();
+  const last = num(sc[kind + 'At'], 0);
+  return Math.max(0, last + CARE_COOLDOWN_MS - Date.now());
 }
 function claimSelfCare(kind) {
   const sc = selfCareToday();
   if (sc[kind]) { toast('今天这项已经完成啦，明天再来'); return; }
   sc[kind] = true;
-  addReward(SELF_CARE_REWARD);
+  const reward = selfCareReward();
+  let logs = addReward(reward);
+  let extra = '';
+  if (sc.focus && sc.move && !sc.doneReward) {
+    sc.doneReward = true;
+    const today = localDateKey();
+    const yesterday = localDateKey(new Date(Date.now() - DAY_MS));
+    sc.streak = sc.lastDoneDate === yesterday ? clamp(num(sc.streak, 0) + 1, 1, 9999) : 1;
+    sc.lastDoneDate = today;
+    logs = logs.concat(addReward({ crystal: 10, starShard: 2 }));
+    if (sc.streak % 7 === 0) logs = logs.concat(addReward({ crystal: 40, skillBook: 1 }));
+    extra = ' · 今日陪伴达成，今天挂机 +10%（连陪 ' + sc.streak + ' 天）';
+  }
   saveGame();
   renderAll();
-  toast(kind === 'focus'
-    ? '专注完成！+12 金币 +1 经验果，毛茸茸为你骄傲'
-    : '活动一下完成！+12 金币 +1 经验果，动一动更有精神', 'good');
+  toast((kind === 'focus' ? '专注完成' : '活动完成') + '：' + rewardLogText(logs) + extra, 'good', 3200);
 }
 function hugPet() {
   const pet = getMainPet();
   if (!pet) return;
-  pet.intimacy = clamp(num(pet.intimacy, 0) + 0.4, 0, 100);
-  pet.mood = clamp(num(pet.mood, 80) + 2, 0, 100);
+  const left = careCooldownLeft('hug');
+  if (left > 0) { toast(`刚抱过啦，${fmtClock(left)} 后再来抱抱`, 'bad'); return; }
+  const sc = selfCareToday();
+  sc.hugAt = Date.now();
+  pet.intimacy = clamp(num(pet.intimacy, 0) + 1.2, 0, 100);
+  pet.mood = clamp(num(pet.mood, 80) + 4, 0, 100);
   saveGame();
   renderAll();
   toast(`你抱住了${petDisplayName(pet)}，它舒服地蹭了蹭你 💗`, 'good');
@@ -9757,23 +9898,32 @@ function hugPet() {
 function goodnightPet() {
   const pet = getMainPet();
   if (!pet) return;
-  pet.mood = clamp(num(pet.mood, 80) + 1, 0, 100);
-  pet.intimacy = clamp(num(pet.intimacy, 0) + 0.2, 0, 100);
+  const left = careCooldownLeft('night');
+  if (left > 0) { toast(`刚说过晚安啦，${fmtClock(left)} 后再来`, 'bad'); return; }
+  const sc = selfCareToday();
+  sc.nightAt = Date.now();
+  pet.mood = clamp(num(pet.mood, 80) + 3, 0, 100);
+  pet.intimacy = clamp(num(pet.intimacy, 0) + 0.8, 0, 100);
   saveGame();
   renderAll();
   toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你入梦 🌙`, 'good');
 }
 function careCardHTML() {
   const sc = selfCareToday();
-  const btn = (act, label, done) => `<button class="btn btn-ghost btn-sm" type="button" data-act="${act}" ${done ? 'disabled' : ''}>${label} ${done ? '✓' : '+'}</button>`;
+  const reward = selfCareReward();
+  const done = sc.focus && sc.move;
+  const hugLeft = careCooldownLeft('hug');
+  const nightLeft = careCooldownLeft('night');
+  const btn = (act, label, disabled) => `<button class="btn btn-ghost btn-sm" type="button" data-act="${act}" ${disabled ? 'disabled' : ''}>${label}</button>`;
   return `<section class="card care-card">
-    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>完成一项小自律换一点奖励；抱抱、说晚安也是陪伴。</p></div></div>
+    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>完成专注 + 活动两项，今天挂机 +10%；抱抱和晚安每 30 分钟一次。</p></div><span class="chip ${done ? 'mint' : ''}">${done ? '今日已达成' : '未达成'}</span></div>
     <div class="care-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${btn('selfFocus', '📖 专注25分钟', sc.focus)}
-      ${btn('selfMove', '🚶 活动10分钟', sc.move)}
-      ${btn('hugPet', '🤗 抱抱', false)}
-      ${btn('goodnightPet', '🌙 说晚安', false)}
+      ${btn('selfFocus', sc.focus ? '📖 专注 ✓' : `📖 专注25分钟 · +${fmt(reward.gold)}`, sc.focus)}
+      ${btn('selfMove', sc.move ? '🚶 活动 ✓' : `🚶 活动10分钟 · +${fmt(reward.gold)}`, sc.move)}
+      ${btn('hugPet', hugLeft > 0 ? `🤗 ${fmtClock(hugLeft)}` : '🤗 抱抱', hugLeft > 0)}
+      ${btn('goodnightPet', nightLeft > 0 ? `🌙 ${fmtClock(nightLeft)}` : '🌙 说晚安', nightLeft > 0)}
     </div>
+    <div class="note" style="margin-top:8px">连陪 <b>${sc.streak}</b> 天${done ? ` · 今天挂机收益 ×1.1` : ''} · 每完成两项额外 +10 钻石 +2 星尘，连陪满 7 天再送 40 钻石 + 技能书${done ? '' : ` · 每项 +${fmt(reward.gold)} 金币 +${reward.fruit} 经验果`}</div>
   </section>`;
 }
 
@@ -10329,6 +10479,7 @@ function forgeEquipmentAction() {
 
 /* -------- 对战 -------- */
 function startTower() {
+  ensureTowerWeek();
   if (state.tower.floor > 30) { toast('已经登顶啦', 'bad'); return; }
   if (!getTeamPets().length) { toast('请先上阵宠物', 'bad'); return; }
   if (state.challenge.value < TOWER_CHALLENGE_COST) { toast('挑战券不足', 'bad'); return; }
@@ -10340,7 +10491,8 @@ function startTower() {
   const chapter = CHAPTERS[(floor - 1) % CHAPTERS.length];
   const pool = PETS.filter(p => p.element === chapter.element && !templateHasHeal(p));
   const lineup = [];
-  const count = isBossFloor ? 3 : 1;
+  // 一律 3 只：单只塔灵会吃掉整层战力，显示数字就完全失真了
+  const count = 3;
   for (let i = 0; i < count; i++) lineup.push(pick(pool.length ? pool : enemyPetPool()).id);
   const enemies = createEnemyFormation(power, {
     count,
@@ -10351,8 +10503,8 @@ function startTower() {
     bossEmoji: '🗼',
     name: `第 ${floor} 层塔灵`,
     emoji: '🗼',
-    bossHpMult: 2.4,
-    powerFactor: isBossFloor ? 1.02 : 0.95,
+    bossHpMult: isBossFloor ? 2.0 : 1,
+    powerFactor: 1,
     level: Math.max(10, Math.round(floor * 2.3)),
     star: 1,
     evo: floor >= 15 ? 1 : 0
@@ -10373,6 +10525,49 @@ function startTower() {
     saveGame();
     playSfx('battle');
   }
+}
+function towerRush() {
+  ensureTowerWeek();
+  if (UI.towerRush) return;
+  if (state.tower.floor > 30) { toast('本周已经登顶啦', 'bad'); return; }
+  if (state.challenge.value < TOWER_CHALLENGE_COST) { toast('挑战券不足', 'bad'); return; }
+  if (!getTeamPets().length) { toast('请先上阵宠物', 'bad'); return; }
+  UI.towerRush = { from: state.tower.floor, fights: 0, wins: 0, gold: 0, crystal: 0, stop: '' };
+  const rootEl = $('#battleRoot');
+  if (rootEl) rootEl.style.display = 'none';   // 连战期间不闪战斗画面
+  toast('连战开始：自动逐层挑战，遇到失败或缺券会停下', '', 1800);
+  setTimeout(towerRushStep, 60);
+}
+function towerRushStep() {
+  const R = UI.towerRush;
+  if (!R) return;
+  if (state.tower.floor > 30) { R.stop = '本周已登顶'; return towerRushDone(); }
+  if (state.challenge.value < TOWER_CHALLENGE_COST) { R.stop = '挑战券不足'; return towerRushDone(); }
+  const floor = state.tower.floor;
+  const g0 = state.resources.gold, c0 = state.resources.crystal;
+  closeBattle();
+  startTower();
+  const b = UI.battle;
+  if (!b) { R.stop = '无法开战'; return towerRushDone(); }
+  R.fights++;
+  skipBattle();
+  R.gold += state.resources.gold - g0;
+  R.crystal += state.resources.crystal - c0;
+  if (!b.win) { R.stop = `第 ${floor} 层没过`; return towerRushDone(); }
+  R.wins++;
+  setTimeout(towerRushStep, 60);
+}
+function towerRushDone() {
+  const R = UI.towerRush || { from: 1, fights: 0, wins: 0, gold: 0, crystal: 0, stop: '' };
+  UI.towerRush = null;
+  const rootEl = $('#battleRoot');
+  if (rootEl) rootEl.style.display = '';
+  closeBattle();
+  const parts = [`连战结束 · ${R.wins}/${R.fights} 胜`, `🪙+${fmt(Math.max(0, R.gold))}`, `💎+${Math.max(0, R.crystal)}`];
+  if (R.stop) parts.push(R.stop);
+  toast(parts.join(' · '), R.wins ? 'good' : 'bad', 3600);
+  playSfx(R.wins ? 'win' : 'lose');
+  saveGame();
 }
 function startArena(index) {
   generateArenaOpponents(false);
@@ -10812,6 +11007,7 @@ function handleActionClick(event) {
     case 'gardenHarvestAll': gardenHarvestAll(); break;
     case 'gardenPlantAll': gardenPlantAll(false); break;
     case 'gardenAuto': toggleGardenAuto(); break;
+    case 'gardenAutoHarvest': buyGardenAutoHarvest(); break;
     case 'claimAllHome': claimAllHome(); break;
     case 'claimWeekly': claimWeekly(target.dataset.goal); break;
     case 'claimAllWeekly': claimAllWeekly(); break;
@@ -10880,6 +11076,7 @@ function handleActionClick(event) {
     case 'forgeEquipment': forgeEquipmentAction(); break;
 
     case 'startTower': startTower(); break;
+    case 'towerRush': towerRush(); break;
     case 'startArena': startArena(index); break;
     case 'refreshArena': refreshArena(); break;
     case 'arenaSettle': settleArena(); break;
@@ -11082,6 +11279,7 @@ function audioTone(freq, duration, type = 'sine', volume = 0.025, delay = 0, sli
   } catch (err) {}
 }
 function playSfx(name) {
+  if (UI && UI.towerRush) return;
   if (!state || !state.settings.sfx) return;
   const ctx = ensureAudio();
   if (!ctx) return;
@@ -11239,6 +11437,10 @@ function gameTick() {
   if (!UI.offlineOffer) accrueIdleToNow();
   else UI.lastTick = Date.now();
   const now = Date.now();
+  if (!UI.modal && !UI.battle && now - (UI.gardenAutoAt || 0) > 20000) {
+    UI.gardenAutoAt = now;
+    try { gardenAutoTick(now); } catch (e) {}
+  }
   if (UI.tab === 'home' && !UI.modal && !UI.battle && !UI.offlineOffer) {
     const anyReady = gardenJustReady();
     if (anyReady && !UI.gardenReadyPing) { UI.gardenReadyPing = true; renderPage(); }
