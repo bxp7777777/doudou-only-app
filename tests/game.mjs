@@ -339,6 +339,47 @@ if (typeof globalThis.petArtCandidates === 'function') {
   }
 }
 
+/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；前期难度系数把敌人抬到 2.2× */
+if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPower === 'function') {
+  let total = 0;
+  for (let i = 1; i <= 100; i++) {
+    const st = globalThis.getStage(i);
+    if (!st || st.index !== i) break;
+    total = i;
+  }
+  check(total === 70, '主线应为 70 关（10 章 × 7），实际 ' + total);
+  const perChapter = new Map();
+  for (let i = 1; i <= total; i++) {
+    const st = globalThis.getStage(i);
+    if (!perChapter.has(st.chapter)) perChapter.set(st.chapter, []);
+    perChapter.get(st.chapter).push(st);
+  }
+  check(perChapter.size === 10, '主线应为 10 章，实际 ' + perChapter.size);
+  for (const [ch, list] of perChapter) {
+    check(list.length === 7, '第 ' + ch + ' 章应为 7 关，实际 ' + list.length);
+    check(list[6].type === 'boss', '第 ' + ch + ' 章最后一关应是首领，实际 ' + list[6].type);
+    check(list.filter((s) => s.type === 'elite').length === 2, '第 ' + ch + ' 章应有 2 个精英关');
+    check(list.filter((s) => s.type === 'mob').length === 4, '第 ' + ch + ' 章应有 4 个小怪关');
+  }
+  const s11 = globalThis.getStage(1);
+  const expect11 = Math.round(s11.recPower * 2.2 * 0.92);
+  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×2.2×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
+  const s1070 = globalThis.getStage(70);
+  const expectFinal = Math.round(s1070.recPower * 0.84 * 1.08);
+  check(globalThis.stageEnemyPower(s1070) === expectFinal, '第 10 章首领敌人战力应为 recPower×0.84×首领系数，实际 ' + globalThis.stageEnemyPower(s1070));
+}
+
+/* 旧存档（5 关/章）迁移：第 5 关的首领要落到新布局的最后一关，不能退回前面重打 */
+if (typeof globalThis.migrateStageLayout5 === 'function') {
+  const migrated = globalThis.migrateStageLayout5({ maxCleared: 25, stars: { 23: 3, 25: 2, 5: 3, 49: 1 } });
+  check(migrated.maxCleared === 35, '旧存档第 5 章首领应迁移到第 35 关，实际 ' + migrated.maxCleared);
+  check(migrated.stars[35] === 2, '旧存档首领关星星应搬到第 35 关');
+  check(migrated.stars[31] === 3, '旧存档第 23 关应迁移到第 31 关');
+  check(migrated.stars[7] === 3, '旧存档第 1 章首领应迁移到第 7 关');
+  check(migrated.stars[67] === 1, '旧存档第 10 章第 4 关应迁移到第 67 关');
+  check(migrated.layout === 7, '迁移后应记录新布局 7 关/章');
+}
+
 if (problems.length) {
   console.error('❌ 游戏冒烟 ' + problems.length + ' 条问题：');
   problems.slice(0, 20).forEach((p) => console.error(' - ' + p));

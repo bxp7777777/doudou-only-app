@@ -2560,7 +2560,7 @@ const PET_NATURES = {
 };
 const PET_NATURE_KEYS = Object.keys(PET_NATURES).filter(k => k !== 'neutral');
 
-// 10 章 × 5 关 = 50 关。关底首领提供首次通关奖励与下一章解锁。
+// 10 章 × 7 关 = 70 关。关底首领提供首次通关奖励与下一章解锁。
 const CHAPTERS = [
   { id: 1, name: '奶油草原', emoji: '🌼', element: 'grass', boss: '棉花糖巨兽', bossEmoji: '🍡', desc: '风吹过奶油色的草浪，空气里都是甜味。', theme: 'cream' },
   { id: 2, name: '草莓丘陵', emoji: '🍓', element: 'fire', boss: '焦糖狐火', bossEmoji: '🦊', desc: '一山丘的草莓熟透了，连风都冒着粉色泡泡。', theme: 'pink' },
@@ -2578,6 +2578,8 @@ const STAGE_KINDS = [
   { type: 'mob', name: '小怪', label: '小怪', emoji: '🌼' },
   { type: 'mob', name: '小怪', label: '小怪', emoji: '🍄' },
   { type: 'elite', name: '精英', label: '精英', emoji: '🛡️' },
+  { type: 'mob', name: '小怪', label: '小怪', emoji: '🌿' },
+  { type: 'elite', name: '精英', label: '精英', emoji: '⚔️' },
   { type: 'boss', name: '首领', label: '首领', emoji: '👑' }
 ];
 // 非 Boss 关名后缀：按槽位 × 章节轮换，避免 40 关共用同一组词（纯命名文案，不影响判定）
@@ -2585,7 +2587,9 @@ const STAGE_NAME_WORDS = {
   mob1: ['初遇', '浅草', '晨光', '炊烟', '溪声', '晨雾', '云絮', '苔径', '花影', '星火'],
   mob2: ['花间', '坡地', '蝶影', '涟漪', '树影', '萤火', '沙痕', '石径', '光斑', '潮声'],
   mob3: ['林间', '溪畔', '幽谷', '密林', '月色', '崖边', '礁滩', '花田', '山脊', '浪迹'],
-  elite: ['守卫', '哨点', '拦路', '巡守', '岗哨', '伏击', '要隘', '镇守', '护卫', '关隘']
+  elite: ['守卫', '哨点', '拦路', '巡守', '岗哨', '伏击', '要隘', '镇守', '护卫', '关隘'],
+  mob4: ['小径', '篱边', '斜阳', '苔阶', '石桥', '穗野', '林隙', '坡上', '浅滩', '木桥'],
+  elite2: ['锋线', '重阵', '断崖', '死守', '铁关', '血路', '绝壁', '压阵', '险隘', '死关']
 };
 const STAGE_BLURB = {
   mob: ['草丛里探出一只探头探脑的小伙伴，尾巴晃来晃去。', '路边传来细碎响动，几只小家伙聚在一块儿玩耍。', '微风卷起落叶，前方的草地上有几道小影子掠过。', '溪水边冒出几个圆滚滚的身影，好奇地打量着队伍。', '花瓣与绒毛在空中打转，一场轻松的小遭遇。'],
@@ -2730,16 +2734,19 @@ function allyBattleQuip(b, unit, hurtOnly) {
   const nat = (pet && BATTLE_QUIPS[pet.nature]) ? pet.nature : 'neutral';
   pushBattleLog(b, '💬 ' + pick(BATTLE_QUIPS[nat]));
 }
+// 每章 7 关：4 小怪 + 2 精英 + 首领；首领固定在最后一关，负责解锁下一章
+const STAGES_PER_CHAPTER = 7;
 const STAGES = [];
 for (const chapter of CHAPTERS) {
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= STAGES_PER_CHAPTER; i++) {
     const kind = STAGE_KINDS[i - 1];
-    const index = (chapter.id - 1) * 5 + i;
+    const index = (chapter.id - 1) * STAGES_PER_CHAPTER + i;
     const recPower = Math.round(650 * Math.pow(1.42, chapter.id - 1) * (1 + 0.16 * (i - 1)));
     const baseGold = Math.round((1.0 + (chapter.id - 1) * 0.9 + i * 0.18) * 10) / 10;
     const bdef = kind.type === 'boss' ? bossByChapter(chapter.id) : null;
-    const slotKey = ['mob1', 'mob2', 'mob3', 'elite'][i - 1];
-    const suffix = bdef ? '' : STAGE_NAME_WORDS[slotKey][(chapter.id - 1) % 10];
+    const slotKey = ['mob1', 'mob2', 'mob3', 'elite', 'mob4', 'elite2'][i - 1];
+    const suffixPool = STAGE_NAME_WORDS[slotKey] || STAGE_NAME_WORDS.mob1;
+    const suffix = bdef ? '' : suffixPool[(chapter.id - 1) % 10];
     const blurbPool = STAGE_BLURB[kind.type] || [];
     const blurb = bdef ? bdef.flavor : (blurbPool[(index - 1) % blurbPool.length] || '');
     STAGES.push({
@@ -2762,7 +2769,32 @@ for (const chapter of CHAPTERS) {
 function getStage(index) {
   return STAGES[clamp(index, 1, STAGES.length) - 1] || STAGES[0];
 }
-function stageIndex(chapter, sub) { return (chapter - 1) * 5 + sub; }
+function stageIndex(chapter, sub) { return (chapter - 1) * STAGES_PER_CHAPTER + sub; }
+// 难度系数：敌人实际战力 = recPower × 章系数 × 关卡类型系数。只影响敌人强度与展示，不改奖励公式
+// 章系数保持"前期明显加压、后期收敛"的走向；第 10 章少于 1 是为了抵消 7 关布局带来的 recPower 抬升
+const STAGE_DIFFICULTY = { 1: 2.2, 2: 1.9, 3: 1.7, 4: 1.45, 5: 1.0, 6: 0.98, 7: 0.98, 8: 0.95, 9: 0.88, 10: 0.84 };
+const STAGE_TYPE_POWER = { mob: 0.92, elite: 1.0, boss: 1.08 };
+function stageEnemyPower(stage) {
+  if (!stage) return 0;
+  const ch = STAGE_DIFFICULTY[stage.chapter] || 1;
+  const tp = STAGE_TYPE_POWER[stage.type] || 1;
+  return Math.round(num(stage.recPower, 0) * ch * tp);
+}
+// 界面上展示的「敌人战力」用真实生成的阵容战力（Boss 有额外倍率，比目标值更高），只用于显示与对比
+const STAGE_POWER_CACHE = {};
+function stageDisplayPower(stage) {
+  if (!stage) return 0;
+  const key = stage.index + ':' + stageEnemyPower(stage);
+  if (STAGE_POWER_CACHE[key] == null) {
+    try {
+      const units = createEnemyFormation(stageEnemyPower(stage), buildStageEnemyOptions(stage));
+      STAGE_POWER_CACHE[key] = Math.round(units.reduce((a, u) => a + calcPower(u), 0));
+    } catch (err) {
+      STAGE_POWER_CACHE[key] = stageEnemyPower(stage);
+    }
+  }
+  return STAGE_POWER_CACHE[key];
+}
 
 const DUNGEON_MODES = [
   {
@@ -2890,9 +2922,9 @@ const ACHIEVEMENTS = [
   { id: 'a_win50', name: '千锤百炼', desc: '战斗胜利累计 50 次', icon: '🏆', target: 50, get: s => s.quests.metrics.wins, reward: { crystal: 150, enhanceStone: 5 } },
   { id: 'a_clear5', name: '关卡新星', desc: '通关 5 个关卡', icon: '🌱', target: 5, get: s => s.stage.maxCleared, reward: { crystal: 40, fruit: 15 } },
   { id: 'a_clear10', name: '章节英雄', desc: '通关 10 个关卡', icon: '📖', target: 10, get: s => s.stage.maxCleared, reward: { crystal: 80, fruit: 20 } },
-  { id: 'a_clear15', name: '草原霸主', desc: '通关第 3 章首领', icon: '🌾', target: 15, get: s => s.stage.maxCleared, reward: { crystal: 120, stonesRandom: 3 } },
-  { id: 'a_clear25', name: '远征勇者', desc: '通关第 5 章首领', icon: '🌙', target: 25, get: s => s.stage.maxCleared, reward: { crystal: 200, frame: 'moon' } },
-  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 50, get: s => s.stage.maxCleared, reward: { crystal: 500, eternal: 10 } },
+  { id: 'a_clear15', name: '草原霸主', desc: '通关第 3 章首领', icon: '🌾', target: 21, get: s => s.stage.maxCleared, reward: { crystal: 120, stonesRandom: 3 } },
+  { id: 'a_clear25', name: '远征勇者', desc: '通关第 5 章首领', icon: '🌙', target: 35, get: s => s.stage.maxCleared, reward: { crystal: 200, frame: 'moon' } },
+  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 70, get: s => s.stage.maxCleared, reward: { crystal: 500, eternal: 10 } },
   { id: 'a_pet1', name: '第一只萌宠', desc: '拥有 1 只宠物', icon: '🥚', target: 1, get: s => Object.keys(s.pets).length, reward: { crystal: 25 } },
   { id: 'a_pet5', name: '毛茸茸小队', desc: '收集 5 种不同宠物', icon: '🐾', target: 5, get: s => stateUniqueCount(s), reward: { crystal: 80, equipShard: 20 } },
   { id: 'a_pet12', name: '图鉴大师', desc: `收集全部 ${PETS.length} 种宠物`, icon: '📚', target: PETS.length, get: s => stateUniqueCount(s), reward: { crystal: 300, frame: 'mint' } },
@@ -4055,7 +4087,7 @@ function defaultState() {
     nextPetId: 1,
     equipment: [],
     nextEquipId: 1,
-    stage: { maxCleared: 0, stars: {} },
+    stage: { maxCleared: 0, stars: {}, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0 },
     boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
@@ -4282,6 +4314,33 @@ function sanitizeState(s) {
   return s;
 }
 
+// 旧存档是「5 关/章」，新布局是 7 关/章：把 maxCleared 与星星搬过去，章节首领仍算通关
+function migrateStageLayout5(oldStage) {
+  const oldPer = 5;
+  const newPer = STAGES_PER_CHAPTER;
+  const s = oldStage || {};
+  const stars = s.stars && typeof s.stars === 'object' ? s.stars : {};
+  const out = {};
+  for (const key of Object.keys(stars)) {
+    const idx = Math.floor(num(key, 0));
+    if (idx <= 0) continue;
+    const ch = Math.floor((idx - 1) / oldPer) + 1;
+    const sub = ((idx - 1) % oldPer) + 1;
+    if (ch > CHAPTERS.length) continue;
+    const newSub = sub === oldPer ? newPer : Math.min(sub, newPer - 1);
+    out[(ch - 1) * newPer + newSub] = stars[key];
+  }
+  const oldMax = Math.floor(num(s.maxCleared, 0));
+  let newMax = 0;
+  if (oldMax > 0) {
+    const ch = Math.floor((oldMax - 1) / oldPer) + 1;
+    const sub = ((oldMax - 1) % oldPer) + 1;
+    const newSub = sub === oldPer ? newPer : Math.min(sub, newPer - 1);
+    newMax = Math.min(STAGES.length, (ch - 1) * newPer + newSub);
+  }
+  return { maxCleared: newMax, stars: out, layout: newPer };
+}
+
 function loadState() {
   let raw = null;
   try { raw = localStorage.getItem(SAVE_KEY); } catch (err) { raw = null; }
@@ -4289,7 +4348,10 @@ function loadState() {
   try {
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== 'object') throw new Error('bad save');
-    return sanitizeState(deepMerge(defaultState(), parsed));
+    const merged = deepMerge(defaultState(), parsed);
+    const oldLayout = parsed.stage && typeof parsed.stage === 'object' && parsed.stage.layout === undefined;
+    if (oldLayout) merged.stage = migrateStageLayout5(merged.stage);
+    return sanitizeState(merged);
   } catch (err) {
     UI.loadError = true;
     return defaultState();
@@ -6995,7 +7057,7 @@ function stoneLabelOf(element) {
 function stageUpgradePlan(stage) {
   const team = getTeamPets();
   const power = Math.round(calcTeamPower(state));
-  const need = Math.round(num(stage && stage.recPower, 0));
+  const need = stageDisplayPower(stage);
   const gap = Math.max(0, need - power);
   let gapLine = '';
   if (need > 0) {
@@ -7124,11 +7186,11 @@ function finishBattle() {
         storyLine = feels.filter(Boolean).join(' ');
         if (stage.type === 'boss') {
           const chObj = CHAPTERS.find(c => c.id === stage.chapter);
-          const base = (stage.chapter - 1) * 5;
-          const chStars = [1, 2, 3, 4, 5].reduce((sum, k) => sum + num(state.stage.stars[base + k], 0), 0);
+          const base = (stage.chapter - 1) * STAGES_PER_CHAPTER;
+          const chStars = Array.from({ length: STAGES_PER_CHAPTER }, (_, k) => num(state.stage.stars[base + k + 1], 0)).reduce((sum, v) => sum + v, 0);
           review = {
             title: `第${stage.chapter}章 · ${chObj ? chObj.name : ''} 通关回顾`,
-            stars: `本章星级 ${chStars}/15`,
+            stars: `本章星级 ${chStars}/${STAGES_PER_CHAPTER * 3}`,
             boss: `首领「${stage.name}」已被击退`,
             vibe: chObj ? chObj.desc : ''
           };
@@ -7138,7 +7200,7 @@ function finishBattle() {
       }
       resultNote = firstClear
         ? `第 ${stage.chapter} 章进度推进了，新的挂机上限已更新到 ${stage.chapter}-${stage.sub}。`
-        : `扫荡与重复挑战都会继续产出资源。当前最高通关：${Math.floor((state.stage.maxCleared - 1) / 5) + 1}-${((state.stage.maxCleared - 1) % 5) + 1}。`;
+        : `扫荡与重复挑战都会继续产出资源。当前最高通关：${Math.floor((state.stage.maxCleared - 1) / STAGES_PER_CHAPTER) + 1}-${((state.stage.maxCleared - 1) % STAGES_PER_CHAPTER) + 1}。`;
     } else {
       storyLine = pick(FAIL_FEEL);
       resultSub = pick(FAIL_SUB_POOL);
@@ -7361,11 +7423,11 @@ function pageHead(eyebrow, title, sub, actions = '') {
   return `<div class="page-head"><div><p class="eyebrow">${esc(eyebrow)}</p><h1 class="page-title">${title}</h1><p class="page-sub">${sub}</p></div><div class="head-actions">${actions}</div></div>`;
 }
 function currentChapterNumber() {
-  return clamp(Math.ceil((state.stage.maxCleared + 1) / 5), 1, CHAPTERS.length);
+  return clamp(Math.ceil((state.stage.maxCleared + 1) / STAGES_PER_CHAPTER), 1, CHAPTERS.length);
 }
 function chapterUnlocked(chapterId) {
   if (chapterId <= 1) return true;
-  return state.stage.maxCleared >= (chapterId - 1) * 5;
+  return state.stage.maxCleared >= (chapterId - 1) * STAGES_PER_CHAPTER;
 }
 function highestStageLabel() {
   if (!state.stage.maxCleared) return '尚未通关';
@@ -7790,7 +7852,7 @@ function renderHome() {
           <button class="quick-btn" type="button" data-act="nav" data-tab="quest"><span class="emoji">📜</span>领奖励</button>
           <button class="quick-btn" type="button" data-act="openRebirth"><span class="emoji">🌀</span>轮回殿</button>
         </div>
-        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（推荐战力 ${fmt(next.recPower)}）。` : '主线已全部通关，去爬塔或轮回吧。'} 当前队伍战力 ${fmt(power)}。</div>
+        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（敌人战力 ${fmt(stageDisplayPower(next))}）。` : '主线已全部通关，去爬塔或轮回吧。'} 当前队伍战力 ${fmt(power)}。</div>
       </div>
 
       <div class="grid">
@@ -7862,13 +7924,13 @@ function renderAdventure() {
   UI.adventureChapter = clamp(UI.adventureChapter, 1, CHAPTERS.length);
   const ch = CHAPTERS[UI.adventureChapter - 1];
   const unlocked = chapterUnlocked(ch.id);
-  const stageStart = (ch.id - 1) * 5;
+  const stageStart = (ch.id - 1) * STAGES_PER_CHAPTER;
   const teamPower = calcTeamPower();
   const next = nextStageInfo();
   const modeIndex = currentDungeonModeIndex();
   const dungeon = DUNGEON_MODES[modeIndex];
   const dungeonReward = makeDungeonReward(modeIndex);
-  const chapterStars = Array.from({ length: 5 }, (_, i) => state.stage.stars[stageStart + i + 1] || 0);
+  const chapterStars = Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => state.stage.stars[stageStart + i + 1] || 0);
   const earnedStars = sum(chapterStars);
   return `
   <div class="page">
@@ -7885,14 +7947,14 @@ function renderAdventure() {
     </div>
     <div class="chapter-banner">
       <div class="flex"><span class="ch-large">${ch.emoji}</span><div><h2>第 ${ch.id} 章 · ${esc(ch.name)} ${unlocked ? '' : '🔒'}</h2><p>${esc(ch.desc)}</p>${(CHAPTER_NARRATIVE[ch.id] || {}).enter ? `<p class="chapter-story">📖 ${esc(CHAPTER_NARRATIVE[ch.id].enter)}</p>` : ''}</div></div>
-      <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/15</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
+      <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/${STAGES_PER_CHAPTER * 3}</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
     </div>
     <div class="card">
-      <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>3 小怪 + 1 精英 + 章节首领。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
-      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比推荐值：</span>${next ? `<span class="chip ${teamPower >= next.recPower ? 'mint' : 'pink'}">${teamPower >= next.recPower ? '状态良好' : '建议再养成'}</span>` : '<span class="chip mint">全通关</span>'}</div>
+      <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>4 小怪 + 2 精英 + 章节首领（每章 7 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
+      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageDisplayPower(next) ? 'mint' : 'pink'}">${teamPower >= stageDisplayPower(next) ? '状态良好' : '建议再养成'}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
-        ${Array.from({ length: 5 }, (_, i) => {
+        ${Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => {
           const stage = getStage(stageStart + i + 1);
           const isLocked = !unlocked || stage.index > state.stage.maxCleared + 1;
           const isCleared = state.stage.maxCleared >= stage.index;
@@ -7904,7 +7966,7 @@ function renderAdventure() {
             <div class="stage-emoji">${isLocked ? '🔒' : stage.emoji}</div>
             <div class="stage-name">${esc(stage.name)}</div>
             ${!isLocked && stage.blurb ? `<div class="stage-blurb">${esc(stage.blurb)}</div>` : ''}
-            <div class="stage-meta">推荐战力 ${fmt(stage.recPower)} · ${ELEMENTS[stage.element].emoji}${ELEMENTS[stage.element].name}</div>
+            <div class="stage-meta">敌人战力 ${fmt(stageDisplayPower(stage))} · ${ELEMENTS[stage.element].emoji}${ELEMENTS[stage.element].name}</div>
             <div class="stars-display">${[1, 2, 3].map(n => `<span class="${n <= stars ? '' : 'off'}">★</span>`).join('')}</div>
             <div class="stage-actions">
               ${isLocked
@@ -8145,7 +8207,7 @@ function renderBattlePage() {
   const teamPower = calcTeamPower();
   const topList = board.list.slice(0, 5);
   const clearedStage = state.stage.maxCleared || 0;
-  const stageLabel = clearedStage > 0 ? `${Math.floor((clearedStage - 1) / 5) + 1}-${((clearedStage - 1) % 5) + 1}` : '尚未通关';
+  const stageLabel = clearedStage > 0 ? `${Math.floor((clearedStage - 1) / STAGES_PER_CHAPTER) + 1}-${((clearedStage - 1) % STAGES_PER_CHAPTER) + 1}` : '尚未通关';
 
   return `
   <div class="page">
@@ -9045,7 +9107,7 @@ function openEquipPetPicker(itemId) {
 
 /* -------- 轮回之泉 -------- */
 function rebirthEternalPreview() {
-  return 10 + Math.floor(calcTeamPower() / 1500) + Math.floor(state.stage.maxCleared / 5) * 2;
+  return 10 + Math.floor(calcTeamPower() / 1500) + Math.floor(state.stage.maxCleared / STAGES_PER_CHAPTER) * 2;
 }
 function rebirthUpgradeCost(upgrade) {
   const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
@@ -9075,7 +9137,7 @@ function openRebirthModal() {
     <div class="note lav">已通关 ${state.stage.maxCleared} 关 · 队伍战力 ${fmt(calcTeamPower())}。通关章节越多，轮回获得的永恒结晶越多。</div>
     <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入轮回</button>
     <div class="tiny muted center" style="margin-top:6px">需要再次确认，不会误触。</div>`
-    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>轮回之泉还在沉睡</h3><p>通关第 5 章首领（5-5）后开启。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, 25 - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
+    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>轮回之泉还在沉睡</h3><p>通关第 5 章首领（5-${STAGES_PER_CHAPTER}）后开启。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, 5 * STAGES_PER_CHAPTER - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
   openModal('🌀 轮回之泉', body, { wide: true });
 }
 function openRebirthConfirm() {
@@ -9138,7 +9200,7 @@ function openSettingsModal() {
       <h3>📊 战力对比</h3>
       <div class="compare-table">
         <div><span>我方队伍</span><b>${fmt(power)}</b></div>
-        <div><span>下一关推荐</span><b>${next ? fmt(next.recPower) : '已通关'}</b></div>
+        <div><span>下一关敌人战力</span><b>${next ? fmt(stageDisplayPower(next)) : '已通关'}</b></div>
         <div><span>当前塔层推荐</span><b>${fmt(towerFloorPower(Math.min(30, state.tower.floor)))}</b></div>
         <div><span>竞技场对手均值</span><b>${fmt(UI.arenaOpponents.length ? Math.round(sum(UI.arenaOpponents.map(o => o.power)) / UI.arenaOpponents.length) : power)}</b></div>
       </div>
@@ -9623,9 +9685,7 @@ function buildStageEnemyOptions(stage) {
   const source = pool.length ? pool : PETS.filter(p => p.element === stage.element);
   const lineup = [];
   for (let i = 0; i < count; i++) lineup.push(pick(source.length ? source : enemyPetPool()).id);
-  // 标准加难：前两章温和不劝退，第 3 章起逐步抬升敌方战力系数；后期需练度与属性克制
-  const diff = stage.chapter <= 2 ? 0.92 : (stage.chapter <= 5 ? 1.02 : (stage.chapter <= 8 ? 1.12 : 1.18));
-  const baseFactor = stage.type === 'boss' ? 1.08 : (stage.type === 'elite' ? 1.00 : 0.92);
+  // 章节难度统一由 STAGE_DIFFICULTY 决定（见 stageEnemyPower），这里不再二次缩放
   const bossDef = stage.type === 'boss' ? bossByChapter(stage.chapter) : null;
   // 章节越早 Boss 档案倍率打折，避免新手首章被高血 Boss 劝退；后期足额高属性
   const bossScale = bossDef ? (stage.chapter <= 2 ? 0.82 : (stage.chapter <= 5 ? 0.92 : 1)) : 1;
@@ -9639,7 +9699,7 @@ function buildStageEnemyOptions(stage) {
     bossScale,
     bossName: bossDef ? bossDef.name : stage.name,
     bossEmoji: bossDef ? bossDef.emoji : stage.emoji,
-    powerFactor: baseFactor * diff,
+    powerFactor: 1,
     level: Math.max(3, Math.round(3 + stage.index * 1.45)),
     star: 1,
     evo: stage.chapter >= 7 ? 1 : 0
@@ -9652,7 +9712,7 @@ function startStage(index) {
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
   // 最终关留 5% 余量：满配战力 25,773 对 25,024 只剩 3%，少练一只或换队就会卡死
-  const enemyPower = stage.index === STAGES.length ? Math.round(stage.recPower * 0.95) : stage.recPower;
+  const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
   const enemies = createEnemyFormation(enemyPower, buildStageEnemyOptions(stage));
   if (!spendStamina(STAGE_STAMINA_COST)) { toast('体力不足', 'bad'); return; }
   bumpMetric('battles', 1);
