@@ -421,6 +421,7 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('.idle-hud{position:relative'), '挂机信息条应移出场景以免与宠物重叠');
   // 菜地：进度缩放（金币）、稀有掉落、自动收获
   check(text.includes('function gardenProgressMult') && text.includes('function gardenDropBonus'), '菜园缺少进度缩放/掉落');
+  check(text.includes('wind: 0, ice: 0'), '进化石应覆盖 8 个属性（风/冰曾显示 undefined）');
   check(text.includes('function buyGardenAutoHarvest') && text.includes("case 'gardenAutoHarvest'"), '菜园缺少自动收获解锁');
 
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');

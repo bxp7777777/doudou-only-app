@@ -500,6 +500,7 @@ body.theme-duo .bg::after {
 /* 小日子 */
 .chips {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin: 10px 0 14px;
 }
@@ -547,6 +548,12 @@ body.theme-duo .bg::after {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* 行内输入框允许收缩：320px 窄屏上搜索框 + 按钮原本会顶出屏幕 */
+.row .input {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .input {
@@ -1005,6 +1012,7 @@ body.theme-duo .bg::after {
 }
 
 .tag-chip {
+  flex: 0 0 auto;
   padding: 5px 10px;
   border-radius: 999px;
   border: 1px dashed #ffd7de;
