@@ -380,6 +380,18 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(migrated.layout === 7, '迁移后应记录新布局 7 关/章');
 }
 
+/* 竞技商店：4 件养成材料、每日限购、入口按钮与购买动作都接上了 */
+{
+  const shopBlock = text.slice(text.indexOf('const ARENA_SHOP = ['), text.indexOf('const ARENA_SHOP_MAP'));
+  check((shopBlock.match(/\{ id: '/g) || []).length === 4, '竞技商店应有 4 件商品');
+  check(shopBlock.includes("reward: { stonesRandom: 3 }") && shopBlock.includes("reward: { challenge: 2 }"), '竞技商店应能换进化石与挑战券');
+  check(text.includes("case 'buyArenaItem': buyArenaItem(target.dataset.id); break;"), '竞技商店缺少购买动作分发');
+  check(text.includes("id: 'arena', name: '竞技'"), '商店缺少「竞技」子页');
+  check(text.includes('function arenaShopReset') && text.includes('shopCount'), '竞技商店缺少每日限购计数');
+  check(text.includes('lastWinBonusDate'), '竞技场缺少每日首胜记录字段');
+  check(text.includes('const factors = [0.85, 0.95, 1.05]'), '竞技场对手战力档位应为 85%/95%/105%');
+}
+
 if (problems.length) {
   console.error('❌ 游戏冒烟 ' + problems.length + ' 条问题：');
   problems.slice(0, 20).forEach((p) => console.error(' - ' + p));

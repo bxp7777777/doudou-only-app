@@ -4089,7 +4089,7 @@ function defaultState() {
     nextEquipId: 1,
     stage: { maxCleared: 0, stars: {}, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0 },
-    arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0 },
+    arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
     boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
     encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0 },
     gacha: { normal: 0, rare: 0, total: 0, lastResults: [] },
@@ -4228,6 +4228,9 @@ function sanitizeState(s) {
   s.arena.season = Math.max(1, Math.floor(num(s.arena.season, 1)));
   s.arena.lastSettleDate = String(s.arena.lastSettleDate || '');
   s.arena.streakRewardGiven = Math.max(0, Math.floor(num(s.arena.streakRewardGiven, 0)));
+  s.arena.lastWinBonusDate = String(s.arena.lastWinBonusDate || '');
+  s.arena.shopDay = String(s.arena.shopDay || '');
+  s.arena.shopCount = s.arena.shopCount && typeof s.arena.shopCount === 'object' ? s.arena.shopCount : {};
   if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' };
   s.boss.attempts = clamp(Math.floor(num(s.boss.attempts, 0)), 0, 3);
   s.boss.bestDamage = Math.max(0, Math.floor(num(s.boss.bestDamage, 0)));
@@ -4967,6 +4970,9 @@ function ensureArenaSeason(s = state, now = Date.now()) {
     const tier = arenaTierOf(s.arena.rating);
     const bonus = Math.floor(tier.reward * 1.6);
     s.items.arenaCoin += bonus;
+    // 赛季奖励除了竞技币，还按段位发养成材料，让冲段位有实感
+    if (tier.order >= 2) s.items.starShard += 6 + tier.order * 4;
+    if (tier.order >= 3) s.items.skillBook += 1;
     s.arena.rating = 1000;
     s.arena.wins = 0;
     s.arena.losses = 0;
@@ -5314,7 +5320,8 @@ function generateArenaOpponents(force = false) {
   ].join(':');
   if (!force && UI.arenaOpponents.length && UI.arenaRefreshTag === tag) return UI.arenaOpponents;
   const power = Math.max(900, calcTeamPower());
-  const factors = [0.58, 0.74, 0.90];
+  // 对手不再全是软柿子：三档分别是 85% / 95% / 105% 队伍战力，第三档会真正压着你打
+  const factors = [0.85, 0.95, 1.05];
   const names = ARENA_NAMES.slice().sort(() => Math.random() - 0.5);
   UI.arenaOpponents = factors.map((factor, i) => {
     const lineup = [];
@@ -5324,7 +5331,8 @@ function generateArenaOpponents(force = false) {
       id: 'opp' + i,
       name: names[i],
       factor,
-      rating: Math.max(700, Math.round(state.arena.rating + (factor - 0.74) * 600 + rndInt(-25, 25))),
+      index: i,
+      rating: Math.max(700, Math.round(state.arena.rating + (factor - 0.95) * 600 + rndInt(-25, 25))),
       power: Math.max(500, Math.round(power * factor)),
       lineup,
       emojis: lineup.map(id => petEmojiById(id, 0)).join('')
@@ -7049,6 +7057,44 @@ const ARENA_STREAK_REWARDS = [
   { streak: 5, reward: { arenaCoin: 60, crystal: 5 }, label: '5 连胜' },
   { streak: 8, reward: { arenaCoin: 100, crystal: 12 }, label: '8 连胜' }
 ];
+// 竞技商店：竞技币换养成材料。每日限量，让「打竞技场」有实打实的产出，又不会刷穿经济
+const ARENA_SHOP = [
+  { id: 'stone3', name: '进化石福袋', emoji: '💎', cost: 180, limit: 1, desc: '随机属性进化石 ×3', reward: { stonesRandom: 3 } },
+  { id: 'star10', name: '星尘碎片包', emoji: '🌠', cost: 240, limit: 1, desc: '星尘碎片 ×10', reward: { starShard: 10 } },
+  { id: 'book1', name: '技能书', emoji: '📘', cost: 200, limit: 1, desc: '技能书 ×1', reward: { skillBook: 1 } },
+  { id: 'ticket2', name: '挑战券', emoji: '🎟️', cost: 120, limit: 2, desc: '挑战券 ×2', reward: { challenge: 2 } }
+];
+const ARENA_SHOP_MAP = Object.fromEntries(ARENA_SHOP.map(it => [it.id, it]));
+// 竞技商店每日限购计数（日期变了自动清零，复用已有 arena 存档字段，不新增存档键）
+function arenaShopReset(s = state) {
+  const today = localDateKey();
+  if (s.arena.shopDay !== today) {
+    s.arena.shopDay = today;
+    s.arena.shopCount = {};
+  }
+  return s.arena.shopCount || {};
+}
+function arenaShopBought(id, s = state) {
+  const counts = arenaShopReset(s);
+  return Math.max(0, Math.floor(num(counts[id], 0)));
+}
+function buyArenaItem(id) {
+  const item = ARENA_SHOP_MAP[id];
+  if (!item) return;
+  const counts = arenaShopReset();
+  const bought = Math.max(0, Math.floor(num(counts[id], 0)));
+  if (bought >= item.limit) { toast('今天这件已经换完了，明天再来', 'bad'); return; }
+  if (state.items.arenaCoin < item.cost) { toast(`竞技币不足，需要 ${item.cost}`, 'bad'); return; }
+  if (item.reward.challenge && state.challenge.value >= state.challenge.max) { toast('挑战券已经满额，先花掉几张再来换', 'bad'); return; }
+  state.items.arenaCoin -= item.cost;
+  counts[id] = bought + 1;
+  state.arena.shopCount = counts;
+  const logs = addReward(item.reward);
+  saveGame();
+  renderAll();
+  toast(`兑换「${item.name}」：${rewardLogText(logs)}`, 'gold', 2600);
+  playSfx('buy');
+}
 // 主线失败时的“变强清单”：依据当前队伍真实状态给可执行提示，纯展示不自动战斗
 function stoneLabelOf(element) {
   return { fire: '火', grass: '草', water: '水', light: '光', dark: '暗', earth: '土' }[element] || '通用';
@@ -7244,7 +7290,9 @@ function finishBattle() {
     let streakExtra = [];
     let streakNote = '';
     if (win) {
-      delta = 24 + rndInt(0, 8);
+      // 越强的对手给越多的段位分：挑战第三档才有爬段位的意义
+      const oppIndex = clamp(Math.floor(num(b.config.opponent && b.config.opponent.index, 0)), 0, 2);
+      delta = [14, 22, 30][oppIndex] + rndInt(0, 5) + tier.order * 2;
       state.arena.rating += delta;
       state.arena.wins += 1;
       bumpMetric('arenaWins', 1);
@@ -7252,6 +7300,13 @@ function finishBattle() {
       state.hall.arenaWinStreak = Math.max(state.hall.arenaWinStreak || 0, state.hall.arenaStreak);
       state.hall.arenaBest = Math.max(state.hall.arenaBest || 0, state.arena.rating);
       logs = addReward({ arenaCoin: 24 + tier.order * 6, crystal: 8 + tier.order * 3 });
+      // 每日首胜：一天一次，把「每天来打一场」变成习惯
+      const winDay = localDateKey();
+      if (state.arena.lastWinBonusDate !== winDay) {
+        state.arena.lastWinBonusDate = winDay;
+        logs = logs.concat(addReward({ crystal: 20, arenaCoin: 30 }));
+        streakNote += ' 🌅今日首胜额外奖励已发放。';
+      }
       // 连胜档一次性奖励：达到 3/5/8 且未领过才发，不重复领取
       const curStreak = state.hall.arenaStreak;
       let givenMark = state.arena.streakRewardGiven || 0;
@@ -7396,7 +7451,7 @@ const PET_SUBTABS = [
   { id: 'codex', name: '图鉴' }, { id: 'growth', name: '养成' }
 ];
 const SHOP_SUBTABS = [
-  { id: 'gacha', name: '抽蛋' }, { id: 'exchange', name: '兑换' }, { id: 'cosmetic', name: '装扮' }
+  { id: 'gacha', name: '抽蛋' }, { id: 'exchange', name: '兑换' }, { id: 'arena', name: '竞技' }, { id: 'cosmetic', name: '装扮' }
 ];
 const QUEST_SUBTABS = [
   { id: 'daily', name: '每日' }, { id: 'achievements', name: '成就' }, { id: 'signin', name: '签到' }, { id: 'mini', name: '小游戏' }
@@ -8235,6 +8290,7 @@ function renderBattlePage() {
             <div class="idle-stat"><span>段位分</span><b>${fmt(state.arena.rating)}</b></div>
             <div class="idle-stat"><span>赛季剩余</span><b>${Math.ceil(seasonRemainMs() / DAY_MS)} 天</b></div>
             <div class="idle-stat"><span>胜负</span><b>${state.arena.wins} / ${state.arena.losses}</b></div>
+            <div class="idle-stat"><span>今日首胜</span><b>${state.arena.lastWinBonusDate === localDateKey() ? '已领取' : '待领取 +20💎'}</b></div>
           </div>
           <div class="arena-opponents">
             ${UI.arenaOpponents.map((opp, i) => `<div class="arena-opponent">
@@ -8247,7 +8303,7 @@ function renderBattlePage() {
             <button class="btn btn-ghost btn-xs" type="button" data-act="refreshArena">🔄 换一批对手</button>
             <button class="btn ${settleReady ? 'btn-mint' : 'btn-ghost'} btn-xs" type="button" data-act="arenaSettle" ${settleReady ? '' : 'disabled'}>${settleReady ? `今日结算 🎖️${settleReward}` : '今日已结算'}</button>
           </div>
-          <div class="note lav" style="margin-top:8px">赛季每 7 天重置到 1000 分，并按段位发放额外竞技币。竞技币可在商店换装扮。</div>
+          <div class="note lav" style="margin-top:8px">赛季每 7 天重置到 1000 分，并按段位发放额外竞技币与养成材料。竞技币可在「商店 · 竞技」换进化石、星尘、技能书、挑战券，也能换装扮。</div>
         </div>
       </div>
 
@@ -8405,6 +8461,31 @@ function renderShop() {
           <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
           <button class="btn btn-lav btn-xs" type="button" data-act="buyChallengeTicket" ${state.challenge.value >= state.challenge.max || state.resources.crystal < CHALLENGE_TICKET_PRICE ? 'disabled' : ''}>💎${CHALLENGE_TICKET_PRICE} 换 1</button>
         </div>
+      </div>`;
+  } else if (tab === 'arena') {
+    const counts = arenaShopReset();
+    const tier = arenaTierOf(state.arena.rating);
+    const firstWinDone = state.arena.lastWinBonusDate === localDateKey();
+    body = `
+      <div class="card">
+        <div class="card-head"><div><h2>🏟️ 竞技商店</h2><p>竞技币在这里花：进化石、星尘、技能书、挑战券。每日限量，第二天刷新。</p></div><span class="chip">🎖️ 竞技币 ${fmt(state.items.arenaCoin)}</span></div>
+        <div class="grid two">
+          ${ARENA_SHOP.map(item => {
+            const bought = Math.max(0, Math.floor(num(counts[item.id], 0)));
+            const soldOut = bought >= item.limit;
+            const canBuy = !soldOut && state.items.arenaCoin >= item.cost;
+            return `<div class="shop-item">
+              <span class="shop-ico">${item.emoji}</span><b>${item.name}</b><p>${esc(item.desc)}</p>
+              <button class="btn ${soldOut ? 'btn-ghost' : 'btn-yellow'} btn-xs" type="button" data-act="buyArenaItem" data-id="${item.id}" ${canBuy ? '' : 'disabled'}>${soldOut ? '今日已换完' : `🎖️ ${item.cost}`}</button>
+              <div class="tiny muted" style="margin-top:4px">今日 ${bought}/${item.limit}</div>
+            </div>`;
+          }).join('')}
+        </div>
+        <div class="note lav" style="margin-top:10px">竞技币来源：每日段位结算、每日首胜（+30）、连胜档、赛季重置。段位越高，结算越多。</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><h2>🏆 今天的竞技场</h2><p>段位 <b style="color:${tier.color}">${tier.emoji} ${tier.name}</b> · 今日首胜 ${firstWinDone ? '已领取' : '还没拿'} · 三档对手分别是队伍战力的 85% / 95% / 105%。</p></div></div>
+        <div class="flex" style="gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="nav" data-tab="battle">去竞技场</button><button class="btn btn-ghost" type="button" data-act="nav" data-tab="quest">看看每日任务</button></div>
       </div>`;
   } else {
     const main = getMainPet();
@@ -10147,7 +10228,7 @@ function startArena(index) {
   saveGame();
   const ok = startBattle({
     mode: 'arena',
-    opponent: { name: opp.name, rating: opp.rating, power: opp.power },
+    opponent: { name: opp.name, rating: opp.rating, power: opp.power, index: index, factor: opp.factor },
     title: `竞技场 · 对阵 ${opp.name}`,
     subtitle: `对手战力 ${fmt(opp.power)} · 胜利提升段位分`,
     emoji: '🏟️',
@@ -10656,6 +10737,7 @@ function handleActionClick(event) {
     case 'buyChallengeTicket': buyChallengeTicket(); break;
     case 'buyStone': buyStone(target.dataset.el); break;
     case 'buyCosmetic': buyCosmetic(target.dataset.id); break;
+      case 'buyArenaItem': buyArenaItem(target.dataset.id); break;
     case 'equipCosmetic': equipCosmetic(target.dataset.id); break;
 
     case 'claimDaily': claimDailyTask(target.dataset.id); break;
