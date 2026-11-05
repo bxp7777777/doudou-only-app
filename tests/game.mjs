@@ -403,6 +403,10 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function levelUpTeam') && text.includes('data-act="levelTeam"'), '缺少一键升级队伍');
   check(text.includes('function stageAdvice') && text.includes('推荐强度'), '缺少关卡推荐强度提示');
   check(text.includes('参考需求'), '战力对比应给出参考需求战力');
+  check(text.includes('function stageNeedPower'), '缺少实战需求战力换算 stageNeedPower');
+  check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
+  check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');
+  check(text.includes("const SAVE_KEY = 'ddgame:v1';"), '存档键名不应改变');
   check(text.includes('const count = 3;'), '关卡敌人应统一 3 只，避免单只怪物吃掉全部战力');
   check(text.includes("metric: 'stageClears'"), '每日清剿任务应可用通关完成');
   check(text.includes('wantPower / got'), '敌人战力应按真实战力二次校准');

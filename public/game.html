@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#fff7e9">
 <meta name="description" content="周思汐的小镇：单文件挂机养成对战小游戏">
+<link rel="manifest" href="/game.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="小镇">
 <title>周思汐的小镇 · 挂机养成对战</title>
 <style>
 /* ============================================================
@@ -2880,7 +2885,7 @@ const TUTORIAL_STEPS = [
 ];
 
 const HELP_FAQ = [
-  ['离线收益怎么算？', '每次离开/刷新时记录 Date.now()。回来时按时间差计算，离线时长最多 12 小时，收益系数 0.6；离线挂机位每格额外 +15%。'],
+  ['离线收益怎么算？', '每次离开/刷新时记录 Date.now()。回来时按时间差计算，离线时长最多 12 小时，收益系数 0.6；离线挂机位每格额外 +20%。'],
   ['为什么战力比推荐战力低还能赢？', '推荐战力是队伍总战力的参考值。属性克制、暴击、回复、护盾和速度都会改变结果，低 10% 左右仍有机会。'],
   ['十连保底是什么？', '普通蛋与稀有蛋的十连中，如果前 9 个都没有 SR/SSR，最后一个必定是 SR 或 SSR。概率公示在商店抽蛋页。'],
   ['重复宠物有什么用？', '重复的宠物会自动转换成同种族碎片。碎片用于升星，也可以在兑换商店定向兑换未拥有的宠物。'],
@@ -4017,6 +4022,12 @@ const COSMETIC_SCENE = {
 
 /* ========== 2. 存档与核心状态 ========== */
 const SAVE_KEY = 'ddgame:v1';
+// PWA：离线也能开局。SW 注册只在 http(s) 下生效（file:// 打开时跳过，不影响本地调试）
+function registerGameServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  if (!/^https?:$/.test(location.protocol)) return;
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
 const MAX_STAMINA = 100;
 const MAX_CHALLENGE = 10;
 const STAMINA_REGEN_MS = 5 * 60 * 1000;
@@ -5396,7 +5407,7 @@ function accrueIdle(seconds, s = state) {
   for (const pet of team) pet.intimacy = clamp(num(pet.intimacy, 0) + seconds * 0.00035, 0, 100);
 }
 function offlineSlotsBonus(s = state) {
-  return 1 + clamp(s.idle.offlineSlots, 0, 4) * 0.15;
+  return 1 + clamp(s.idle.offlineSlots, 0, 4) * 0.2;
 }
 // 离线收益 = 离线时每秒产出 × 离线秒数 × 0.6 × 挂机位加成。
 // 离线秒数由 Date.now() 与存档 savedAt 的差值得到，最多 12 小时。
@@ -7165,9 +7176,15 @@ function stoneLabelOf(element) {
   return { fire: '火', grass: '草', water: '水', light: '光', dark: '暗', earth: '土' }[element] || '通用';
 }
 // 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
+// 实战需要：敌人显示战力 × 经验系数。实测前期要 1.4 倍才打得平（敌人属性分配更极端），
+// 后期玩家技能/装备更全，1.18 倍就够；用同一条曲线，避免"推荐强度"和战力对比两条标准打架。
+function stageNeedPower(stage) {
+  const k = 1.4 - 0.22 * ((stage.index - 1) / Math.max(1, STAGES.length - 1));
+  return Math.round(stageDisplayPower(stage) * k);
+}
 // 关卡推荐强度：把敌人战力换算成"等级/星级/进化"这类玩家看得懂的目标
 function stageAdvice(stage) {
-  const need = stageDisplayPower(stage);
+  const need = stageNeedPower(stage);
   if (need < 3000) return 'Lv.10 · ★1 · 幼体';
   if (need < 6000) return 'Lv.20 · ★2 · 幼体';
   if (need < 10000) return 'Lv.30 · ★4 · 成体';
@@ -7179,7 +7196,7 @@ function stageAdvice(stage) {
 function stageUpgradePlan(stage) {
   const team = getTeamPets();
   const power = Math.round(calcTeamPower(state));
-  const need = stageDisplayPower(stage);
+  const need = stageNeedPower(stage);
   const gap = Math.max(0, need - power);
   let gapLine = `参考强度：${stageAdvice(stage)}。`;
   if (need > 0) {
@@ -7327,7 +7344,9 @@ function finishBattle() {
     } else {
       storyLine = pick(FAIL_FEEL);
       resultSub = pick(FAIL_SUB_POOL);
-      resultNote = pick(['队伍还需要再成长一点。', '再练练等级、装备与属性克制就好了。', '先养一波状态，回头轻松拿下这关。']);
+      resultNote = outcome === 'timeout'
+        ? '回合打满了还没打完，说明输出不够：先升攻击型宠物的等级/装备，或换被克制的属性上阵。'
+        : pick(['队伍还需要再成长一点。', '再练练等级、装备与属性克制就好了。', '先养一波状态，回头轻松拿下这关。']);
       {
         const plan = stageUpgradePlan(stage);
         const ordered = plan.actions.slice().sort((a, b) => a.weight - b.weight);
@@ -7964,11 +7983,11 @@ function renderHome() {
       ${careCardHTML()}
       <div class="boost-row">
         <span class="boost-pill ${boostRemain > 0 ? 'active' : ''}" id="homeBoostTimer">${boostRemain > 0 ? `双倍加速中 ${fmtClock(boostRemain)}` : '当前未加速'}</span>
-        <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="gold">🪙 1200 · 5 分钟 2 倍</button>
-        <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="crystal">💎 30 · 30 分钟 2 倍</button>
-        <button class="btn btn-ghost btn-xs" type="button" data-act="buyOfflineSlot" ${state.idle.offlineSlots >= 4 ? 'disabled' : ''}>🛏️ 离线位 +15% · 💎 ${slotCost}</button>
+        <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="gold">🪙 200 · 30 分钟 2 倍</button>
+        <button class="btn btn-ghost btn-xs" type="button" data-act="buyBoost" data-kind="crystal">💎 30 · 3 小时 2 倍</button>
+        <button class="btn btn-ghost btn-xs" type="button" data-act="buyOfflineSlot" ${state.idle.offlineSlots >= 4 ? 'disabled' : ''}>🛏️ 离线位 +20% · 💎 ${slotCost}</button>
       </div>
-      <div class="note" style="margin-top:10px">离线收益上限 12 小时，结算系数 0.6；离线挂机位 +${state.idle.offlineSlots} 格，当前额外 +${state.idle.offlineSlots * 15}%。驻守关卡越高，产出越多。</div>
+      <div class="note" style="margin-top:10px">离线收益上限 12 小时，结算系数 0.6；离线挂机位 +${state.idle.offlineSlots} 格，当前额外 +${state.idle.offlineSlots * 20}%。驻守关卡越高，产出越多。</div>
     </div>
 
     <div class="home-bottom-grid">
@@ -8083,7 +8102,7 @@ function renderAdventure() {
     </div>
     <div class="card">
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>4 小怪 + 2 精英 + 章节首领（每章 7 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
-      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageDisplayPower(next) * 1.4 ? 'mint' : 'pink'}">${teamPower >= stageDisplayPower(next) * 1.4 ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(Math.round(stageDisplayPower(next) * 1.4))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
+      <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageNeedPower(next) ? 'mint' : 'pink'}">${teamPower >= stageNeedPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(stageNeedPower(next))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
         ${Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => {
@@ -9820,8 +9839,8 @@ function showComboPop(el, n) {
 function buyBoost(kind) {
   const now = Date.now();
   const offer = kind === 'crystal'
-    ? { cost: { crystal: 30 }, duration: 30 * 60 * 1000, label: '30 分钟' }
-    : { cost: { gold: 1200 }, duration: 5 * 60 * 1000, label: '5 分钟' };
+    ? { cost: { crystal: 30 }, duration: 3 * 60 * 60 * 1000, label: '3 小时' }
+    : { cost: { gold: 200 }, duration: 30 * 60 * 1000, label: '30 分钟' };
   if (!canPayCost(offer.cost)) { toast(`资源不足：${costText(offer.cost)}`, 'bad'); return; }
   payCost(offer.cost);
   state.idle.boostUntil = Math.max(now, state.idle.boostUntil) + offer.duration;
@@ -9832,13 +9851,13 @@ function buyBoost(kind) {
 }
 function buyOfflineSlot() {
   if (state.idle.offlineSlots >= 4) { toast('离线挂机位已经满啦', 'bad'); return; }
-  const cost = { crystal: 260 * (state.idle.offlineSlots + 1) };
+  const cost = { crystal: 150 * (state.idle.offlineSlots + 1) };
   if (!canPayCost(cost)) { toast(`需要 ${costText(cost)}`, 'bad'); return; }
   payCost(cost);
   state.idle.offlineSlots += 1;
   saveGame();
   renderAll();
-  toast(`离线挂机位 +1，离线收益额外 +15%`, 'good');
+  toast(`离线挂机位 +1，离线收益额外 +20%`, 'good');
 }
 
 /* -------- 关卡 / 副本 -------- */
@@ -11283,6 +11302,7 @@ function bootGame() {
     if (UI.loadError) toast('存档读取失败，已用新的小镇重新开始。', 'bad', 3600);
     if (offer) setTimeout(() => showOfflineModal(offer), 520);
     if (state.settings.music) setTimeout(() => syncAudio(), 900);
+    registerGameServiceWorker();
   } catch (err) {
     try {
       state = defaultState();
