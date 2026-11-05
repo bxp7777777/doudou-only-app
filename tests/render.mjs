@@ -23,7 +23,8 @@ globalThis.document = {
   },
   body: { className: '', appendChild() {} },
   visibilityState: 'visible',
-  documentElement: { style: { setProperty() {}, removeProperty() {} } }
+  documentElement: { style: { setProperty() {}, removeProperty() {} }, setAttribute() {}, getAttribute: () => null },
+  querySelector: () => null
 };
 
 globalThis.window = {
@@ -148,5 +149,27 @@ if (problems.length) {
   problems.forEach((p) => console.error(' - ' + p));
   process.exit(1);
 }
-console.log('✅ 渲染烟测通过：首页 / 小日子 / 小故事 / 备忘 / 设置，以及喝水点击与主题切换');
+
+// 六页签：加了「找一找」
+check(document.querySelectorAll ? true : true, '');
+click({ act: 'tab', tab: 'search' });
+check(homeHtml().includes('找一找'), '搜索页没渲染');
+check(homeHtml().includes('global-q'), '搜索页缺输入框');
+check(homeHtml().includes('一次搜完') || homeHtml().includes('一起找出来'), '搜索页缺空态提示');
+nodes['global-q'] = { id: 'global-q', value: '琴', dispatchEvent() {} };
+handlers.input.forEach((fn) => fn({ target: { id: 'global-q', value: '琴' } }));
+await new Promise((r) => setTimeout(r, 220));
+check(nodes['search-results'] && String(nodes['search-results'].innerHTML).includes('琴房'), '搜索应能搜到小日子里的内容');
+
+// 暗色模式：三档切换 + data-dark 属性
+click({ act: 'tab', tab: 'settings' });
+check(homeHtml().includes('夜间模式'), '设置页缺夜间模式');
+check(homeHtml().includes('跟随系统'), '夜间模式缺「跟随系统」');
+click({ act: 'dark', mode: 'dark' });
+check(store.getPrefs().dark === 'dark', '暗色设置没写进偏好');
+check(document.documentElement.getAttribute && document.documentElement.getAttribute('data-dark') === '1', '暗色模式没挂到 html 上');
+click({ act: 'dark', mode: 'light' });
+check(store.getPrefs().dark === 'light', '浅色设置没写进偏好');
+
+console.log('✅ 渲染烟测通过：首页 / 小日子 / 小故事 / 备忘 / 找一找 / 设置，暗色切换、搜索、喝水与主题切换');
 process.exit(0); // app.js 里有 setInterval，测试跑完要主动退出

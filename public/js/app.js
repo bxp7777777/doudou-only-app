@@ -16,7 +16,8 @@ const TABS = [
   { key: 'cycle', icon: '🌸', label: '小日子' },
   { key: 'story', icon: '🌙', label: '每日故事' },
   { key: 'memo', icon: '📝', label: '备忘' },
-  { key: 'game', icon: '🎮', label: '养成' }
+  { key: 'game', icon: '🎮', label: '养成' },
+  { key: 'search', icon: '🔍', label: '找一找' }
 ];
 
 const state = {
@@ -28,7 +29,8 @@ const state = {
   diaryQuery: '',
   tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
   musicSleepTimer: null,
-  toolsOpen: false
+  toolsOpen: false,
+  searchQuery: ''
 };
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -155,6 +157,8 @@ function render() {
       ? storyPage()
       : state.tab === 'memo'
       ? memoPage()
+      : state.tab === 'search'
+      ? searchPage()
       : settingsPage();
 
   tabsEl.innerHTML = TABS.map(
@@ -956,6 +960,93 @@ function memoPage() {
 
 /* ------------------------- 记事本/设置 ------------------------- */
 
+function searchResultsHTML(q) {
+  const needle = String(q || '').trim().toLowerCase();
+  if (!needle) return '<p class="hint">输入一个词：小日子、备忘、想吃清单、重要日子会一起找出来。</p>';
+  const hit = (s) => String(s === null || s === undefined ? '' : s).toLowerCase().indexOf(needle) >= 0;
+  const groups = [];
+
+  const diary = store
+    .listDiary(4000)
+    .filter((e) => hit(e.text) || hit(e.date) || (e.tags || []).some(hit) || hit(moodLabel(e.mood)) || hit(bodyLabel(e.body)));
+  if (diary.length) {
+    groups.push({
+      emoji: '🌸',
+      name: '小日子',
+      rows: diary.slice(0, 30).map((e) => ({
+        text: String(e.text || '').trim() || '（这天只记了心情）',
+        meta: [e.date, moodLabel(e.mood), bodyLabel(e.body), (e.tags || []).map((t) => '#' + t).join(' ')]
+          .filter(Boolean)
+          .join(' · '),
+        act: 'search-diary',
+        date: e.date
+      }))
+    });
+  }
+
+  const memos = store.getMemos().filter((m) => hit(m.text));
+  if (memos.length) {
+    groups.push({
+      emoji: '📝',
+      name: '备忘',
+      rows: memos.slice(0, 30).map((m) => ({ text: m.text, meta: m.done ? '已完成' : '待办', act: 'search-memo' }))
+    });
+  }
+
+  const wishes = store.getWishes().filter((w) => hit(w.text));
+  if (wishes.length) {
+    groups.push({ emoji: '🍡', name: '想吃清单', rows: wishes.slice(0, 30).map((w) => ({ text: w.text, meta: '想吃', act: 'search-home' })) });
+  }
+
+  const miles = store.getMilestones().filter((m) => hit(m.label) || hit(m.date));
+  if (miles.length) {
+    const today = todayKey();
+    groups.push({
+      emoji: '📌',
+      name: '重要日子',
+      rows: miles.slice(0, 30).map((m) => {
+        const left = daysBetween(today, m.date);
+        return {
+          text: m.label,
+          meta: m.date + (left > 0 ? ' · 还有 ' + left + ' 天' : left === 0 ? ' · 就是今天' : ''),
+          act: 'search-home'
+        };
+      })
+    });
+  }
+
+  if (!groups.length) return '<p class="hint">没找到「' + esc(q) + '」。换个词试试，或者先在小日子/备忘里记一句。</p>';
+
+  return groups
+    .map(
+      (g) => `<div class="search-group">
+      <p class="search-group-name">${g.emoji} ${esc(g.name)} · ${g.rows.length}</p>
+      ${g.rows
+        .map(
+          (r) => `<button class="search-row" data-act="${r.act}"${r.date ? ' data-date="' + esc(r.date) + '"' : ''}>
+        <span class="search-text">${esc(r.text.length > 90 ? r.text.slice(0, 90) + '…' : r.text)}</span>
+        <span class="search-meta">${esc(r.meta)}</span>
+      </button>`
+        )
+        .join('')}
+    </div>`
+    )
+    .join('');
+}
+
+function searchPage() {
+  const q = state.searchQuery || '';
+  return `<div class="wrap">
+    ${hero('找一找', '小日子 / 备忘 / 想吃 / 重要日子，一次搜完')}
+    <section class="card">
+      <div class="row">
+        <input class="input" id="global-q" value="${esc(q)}" placeholder="搜关键词：琴、食堂、生日、蛋糕…" enterkeyhint="search" autocomplete="off">
+      </div>
+      <div id="search-results">${searchResultsHTML(q)}</div>
+    </section>
+  </div>`;
+}
+
 function settingsPage() {
   const prefs = store.getPrefs();
   const cfg = store.getCycle();
@@ -1006,6 +1097,12 @@ function settingsPage() {
         (t) => `<button class="theme-chip ${t.key === prefs.theme ? 'theme-chip-on' : ''}" data-act="theme" data-key="${t.key}">${esc(t.name)}</button>`
       ).join('')}</div>
       <button class="btn btn-ghost btn-mini" data-act="shuffle">换下一张</button>
+      <div class="divider-dots">✦</div>
+      <p class="line">夜间模式</p>
+      <p class="hint">默认跟随手机：白天浅色、晚上暗色；也可以固定一种。</p>
+      <div class="themes">${['auto', 'light', 'dark'].map(
+        (m) => `<button class="theme-chip ${prefs.dark === m ? 'theme-chip-on' : ''}" data-act="dark" data-mode="${m}">${ { auto: '跟随系统', light: '浅色', dark: '暗色' }[m] }</button>`
+      ).join('')}</div>
     </section>
 
     <section class="card">
@@ -1140,9 +1237,20 @@ function setTab(key) {
 
 /* 日记边写边存：不重渲染，免得光标跳走 */
 let diaryTimer = null;
+let searchTimer = null;
 document.addEventListener('input', (e) => {
   const el = e.target;
-  if (!el || el.id !== 'diary-text') return;
+  if (!el) return;
+  if (el.id === 'global-q') {
+    state.searchQuery = el.value;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      const box = document.getElementById('search-results');
+      if (box) box.innerHTML = searchResultsHTML(el.value);
+    }, 140);
+    return;
+  }
+  if (el.id !== 'diary-text') return;
   const count = document.getElementById('diary-count');
   const hint = document.getElementById('diary-saved');
   if (count) count.textContent = String(el.value.length);
@@ -1161,6 +1269,14 @@ document.addEventListener('click', (e) => {
   const today = todayKey();
 
   if (act === 'tab') return setTab(el.dataset.tab);
+
+  if (act === 'search-diary') {
+    state.diaryDate = el.dataset.date || todayKey();
+    setTab('cycle');
+    return;
+  }
+  if (act === 'search-memo') return setTab('memo');
+  if (act === 'search-home') return setTab('home');
 
   if (act === 'cup') {
     const before = store.waterCount(today);
@@ -1587,6 +1703,14 @@ document.addEventListener('click', (e) => {
     return toast('换成这套背景啦');
   }
 
+  if (act === 'dark') {
+    const mode = el.dataset.mode === 'light' || el.dataset.mode === 'dark' ? el.dataset.mode : 'auto';
+    store.setPrefs({ dark: mode });
+    applyTheme();
+    render();
+    return toast({ auto: '夜间模式跟随手机', light: '一直用浅色', dark: '一直用暗色' }[mode]);
+  }
+
   if (act === 'shuffle') {
     const next = (artIndexFor(store.getPrefs().theme) + 1) % DUO_ARTS.length;
     store.setPrefs({ theme: 'duo-' + (next + 1) });
@@ -1703,13 +1827,53 @@ function dayArtIndex() {
   return ((d % DUO_ARTS.length) + DUO_ARTS.length) % DUO_ARTS.length;
 }
 
+try {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onMq = () => {
+      if ((store.getPrefs().dark || 'auto') === 'auto') applyDark();
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onMq);
+    else if (mq.addListener) mq.addListener(onMq);
+  }
+} catch {
+  /* 老浏览器没有 matchMedia，忽略 */
+}
+
 function artIndexFor(theme) {
   const m = String(theme || '').match(/^duo-(\d)$/);
   if (m) return (Number(m[1]) - 1 + DUO_ARTS.length) % DUO_ARTS.length;
   return dayArtIndex();
 }
 
+function darkActive() {
+  const mode = store.getPrefs().dark || 'auto';
+  if (mode === 'dark') return true;
+  if (mode === 'light') return false;
+  try {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  } catch {
+    return false;
+  }
+}
+
+function applyDark() {
+  const on = darkActive();
+  try {
+    document.documentElement.setAttribute('data-dark', on ? '1' : '0');
+  } catch {
+    /* 极简环境没有 setAttribute，忽略 */
+  }
+  try {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', on ? '#161214' : '#fdf3f0');
+  } catch {
+    /* 忽略 */
+  }
+}
+
 function applyTheme() {
+  applyDark();
   const theme = store.getPrefs().theme || 'duo';
   const duo = String(theme).indexOf('duo') === 0;
   document.body.className = duo ? 'theme-duo' : 'theme-' + theme;

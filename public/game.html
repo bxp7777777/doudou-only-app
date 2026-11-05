@@ -470,7 +470,7 @@ img{max-width:100%}
 /* ---------- 宠物 ---------- */
 .subnav{display:flex;gap:6px;padding:5px;background:rgba(255,255,255,.6);border:1px solid var(--line);border-radius:16px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
 .subnav::-webkit-scrollbar{display:none}
-.subnav button{flex:0 0 auto;border:0;background:transparent;border-radius:11px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--muted);transition:.18s}
+.subnav button{flex:0 0 auto;border:0;background:transparent;border-radius:11px;padding:8px 14px;min-height:34px;display:inline-flex;align-items:center;font-size:12px;font-weight:700;color:var(--muted);transition:.18s}
 .subnav button.active{background:#fff;color:var(--ink);box-shadow:0 4px 12px rgba(151,118,84,.1)}
 .team-board{display:grid;gap:12px}
 .formation-row{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}
@@ -487,11 +487,11 @@ img{max-width:100%}
 .slot .slot-name{font-size:11px;font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .slot .slot-lv{font-size:9.5px;color:var(--muted)}
 .slot .slot-power{font-size:10px;color:#ac7435;font-weight:700}
-.slot .remove-x{position:absolute;right:5px;top:5px;width:20px;height:20px;border-radius:50%;border:0;background:#fff0e3;color:#b08266;font-size:11px;line-height:1;display:grid;place-items:center}
+.slot .remove-x{position:absolute;right:4px;top:4px;width:26px;height:26px;border-radius:50%;border:0;background:#fff0e3;color:#b08266;font-size:13px;line-height:1;display:grid;place-items:center}
 .slot .remove-x:hover{background:#ffd9d0;color:#9c4e3d}
 .slot.empty{color:#bda98f;font-size:11px;gap:3px}
 .slot.empty .plus{font-size:24px;line-height:1;opacity:.65}
-.slot .slot-role{position:absolute;left:6px;top:6px;font-size:8px;padding:1px 5px;border-radius:6px;background:#fff0df;color:#a47746}
+.slot .slot-role{position:absolute;left:6px;top:6px;font-size:10px;padding:1px 5px;border-radius:6px;background:#fff0df;color:#a47746}
 .pet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px}
 .pet-card{
   position:relative;border-radius:19px;padding:12px 12px 10px;background:linear-gradient(155deg,var(--paper),var(--rarity-soft,#f7f2eb));
@@ -1174,6 +1174,19 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .frame-pill{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#fff9ef;border:1px solid #f0ddc6;box-shadow:0 4px 10px rgba(140,104,70,.1)}
 
 /* 成就 */
+.team-preset-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed #ffe7e5}
+.team-preset-row:last-child{border-bottom:0}
+.codex-filter{overflow-x:auto;scrollbar-width:none}
+.codex-filter::-webkit-scrollbar{display:none}
+.ach-group{padding:0;overflow:hidden}
+.ach-group>summary{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;list-style:none;font-weight:700;color:var(--ink);font-size:14px}
+.ach-group>summary::-webkit-details-marker{display:none}
+.ach-group>summary::after{content:"▾";margin-left:auto;color:var(--muted);font-size:12px;transition:transform .18s ease}
+.ach-group[open]>summary::after{transform:rotate(180deg)}
+.ach-group>summary:hover{background:#fffaf4}
+.ach-group-emoji{font-size:17px}
+.ach-group-name{flex:0 1 auto}
+.ach-group .achievement-grid{padding:0 12px 12px}
 .achievement-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
 .achievement-card{
   display:flex;gap:9px;padding:10px;border-radius:15px;border:1px solid #eedcc7;background:#fffaf3;
@@ -1583,7 +1596,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
   .pet-card{padding:9px;border-radius:15px}
   .pet-avatar{font-size:37px}
   .pet-name{font-size:12px}
-  .pet-card .pet-actions .btn{padding:5px 4px;font-size:9.5px;border-radius:8px;box-shadow:none}
+  .pet-card .pet-actions .btn{padding:6px 4px;font-size:11px;min-height:34px;border-radius:8px;box-shadow:none}
   .formation-row{flex-wrap:nowrap;gap:5px}
   .row-label{width:15px;font-size:8px;letter-spacing:0}
   .slot{min-width:0;min-height:81px;padding:5px 3px;border-radius:13px}
@@ -4124,7 +4137,7 @@ function defaultState() {
     },
     codex: { claimed: [], seen: [] },
     bonds: { mastery: {}, ever: [] },
-    idle: { pendingGold: 0, pendingFruit: 0, offlineSlots: 0, boostUntil: 0, lastCare: now },
+    idle: { pendingGold: 0, pendingFruit: 0, offlineSlots: 0, boostUntil: 0, lastCare: now, capHours: 0 },
     garden: { plots: [] },
     mini: { date: '', done: false, wins: 0 },
     cosmetics: { owned: ['bg_cream'], background: 'bg_cream', petAccessory: {} },
@@ -5005,7 +5018,7 @@ function ensureArenaSeason(s = state, now = Date.now()) {
 }
 
 function updateCareElapsed(seconds, s = state) {
-  seconds = Math.max(0, Math.min(seconds, OFFLINE_CAP_SEC));
+  seconds = Math.max(0, Math.min(seconds, typeof offlineCapSec === 'function' ? offlineCapSec() : OFFLINE_CAP_SEC));
   if (seconds < 1) return;
   for (const pet of Object.values(s.pets)) {
     pet.hunger = clamp(num(pet.hunger, 80) - seconds * 3 / 3600, 0, 100);
@@ -5414,10 +5427,15 @@ function accrueIdle(seconds, s = state) {
 function offlineSlotsBonus(s = state) {
   return 1 + clamp(s.idle.offlineSlots, 0, 4) * 0.2;
 }
+// 离线时长上限：基础 12 小时 + 小夜灯升级（最多 +12 小时）。
+function offlineCapSec() {
+  return OFFLINE_CAP_SEC + clamp(num(state.idle && state.idle.capHours, 0), 0, 6) * 3600;
+}
 // 离线收益 = 离线时每秒产出 × 离线秒数 × 0.6 × 挂机位加成。
-// 离线秒数由 Date.now() 与存档 savedAt 的差值得到，最多 12 小时。
+// 离线秒数由 Date.now() 与存档 savedAt 的差值得到，最多 offlineCapSec()。
 function buildOfflineOffer(seconds) {
-  const capped = clamp(seconds, 0, OFFLINE_CAP_SEC);
+  const capSec = offlineCapSec();
+  const capped = clamp(seconds, 0, capSec);
   const team = getTeamPets();
   if (!team.length || capped < 20) return null;
   const rates = calcIdleRates(true);
@@ -5428,7 +5446,8 @@ function buildOfflineOffer(seconds) {
   return {
     seconds: capped,
     requestedSeconds: Math.max(0, seconds),
-    cappedOut: seconds > OFFLINE_CAP_SEC,
+    cappedOut: seconds > capSec,
+    capHours: Math.round(capSec / 3600),
     gold,
     fruit,
     goldPerSec: rates.gold,
@@ -5683,6 +5702,27 @@ function claimAllDailyTasks() {
   saveGame();
   renderAll();
   toast(`领取 ${available.length} 份任务奖励！`, 'good');
+}
+// 成就分类：按 id 前缀归组，200 条成就不再是一整面 23,000px 的墙
+const ACH_CATEGORIES = [
+  { id: 'battle', name: '战斗与关卡', emoji: '⚔️', match: ['xb_battle_', 'xb_win_', 'xb_clear_', 'xb_sweep_', 'a_win', 'a_clear'] },
+  { id: 'collect', name: '收集与图鉴', emoji: '📚', match: ['xb_kind_', 'xb_seen_', 'xb_own_', 'xb_shiny_', 'xb_pair', 'a_pet'] },
+  { id: 'evolve', name: '进化与星级', emoji: '✨', match: ['xb_evo', 'xb_star', 'a_evo', 'a_star'] },
+  { id: 'growth', name: '养成与陪伴', emoji: '🍓', match: ['xb_lvl', 'xb_feed_', 'xb_intmax_', 'xb_intsum_', 'xb_skill_', 'xb_bond', 'a_bond', 'a_feed30', 'a_intimacy100'] },
+  { id: 'arena', name: '竞技场', emoji: '🏟️', match: ['xb_awin_', 'xb_abat_', 'xb_streak_', 'xb_abest_', 'a_arena'] },
+  { id: 'tower', name: '爬塔与首领', emoji: '🗼', match: ['xb_tower_', 'xb_tclear_', 'xb_boss_', 'a_tower', 'a_boss'] },
+  { id: 'economy', name: '资源与装备', emoji: '🪙', match: ['xb_gold_', 'xb_enh_', 'xb_feq_', 'a_gold', 'a_enhance', 'a_fullgear'] },
+  { id: 'idle', name: '挂机与日常', emoji: '🌙', match: ['xb_idle_', 'xb_daily_', 'xb_pull_', 'xb_enc_', 'xb_rebirth', 'xb_power', 'a_pull', 'a_idle', 'a_enc', 'a_sign', 'a_rebirth', 'a_power', 'a_daily50', 'merchant', 'orchard'] }
+];
+const ACH_CAT_OTHER = { id: 'other', name: '其他', emoji: '🎁' };
+function achievementCategoryOf(ach) {
+  const id = ach && ach.id ? ach.id : '';
+  for (const c of ACH_CATEGORIES) {
+    for (const p of c.match) {
+      if (id === p || id.indexOf(p) === 0) return c;
+    }
+  }
+  return ACH_CAT_OTHER;
 }
 function achievementProgress(ach, s = state) {
   try { return Math.min(ach.target, Math.max(0, Math.floor(ach.get(s)))); } catch (err) { return 0; }
@@ -8254,10 +8294,27 @@ function renderPets() {
   const subnav = `<div class="subnav">${PET_SUBTABS.map(s => `<button type="button" class="${tab === s.id ? 'active' : ''}" data-act="petTab" data-tab="${s.id}">${s.name}</button>`).join('')}</div>`;
   let body = '';
   if (tab === 'team') {
+    const ROSTER_SORTS = [
+      { id: 'default', name: '默认顺序' },
+      { id: 'level', name: '等级' },
+      { id: 'power', name: '战力' },
+      { id: 'star', name: '星级' },
+      { id: 'intimacy', name: '亲密度' }
+    ];
+    const rosterSort = UI.petSort || 'default';
+    const rosterPets = all.slice();
+    if (rosterSort === 'level') rosterPets.sort((a, b) => b.level - a.level);
+    else if (rosterSort === 'power') rosterPets.sort((a, b) => petPowerSafe(b) - petPowerSafe(a));
+    else if (rosterSort === 'star') rosterPets.sort((a, b) => b.star - a.star || b.level - a.level);
+    else if (rosterSort === 'intimacy') rosterPets.sort((a, b) => num(b.intimacy, 0) - num(a.intimacy, 0));
+    const rosterSortBar = `<div class="subnav codex-filter" style="margin:0 0 8px">${ROSTER_SORTS.map(s => `<button type="button" class="${rosterSort === s.id ? 'active' : ''}" data-act="petSort" data-sort="${s.id}">${s.name}</button>`).join('')}</div>`;
+    const rosterHTML = all.length
+      ? `<div class="section-title"><span class="emoji">🐾</span>毛茸茸名册<span class="count">${all.length} / ${PETS.length} 种</span></div>${rosterSortBar}<div class="pet-grid">${rosterPets.map(p => petCardHTML(p, 'team')).join('')}</div>`
+      : `<div class="card empty"><span class="empty-emoji">🥚</span>还没有宠物。去商店抽一颗蛋吧！<div style="margin-top:10px"><button class="btn btn-primary" type="button" data-act="nav" data-tab="shop">去抽蛋</button></div></div>`;
     body = `
       <div class="card">
         <div class="card-head"><div><h2>🛏️ 出战队伍</h2><p>前排优先承受普攻，后排更容易受到溅射/穿击。最多 5 只。</p></div>
-          <div class="flex"><span class="chip mint">队伍战力 ${fmt(teamPower)}</span><button class="btn btn-lav btn-sm" type="button" data-act="levelTeam">🍎 一键升级</button><button class="btn btn-mint btn-sm" type="button" data-act="autoTeam">一键上阵</button><button class="btn btn-ghost btn-sm" type="button" data-act="clearTeam">清空</button></div>
+          <div class="flex"><span class="chip mint">队伍战力 ${fmt(teamPower)}</span><button class="btn btn-lav btn-sm" type="button" data-act="levelTeam">🍎 一键升级</button><button class="btn btn-mint btn-sm" type="button" data-act="autoTeam">一键上阵</button><button class="btn btn-ghost btn-sm" type="button" data-act="clearTeam">清空</button><button class="btn btn-ghost btn-sm" type="button" data-act="teamPreset">📌 阵容</button></div>
         </div>
         <div class="team-board">
           <div class="formation-row"><div class="row-label">前排 · 承伤</div>${[0, 1].map(i => formationSlotHTML('front', i)).join('')}</div>
@@ -8266,7 +8323,7 @@ function renderPets() {
         <div class="note mint" style="margin-top:10px">羁绊自动检测：${activeBondsForTeam().length ? activeBondsForTeam().map(b => `<b>${esc(b.name)}</b>`).join('、') : '当前没有点亮羁绊，试试把有故事的宠物放在同一队。'}</div>
         ${resonanceHTML(team)}
       </div>
-      ${all.length ? `<div class="section-title"><span class="emoji">🐾</span>毛茸茸名册<span class="count">${all.length} / ${PETS.length} 种</span></div><div class="pet-grid">${all.map(p => petCardHTML(p, 'team')).join('')}</div>` : `<div class="card empty"><span class="empty-emoji">🥚</span>还没有宠物。去商店抽一颗蛋吧！<div style="margin-top:10px"><button class="btn btn-primary" type="button" data-act="nav" data-tab="shop">去抽蛋</button></div></div>`}`;
+      ${rosterHTML}`;
   } else if (tab === 'bag') {
     const inv = equipmentInventory();
     body = `
@@ -8303,11 +8360,24 @@ function renderPets() {
     const unique = stateUniqueCount();
     const seenIds = new Set([...(state.codex.seen || []), ...Object.values(state.pets || {}).map(p => p.templateId)]);
     const seenCount = stateCodexSeenCount();
+    const cf = UI.codexFilter || (UI.codexFilter = { el: 'all', rarity: 'all', miss: false });
+    const codexList = PETS.filter(t =>
+      (cf.el === 'all' || t.element === cf.el) &&
+      (cf.rarity === 'all' || t.rarity === cf.rarity) &&
+      (!cf.miss || !seenIds.has(t.id)));
+    const codexEls = ['all', ...ELEMENT_KEYS];
+    const codexRarities = ['all', ...Object.keys(RARITIES).sort((a, b) => RARITIES[a].order - RARITIES[b].order)];
+    const codexBar = `<div class="subnav codex-filter" style="margin:2px 0 8px">${codexEls.map(el =>
+      `<button type="button" class="${cf.el === el ? 'active' : ''}" data-act="codexFilter" data-el="${el}">${el === 'all' ? '全部属性' : ELEMENTS[el].emoji + ELEMENTS[el].name}</button>`).join('')}</div>
+      <div class="subnav codex-filter" style="margin:0 0 8px">${codexRarities.map(rr =>
+      `<button type="button" class="${cf.rarity === rr ? 'active' : ''}" data-act="codexFilter" data-rarity="${rr}">${rr === 'all' ? '全部稀有度' : RARITIES[rr].name}</button>`).join('')}
+        <button type="button" class="${cf.miss ? 'active' : ''}" data-act="codexFilter" data-miss="1">${cf.miss ? '只看未收录' : '含已收录'}</button></div>`;
     body = `
       <div class="card">
         <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。轮回后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
+        ${codexBar}
         <div class="codex-grid">
-          ${PETS.map(t => {
+          ${codexList.length ? codexList.map(t => {
             const recorded = seenIds.has(t.id);
             const codexUrls = recorded ? petArtCandidates(t.id) : [];
             const codexArt = codexUrls.length ? `<img class="codex-img" src="${codexUrls[0]}" alt="${esc(t.name)}" loading="lazy" ${artChainAttr(codexUrls, t.name, 'remove')}>` : '';
@@ -8317,7 +8387,7 @@ function renderPets() {
               <p>${recorded ? esc(t.title) : '尚未在旅途中遇见'}</p>
               <div class="codex-state">${recorded ? `${elementTag(t.element)} ${rarityTag(t.rarity)}` : '<span class="chip">剪影</span>'}</div>
             </div>`;
-          }).join('')}
+          }).join('') : '<div class="empty"><span class="empty-emoji">🔍</span>这个筛选下没有宠物，换个属性或稀有度看看。</div>'}
         </div>
       </div>
       <div class="card">
@@ -8599,7 +8669,14 @@ function renderShop() {
       { key: 'enhanceStone', price: 60, icon: '🔨', name: '强化石', desc: '装备强化必备材料。' }
     ];
     body = `
-      <div class="card">
+      <div class="subnav codex-filter" style="margin:0 0 10px">
+        <button type="button" data-act="exchangeJump" data-target="ex-shard">🧩 碎片</button>
+        <button type="button" data-act="exchangeJump" data-target="ex-supply">🧪 材料</button>
+        <button type="button" data-act="exchangeJump" data-target="ex-ticket">🎟️ 挑战券</button>
+        <button type="button" data-act="exchangeJump" data-target="ex-fruit">🍎 果实</button>
+        <button type="button" data-act="exchangeJump" data-target="ex-gold">🪙 金币</button>
+      </div>
+      <div class="card" id="ex-shard">
         <div class="card-head"><div><h2>🧩 同族碎片兑换</h2><p>用钻石买碎片，或集齐碎片直接唤醒新伙伴。已拥有的宠物用碎片升星。</p></div><span class="chip">持有碎片</span></div>
         <div class="exchange-grid">
           ${PETS.map(t => {
@@ -8617,7 +8694,7 @@ function renderShop() {
           }).join('')}
         </div>
       </div>
-      <div class="card">
+      <div class="card" id="ex-supply">
         <div class="card-head"><div><h2>🪙 材料补给</h2><p>稀有材料用钻石兑换，竞技币与装扮在另一页。</p></div><span class="chip">💎 ${fmt(state.resources.crystal)}</span></div>
         <div class="grid three">
           ${materialRows.map(row => `<div class="shop-item">
@@ -8634,7 +8711,7 @@ function renderShop() {
           </div>`).join('')}
         </div>
       </div>
-      <div class="card">
+      <div class="card" id="ex-ticket">
         <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>月影爬塔、竞技场、每日 Boss 的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
         <div class="flex between" style="gap:10px;align-items:center">
           <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
@@ -8642,6 +8719,13 @@ function renderShop() {
         </div>
       </div>
       <div class="card">
+        <div class="card-head"><div><h2>🌙 小夜灯 · 离线时长</h2><p>人不在的时候，宠物也悄悄攒着。每买一盏夜灯，离线累计上限 +2 小时（最高 +12 小时）。</p></div><span class="chip">当前上限 ${Math.round(offlineCapSec() / 3600)} 小时</span></div>
+        <div class="flex between" style="gap:10px;align-items:center">
+          <div><b>夜灯 ×${clamp(num(state.idle.capHours, 0), 0, 6) + 1}</b><p class="tiny muted" style="margin:2px 0 0">${clamp(num(state.idle.capHours, 0), 0, 6) >= 6 ? '已经点满 24 小时啦' : '💎200 · 上限再 +2 小时'}</p></div>
+          <button class="btn btn-lav btn-xs" type="button" data-act="buyOfflineCap" ${state.resources.crystal < 200 || clamp(num(state.idle.capHours, 0), 0, 6) >= 6 ? 'disabled' : ''}>${clamp(num(state.idle.capHours, 0), 0, 6) >= 6 ? '已点满' : '💎200 点亮'}</button>
+        </div>
+      </div>
+      <div class="card" id="ex-fruit">
         <div class="card-head"><div><h2>🍎 经验果转化</h2><p>等级到顶后经验果会堆着没用，这里换成养成材料。</p></div><span class="chip">🍎 ${fmt(state.resources.fruit)}</span></div>
         <div class="grid three">
           ${FRUIT_EXCHANGE.map(row => `<div class="shop-item">
@@ -8650,7 +8734,7 @@ function renderShop() {
           </div>`).join('')}
         </div>
       </div>
-      <div class="card">
+      <div class="card" id="ex-gold">
         <div class="card-head"><div><h2>🪙 金币转化</h2><p>后期金币会越攒越多，这里换成体力或口粮，每天各限 3 次。</p></div><span class="chip">🪙 ${fmt(state.resources.gold)}</span></div>
         <div class="grid three">
           ${GOLD_EXCHANGE.map(row => {
@@ -8851,17 +8935,31 @@ function renderQuest() {
     const filterBar = '<div class="subnav" style="margin:4px 0 10px">' + FILTERS.map(fl =>
       `<button type="button" class="${f === fl.id ? 'active' : ''}" data-act="achFilter" data-filter="${fl.id}">${fl.name} ${counts[fl.id]}</button>`
     ).join('') + '</div>';
-    const gridHTML = shown.length
-      ? shown.map(r => achievementCardHTML(r.a)).join('')
-      : '<div class="note" style="padding:14px 6px">这个分类暂时没有成就。</div>';
+    const groups = [];
+    for (const r of shown) {
+      const cat = achievementCategoryOf(r.a);
+      let g = groups.find(x => x.cat.id === cat.id);
+      if (!g) { g = { cat, rows: [] }; groups.push(g); }
+      g.rows.push(r);
+    }
+    const groupsHTML = groups.length ? groups.map(g => {
+      const ready = g.rows.filter(r => !r.claimed && r.progress >= r.a.target).length;
+      const got = g.rows.filter(r => r.claimed).length;
+      return `<details class="card ach-group"${ready ? ' open' : ''}>
+        <summary><span class="ach-group-emoji">${g.cat.emoji}</span><span class="ach-group-name">${esc(g.cat.name)}</span>
+          <span class="chip">${got}/${g.rows.length}</span>${ready ? `<span class="chip mint">可领 ${ready}</span>` : ''}
+        </summary>
+        <div class="achievement-grid">${g.rows.map(r => achievementCardHTML(r.a)).join('')}</div>
+      </details>`;
+    }).join('') : '<div class="card"><div class="note" style="padding:14px 6px">这个筛选下没有成就。</div></div>';
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>🏅 成长成就</h2><p>一次性成就，达成后手动领取。共 ${ACHIEVEMENTS.length} 项。</p></div>
+        <div class="card-head"><div><h2>🏅 成长成就</h2><p>一次性成就，达成后手动领取。共 ${ACHIEVEMENTS.length} 项，按类别折叠。</p></div>
           <div class="flex"><span class="chip mint">已领取 ${done}/${ACHIEVEMENTS.length}</span><button class="btn btn-ghost btn-sm" type="button" data-act="claimAllAchievements">一键可领</button></div>
         </div>
         ${filterBar}
-        <div class="achievement-grid">${gridHTML}</div>
-      </div>`;
+      </div>
+      ${groupsHTML}`;
   } else if (tab === 'mini') {
     body = miniGameHTML();
   } else {
@@ -9104,7 +9202,7 @@ function showOfflineModal(offer) {
       <div><span>离线系数</span><b>0.6</b></div>
       <div><span>挂机位加成</span><b>+${Math.round((offer.slotBonus - 1) * 100)}%</b></div>
     </div>
-    <p class="note">离线收益按每秒产出 × 离线秒数 × 0.6 × 挂机位加成结算，最多累计 12 小时。领取后自动保存。</p>
+    <p class="note">离线收益按每秒产出 × 离线秒数 × 0.6 × 挂机位加成结算，最多累计 ${offer.capHours || 12} 小时（兑换页的「小夜灯」可以加时长）。领取后自动保存。</p>
     <button class="btn btn-primary btn-wide" type="button" data-act="claimOffline">收下这段时间的思念 💗</button>`;
   openModal('你不在的这段时间', body, { closable: false, wide: false });
   requestAnimationFrame(() => {
@@ -9756,6 +9854,16 @@ function gardenPlantAll(silent) {
   persist();
 }
 const GARDEN_AUTO_COST = 40000;
+function buyOfflineCap() {
+  const cur = clamp(num(state.idle.capHours, 0), 0, 6);
+  if (cur >= 6) { toast('小夜灯已经点满 24 小时啦', 'bad'); return; }
+  if (state.resources.crystal < 200) { toast('钻石不够，先攒一攒', 'bad'); return; }
+  state.resources.crystal -= 200;
+  state.idle.capHours = cur + 2;
+  saveGame();
+  renderAll();
+  toast(`🌙 小夜灯点亮：离线上限 ${Math.round(offlineCapSec() / 3600)} 小时`, 'good');
+}
 function buyGardenAutoHarvest() {
   ensureGarden();
   if (state.garden.autoHarvest) { toast('自动收获已经解锁啦', ''); return; }
@@ -9831,7 +9939,7 @@ const CARE_TASKS = [
   { id: 'focus', emoji: '📖', label: '专注25分钟', act: 'selfFocus' },
   { id: 'move', emoji: '🚶', label: '活动10分钟', act: 'selfMove' },
   { id: 'sun', emoji: '🌞', label: '出门走走10分钟', act: 'selfSun' },
-  { id: 'water', emoji: '🥤', label: '喝够8杯水', act: 'selfWater' }
+  { id: 'water', emoji: '🥤', label: '喝够3杯水', act: 'selfWater' }
 ];
 // 连陪里程碑：达标一天给一次性奖励 + 称号
 const CARE_MILESTONES = [
@@ -10263,6 +10371,50 @@ function benchPet(uid) {
   if (UI.modal) closeModal(true);
   renderAll();
   toast(`${petDisplayName(pet)} 已回到替补席`);
+}
+function openTeamPresets() {
+  const presets = Array.isArray(state.team.presets) ? state.team.presets : (state.team.presets = []);
+  const rows = [0, 1, 2].map(i => {
+    const p = presets[i];
+    const info = p
+      ? `${(p.front || []).length + (p.back || []).length} 只 · 战力 ${fmt(num(p.power, 0))}`
+      : '空位';
+    return `<div class="team-preset-row">
+      <div><b>预设 ${i + 1}</b><p class="tiny muted" style="margin:2px 0 0">${info}</p></div>
+      <div class="flex">
+        <button class="btn btn-ghost btn-xs" type="button" data-act="teamPresetSave" data-slot="${i}">存当前</button>
+        <button class="btn btn-lav btn-xs" type="button" data-act="teamPresetLoad" data-slot="${i}" ${p ? '' : 'disabled'}>载入</button>
+      </div>
+    </div>`;
+  }).join('');
+  openModal('📌 阵容预设', `<p class="note">爬塔、竞技、主线可以各存一套阵容，一键切回来。预设只记上阵位置，不复制宠物。</p>${rows}`);
+}
+function teamPresetSave(slot) {
+  if (!state.team.presets) state.team.presets = [];
+  state.team.presets[slot] = {
+    front: state.team.front.slice(),
+    back: state.team.back.slice(),
+    power: calcTeamPower(),
+    at: Date.now()
+  };
+  saveGame();
+  toast('阵容已存好', 'good');
+  openTeamPresets();
+}
+function teamPresetLoad(slot) {
+  const p = state.team.presets && state.team.presets[slot];
+  if (!p) { toast('这个位子还没存过阵容', 'bad'); return; }
+  const ok = uid => state.pets[uid];
+  const front = (p.front || []).filter(ok).slice(0, 2);
+  const back = (p.back || []).filter(ok).slice(0, 3);
+  if (!front.length && !back.length) { toast('这套阵容里的宠物已经不在了', 'bad'); return; }
+  state.team.front = front;
+  state.team.back = back;
+  noteBonds();
+  saveGame();
+  closeModal(true);
+  renderAll();
+  toast(`已切换回预设 ${slot + 1}`, 'good');
 }
 function autoTeam() {
   const all = ownedPets().slice().sort((a, b) => petPowerSafe(b) - petPowerSafe(a));
@@ -11088,6 +11240,7 @@ function handleActionClick(event) {
     case 'buyBoost': buyBoost(target.dataset.kind); break;
     case 'buyOfflineSlot': buyOfflineSlot(); break;
     case 'claimOffline': claimOfflineOffer(); break;
+    case 'buyOfflineCap': buyOfflineCap(); break;
 
     case 'adventureChapter':
       UI.adventureChapter = clamp(Number(target.dataset.chapter) || 1, 1, CHAPTERS.length);
@@ -11116,6 +11269,23 @@ function handleActionClick(event) {
       renderPage();
       break;
     case 'deploy': deployPet(uid, target.dataset.row === 'front' ? 'front' : 'back'); break;
+    case 'petSort': UI.petSort = target.dataset.sort || 'default'; renderPage(); break;
+    case 'exchangeJump': {
+      const el = document.getElementById(target.dataset.target || '');
+      if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 78), behavior: 'smooth' });
+      break;
+    }
+    case 'teamPreset': openTeamPresets(); break;
+    case 'teamPresetSave': teamPresetSave(Number(target.dataset.slot) || 0); break;
+    case 'teamPresetLoad': teamPresetLoad(Number(target.dataset.slot) || 0); break;
+    case 'codexFilter': {
+      const cf = UI.codexFilter || (UI.codexFilter = { el: 'all', rarity: 'all', miss: false });
+      if (target.dataset.el) cf.el = target.dataset.el;
+      if (target.dataset.rarity) cf.rarity = target.dataset.rarity;
+      if (target.dataset.miss) cf.miss = !cf.miss;
+      renderPage();
+      break;
+    }
     case 'bench': benchPet(uid); break;
     case 'autoTeam': autoTeam(); break;
     case 'clearTeam': clearTeam(); break;

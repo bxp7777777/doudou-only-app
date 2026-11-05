@@ -38,6 +38,7 @@ export const DEFAULT_PREFS = {
   storyAt: '23:00',
   skin: '敏感肌',
   theme: 'duo',
+  dark: 'auto',
   cities: [
     { key: 'nanning', name: '南宁', note: '学校' },
     { key: 'shenzhen', name: '深圳', note: '家里' }

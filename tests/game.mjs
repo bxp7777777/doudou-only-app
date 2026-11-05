@@ -423,6 +423,16 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function gardenProgressMult') && text.includes('function gardenDropBonus'), '菜园缺少进度缩放/掉落');
   check(text.includes('wind: 0, ice: 0'), '进化石应覆盖 8 个属性（风/冰曾显示 undefined）');
   check(text.includes('function buyGardenAutoHarvest') && text.includes("case 'gardenAutoHarvest'"), '菜园缺少自动收获解锁');
+  check(text.includes('喝够3杯水'), '第 4 项自律应为「喝够3杯水」');
+  // 成就按类别折叠（200 条不再是一整面长列表）
+  check(text.includes('const ACH_CATEGORIES = [') && text.includes('function achievementCategoryOf'), '成就缺少分类逻辑');
+  check(text.includes('class="card ach-group"') || text.includes('card ach-group'), '成就缺少折叠分组渲染');
+  // 图鉴筛选 / 名册排序 / 阵容预设 / 兑换锚点
+  check(text.includes('data-act="codexFilter"') && text.includes('UI.codexFilter'), '图鉴缺少属性/稀有度筛选');
+  check(text.includes('data-act="petSort"') && text.includes('UI.petSort'), '宠物名册缺少排序');
+  check(text.includes('function teamPresetSave') && text.includes('function teamPresetLoad'), '缺少阵容预设');
+  check(text.includes('data-act="exchangeJump"') && text.includes('id="ex-gold"'), '兑换页缺少分段锚点');
+  check(text.includes('function offlineCapSec') && text.includes("case 'buyOfflineCap'"), '离线时长升级缺失');
 
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');

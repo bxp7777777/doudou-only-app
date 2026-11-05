@@ -1270,3 +1270,161 @@ body.theme-duo .bg::after {
   color: var(--muted);
 }
 .card-head .sum-chip { margin-left: 8px; flex: 0 0 auto; }
+
+
+/* ================= 暗色模式 ================= */
+/* 由 html[data-dark="1"] 开启（跟随系统 / 手动切换，见 app.js）。 */
+html[data-dark="1"] {
+  color-scheme: dark;
+  --ink: #f2e8e6;
+  --ink-soft: #dbcdcb;
+  --accent: #ff9db3;
+  --accent-strong: #ff8499;
+  --line: #3b3034;
+  --card: #221d20;
+  --muted: #b6a3a7;
+}
+
+html[data-dark="1"] body { background: #161214; color: var(--ink); }
+
+html[data-dark="1"] .bg {
+  background: linear-gradient(172deg, #1a1517 0%, #201a1e 46%, #241c20 100%);
+  filter: none;
+}
+html[data-dark="1"] body.theme-qingzhu .bg { background: linear-gradient(172deg, #151a16 0%, #18201a 45%, #1c2420 100%); }
+html[data-dark="1"] body.theme-chenwu .bg { background: linear-gradient(172deg, #14171d 0%, #181d26 45%, #1b2029 100%); }
+html[data-dark="1"] body.theme-wanxia .bg { background: linear-gradient(172deg, #1d1714 0%, #241b17 45%, #2a1e19 100%); }
+html[data-dark="1"] body.theme-duo .bg {
+  background-color: #141012;
+  background-image: var(--bg-art, url("/art/bg-ai1.jpg"));
+  filter: brightness(.42) saturate(.72);
+}
+html[data-dark="1"] body.theme-duo .bg::after {
+  background: linear-gradient(180deg, rgba(18, 14, 16, .96) 0%, rgba(22, 17, 19, .9) 22%, rgba(24, 19, 22, .78) 52%, rgba(26, 20, 23, .62) 100%);
+}
+
+/* 卡片与表面 */
+html[data-dark="1"] .card,
+html[data-dark="1"] .tomato-card { background: var(--card); border-color: var(--line); }
+html[data-dark="1"] .card-head,
+html[data-dark="1"] .card-title { color: var(--accent); }
+html[data-dark="1"] .hero--home { background: linear-gradient(135deg, rgba(90, 62, 48, .34), rgba(104, 52, 70, .32)); }
+html[data-dark="1"] .hero-note { color: #c7aeb2; }
+html[data-dark="1"] .hero-mascot { border-color: #4a3b33; background: #33281f; }
+
+/* 浅底 → 深底 */
+html[data-dark="1"] .btn-ghost,
+html[data-dark="1"] .tomato-quick,
+html[data-dark="1"] .theme-chip { background: #2e2429; border-color: #4a363c; color: #ffb0bf; }
+html[data-dark="1"] .btn-ghost:active { background: #3a2d33; }
+html[data-dark="1"] .chip,
+html[data-dark="1"] .tag,
+html[data-dark="1"] .pill-early,
+html[data-dark="1"] .cup,
+html[data-dark="1"] .wx-city,
+html[data-dark="1"] .check,
+html[data-dark="1"] .ta,
+html[data-dark="1"] .memo,
+html[data-dark="1"] .input,
+html[data-dark="1"] .wish-input,
+html[data-dark="1"] .cal-day,
+html[data-dark="1"] .mood,
+html[data-dark="1"] .tag-chip,
+html[data-dark="1"] .sched-aft,
+html[data-dark="1"] .tomato-min,
+html[data-dark="1"] .code,
+html[data-dark="1"] .diary-del,
+html[data-dark="1"] .sign-pill { background: #262024; border-color: #43343a; color: var(--ink-soft); }
+
+html[data-dark="1"] .badge { background: rgba(38, 32, 36, .72); border-color: #3d3136; }
+html[data-dark="1"] .badge-desc,
+html[data-dark="1"] .badge-prog { color: #b6a3a7; }
+html[data-dark="1"] .badge-on { background: #33291f; }
+html[data-dark="1"] .badge-on .badge-prog { color: #e0b06a; }
+
+html[data-dark="1"] .tag-warm,
+html[data-dark="1"] .pill-mid,
+html[data-dark="1"] .pill-unknown,
+html[data-dark="1"] .sched-today,
+html[data-dark="1"] .bday-card { background: #33291f; }
+html[data-dark="1"] .tag-warm { color: #f0b183; }
+html[data-dark="1"] .pill-mid { color: #f0b183; }
+html[data-dark="1"] .pill-unknown,
+html[data-dark="1"] .sched-row.sched-unknown .sched-day { color: #a3909a; }
+html[data-dark="1"] .tag-light,
+html[data-dark="1"] .pill-free,
+html[data-dark="1"] .check-on { background: #1f2e26; }
+html[data-dark="1"] .tag-light { color: #8fd6ae; }
+html[data-dark="1"] .pill-free { color: #8fd6ae; }
+html[data-dark="1"] .check-on .check-label { color: #8fd6ae; }
+html[data-dark="1"] .check-on .check-box,
+html[data-dark="1"] .memo-box-on { color: #7fcfa2; }
+html[data-dark="1"] .pill-early { color: #ff9db3; }
+html[data-dark="1"] .sched-aft-on,
+html[data-dark="1"] .cal-on,
+html[data-dark="1"] .mood-on,
+html[data-dark="1"] .tag-on,
+html[data-dark="1"] .theme-chip-on,
+html[data-dark="1"] .cup-on { background: #3a2730; border-color: #4f3540; color: #ff9db3; }
+html[data-dark="1"] .cup-on .cup-txt { color: #ffa9bd; }
+html[data-dark="1"] .sign-card { background: linear-gradient(135deg, #241f2c, #2a2026); }
+html[data-dark="1"] .tomato-track { background: #35292c; }
+
+/* 文字 */
+html[data-dark="1"] .row-l,
+html[data-dark="1"] .wx-name,
+html[data-dark="1"] .diary-date,
+html[data-dark="1"] .sched-day,
+html[data-dark="1"] .mood { color: #d5c2c4; }
+html[data-dark="1"] .diary-label,
+html[data-dark="1"] .tag-chip,
+html[data-dark="1"] .diary-snippet,
+html[data-dark="1"] .memo-done,
+html[data-dark="1"] .memo-box,
+html[data-dark="1"] .check-box,
+html[data-dark="1"] .cal-day { color: #a89498; }
+html[data-dark="1"] .diary-skip,
+html[data-dark="1"] .diary-tags { color: #9c8890; }
+html[data-dark="1"] .memo-del,
+html[data-dark="1"] .diary-del,
+html[data-dark="1"] .nn { color: #e79aab; }
+html[data-dark="1"] .chip-v,
+html[data-dark="1"] .wx-temp,
+html[data-dark="1"] .tomato-time { color: #ff9db3; }
+html[data-dark="1"] .code { color: #ffb0bf; }
+html[data-dark="1"] .sched-aft-on { color: #ffb0bf; }
+
+/* 分隔线与导航 */
+html[data-dark="1"] .row,
+html[data-dark="1"] .sched-row,
+html[data-dark="1"] .diary-item { border-bottom-color: #3a2d31; }
+html[data-dark="1"] .tabs { background: rgba(26, 21, 24, .94); border-top-color: #3a2d31; }
+html[data-dark="1"] .tab { color: #b6a3a7; }
+html[data-dark="1"] .tab.on { color: #ff8499; }
+html[data-dark="1"] .toast { background: rgba(240, 232, 230, .94); color: #241f22; }
+
+/* 彩色按钮在暗底上压暗一档 */
+html[data-dark="1"] .btn-primary,
+html[data-dark="1"] .btn { background: linear-gradient(180deg, #e5839a, #d9637d); }
+html[data-dark="1"] .btn-mint { background: linear-gradient(180deg, #5fae8d, #4a9575); color: #eafff4; }
+html[data-dark="1"] .tomato-bar { background: linear-gradient(90deg, #e0877a, #d9637d); }
+html[data-dark="1"] .theme-chip-on { color: #ffb0bf; }
+
+/* 找一找 */
+.search-group { margin: 10px 0 4px; }
+.search-group-name { margin: 0 0 6px; font-size: 12px; color: var(--muted); letter-spacing: .4px; }
+.search-row { display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left; padding: 9px 2px; border: 0; border-bottom: 1px dashed #ffe6ea; background: none; color: inherit; font: inherit; }
+.search-row:last-child { border-bottom: 0; }
+.search-text { font-size: 14px; color: var(--ink-soft); line-height: 1.5; }
+.search-meta { font-size: 11.5px; color: var(--muted); }
+html[data-dark="1"] .search-row { border-bottom-color: #3a2d31; }
+
+/* 暗色补齐：首页汇总胶囊、内联白底输入框（内联样式优先级更高，用 !important） */
+html[data-dark="1"] .sum-chip,
+html[data-dark="1"] .sum-chip .sum-chip-v { background: #2e2429; color: #ffb0bf; border-color: #4a363c; }
+html[data-dark="1"] .sum-chip.on { background: #3a2730; color: #ff9db3; }
+html[data-dark="1"] input, html[data-dark="1"] textarea, html[data-dark="1"] select { background: #262024 !important; color: var(--ink) !important; border-color: #43343a !important; }
+html[data-dark="1"] input::placeholder, html[data-dark="1"] textarea::placeholder { color: #9c8890 !important; }
+html[data-dark="1"] .input { color: #ffb0bf !important; }
+html[data-dark="1"] .wish-input { color: var(--ink-soft) !important; }
+html[data-dark="1"] .tomato-min { color: var(--ink-soft) !important; }
