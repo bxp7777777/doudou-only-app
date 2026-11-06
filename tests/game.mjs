@@ -601,7 +601,8 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}'), '小屏首领立绘应放大到 128px');
   check(!text.includes('待命位'), '敌方空位不该再写「待命位」');
   check(globalThis.enemySlotsHtml({ allies: [1,2,3], enemies: [1] }) === '', '敌方空位应留成空地（enemySlotsHtml 返回空串）');
-  check(text.includes('data-boss-phase="${unit.isBoss ? bossPhaseOf'), '首领会输出阶段标记');
+  check(text.includes('data-boss-phase="${unit.isBoss ? bossUnitPhase(unit)'), '首领会输出阶段标记');
+  check(text.includes('lifeLeft') && text.includes('BOSS_LIVES'), '多命首领应记录剩余命数');
   check(text.includes("content:\"\\5F62\\6001\\2161\"") && text.includes("content:\"\\6FD2\\6B7B\\2162\""), '首领换阶段应显示「形态Ⅱ / 濒死Ⅲ」');
   check(text.includes('const PET_STAGE_NAME = {'), '缺少三阶名字表');
   const stageBlock = text.slice(text.indexOf('const PET_STAGE_NAME = {'), text.indexOf('const BONDS = ['));
