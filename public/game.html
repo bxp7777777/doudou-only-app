@@ -924,7 +924,7 @@ body.modal-open{overflow:hidden}
 .battle-layer .b-side.ally .b-unit.attack-forward{transform:translateX(15px)}
 .battle-layer .b-side.enemy .b-unit.attack-forward{transform:translateX(-15px)}
 .battle-layer .b-unit.hit-flash .art-frame img,.battle-layer .b-unit.hit-flash .b-emoji{filter:brightness(1.32) saturate(1.18)}
-@media (max-width:420px){.battle-layer .art-frame.art-battle{width:68px;height:68px}.battle-layer .b-emoji-wrap{min-height:62px}}
+@media (max-width:420px){.battle-layer .art-frame.art-battle{width:80px;height:80px}.battle-layer .b-emoji-wrap{min-height:62px}}
 /* 主页立绘：立绘本身就是方图，改成圆形头像——圆形裁切只切掉四角背景，主体完整保留 */
 .home-pet-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 8px 18px rgba(111,82,54,.20)}
 .pal-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:none}
@@ -1085,7 +1085,65 @@ background:radial-gradient(2.6px 2.1px at 13% 72%,rgba(96,84,104,.34),rgba(96,84
 .battle-layer .b-top-progress{position:absolute;left:0;right:0;top:0;height:3px;z-index:9;background:rgba(120,96,74,.14);overflow:hidden}
 .battle-layer .b-top-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd98a,#f2a94e);box-shadow:0 0 8px rgba(242,169,78,.6);transition:width .35s ease}
 @media (max-width:420px){.battle-layer .b-row-line{gap:4px}.battle-layer .b-row-line .b-unit{max-width:96px}.battle-layer .b-row-line.back-line .b-unit{max-width:88px}.battle-layer .b-row-line.front-line{padding-right:6px}.battle-layer .b-row-line.back-line{padding-left:6px}}
-@media (max-width:420px){.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:104px;height:104px}.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:108px}.battle-layer .b-unit.boss-unit .b-name{font-size:10px}}
+@media (max-width:420px){.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:108px}.battle-layer .b-unit.boss-unit .b-name{font-size:10px}}
+/* ===== 梦幻西游 / 奥奇传说 式站桩战斗 ===== */
+/* 单位不再是信息卡片：立绘自由站立，名字/血条/怒气收进一块半透明小铭牌 */
+.battle-layer .b-unit{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:0;padding:0;background:none;border:0;box-shadow:none;border-radius:0}
+.battle-layer .b-unit .b-cap{display:flex;align-items:center;justify-content:center;gap:3px;font-size:7.5px;line-height:1;color:#7d6852;opacity:.85;margin-bottom:1px}
+.battle-layer .b-unit .b-cap .b-role{padding:1px 4px;border-radius:5px;background:rgba(255,255,255,.74);font-weight:800;box-shadow:0 1px 2px rgba(120,96,74,.12)}
+.battle-layer .b-unit .b-cap .b-lv{font-weight:800;opacity:.85}
+.battle-layer .b-unit .b-cap .b-el{font-size:8px;opacity:.9}
+.battle-layer .b-unit .b-plate{width:calc(100% - 2px);display:flex;flex-direction:column;gap:2px;padding:2px 4px 3px;margin-top:-2px;border-radius:9px;
+background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,250,240,.58));border:1px solid rgba(255,255,255,.72);box-shadow:0 1px 5px rgba(120,96,74,.16);backdrop-filter:blur(2px)}
+.battle-layer .b-unit .b-name{font-size:9px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#4b3b2d;letter-spacing:.2px}
+.battle-layer .b-unit .b-hp{position:relative;height:9px;border-radius:999px;background:rgba(86,64,48,.18);overflow:hidden;box-shadow:inset 0 1px 2px rgba(80,58,40,.18)}
+.battle-layer .b-unit .b-hp .b-hp-fill{position:absolute;top:0;left:0;bottom:0;height:100%;border-radius:999px;background:linear-gradient(180deg,#9cf2cc,#45b487 70%,#319a6c);transition:width .26s ease;box-shadow:inset 0 -1px 0 rgba(0,0,0,.10)}
+.battle-layer .b-unit .b-hp .b-hp-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:6.5px;font-weight:900;color:#fff;text-shadow:0 1px 1px rgba(0,70,50,.55);letter-spacing:.2px}
+.battle-layer .b-unit .b-rage{position:relative;height:3px;border-radius:999px;background:rgba(86,64,48,.14);overflow:hidden}
+.battle-layer .b-unit .b-rage .b-rage-fill{position:absolute;top:0;left:0;bottom:0;border-radius:999px;background:linear-gradient(90deg,#ffd88e,#f0a03a)}
+.battle-layer .b-unit .b-rage .b-rage-text{display:none}
+.battle-layer .b-unit.dead .b-plate{opacity:.45;filter:grayscale(.6)}
+/* 立绘放大成站桩尺寸 + 地面椭圆投影 */
+.battle-layer .art-frame.art-battle{width:100px;height:100px}
+.battle-layer .b-emoji-wrap{min-height:88px}
+.battle-layer .b-emoji-wrap::after{width:66px;height:10px;bottom:0;background:radial-gradient(ellipse at 50% 50%,rgba(74,52,38,.28),rgba(74,52,38,0) 74%)}
+.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:168px;height:168px}
+.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:172px}
+.battle-layer .b-unit.boss-unit .b-emoji-wrap::after{width:118px;height:13px}
+.battle-layer .b-unit.boss-unit .b-plate{max-width:150px;width:auto;align-self:center}
+.battle-layer .b-unit.boss-unit .b-name{font-size:10.5px}
+/* 面对面：敌方立绘镜像朝向中央 */
+.battle-layer .b-side.enemy .b-unit .art-frame{transform:scaleX(-1)}
+.battle-layer .b-side.enemy .b-unit .b-emoji{transform:scaleX(-1)}
+/* 透视地台：两军各站一片斜向地面，中间留出空地 */
+.battle-layer .battle-field{position:relative;isolation:isolate}
+/* 栅格改成 minmax(0,1fr)：立绘放大后 1fr 的 min-content 会把两翼挤出屏幕 */
+.battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
+.battle-layer .b-side{min-width:0}
+.battle-layer .b-emoji-wrap{max-width:100%}
+.battle-layer .b-unit.boss-unit .art-frame.art-battle{max-width:100%}
+.battle-layer .b-emoji-wrap .art-frame{max-width:100%}
+@media (max-width:420px){.battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr)}}
+.battle-layer .battle-field::before{content:"";position:absolute;left:-8%;right:-8%;bottom:-6%;height:64%;z-index:0;pointer-events:none;transform:perspective(760px) rotateX(56deg);transform-origin:50% 100%;
+background:radial-gradient(56% 44% at 50% 2%,rgba(255,247,226,.62),rgba(255,247,226,0) 72%),linear-gradient(180deg,rgba(162,134,112,.05),rgba(110,86,74,.18));border-radius:46% 46% 16% 16%}
+/* 我方暖光、敌方冷光，站区各自有营地氛围 */
+.battle-layer .b-side.ally::before{content:"";position:absolute;inset:-10px -6px;border-radius:44px;z-index:0;pointer-events:none;background:radial-gradient(72% 62% at 50% 64%,rgba(255,236,196,.40),rgba(255,236,196,0) 76%)}
+.battle-layer .b-side.ally .b-team,.battle-layer .b-side.ally .b-side-label{position:relative;z-index:1}
+/* 前后排纵深：后排更远（略小、略高），前排更近（略大、略低） */
+.battle-layer .b-row-line{transform-origin:50% 100%;transition:transform .3s ease}
+.battle-layer .b-row-line.back-line,.battle-layer .b-row-line.mob-line{transform:translateY(-3px) scale(.93)}
+.battle-layer .b-row-line.front-line{transform:translateY(3px) scale(1.02)}
+.battle-layer .b-row-line.boss-line{transform:translateY(-2px)}
+@media (max-width:420px){
+.battle-layer .art-frame.art-battle{width:80px;height:80px}
+.battle-layer .b-emoji-wrap{min-height:72px}
+.battle-layer .b-emoji-wrap::after{width:54px;height:9px}
+.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}
+.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:132px}
+.battle-layer .b-unit.boss-unit .b-emoji-wrap::after{width:92px;height:11px}
+.battle-layer .b-unit .b-name{font-size:8.5px}
+.battle-layer .b-unit .b-plate{padding:2px 3px 2px}
+}
 .b-hp-summary{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:2px 2px 0}
 .b-hp-side{display:flex;flex-direction:column;gap:2px}
 .b-hp-side span{font-size:9px;font-weight:800;letter-spacing:.3px}
@@ -1111,7 +1169,7 @@ background:radial-gradient(2.6px 2.1px at 13% 72%,rgba(96,84,104,.34),rgba(96,84
 .battle-layer .battle-log div{white-space:normal;overflow:visible;text-overflow:clip;opacity:.86}
 .battle-layer .battle-log div.log-last{opacity:1}
 @media (max-width:420px){
-  .battle-layer .art-frame.art-battle{width:68px;height:68px}
+  .battle-layer .art-frame.art-battle{width:80px;height:80px}
   .battle-layer .b-team{min-height:176px}
   .battle-layer .b-slot-empty{min-height:118px}
   .b-hp-summary{gap:5px}
@@ -6532,23 +6590,19 @@ function battleUnitHTML(unit) {
   const ragePct = clamp(unit.rage, 0, 100);
   return `
     <div class="b-unit ${unit.row} rarity-${unit.rarity} ${unit.alive ? '' : 'dead'} ${unit.isBoss ? 'boss-unit' : ''}" data-boss-phase="${unit.isBoss ? bossPhaseOf(unit.hp / Math.max(1, unit.maxHp)) : ''}" data-uid="${esc(unit.uid)}" data-act="${unit.side === 'enemy' ? 'battleFocus' : ''}">
-      <div class="b-top">
+      <div class="b-top b-cap">
         <span class="b-role">${unit.isBoss ? '👑 首领' : unit.row === 'front' ? '前排' : '后排'}</span>
         <span class="b-lv">Lv.${unit.level}</span>
+        <span class="b-el">${el.emoji}</span>
       </div>
       <div class="b-emoji-wrap">
         ${(unit.side === 'enemy' ? enemyArtFrame(unit) : allyBattleArtFrame(unit)) || `<span class="b-emoji">${unit.emoji}</span>`}
         <span class="b-shield" style="${unit.shield > 0 ? '' : 'display:none'}">🛡${fmt(unit.shield)}</span>
       </div>
-      <div class="b-name">${esc(unit.name)}</div>
-      <div class="b-el">${el.emoji} ${el.name} · ${unit.rarity}</div>
-      <div class="bar">
-        <div class="bar-label"><span>生命</span><span class="b-hp-text">${fmt(unit.hp)}</span></div>
-        <div class="progress"><i class="b-hp-fill" style="width:${hpPct}%"></i></div>
-      </div>
-      <div class="bar">
-        <div class="bar-label"><span>怒气</span><span class="b-rage-text">${Math.floor(unit.rage)}</span></div>
-        <div class="progress rage"><i class="rage-fill b-rage-fill" style="width:${ragePct}%"></i></div>
+      <div class="b-plate">
+        <div class="b-name">${esc(unit.name)}</div>
+        <div class="b-hp"><i class="b-hp-fill" style="width:${hpPct}%"></i><b class="b-hp-text">${fmt(unit.hp)}</b></div>
+        <div class="b-rage"><i class="rage-fill b-rage-fill" style="width:${ragePct}%"></i><b class="b-rage-text">${Math.floor(unit.rage)}</b></div>
       </div>
       <div class="b-buffs"></div>
     </div>`;

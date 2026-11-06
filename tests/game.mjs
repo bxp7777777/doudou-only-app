@@ -464,14 +464,21 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   // 战斗界面：首领横跨两列放大、空位不再画「待命位」、血线换阶段有标记
   check(text.includes('.battle-layer .b-unit.boss-unit{grid-column:1/-1'), '首领应横跨两列撑住版面');
   check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:136px;height:136px}'), '首领立绘应放大到 136px');
-  check(text.includes('.battle-layer .art-frame.art-battle{width:84px;height:84px}') && text.includes('.battle-layer .art-frame.art-battle{width:68px;height:68px}'), '小怪立绘应放大到 84px（小屏 68px）');
+  check(text.includes('.battle-layer .art-frame.art-battle{width:100px;height:100px}') && text.includes('.battle-layer .art-frame.art-battle{width:80px;height:80px}'), '小怪立绘应放大到 100px（小屏 80px）');
   check(text.includes('.battle-layer .b-side.enemy{background:transparent;border:0;box-shadow:none;backdrop-filter:none'), '敌方半边不该再铺白/粉底卡片');
   check(text.includes('.battle-layer .b-side.enemy::before{content:"";position:absolute') && text.includes('radial-gradient(118% 76% at 50% 98%'), '敌方半边应改成透出场景的地台');
   check(text.includes('.battle-layer #btnBattleSpeed::after{content:"×2"'), '速度开关应有 ×2 角标');
   check(text.includes('.battle-layer.speed-2 #btnBattleSpeed{background:linear-gradient'), '2 倍速时速度开关应高亮');
   check(text.includes('if (rt) rt.textContent = `第 ${b.round}/${b.maxRounds} 回合`;'), '回合条应显示「第 N/M 回合」');
   check(text.includes('`我方 ${aliveN(b.allies)}/${b.allies.length}`') && text.includes('`敌方 ${aliveN(b.enemies)}/${b.enemies.length}`'), '回合条两侧应显示双方存活数');
-  check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:104px;height:104px}'), '小屏首领立绘应放大到 104px');
+  check(text.includes('<div class="b-plate">') && text.includes('<b class="b-hp-text">'), '单位应改成立绘 + 小铭牌结构');
+  check(!text.includes('<div class="b-el">${el.emoji} ${el.name} · ${unit.rarity}</div>'), '单位信息块不该再整块铺属性行');
+  check(text.includes('.battle-layer .b-side.enemy .b-unit .art-frame{transform:scaleX(-1)}'), '敌方立绘应镜像面向中央');
+  check(text.includes(".battle-layer .battle-field::before{content:\"\";position:absolute;left:-8%;right:-8%;bottom:-6%;height:64%"), '战场应加透视地台');
+  check(text.includes('.battle-layer .b-row-line.back-line,.battle-layer .b-row-line.mob-line{transform:translateY(-3px) scale(.93)}'), '后排应有纵深缩放');
+  check(text.includes('.battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}'), '栅格应用 minmax(0,1fr) 防止立绘撑破屏幕');
+  check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:168px;height:168px}'), '首领立绘应放大到 168px');
+  check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}'), '小屏首领立绘应放大到 128px');
   check(!text.includes('待命位'), '敌方空位不该再写「待命位」');
   check(globalThis.enemySlotsHtml({ allies: [1,2,3], enemies: [1] }) === '', '敌方空位应留成空地（enemySlotsHtml 返回空串）');
   check(text.includes('data-boss-phase="${unit.isBoss ? bossPhaseOf'), '首领会输出阶段标记');
