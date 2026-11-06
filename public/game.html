@@ -2240,7 +2240,47 @@ const PET_STAGE_NAME = {
   alpaca: ['高原羊驼', '绒毛羊驼', '云端软毛王'],
   mole: ['掘土鼹', '铁爪鼹', '地脉掘进王'],
   jellyfish: ['浮灯水母', '澄光水母', '深海水月母'],
-  peacock: ['光羽孔雀', '开屏孔雀', '万象羽后']
+  peacock: ['光羽孔雀', '开屏孔雀', '万象羽后'],
+  dolphin: ['跃浪海豚', '潮声海豚', '沧海跃浪王'],
+  sailfish: ['旗枪鱼', '长枪旗鱼', '裂浪旗枪王'],
+  anglerfish: ['灯笼小鱼', '诱灯鮟鱇', '深潭诱灯王'],
+  lobster: ['铁壳龙虾', '钢钳龙虾', '深海铁甲王'],
+  swan: ['湖心天鹅', '白羽天鹅', '月湖白羽后'],
+  giraffe: ['长颈小鹿', '高颈长颈鹿', '云顶长颈王'],
+  zebra: ['条纹小马', '疾驰斑马', '草原条纹客'],
+  ladybug: ['红壳小虫', '圆点瓢虫', '草原红壳使'],
+  cicada: ['夏鸣小蝉', '长夏鸣蝉', '酷暑长鸣王'],
+  poisonfrog: ['斑纹小蛙', '毒腺花蛙', '沼地毒腺王'],
+  turkey: ['蓬羽火鸡', '烈焰火鸡', '灶前蓬羽王'],
+  qilin: ['火麟幼兽', '踏火麒麟', '焚天火麒麟'],
+  gecko: ['熔甲小蜥', '岩浆壁虎', '熔岩断尾王'],
+  fireant: ['灼咬小蚁', '焰火蚂蚁', '蚁群灼咬王'],
+  raccoon: ['灰脸小浣熊', '烟火浣熊', '炮竹灰脸王'],
+  magpie: ['喜讯小鹊', '报喜喜鹊', '祥云报喜王'],
+  butterfly: ['鳞粉小蝶', '幻彩蝴蝶', '花海鳞粉后'],
+  coral: ['光珊小枝', '珊瑚光珊', '浅海珊瑚王'],
+  narwhal: ['独角小鲸', '圣角独角鲸', '极光圣角王'],
+  dove: ['橄榄小鸽', '白羽信鸽', '和平白羽使'],
+  crow: ['黑羽小鸦', '厄运黑鸦', '长夜黑羽王'],
+  skull: ['骨甲小兵', '骸骨卫士', '万骨骨甲王'],
+  viper: ['影毒小蛇', '幽影蝰蛇', '夜沼影毒王'],
+  squid: ['墨囊小鱿', '浓墨乌贼', '深潭墨潮王'],
+  centipede: ['百足小虫', '百足蜈蚣', '暗谷百足王'],
+  yeti: ['雪团小雪人', '厚毛雪人', '雪山雪掌王'],
+  wolf: ['霜牙小狼', '冰原霜狼', '极夜霜牙王'],
+  icefish: ['冰鳍小鱼', '寒潭冰鳍', '极地冰鳍使'],
+  crane: ['霜羽仙鹤', '长腿霜鹤', '寒汀霜羽君'],
+  yak: ['雪岭小牛', '雪域牦牛', '雪岭踏雪王'],
+  rhino: ['铁角小犀', '岩甲犀牛', '山岳铁角王'],
+  camel: ['驼峰小驼', '沙漠双峰驼', '金沙驼峰王'],
+  sandworm: ['沙虫宝宝', '流沙巨虫', '黄沙流沙王'],
+  hyena: ['斑鬣小兽', '狞笑鬣狗', '荒原狞笑王'],
+  hippo: ['河马小宝', '泥河河马', '大泥河马王'],
+  vulture: ['秃头小鹫', '荒原秃鹫', '黄沙秃鹫王'],
+  hummingbird: ['振翅小蜂鸟', '残影蜂鸟', '千翼残影使'],
+  dragonfly: ['薄翼小蜓', '碧空蜻蜓', '晴空薄翼王'],
+  windweed: ['风滚草苗', '滚地风草', '荒原风滚王'],
+  kite: ['纸鸢小童', '云端纸鸢', '长空纸鸢使']
 };
 const BONDS = [
   { id: 'cuteDuo', name: '可爱二人组', pets: ['pig', 'golden'], effect: { hpPct: 0.10 }, emoji: '🐷🐶', desc: '泥兜猪 + 金毛崽同场：全队生命 +10%。', quote: '你拱一下、我摇一下尾巴，今天也要黏在一起。' },
@@ -2483,6 +2523,76 @@ const MONSTER_SKILLS = {
   b_ult_peak_titan: { name: "大地裂变", kind: "ult", icon: "🌋", rageCost: 100, desc: "奥义：大地裂开，重创全体并为全队加防。", effects: [{ type: "damage", mult: 1.2, target: "enemy_all" }, { type: "buff", stat: "def", pct: 0.12, turns: 2, target: "ally_all" }] },
 };
 Object.assign(SKILLS, MONSTER_SKILLS);
+/* ===== 80 只宠物扩展包：元素基础技 / 元素奥义 / 定位通用技 / 每只一个招牌技 =====
+   基础技·奥义·定位技全元素共用，招牌技一只一条，保证个体差异 */
+const EXTRA_SKILLS = {
+  pb_grass: { name: "草绳绊击", kind: "basic", icon: "🌿", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_fire: { name: "火舌舔击", kind: "basic", icon: "🔥", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_water: { name: "水珠弹打", kind: "basic", icon: "💧", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_light: { name: "光斑拍击", kind: "basic", icon: "✨", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_dark: { name: "暗角撕咬", kind: "basic", icon: "🌑", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_earth: { name: "土砂拍打", kind: "basic", icon: "🪨", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_wind: { name: "风刃划过", kind: "basic", icon: "🌬️", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pb_ice: { name: "霜粒击打", kind: "basic", icon: "❄️", rageGain: 35, desc: "朝最前排来一下，攒一点怒气。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  pu_grass: { name: "藤海春生", kind: "ult", icon: "🌿", rageCost: 100, desc: "藤海春生" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1.02, target: "enemy_all" }, { type: "heal", atkPct: 0.45, hpPct: 0.05, target: "ally_all" }] },
+  pu_fire: { name: "烈焰奔流", kind: "ult", icon: "🔥", rageCost: 100, desc: "烈焰奔流" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "self" }] },
+  pu_water: { name: "潮声回响", kind: "ult", icon: "🌊", rageCost: 100, desc: "潮声回响" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1.02, target: "enemy_all" }, { type: "heal", atkPct: 0.4, hpPct: 0.04, target: "ally_all" }] },
+  pu_light: { name: "圣辉普照", kind: "ult", icon: "🌟", rageCost: 100, desc: "圣辉普照" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "shield", hpPct: 0.1, turns: 2, target: "ally_all" }] },
+  pu_dark: { name: "沉夜吞光", kind: "ult", icon: "🌑", rageCost: 100, desc: "沉夜吞光" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1.05, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.12, turns: 2, target: "enemy_all" }] },
+  pu_earth: { name: "大地起立", kind: "ult", icon: "🏔️", rageCost: 100, desc: "大地起立" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "buff", stat: "def", pct: 0.12, turns: 2, target: "ally_all" }] },
+  pu_wind: { name: "风起云涌", kind: "ult", icon: "🌀", rageCost: 100, desc: "风起云涌" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1.06, target: "enemy_all" }, { type: "buff", stat: "spd", pct: 0.15, turns: 2, target: "ally_all" }] },
+  pu_ice: { name: "霜华凝定", kind: "ult", icon: "❄️", rageCost: 100, desc: "霜华凝定" + "是这一系的集体奥义，全场一起响。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "shield", hpPct: 0.08, turns: 2, target: "ally_all" }] },
+  rk_tank: { name: "铁壁架势", kind: "active", icon: "🛡️", cooldown: 3, rageGain: 10, desc: "铁壁架势" + "：按定位使出的通用手法。", effects: [{ type: "shield", hpPct: 0.22, turns: 2, target: "self" }, { type: "buff", stat: "def", pct: 0.15, turns: 2, target: "self" }] },
+  rk_bruiser: { name: "蓄力一击", kind: "active", icon: "💪", cooldown: 3, rageGain: 10, desc: "蓄力一击" + "：按定位使出的通用手法。", effects: [{ type: "damage", mult: 1.55, target: "enemy_front" }, { type: "buff", stat: "atk", pct: 0.1, turns: 2, target: "self" }] },
+  rk_assassin: { name: "暗影突袭", kind: "active", icon: "🗡️", cooldown: 3, rageGain: 10, desc: "暗影突袭" + "：按定位使出的通用手法。", effects: [{ type: "damage", mult: 1.6, target: "enemy_back" }] },
+  rk_mage: { name: "元素涌动", kind: "active", icon: "🔮", cooldown: 3, rageGain: 10, desc: "元素涌动" + "：按定位使出的通用手法。", effects: [{ type: "damage", mult: 0.9, target: "enemy_all" }] },
+  rk_healer: { name: "润泽同行", kind: "active", icon: "💧", cooldown: 3, rageGain: 10, desc: "润泽同行" + "：按定位使出的通用手法。", effects: [{ type: "heal", atkPct: 0.6, hpPct: 0.05, target: "ally_all" }, { type: "hot", target: "ally_all", hpPct: 0.03, turns: 2 }] },
+  rk_controller: { name: "迟缓咒印", kind: "active", icon: "🕸️", cooldown: 3, rageGain: 10, desc: "迟缓咒印" + "：按定位使出的通用手法。", effects: [{ type: "damage", mult: 0.9, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.25, turns: 2, target: "enemy_front" }] },
+  rk_support: { name: "鼓舞号角", kind: "active", icon: "📣", cooldown: 3, rageGain: 10, desc: "鼓舞号角" + "：按定位使出的通用手法。", effects: [{ type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "ally_all" }] },
+  rk_speed: { name: "疾影连踏", kind: "active", icon: "💨", cooldown: 3, rageGain: 10, desc: "疾影连踏" + "：按定位使出的通用手法。", effects: [{ type: "damage", mult: 1.2, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  dolphin_sig: { name: "尾鳍拍浪", kind: "active", icon: "🌊", cooldown: 2, rageGain: 10, desc: "甩尾扫过后排，自己越打越快。", effects: [{ type: "damage", mult: 1.55, target: "enemy_back" }] },
+  sailfish_sig: { name: "旗枪突刺", kind: "active", icon: "🗡️", cooldown: 2, rageGain: 10, desc: "一枪挑向后排最脆的那个。", effects: [{ type: "damage", mult: 1.62, target: "enemy_back" }] },
+  anglerfish_sig: { name: "诱灯吞咬", kind: "active", icon: "💡", cooldown: 2, rageGain: 10, desc: "灯一亮就咬，还顺手削弱对手。", effects: [{ type: "damage", mult: 0.8, target: "enemy_back" }, { type: "heal", atkPct: 0.35, hpPct: 0.05, target: "self" }] },
+  lobster_sig: { name: "钳甲硬壳", kind: "active", icon: "🛡️", cooldown: 2, rageGain: 10, desc: "横起双钳，套上厚壳再顶一下。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "shield", hpPct: 0.18, turns: 2, target: "self" }] },
+  swan_sig: { name: "湖心清波", kind: "active", icon: "🦢", cooldown: 2, rageGain: 10, desc: "涟漪荡开，全队回血并被鼓舞。", effects: [{ type: "heal", atkPct: 0.55, hpPct: 0.06, target: "ally_all" }, { type: "buff", stat: "atk", pct: 0.08, turns: 2, target: "ally_all" }] },
+  giraffe_sig: { name: "长颈重锤", kind: "active", icon: "🦒", cooldown: 2, rageGain: 10, desc: "脖子抡圆了砸向前排。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }] },
+  zebra_sig: { name: "疾驰条纹", kind: "active", icon: "🦓", cooldown: 2, rageGain: 10, desc: "撞过去时连带把节奏带快。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  ladybug_sig: { name: "红壳守护", kind: "active", icon: "🐞", cooldown: 2, rageGain: 10, desc: "抖抖红壳，给全队披上薄盾。", effects: [{ type: "shield", hpPct: 0.12, turns: 2, target: "ally_all" }, { type: "damage", mult: 0.8, target: "enemy_front" }] },
+  cicada_sig: { name: "夏日长鸣", kind: "active", icon: "🦗", cooldown: 2, rageGain: 10, desc: "鸣声扫过全场，震得人人发麻。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }] },
+  poisonfrog_sig: { name: "毒腺喷射", kind: "active", icon: "☠️", cooldown: 2, rageGain: 10, desc: "黏液糊过去，毒会一直啃。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }, { type: "dot", dotKind: "poison", target: "enemy_all", mult: 0.05, turns: 3 }] },
+  turkey_sig: { name: "振羽烈焰", kind: "active", icon: "🔥", cooldown: 2, rageGain: 10, desc: "抖开羽毛，全队攻击被点起来。", effects: [{ type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "ally_all" }] },
+  qilin_sig: { name: "麒麟踏火", kind: "active", icon: "🔥", cooldown: 2, rageGain: 10, desc: "踩着火冲前排，自己也烧起来。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "atk", pct: 0.12, turns: 2, target: "self" }] },
+  gecko_sig: { name: "熔甲断尾", kind: "active", icon: "🦎", cooldown: 2, rageGain: 10, desc: "硬壳护身，尾梢还能甩一下。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "shield", hpPct: 0.18, turns: 2, target: "self" }] },
+  fireant_sig: { name: "蚁群灼咬", kind: "active", icon: "🔥", cooldown: 2, rageGain: 10, desc: "专挑快倒的那个狠咬一口。", effects: [{ type: "damage", mult: 0.8, target: "enemy_lowest" }] },
+  raccoon_sig: { name: "烟火爆竹", kind: "active", icon: "🧨", cooldown: 2, rageGain: 10, desc: "扔出一串炮仗，全场都响。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }, { type: "dot", dotKind: "burn", target: "enemy_all", mult: 0.05, turns: 2 }] },
+  magpie_sig: { name: "喜讯急报", kind: "active", icon: "🐦", cooldown: 2, rageGain: 10, desc: "一边报喜一边飞快撞过去。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  butterfly_sig: { name: "鳞粉疗愈", kind: "active", icon: "🦋", cooldown: 2, rageGain: 10, desc: "鳞粉落下，全队慢慢回血。", effects: [{ type: "heal", atkPct: 0.45, hpPct: 0.05, target: "ally_all" }, { type: "hot", target: "ally_all", hpPct: 0.03, turns: 2 }] },
+  coral_sig: { name: "珊瑚屏障", kind: "active", icon: "🪸", cooldown: 2, rageGain: 10, desc: "撑起珊瑚壁，把全队护在外面。", effects: [{ type: "shield", hpPct: 0.12, turns: 2, target: "ally_all" }, { type: "damage", mult: 0.8, target: "enemy_front" }] },
+  narwhal_sig: { name: "圣角穿浪", kind: "active", icon: "🐋", cooldown: 2, rageGain: 10, desc: "长角破浪直顶最前排。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }] },
+  dove_sig: { name: "橄榄回春", kind: "active", icon: "🕊️", cooldown: 2, rageGain: 10, desc: "衔来橄榄枝，把最虚弱的那位救回来。", effects: [{ type: "heal", atkPct: 0.8, hpPct: 0.06, target: "ally_lowest" }, { type: "buff", stat: "def", pct: 0.1, turns: 2, target: "ally_lowest" }] },
+  crow_sig: { name: "厄运啼鸣", kind: "active", icon: "🌑", cooldown: 2, rageGain: 10, desc: "一声啼叫，敌人手都软了。", effects: [{ type: "damage", mult: 0.9, target: "enemy_all" }, { type: "buff", stat: "atk", pct: -0.15, turns: 2, target: "enemy_all" }] },
+  skull_sig: { name: "骨甲硬抗", kind: "active", icon: "💀", cooldown: 2, rageGain: 10, desc: "把骨头缩成一团，硬生生扛住。", effects: [{ type: "shield", hpPct: 0.22, turns: 2, target: "self" }, { type: "buff", stat: "def", pct: 0.15, turns: 2, target: "self" }] },
+  viper_sig: { name: "影毒獠牙", kind: "active", icon: "🩸", cooldown: 2, rageGain: 10, desc: "咬住后排，把血一点点吸回来。", effects: [{ type: "damage", mult: 0.8, target: "enemy_back" }, { type: "heal", atkPct: 0.35, hpPct: 0.05, target: "self" }] },
+  squid_sig: { name: "墨汁喷涌", kind: "active", icon: "🖤", cooldown: 2, rageGain: 10, desc: "整片墨云盖下来，人人看不清。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.1, turns: 2, target: "enemy_all" }] },
+  centipede_sig: { name: "百足缠击", kind: "active", icon: "🐛", cooldown: 2, rageGain: 10, desc: "百足一起缠上去，还越缠越凶。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "atk", pct: 0.12, turns: 2, target: "self" }] },
+  yeti_sig: { name: "雪掌拍击", kind: "active", icon: "❄️", cooldown: 2, rageGain: 10, desc: "一巴掌拍下，自己裹进雪壳。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "shield", hpPct: 0.18, turns: 2, target: "self" }] },
+  wolf_sig: { name: "霜牙突袭", kind: "active", icon: "🌨️", cooldown: 2, rageGain: 10, desc: "扑上去一通乱咬，越咬越狠。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "atk", pct: 0.12, turns: 2, target: "self" }] },
+  icefish_sig: { name: "冰鳍掠影", kind: "active", icon: "🧊", cooldown: 2, rageGain: 10, desc: "贴着地面掠过，快得只剩影子。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  crane_sig: { name: "霜羽清唳", kind: "active", icon: "❄️", cooldown: 2, rageGain: 10, desc: "一声长鸣，寒气把伤口冻住。", effects: [{ type: "heal", atkPct: 0.8, hpPct: 0.06, target: "ally_lowest" }, { type: "buff", stat: "def", pct: 0.1, turns: 2, target: "ally_lowest" }] },
+  yak_sig: { name: "雪岭冲撞", kind: "active", icon: "🏔️", cooldown: 2, rageGain: 10, desc: "整头撞过去，雪都跟着塌。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "shield", hpPct: 0.18, turns: 2, target: "self" }] },
+  rhino_sig: { name: "铁角冲撞", kind: "active", icon: "🪨", cooldown: 2, rageGain: 10, desc: "低头一顶，前排直接被推走。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }] },
+  camel_sig: { name: "驼峰蓄力", kind: "active", icon: "🏜️", cooldown: 2, rageGain: 10, desc: "把水一口气用完，砸出一下重的。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "shield", hpPct: 0.18, turns: 2, target: "self" }] },
+  sandworm_sig: { name: "流沙漩涡", kind: "active", icon: "🏖️", cooldown: 2, rageGain: 10, desc: "地面塌成漩涡，把前排卷进去。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }] },
+  hyena_sig: { name: "荒原狞笑", kind: "active", icon: "🦴", cooldown: 2, rageGain: 10, desc: "笑着扑向后排，咬住就不放。", effects: [{ type: "damage", mult: 0.8, target: "enemy_back" }, { type: "buff", stat: "atk", pct: 0.08, turns: 2, target: "self" }] },
+  hippo_sig: { name: "泥河张嘴", kind: "active", icon: "💧", cooldown: 2, rageGain: 10, desc: "大嘴一合，前排被咬得死死的。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }] },
+  vulture_sig: { name: "俯冲撕扯", kind: "active", icon: "🦅", cooldown: 2, rageGain: 10, desc: "从高空砸下来，专找残血。", effects: [{ type: "damage", mult: 0.8, target: "enemy_lowest" }] },
+  hummingbird_sig: { name: "振翅残影", kind: "active", icon: "💨", cooldown: 2, rageGain: 10, desc: "快得只剩残影，连撞好几下。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  dragonfly_sig: { name: "四翼急袭", kind: "active", icon: "💠", cooldown: 2, rageGain: 10, desc: "四片翅膀一收，直插后排。", effects: [{ type: "damage", mult: 0.8, target: "enemy_back" }, { type: "buff", stat: "atk", pct: 0.08, turns: 2, target: "self" }] },
+  windweed_sig: { name: "风草滚袭", kind: "active", icon: "🍃", cooldown: 2, rageGain: 10, desc: "滚成一团扫过全场，还停不下来。", effects: [{ type: "damage", mult: 0.8, target: "enemy_all" }] },
+  kite_sig: { name: "纸鸢掠空", kind: "active", icon: "☁️", cooldown: 2, rageGain: 10, desc: "顺着风斜插过去，谁也抓不住。", effects: [{ type: "damage", mult: 0.8, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+};
+Object.assign(SKILLS, EXTRA_SKILLS);
+
 // 小怪：元素通用普攻 + 元素主动 + 自己的招牌技 + 元素奥义
 const MOB_SKILL_KEYS = {
   moss_slime: ['x_basic_grass', 'x_active_grass', 'x_sig_moss_slime', 'x_ult_grass'],
@@ -2890,6 +3000,367 @@ const PETS = [
     skills: ['golden_basic', 'golden_frisbee', 'unicorn_a1', 'golden_ult'],
     lines: ['开屏的瞬间，全场都亮了。', '羽毛上有小小的眼睛花纹。', '光鲜是为了给同伴鼓劲。'],
     codex: '光羽孔雀系的开屏光羽，光属性后排，开屏时华光流转，兼顾输出与增益。它一天要整理三遍羽毛，紧张时反而开不好屏；但只要是为队伍而开，那片光就从没失手过。'
+  },
+
+  {
+    id: 'dolphin', name: '跃浪海豚', title: '逐浪小快艇', species: '跃浪海豚系', element: 'water', rarity: 'SR', role: 'front',
+    emoji: ["🐬", "🐬", "🌊"], shiny: "✨🐬✨",
+    base: {hp:730, atk:70, def:58, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:46, atk:4.5, def:4, spd:0.32},
+    skills: ['pb_water', 'dolphin_sig', 'rk_speed', 'pu_water'],
+    lines: ['我叫跃浪海豚，请多指教。', '见谁都先笑一下。', '尾鳍拍浪，要看看吗？'],
+    codex: "跃浪海豚是水边的小家伙，逐浪小快艇。见谁都先笑一下。最拿手的一招是尾鳍拍浪，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'sailfish', name: '旗枪鱼', title: '长枪小刺头', species: '旗枪鱼系', element: 'water', rarity: 'R', role: 'back',
+    emoji: ["🐟", "🐠", "🗡️"], shiny: "✨🐟✨",
+    base: {hp:480, atk:80, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:30, atk:5.1, def:2, spd:0.48},
+    skills: ['pb_water', 'sailfish_sig', 'rk_assassin', 'pu_water'],
+    lines: ['我叫旗枪鱼，请多指教。', '背鳍从不服软。', '旗枪突刺，要看看吗？'],
+    codex: "旗枪鱼是水边的小家伙，长枪小刺头。背鳍从不服软。最拿手的一招是旗枪突刺，习惯待在后面出主意。"
+  },
+  {
+    id: 'anglerfish', name: '灯笼小鱼', title: '深水小灯泡', species: '灯笼小鱼系', element: 'water', rarity: 'R', role: 'back',
+    emoji: ["🐡", "🐟", "💡"], shiny: "✨🐡✨",
+    base: {hp:480, atk:80, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:30, atk:5.1, def:2, spd:0.48},
+    skills: ['pb_water', 'anglerfish_sig', 'rk_controller', 'pu_water'],
+    lines: ['我叫灯笼小鱼，请多指教。', '喜欢在黑暗里笑。', '诱灯吞咬，要看看吗？'],
+    codex: "灯笼小鱼是水边的小家伙，深水小灯泡。喜欢在黑暗里笑。最拿手的一招是诱灯吞咬，习惯待在后面出主意。"
+  },
+  {
+    id: 'lobster', name: '铁壳龙虾', title: '硬壳小钳工', species: '铁壳龙虾系', element: 'water', rarity: 'SR', role: 'front',
+    emoji: ["🦞", "🦞", "🛡️"], shiny: "✨🦞✨",
+    base: {hp:730, atk:70, def:58, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:46, atk:4.5, def:4, spd:0.32},
+    skills: ['pb_water', 'lobster_sig', 'rk_tank', 'pu_water'],
+    lines: ['我叫铁壳龙虾，请多指教。', '见硬壳就往上撞。', '钳甲硬壳，要看看吗？'],
+    codex: "铁壳龙虾是水边的小家伙，硬壳小钳工。见硬壳就往上撞。最拿手的一招是钳甲硬壳，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'swan', name: '湖心天鹅', title: '水面小公主', species: '湖心天鹅系', element: 'water', rarity: 'SR', role: 'back',
+    emoji: ["🦢", "🦢", "🌙"], shiny: "✨🦢✨",
+    base: {hp:540, atk:91, def:33, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:34, atk:5.8, def:2.3, spd:0.48},
+    skills: ['pb_water', 'swan_sig', 'rk_support', 'pu_water'],
+    lines: ['我叫湖心天鹅，请多指教。', '走路都要照镜子。', '湖心清波，要看看吗？'],
+    codex: "湖心天鹅是水边的小家伙，水面小公主。走路都要照镜子。最拿手的一招是湖心清波，习惯待在后面出主意。"
+  },
+  {
+    id: 'giraffe', name: '长颈小鹿', title: '够得着小树顶', species: '长颈小鹿系', element: 'grass', rarity: 'SR', role: 'front',
+    emoji: ["🦒", "🦒", "🌳"], shiny: "✨🦒✨",
+    base: {hp:755, atk:66, def:61, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:48, atk:4.2, def:4.2, spd:0.32},
+    skills: ['pb_grass', 'giraffe_sig', 'rk_bruiser', 'pu_grass'],
+    lines: ['我叫长颈小鹿，请多指教。', '总想看得更远一点。', '长颈重锤，要看看吗？'],
+    codex: "长颈小鹿是林间的小家伙，够得着小树顶。总想看得更远一点。最拿手的一招是长颈重锤，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'zebra', name: '条纹小马', title: '跑起来像风', species: '条纹小马系', element: 'grass', rarity: 'R', role: 'front',
+    emoji: ["🦓", "🦓", "💨"], shiny: "✨🦓✨",
+    base: {hp:670, atk:59, def:54, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:42, atk:3.8, def:3.7, spd:0.32},
+    skills: ['pb_grass', 'zebra_sig', 'rk_speed', 'pu_grass'],
+    lines: ['我叫条纹小马，请多指教。', '数不清自己有几条纹。', '疾驰条纹，要看看吗？'],
+    codex: "条纹小马是林间的小家伙，跑起来像风。数不清自己有几条纹。最拿手的一招是疾驰条纹，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'ladybug', name: '红壳小虫', title: '背着一身圆点', species: '红壳小虫系', element: 'grass', rarity: 'N', role: 'back',
+    emoji: ["🐞", "🐞", "🍀"], shiny: "✨🐞✨",
+    base: {hp:425, atk:66, def:27, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:27, atk:4.2, def:1.9, spd:0.48},
+    skills: ['pb_grass', 'ladybug_sig', 'rk_support', 'pu_grass'],
+    lines: ['我叫红壳小虫，请多指教。', '紧张时会喷黄水。', '红壳守护，要看看吗？'],
+    codex: "红壳小虫是林间的小家伙，背着一身圆点。紧张时会喷黄水。最拿手的一招是红壳守护，习惯待在后面出主意。"
+  },
+  {
+    id: 'cicada', name: '夏鸣小蝉', title: '夏天的主唱', species: '夏鸣小蝉系', element: 'grass', rarity: 'R', role: 'front',
+    emoji: ["🦗", "🦗", "🎵"], shiny: "✨🦗✨",
+    base: {hp:670, atk:59, def:54, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:42, atk:3.8, def:3.7, spd:0.32},
+    skills: ['pb_grass', 'cicada_sig', 'rk_mage', 'pu_grass'],
+    lines: ['我叫夏鸣小蝉，请多指教。', '一叫就是一整季。', '夏日长鸣，要看看吗？'],
+    codex: "夏鸣小蝉是林间的小家伙，夏天的主唱。一叫就是一整季。最拿手的一招是夏日长鸣，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'poisonfrog', name: '斑纹小蛙', title: '一身漂亮花纹', species: '斑纹小蛙系', element: 'grass', rarity: 'SR', role: 'front',
+    emoji: ["🐸", "🐸", "☠️"], shiny: "✨🐸✨",
+    base: {hp:755, atk:66, def:61, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:48, atk:4.2, def:4.2, spd:0.32},
+    skills: ['pb_grass', 'poisonfrog_sig', 'rk_controller', 'pu_grass'],
+    lines: ['我叫斑纹小蛙，请多指教。', '被摸背会鼓起肚子。', '毒腺喷射，要看看吗？'],
+    codex: "斑纹小蛙是林间的小家伙，一身漂亮花纹。被摸背会鼓起肚子。最拿手的一招是毒腺喷射，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'turkey', name: '蓬羽火鸡', title: '羽毛炸开的样子', species: '蓬羽火鸡系', element: 'fire', rarity: 'R', role: 'back',
+    emoji: ["🦃", "🦃", "🔥"], shiny: "✨🦃✨",
+    base: {hp:440, atk:84, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:28, atk:5.4, def:2, spd:0.48},
+    skills: ['pb_fire', 'turkey_sig', 'rk_support', 'pu_fire'],
+    lines: ['我叫蓬羽火鸡，请多指教。', '嗓门比火还大。', '振羽烈焰，要看看吗？'],
+    codex: "蓬羽火鸡是火山的小家伙，羽毛炸开的样子。嗓门比火还大。最拿手的一招是振羽烈焰，习惯待在后面出主意。"
+  },
+  {
+    id: 'qilin', name: '火麟幼兽', title: '一步一朵火', species: '火麟幼兽系', element: 'fire', rarity: 'SSR', role: 'front',
+    emoji: ["🦄", "🐎", "🔥"], shiny: "✨🦄✨",
+    base: {hp:755, atk:82, def:65, spd:16, crit:0.07, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:48, atk:5.2, def:4.5, spd:0.32},
+    skills: ['pb_fire', 'qilin_sig', 'rk_bruiser', 'pu_fire'],
+    lines: ['我叫火麟幼兽，请多指教。', '只在雷雨天现身。', '麒麟踏火，要看看吗？'],
+    codex: "火麟幼兽是火山的小家伙，一步一朵火。只在雷雨天现身。最拿手的一招是麒麟踏火，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'gecko', name: '熔甲小蜥', title: '断尾也不认输', species: '熔甲小蜥系', element: 'fire', rarity: 'R', role: 'front',
+    emoji: ["🦎", "🦎", "🌋"], shiny: "✨🦎✨",
+    base: {hp:595, atk:65, def:51, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:37, atk:4.2, def:3.5, spd:0.32},
+    skills: ['pb_fire', 'gecko_sig', 'rk_tank', 'pu_fire'],
+    lines: ['我叫熔甲小蜥，请多指教。', '贴着岩壁晒太阳。', '熔甲断尾，要看看吗？'],
+    codex: "熔甲小蜥是火山的小家伙，断尾也不认输。贴着岩壁晒太阳。最拿手的一招是熔甲断尾，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'fireant', name: '灼咬小蚁', title: '扛着火星搬家', species: '灼咬小蚁系', element: 'fire', rarity: 'R', role: 'front',
+    emoji: ["🐜", "🐜", "🔥"], shiny: "✨🐜✨",
+    base: {hp:595, atk:65, def:51, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:37, atk:4.2, def:3.5, spd:0.32},
+    skills: ['pb_fire', 'fireant_sig', 'rk_assassin', 'pu_fire'],
+    lines: ['我叫灼咬小蚁，请多指教。', '谁踩窝就咬谁。', '蚁群灼咬，要看看吗？'],
+    codex: "灼咬小蚁是火山的小家伙，扛着火星搬家。谁踩窝就咬谁。最拿手的一招是蚁群灼咬，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'raccoon', name: '灰脸小浣熊', title: '总在翻垃圾找火药', species: '灰脸小浣熊系', element: 'fire', rarity: 'SR', role: 'back',
+    emoji: ["🦝", "🦝", "🧨"], shiny: "✨🦝✨",
+    base: {hp:500, atk:95, def:33, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:32, atk:6.1, def:2.3, spd:0.48},
+    skills: ['pb_fire', 'raccoon_sig', 'rk_mage', 'pu_fire'],
+    lines: ['我叫灰脸小浣熊，请多指教。', '点火前先眨眼。', '烟火爆竹，要看看吗？'],
+    codex: "灰脸小浣熊是火山的小家伙，总在翻垃圾找火药。点火前先眨眼。最拿手的一招是烟火爆竹，习惯待在后面出主意。"
+  },
+  {
+    id: 'magpie', name: '喜讯小鹊', title: '站在枝头报喜', species: '喜讯小鹊系', element: 'light', rarity: 'R', role: 'front',
+    emoji: ["🐦", "🐦", "🍀"], shiny: "✨🐦✨",
+    base: {hp:655, atk:62, def:52, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:41, atk:4, def:3.6, spd:0.32},
+    skills: ['pb_light', 'magpie_sig', 'rk_speed', 'pu_light'],
+    lines: ['我叫喜讯小鹊，请多指教。', '见谁都要讲两句。', '喜讯急报，要看看吗？'],
+    codex: "喜讯小鹊是光明的小家伙，站在枝头报喜。见谁都要讲两句。最拿手的一招是喜讯急报，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'butterfly', name: '鳞粉小蝶', title: '飞一程撒一路粉', species: '鳞粉小蝶系', element: 'light', rarity: 'SR', role: 'back',
+    emoji: ["🦋", "🦋", "🌸"], shiny: "✨🦋✨",
+    base: {hp:550, atk:91, def:34, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:35, atk:5.8, def:2.3, spd:0.48},
+    skills: ['pb_light', 'butterfly_sig', 'rk_support', 'pu_light'],
+    lines: ['我叫鳞粉小蝶，请多指教。', '停在人肩上不肯走。', '鳞粉疗愈，要看看吗？'],
+    codex: "鳞粉小蝶是光明的小家伙，飞一程撒一路粉。停在人肩上不肯走。最拿手的一招是鳞粉疗愈，习惯待在后面出主意。"
+  },
+  {
+    id: 'coral', name: '光珊小枝', title: '海底的小房子', species: '光珊小枝系', element: 'light', rarity: 'SR', role: 'front',
+    emoji: ["🪸", "🪸", "✨"], shiny: "✨🪸✨",
+    base: {hp:745, atk:70, def:59, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:47, atk:4.5, def:4.1, spd:0.32},
+    skills: ['pb_light', 'coral_sig', 'rk_tank', 'pu_light'],
+    lines: ['我叫光珊小枝，请多指教。', '被浪打了也不动。', '珊瑚屏障，要看看吗？'],
+    codex: "光珊小枝是光明的小家伙，海底的小房子。被浪打了也不动。最拿手的一招是珊瑚屏障，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'narwhal', name: '独角小鲸', title: '角上缠着极光', species: '独角小鲸系', element: 'light', rarity: 'SSR', role: 'front',
+    emoji: ["🐋", "🐳", "🦄"], shiny: "✨🐋✨",
+    base: {hp:835, atk:78, def:66, spd:16, crit:0.07, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:53, atk:5, def:4.6, spd:0.32},
+    skills: ['pb_light', 'narwhal_sig', 'rk_bruiser', 'pu_light'],
+    lines: ['我叫独角小鲸，请多指教。', '唱歌能传很远。', '圣角穿浪，要看看吗？'],
+    codex: "独角小鲸是光明的小家伙，角上缠着极光。唱歌能传很远。最拿手的一招是圣角穿浪，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'dove', name: '橄榄小鸽', title: '嘴里总叼着叶子', species: '橄榄小鸽系', element: 'light', rarity: 'R', role: 'back',
+    emoji: ["🕊️", "🕊️", "🌿"], shiny: "✨🕊️✨",
+    base: {hp:490, atk:80, def:30, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:31, atk:5.1, def:2.1, spd:0.48},
+    skills: ['pb_light', 'dove_sig', 'rk_healer', 'pu_light'],
+    lines: ['我叫橄榄小鸽，请多指教。', '吵架时它会飞来。', '橄榄回春，要看看吗？'],
+    codex: "橄榄小鸽是光明的小家伙，嘴里总叼着叶子。吵架时它会飞来。最拿手的一招是橄榄回春，习惯待在后面出主意。"
+  },
+  {
+    id: 'crow', name: '黑羽小鸦', title: '站在枯枝上数人', species: '黑羽小鸦系', element: 'dark', rarity: 'R', role: 'back',
+    emoji: ["🐦‍⬛", "🐦‍⬛", "🌑"], shiny: "✨🐦‍⬛✨",
+    base: {hp:460, atk:83, def:29, spd:24.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:29, atk:5.3, def:2, spd:0.49},
+    skills: ['pb_dark', 'crow_sig', 'rk_controller', 'pu_dark'],
+    lines: ['我叫黑羽小鸦，请多指教。', '叫声很像在笑。', '厄运啼鸣，要看看吗？'],
+    codex: "黑羽小鸦是夜里的小家伙，站在枯枝上数人。叫声很像在笑。最拿手的一招是厄运啼鸣，习惯待在后面出主意。"
+  },
+  {
+    id: 'skull', name: '骨甲小兵', title: '走路会咔咔响', species: '骨甲小兵系', element: 'dark', rarity: 'R', role: 'front',
+    emoji: ["💀", "☠️", "🦴"], shiny: "✨💀✨",
+    base: {hp:620, atk:64, def:51, spd:16.3, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:39, atk:4.1, def:3.5, spd:0.33},
+    skills: ['pb_dark', 'skull_sig', 'rk_tank', 'pu_dark'],
+    lines: ['我叫骨甲小兵，请多指教。', '掉一颗牙会自己捡回来。', '骨甲硬抗，要看看吗？'],
+    codex: "骨甲小兵是夜里的小家伙，走路会咔咔响。掉一颗牙会自己捡回来。最拿手的一招是骨甲硬抗，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'viper', name: '影毒小蛇', title: '在影子里蜕皮', species: '影毒小蛇系', element: 'dark', rarity: 'SR', role: 'back',
+    emoji: ["🐍", "🐍", "🩸"], shiny: "✨🐍✨",
+    base: {hp:520, atk:94, def:33, spd:24.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:33, atk:6, def:2.3, spd:0.49},
+    skills: ['pb_dark', 'viper_sig', 'rk_assassin', 'pu_dark'],
+    lines: ['我叫影毒小蛇，请多指教。', '咬完就躲回暗处。', '影毒獠牙，要看看吗？'],
+    codex: "影毒小蛇是夜里的小家伙，在影子里蜕皮。咬完就躲回暗处。最拿手的一招是影毒獠牙，习惯待在后面出主意。"
+  },
+  {
+    id: 'squid', name: '墨囊小鱿', title: '一紧张就喷墨', species: '墨囊小鱿系', element: 'dark', rarity: 'SR', role: 'back',
+    emoji: ["🦑", "🦑", "🖤"], shiny: "✨🦑✨",
+    base: {hp:520, atk:94, def:33, spd:24.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:33, atk:6, def:2.3, spd:0.49},
+    skills: ['pb_dark', 'squid_sig', 'rk_mage', 'pu_dark'],
+    lines: ['我叫墨囊小鱿，请多指教。', '墨水能写一手好字。', '墨汁喷涌，要看看吗？'],
+    codex: "墨囊小鱿是夜里的小家伙，一紧张就喷墨。墨水能写一手好字。最拿手的一招是墨汁喷涌，习惯待在后面出主意。"
+  },
+  {
+    id: 'centipede', name: '百足小虫', title: '脚多到自己数不过来', species: '百足小虫系', element: 'dark', rarity: 'R', role: 'front',
+    emoji: ["🐛", "🐛", "🦶"], shiny: "✨🐛✨",
+    base: {hp:620, atk:64, def:51, spd:16.3, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:39, atk:4.1, def:3.5, spd:0.33},
+    skills: ['pb_dark', 'centipede_sig', 'rk_bruiser', 'pu_dark'],
+    lines: ['我叫百足小虫，请多指教。', '穿鞋要穿很久。', '百足缠击，要看看吗？'],
+    codex: "百足小虫是夜里的小家伙，脚多到自己数不过来。穿鞋要穿很久。最拿手的一招是百足缠击，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'yeti', name: '雪团小雪人', title: '走到哪都撒雪', species: '雪团小雪人系', element: 'ice', rarity: 'SR', role: 'front',
+    emoji: ["⛄", "☃️", "❄️"], shiny: "✨⛄✨",
+    base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:46, atk:4.2, def:4.5, spd:0.31},
+    skills: ['pb_ice', 'yeti_sig', 'rk_tank', 'pu_ice'],
+    lines: ['我叫雪团小雪人，请多指教。', '夏天会躲进冰柜。', '雪掌拍击，要看看吗？'],
+    codex: "雪团小雪人是雪原的小家伙，走到哪都撒雪。夏天会躲进冰柜。最拿手的一招是雪掌拍击，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'wolf', name: '霜牙小狼', title: '对着月亮练嗓子', species: '霜牙小狼系', element: 'ice', rarity: 'SR', role: 'front',
+    emoji: ["🐺", "🐺", "🌨️"], shiny: "✨🐺✨",
+    base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:46, atk:4.2, def:4.5, spd:0.31},
+    skills: ['pb_ice', 'wolf_sig', 'rk_bruiser', 'pu_ice'],
+    lines: ['我叫霜牙小狼，请多指教。', '雪里能闻出人味。', '霜牙突袭，要看看吗？'],
+    codex: "霜牙小狼是雪原的小家伙，对着月亮练嗓子。雪里能闻出人味。最拿手的一招是霜牙突袭，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'icefish', name: '冰鳍小鱼', title: '冰下游得比谁都快', species: '冰鳍小鱼系', element: 'ice', rarity: 'R', role: 'front',
+    emoji: ["🐟", "🐠", "🧊"], shiny: "✨🐟✨",
+    base: {hp:645, atk:59, def:57, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:41, atk:3.8, def:3.9, spd:0.31},
+    skills: ['pb_ice', 'icefish_sig', 'rk_speed', 'pu_ice'],
+    lines: ['我叫冰鳍小鱼，请多指教。', '撞冰面也不疼。', '冰鳍掠影，要看看吗？'],
+    codex: "冰鳍小鱼是雪原的小家伙，冰下游得比谁都快。撞冰面也不疼。最拿手的一招是冰鳍掠影，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'crane', name: '霜羽仙鹤', title: '单腿站着能睡', species: '霜羽仙鹤系', element: 'ice', rarity: 'SR', role: 'back',
+    emoji: ["🐦", "🕊️", "❄️"], shiny: "✨🐦✨",
+    base: {hp:540, atk:86, def:37, spd:23.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:34, atk:5.5, def:2.6, spd:0.47},
+    skills: ['pb_ice', 'crane_sig', 'rk_healer', 'pu_ice'],
+    lines: ['我叫霜羽仙鹤，请多指教。', '踩水不会起波纹。', '霜羽清唳，要看看吗？'],
+    codex: "霜羽仙鹤是雪原的小家伙，单腿站着能睡。踩水不会起波纹。最拿手的一招是霜羽清唳，习惯待在后面出主意。"
+  },
+  {
+    id: 'yak', name: '雪岭小牛', title: '毛厚得能塞下雪', species: '雪岭小牛系', element: 'ice', rarity: 'SR', role: 'front',
+    emoji: ["🐂", "🐃", "🏔️"], shiny: "✨🐂✨",
+    base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:46, atk:4.2, def:4.5, spd:0.31},
+    skills: ['pb_ice', 'yak_sig', 'rk_tank', 'pu_ice'],
+    lines: ['我叫雪岭小牛，请多指教。', '下山时刹不住。', '雪岭冲撞，要看看吗？'],
+    codex: "雪岭小牛是雪原的小家伙，毛厚得能塞下雪。下山时刹不住。最拿手的一招是雪岭冲撞，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'rhino', name: '铁角小犀', title: '角上磨出了光', species: '铁角小犀系', element: 'earth', rarity: 'SR', role: 'front',
+    emoji: ["🦏", "🦏", "🪨"], shiny: "✨🦏✨",
+    base: {hp:770, atk:67, def:63, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:49, atk:4.3, def:4.3, spd:0.31},
+    skills: ['pb_earth', 'rhino_sig', 'rk_tank', 'pu_earth'],
+    lines: ['我叫铁角小犀，请多指教。', '撞树是它的健身。', '铁角冲撞，要看看吗？'],
+    codex: "铁角小犀是岩层的小家伙，角上磨出了光。撞树是它的健身。最拿手的一招是铁角冲撞，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'camel', name: '驼峰小驼', title: '背上驮着两包水', species: '驼峰小驼系', element: 'earth', rarity: 'R', role: 'front',
+    emoji: ["🐪", "🐫", "🏜️"], shiny: "✨🐪✨",
+    base: {hp:680, atk:59, def:56, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:43, atk:3.8, def:3.9, spd:0.31},
+    skills: ['pb_earth', 'camel_sig', 'rk_tank', 'pu_earth'],
+    lines: ['我叫驼峰小驼，请多指教。', '走三天不喝水。', '驼峰蓄力，要看看吗？'],
+    codex: "驼峰小驼是岩层的小家伙，背上驮着两包水。走三天不喝水。最拿手的一招是驼峰蓄力，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'sandworm', name: '沙虫宝宝', title: '在沙里打洞睡觉', species: '沙虫宝宝系', element: 'earth', rarity: 'SR', role: 'front',
+    emoji: ["🪱", "🪱", "🏖️"], shiny: "✨🪱✨",
+    base: {hp:770, atk:67, def:63, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:49, atk:4.3, def:4.3, spd:0.31},
+    skills: ['pb_earth', 'sandworm_sig', 'rk_mage', 'pu_earth'],
+    lines: ['我叫沙虫宝宝，请多指教。', '沙子进耳朵会打喷嚏。', '流沙漩涡，要看看吗？'],
+    codex: "沙虫宝宝是岩层的小家伙，在沙里打洞睡觉。沙子进耳朵会打喷嚏。最拿手的一招是流沙漩涡，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'hyena', name: '斑鬣小兽', title: '笑起来停不下来', species: '斑鬣小兽系', element: 'earth', rarity: 'R', role: 'back',
+    emoji: ["🐕", "🐕", "🦴"], shiny: "✨🐕✨",
+    base: {hp:505, atk:77, def:32, spd:23, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:32, atk:4.9, def:2.2, spd:0.46},
+    skills: ['pb_earth', 'hyena_sig', 'rk_bruiser', 'pu_earth'],
+    lines: ['我叫斑鬣小兽，请多指教。', '抢骨头第一名。', '荒原狞笑，要看看吗？'],
+    codex: "斑鬣小兽是岩层的小家伙，笑起来停不下来。抢骨头第一名。最拿手的一招是荒原狞笑，习惯待在后面出主意。"
+  },
+  {
+    id: 'hippo', name: '河马小宝', title: '张嘴像打哈欠', species: '河马小宝系', element: 'earth', rarity: 'SR', role: 'front',
+    emoji: ["🦛", "🦛", "💧"], shiny: "✨🦛✨",
+    base: {hp:770, atk:67, def:63, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:49, atk:4.3, def:4.3, spd:0.31},
+    skills: ['pb_earth', 'hippo_sig', 'rk_tank', 'pu_earth'],
+    lines: ['我叫河马小宝，请多指教。', '在泥里泡一整天。', '泥河张嘴，要看看吗？'],
+    codex: "河马小宝是岩层的小家伙，张嘴像打哈欠。在泥里泡一整天。最拿手的一招是泥河张嘴，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'vulture', name: '秃头小鹫', title: '盘旋时最安静', species: '秃头小鹫系', element: 'wind', rarity: 'SR', role: 'front',
+    emoji: ["🦅", "🦅", "🪶"], shiny: "✨🦅✨",
+    base: {hp:685, atk:71, def:56, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:43, atk:4.5, def:3.9, spd:0.35},
+    skills: ['pb_wind', 'vulture_sig', 'rk_bruiser', 'pu_wind'],
+    lines: ['我叫秃头小鹫，请多指教。', '专挑快倒的看。', '俯冲撕扯，要看看吗？'],
+    codex: "秃头小鹫是高风的小家伙，盘旋时最安静。专挑快倒的看。最拿手的一招是俯冲撕扯，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'hummingbird', name: '振翅小蜂鸟', title: '翅膀快得看不见', species: '振翅小蜂鸟系', element: 'wind', rarity: 'R', role: 'front',
+    emoji: ["🐦", "🐦", "💨"], shiny: "✨🐦✨",
+    base: {hp:610, atk:62, def:50, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:38, atk:4, def:3.5, spd:0.35},
+    skills: ['pb_wind', 'hummingbird_sig', 'rk_speed', 'pu_wind'],
+    lines: ['我叫振翅小蜂鸟，请多指教。', '喝蜜要喝很久。', '振翅残影，要看看吗？'],
+    codex: "振翅小蜂鸟是高风的小家伙，翅膀快得看不见。喝蜜要喝很久。最拿手的一招是振翅残影，总爱站到队伍最前面挡着。"
+  },
+  {
+    id: 'dragonfly', name: '薄翼小蜓', title: '停在荷叶尖上', species: '薄翼小蜓系', element: 'wind', rarity: 'R', role: 'back',
+    emoji: ["🪰", "🪰", "💠"], shiny: "✨🪰✨",
+    base: {hp:450, atk:81, def:29, spd:26.4, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:28, atk:5.2, def:2, spd:0.53},
+    skills: ['pb_wind', 'dragonfly_sig', 'rk_assassin', 'pu_wind'],
+    lines: ['我叫薄翼小蜓，请多指教。', '复眼能看到你在想什么。', '四翼急袭，要看看吗？'],
+    codex: "薄翼小蜓是高风的小家伙，停在荷叶尖上。复眼能看到你在想什么。最拿手的一招是四翼急袭，习惯待在后面出主意。"
+  },
+  {
+    id: 'windweed', name: '风滚草苗', title: '一有风就出发', species: '风滚草苗系', element: 'wind', rarity: 'R', role: 'back',
+    emoji: ["🌾", "🌾", "🍃"], shiny: "✨🌾✨",
+    base: {hp:450, atk:81, def:29, spd:26.4, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
+    growth: {hp:28, atk:5.2, def:2, spd:0.53},
+    skills: ['pb_wind', 'windweed_sig', 'rk_mage', 'pu_wind'],
+    lines: ['我叫风滚草苗，请多指教。', '滚过的地方都很干净。', '风草滚袭，要看看吗？'],
+    codex: "风滚草苗是高风的小家伙，一有风就出发。滚过的地方都很干净。最拿手的一招是风草滚袭，习惯待在后面出主意。"
+  },
+  {
+    id: 'kite', name: '纸鸢小童', title: '线一断就乱飞', species: '纸鸢小童系', element: 'wind', rarity: 'R', role: 'front',
+    emoji: ["🪁", "🪁", "☁️"], shiny: "✨🪁✨",
+    base: {hp:610, atk:62, def:50, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
+    growth: {hp:38, atk:4, def:3.5, spd:0.35},
+    skills: ['pb_wind', 'kite_sig', 'rk_speed', 'pu_wind'],
+    lines: ['我叫纸鸢小童，请多指教。', '喜欢有人在下面拉着。', '纸鸢掠空，要看看吗？'],
+    codex: "纸鸢小童是高风的小家伙，线一断就乱飞。喜欢有人在下面拉着。最拿手的一招是纸鸢掠空，总爱站到队伍最前面挡着。"
   }
 ];
 const PET_MAP = Object.fromEntries(PETS.map(p => [p.id, p]));

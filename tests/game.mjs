@@ -524,6 +524,33 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
     const lv10 = skillStatChips(SKILLS.pig_ult, 10);
     check(lv10.some(c => /伤害 162%/.test(c)), '技能等级应放大数值');
   }
+  check(text.includes('const EXTRA_SKILLS = {') && text.includes('Object.assign(SKILLS, EXTRA_SKILLS);'), '扩展包技能表应挂进 SKILLS');
+  if (typeof PETS !== 'undefined' && typeof SKILLS === 'object') {
+    const names = new Map();
+    const skillNames = new Map();
+    let bad4 = 0, missing = 0, noText = 0;
+    for (const p of PETS) {
+      names.set(p.name, (names.get(p.name) || 0) + 1);
+      if (p.skills.length !== 4) bad4++;
+      if (!p.codex || !Array.isArray(p.lines) || p.lines.length < 2 || !p.title) noText++;
+      for (const id of p.skills) { if (!SKILLS[id]) missing++; }
+    }
+    for (const sk of Object.values(SKILLS)) skillNames.set(sk.name, (skillNames.get(sk.name) || 0) + 1);
+    check(PETS.length === 80, '宠物应有 80 只，实际 ' + PETS.length);
+    check([...names.values()].every(c => c === 1), '宠物名不能重复');
+    check(Object.keys(EXTRA_SKILLS).length === 64, '扩展技能应有 64 条，实际 ' + Object.keys(EXTRA_SKILLS).length);
+    check(bad4 === 0 && missing === 0, '每只宠物都该有 4 个已定义技能（坏 ' + bad4 + ' / 缺 ' + missing + '）');
+    check([...skillNames.values()].every(c => c === 1), '全部技能名不能重名');
+    check(noText === 0, '每只宠物都要有称号、台词和图鉴文案');
+    const els = {};
+    for (const p of PETS) els[p.element] = (els[p.element] || 0) + 1;
+    check(Object.keys(els).length === 8 && Object.values(els).every(c => c >= 9), '8 个元素都要有 ≥9 只，实际 ' + JSON.stringify(els));
+    const fronts = PETS.filter(p => p.role === 'front').length;
+    check(Math.abs(fronts - PETS.length / 2) <= 4, '前后排应大致均衡，前排 ' + fronts);
+    const rat = {};
+    for (const p of PETS) rat[p.rarity] = (rat[p.rarity] || 0) + 1;
+    check(rat.SSR >= 5 && rat.SSR <= 10, 'SSR 数量应控制在 5~10，实际 ' + rat.SSR);
+  }
   check(text.includes('const GARDEN_FRUIT_BOOST = 1.7;') && text.includes('num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST'), '收菜经验果应乘产出系数');
   check(text.includes('t.fruit * GARDEN_FRUIT_BOOST * (60 / t.minutes)'), '菜园时产预览也要算系数');
   check(text.includes('const IDLE_FRUIT_BOOST = 1.5;') && text.includes('idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR'), '挂机经验果应有单独加成');
@@ -538,13 +565,13 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('const PET_STAGE_NAME = {'), '缺少三阶名字表');
   const stageBlock = text.slice(text.indexOf('const PET_STAGE_NAME = {'), text.indexOf('const BONDS = ['));
   const stageIds = [...stageBlock.matchAll(/^  (\w+): \['/gm)].map(m => m[1]);
-  check(stageIds.length === 40, '三阶名字表应覆盖 40 只宠物，实际 ' + stageIds.length);
+  check(stageIds.length === 80, '三阶名字表应覆盖 80 只宠物，实际 ' + stageIds.length);
   const perLine = [...stageBlock.matchAll(/^  \w+: \[([^\]]*)\]/gm)].map(m => (m[1].match(/'/g) || []).length / 2);
   check(perLine.every(c => c === 3), '每个宠物应有 3 个阶段名（幼体/成长体/究极体），发现 ' + JSON.stringify(perLine.filter(c => c !== 3)));
   const stageTable = JSON.parse(stageBlock.slice(stageBlock.indexOf('{'), stageBlock.lastIndexOf('}') + 1).replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
   const stageNames = new Set();
   Object.values(stageTable).forEach(a => a.forEach(nm => stageNames.add(nm)));
-  check(stageNames.size === 120, '120 个阶段名应互不重复，实际 ' + stageNames.size);
+  check(stageNames.size === 240, '240 个阶段名应互不重复，实际 ' + stageNames.size);
   check(typeof globalThis.autoEvolvePet === 'function', '缺少等级自动进化 autoEvolvePet');
   const p1 = { templateId: 'pig', evo: 0, level: 9 };
   check(globalThis.autoEvolvePet(p1) === 0 && p1.evo === 0, '9 级不该进化');
