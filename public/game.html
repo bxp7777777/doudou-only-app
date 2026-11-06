@@ -1117,6 +1117,28 @@ background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,250,240,.58));b
 .battle-layer .b-side.enemy .b-unit .b-emoji{transform:scaleX(-1)}
 /* 透视地台：两军各站一片斜向地面，中间留出空地 */
 .battle-layer .battle-field{position:relative;isolation:isolate}
+.battle-layer .battle-top{padding:5px 10px;gap:6px}
+/* 控制条：只留 2 倍速 / 跳过 / ⋯，其余收进菜单 */
+.battle-layer .battle-controls{position:relative;flex-wrap:nowrap;overflow:visible;gap:4px;padding:1px 0}
+.battle-layer .battle-controls .btn{padding:0 8px;font-size:10px;min-height:28px;height:28px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.battle-layer .b-hide{display:none!important}
+.battle-layer .b-btn-more{min-width:26px;font-weight:900;letter-spacing:1px;padding:5px 6px!important;background:rgba(255,255,255,.82);border:1px solid rgba(178,148,118,.38);color:#6b5540}
+.battle-layer .b-btn-more.open{background:linear-gradient(180deg,#ffe6a8,#ffcf72);border-color:#e8b45a;color:#6b4a17}
+.battle-layer .b-more-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:12;display:none;flex-direction:column;gap:4px;padding:5px;border-radius:12px;
+background:rgba(255,253,247,.97);border:1px solid rgba(216,188,152,.6);box-shadow:0 8px 20px rgba(140,108,74,.22)}
+.battle-layer .b-more-menu.open{display:flex}
+.battle-layer .b-more-menu button{display:flex;align-items:center;gap:4px;padding:6px 9px;border-radius:9px;border:1px solid transparent;background:rgba(255,246,230,.9);
+font-size:10px;font-weight:700;color:#6b5540;white-space:nowrap;cursor:pointer}
+.battle-layer .b-more-menu button:active{background:rgba(255,232,196,.95)}
+/* 战报：右下角浮层，点一下展开，安静就转淡 */
+.battle-layer .battle-log{position:fixed;left:10px;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:8;min-height:0;height:22px;max-height:22px;padding:3px 10px;
+border-radius:11px;background:rgba(255,252,246,.88);border:1px solid rgba(226,206,178,.7);box-shadow:0 4px 14px rgba(140,108,74,.16);overflow:hidden;
+font-size:10px;line-height:15px;transition:height .22s ease,max-height .22s ease,opacity .4s ease}
+.battle-layer .battle-log.expanded{height:auto;max-height:84px;overflow-y:auto}
+.battle-layer .battle-log.idle{opacity:.3}
+.battle-layer .battle-log.expanded,.battle-layer .battle-log:hover{opacity:1}
+.battle-layer .battle-log div.log-last{opacity:1;font-weight:600}
+@media (max-width:420px){.battle-layer .battle-log{font-size:9px;height:20px;max-height:20px;padding:2px 8px}}
 /* ===== 减负：砍掉重复/无关信息 ===== */
 .battle-layer .battle-title small,.battle-layer .battle-rounds{display:none}
 .battle-layer .b-side-label{font-size:8px;font-weight:800;letter-spacing:1.6px;opacity:.45;padding:0 0 2px}
@@ -1191,7 +1213,7 @@ background:radial-gradient(56% 44% at 50% 2%,rgba(255,247,226,.62),rgba(255,247,
 .battle-layer .battle-controls .btn-ghost{background:rgba(255,255,255,.74);border:1px solid rgba(178,148,118,.38);color:#6b5540;font-weight:700}
 .battle-layer #btnManualSkill,.battle-layer #btnEarlyUlt{background:rgba(255,243,212,.92);border-color:#eec67e;color:#9a6414}
 .battle-layer #btnPause{background:rgba(232,242,255,.88);border-color:#b9cff0;color:#3d5f9e}
-.battle-layer .battle-log{max-height:52px;min-height:44px;overflow-y:auto;font-size:11px;line-height:1.5;padding:9px 11px;scrollbar-width:thin}
+.battle-layer .battle-log{max-height:22px;min-height:0;overflow:hidden;font-size:11px;line-height:1.5;padding:9px 11px;scrollbar-width:thin}
 .battle-layer .battle-log div{white-space:normal;overflow:visible;text-overflow:clip;opacity:.86}
 .battle-layer .battle-log div.log-last{opacity:1}
 @media (max-width:420px){
@@ -1200,7 +1222,7 @@ background:radial-gradient(56% 44% at 50% 2%,rgba(255,247,226,.62),rgba(255,247,
   .battle-layer .b-slot-empty{min-height:118px}
   .b-hp-summary{gap:5px}
   .b-round-track{width:48px}
-  .battle-layer .battle-log{max-height:44px;min-height:38px;font-size:10px}
+  .battle-layer .battle-log{max-height:20px;min-height:0;font-size:9px}
 }
 .battle-result{display:none;position:fixed;inset:0;z-index:130;background:rgba(75,57,43,.3);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
 .battle-result.open{display:flex;animation:fadeIn .2s}
@@ -6573,12 +6595,15 @@ function renderBattleScreenHTML(battle) {
           <div>${esc(c.title || '自动战斗')}</div>
         </div>
         <div class="battle-controls">
-          <button class="btn btn-ghost" type="button" data-act="battleEarlyUlt" id="btnEarlyUlt">⚡ 提前大招</button>
-          <button class="btn btn-ghost" type="button" data-act="battleManualSkill" id="btnManualSkill">🎯 就绪技</button>
-          <button class="btn btn-ghost" type="button" data-act="battlePause" id="btnPause">⏸ 暂停</button>
-          <button class="btn btn-ghost" type="button" data-act="battleStep" id="btnStep">⏭ 单步</button>
+          <button class="btn btn-ghost b-hide" type="button" data-act="battleEarlyUlt" id="btnEarlyUlt">⚡ 提前大招</button>
           <button class="btn btn-ghost" type="button" data-act="battleDouble" id="btnBattleSpeed">⏩ 2 倍速</button>
           <button class="btn btn-yellow" type="button" data-act="battleSkip">⏭ 跳过</button>
+          <button class="btn btn-ghost b-btn-more" type="button" data-act="battleMoreMenu" id="btnMoreMenu" aria-label="更多战斗操作">⋯</button>
+          <div class="b-more-menu" id="battleMoreMenu">
+            <button type="button" data-act="battleManualSkill" id="btnManualSkill">🎯 就绪技</button>
+            <button type="button" data-act="battlePause" id="btnPause">⏸ 暂停</button>
+            <button type="button" data-act="battleStep" id="btnStep">⏭ 单步</button>
+          </div>
         </div>
       </div>
       ${c.storyIntro ? `<div class="battle-story">📖 ${esc(c.storyIntro)}</div>` : ''}
@@ -6603,7 +6628,7 @@ function renderBattleScreenHTML(battle) {
           <div class="b-team enemy-team">${battleTeamHTML(battle.enemies)}</div>
         </div>
       </div>
-      <div class="battle-log" id="battleLog"></div>
+      <div class="battle-log" id="battleLog" data-act="battleLogToggle" title="点一下展开战报"></div>
       <div class="ult-flash" id="ultFlash"><div class="ult-ring r1"></div><div class="ult-ring r2"></div><div class="ult-rays"></div><div class="ult-name"></div></div>
       <div class="battle-result" id="battleResult"></div>
     </div>`;
@@ -6724,7 +6749,8 @@ function updateBattleControls() {
   if (early) {
     const ready = !b.earlyUltUsed && b.allies.some(u => u.alive && u.rage >= 100);
     early.disabled = !ready;
-    early.textContent = b.earlyUltUsed ? '⚡ 已抢放' : (ready ? '⚡ 提前大招' : '⚡ 怒气未满');
+    early.textContent = b.earlyUltUsed ? '⚡ 已抢放' : '⚡ 提前大招';
+    early.classList.toggle('b-hide', !ready && !b.earlyUltUsed);
   }
   const speed = $('#btnBattleSpeed');
   if (speed) speed.textContent = b.speed >= 2 ? '⏪ 1 倍速' : '⏩ 2 倍速';
@@ -6746,6 +6772,9 @@ function renderBattleLog() {
     const last = i === lines.length - 1 ? ' log-last' : '';
     return `<div class="log-${kind}${last}">${esc(text)}</div>`;
   }).join('');
+  el.classList.remove('idle');
+  clearTimeout(b.logIdleTimer);
+  b.logIdleTimer = setTimeout(() => { if (!el.classList.contains('expanded')) el.classList.add('idle'); }, 2800);
 }
 function pushBattleLog(b, text, kind = 'info') {
   b.log.push({ text, kind });
@@ -7373,6 +7402,26 @@ function skipBattle() {
   clearBattleFx();
   updateBattleUI();
   finishBattle();
+}
+function battleMoreMenu() {
+  const m = $('#battleMoreMenu');
+  if (!m) return;
+  m.classList.toggle('open');
+}
+function closeBattleMore() {
+  const m = $('#battleMoreMenu');
+  if (m) m.classList.remove('open');
+}
+function battleLogToggle() {
+  const el = $('#battleLog');
+  const b = UI.battle;
+  if (!el) return;
+  el.classList.toggle('expanded');
+  el.classList.remove('idle');
+  if (b) { clearTimeout(b.logCollapseTimer); }
+  if (el.classList.contains('expanded') && b) {
+    b.logCollapseTimer = setTimeout(() => { el.classList.remove('expanded'); el.classList.add('idle'); }, 5200);
+  }
 }
 function battleDouble() {
   const b = UI.battle;
@@ -11584,7 +11633,7 @@ function restartTutorial() {
 /* -------- 统一事件分发 -------- */
 function handleActionClick(event) {
   const target = event.target.closest('[data-act]');
-  if (!target) return;
+  if (!target) { closeBattleMore(); return; }
   if (target.disabled) return;
   event.preventDefault();
   const act = target.dataset.act;
@@ -11727,13 +11776,15 @@ function handleActionClick(event) {
     case 'bondMastery': claimBondMastery(target.dataset.id); break;
     case 'selectFrame': selectFrame(target.dataset.frame); break;
 
-    case 'battleSkip': skipBattle(); break;
-    case 'battleDouble': battleDouble(); break;
-    case 'battleEarlyUlt': battleEarlyUlt(); break;
-    case 'battlePause': battlePause(); break;
-    case 'battleStep': battleStep(); break;
+    case 'battleMoreMenu': battleMoreMenu(); break;
+    case 'battleLogToggle': battleLogToggle(); break;
+    case 'battleSkip': skipBattle(); closeBattleMore(); break;
+    case 'battleDouble': battleDouble(); closeBattleMore(); break;
+    case 'battleEarlyUlt': battleEarlyUlt(); closeBattleMore(); break;
+    case 'battlePause': battlePause(); closeBattleMore(); break;
+    case 'battleStep': battleStep(); closeBattleMore(); break;
     case 'battleFocus': battleFocus(target.dataset.uid); break;
-    case 'battleManualSkill': battleManualSkill(); break;
+    case 'battleManualSkill': battleManualSkill(); closeBattleMore(); break;
     case '': break;
     case 'battleClose': closeBattle(); break;
     case 'battleGrow': closeBattle(); navTo('pets'); break;
