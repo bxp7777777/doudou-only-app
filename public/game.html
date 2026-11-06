@@ -1117,6 +1117,32 @@ background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(255,250,240,.58));b
 .battle-layer .b-side.enemy .b-unit .b-emoji{transform:scaleX(-1)}
 /* 透视地台：两军各站一片斜向地面，中间留出空地 */
 .battle-layer .battle-field{position:relative;isolation:isolate}
+/* ===== 减负：砍掉重复/无关信息 ===== */
+.battle-layer .battle-title small,.battle-layer .battle-rounds{display:none}
+.battle-layer .b-side-label{font-size:8px;font-weight:800;letter-spacing:1.6px;opacity:.45;padding:0 0 2px}
+.battle-layer .b-side-label .power{display:none}
+/* 控制条收成一行，横向滑动，不再折成两行 */
+.battle-layer .battle-controls{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;padding:1px 0}
+.battle-layer .battle-controls::-webkit-scrollbar{display:none}
+.battle-layer .battle-controls .btn{flex:0 0 auto}
+/* 战报默认只露两行，需要就看它自己滚 */
+.battle-layer .battle-log{max-height:46px;min-height:40px;padding:6px 9px}
+.battle-layer .battle-log div{line-height:1.45}
+/* 出手顺序只留表情头像 */
+.battle-layer .b-q-chip{font-size:10px;padding:2px 6px;line-height:1.2}
+.battle-layer .b-q-chip.empty{font-size:8px}
+/* 首领名字在上方血条已有一份，脚下铭牌不再重复 */
+.battle-layer .b-unit.boss-unit .b-name{display:none}
+.battle-layer .b-unit.boss-unit .b-plate{padding:3px 5px}
+/* ===== 死亡倒地：倒下后就躺着不再站起来 ===== */
+.battle-layer .b-unit .art-frame{transform-origin:50% 94%;transition:transform .52s cubic-bezier(.34,1.15,.5,1),opacity .5s ease,filter .5s ease}
+.battle-layer .b-unit.dead{opacity:.82;filter:none;transform:none}
+.battle-layer .b-unit.dead .art-frame{transform:rotate(78deg) translateY(1px);opacity:.6;filter:grayscale(.9) brightness(.98)}
+.battle-layer .b-side.enemy .b-unit.dead .art-frame{transform:scaleX(-1) rotate(78deg) translateY(1px);opacity:.6}
+.battle-layer .b-unit.dead .b-emoji-wrap::after{transform:translateX(-50%) scale(.72);opacity:.5;transition:transform .5s ease,opacity .5s ease}
+.battle-layer .b-unit.dead .b-plate{opacity:.42}
+.battle-layer .b-unit.dead .b-cap{opacity:.3}
+.battle-layer .b-unit.dead .art-frame img{filter:none;opacity:1}
 /* 栅格改成 minmax(0,1fr)：立绘放大后 1fr 的 min-content 会把两翼挤出屏幕 */
 .battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
 .battle-layer .b-side{min-width:0}
@@ -1165,7 +1191,7 @@ background:radial-gradient(56% 44% at 50% 2%,rgba(255,247,226,.62),rgba(255,247,
 .battle-layer .battle-controls .btn-ghost{background:rgba(255,255,255,.74);border:1px solid rgba(178,148,118,.38);color:#6b5540;font-weight:700}
 .battle-layer #btnManualSkill,.battle-layer #btnEarlyUlt{background:rgba(255,243,212,.92);border-color:#eec67e;color:#9a6414}
 .battle-layer #btnPause{background:rgba(232,242,255,.88);border-color:#b9cff0;color:#3d5f9e}
-.battle-layer .battle-log{max-height:104px;min-height:58px;overflow-y:auto;font-size:11px;line-height:1.5;padding:9px 11px;scrollbar-width:thin}
+.battle-layer .battle-log{max-height:52px;min-height:44px;overflow-y:auto;font-size:11px;line-height:1.5;padding:9px 11px;scrollbar-width:thin}
 .battle-layer .battle-log div{white-space:normal;overflow:visible;text-overflow:clip;opacity:.86}
 .battle-layer .battle-log div.log-last{opacity:1}
 @media (max-width:420px){
@@ -1174,7 +1200,7 @@ background:radial-gradient(56% 44% at 50% 2%,rgba(255,247,226,.62),rgba(255,247,
   .battle-layer .b-slot-empty{min-height:118px}
   .b-hp-summary{gap:5px}
   .b-round-track{width:48px}
-  .battle-layer .battle-log{max-height:84px;font-size:10px}
+  .battle-layer .battle-log{max-height:44px;min-height:38px;font-size:10px}
 }
 .battle-result{display:none;position:fixed;inset:0;z-index:130;background:rgba(75,57,43,.3);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
 .battle-result.open{display:flex;animation:fadeIn .2s}
@@ -1596,7 +1622,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 @keyframes bHitRecoilR{0%{transform:translateX(0) rotate(0)}28%{transform:translateX(4px) rotate(4deg)}62%{transform:translateX(-2px) rotate(-1.5deg)}100%{transform:translateX(0) rotate(0)}}
 @keyframes bDodgeOut{0%{transform:translateX(0);opacity:1}35%{transform:translateX(-12px);opacity:.42}100%{transform:translateX(0);opacity:1}}
 @keyframes bDodgeOutR{0%{transform:translateX(0);opacity:1}35%{transform:translateX(12px);opacity:.42}100%{transform:translateX(0);opacity:1}}
-@keyframes bDeathFall{0%{opacity:1;transform:rotate(0) scale(1)}30%{opacity:.95;transform:rotate(-7deg) scale(1.02)}100%{opacity:.34;transform:rotate(82deg) scale(.9)}}
+@keyframes bDeathFall{0%{opacity:1;transform:scale(1)}35%{opacity:.96;transform:translateY(2px) scale(.985)}100%{opacity:.92;transform:translateY(3px) scale(.98)}}
 @keyframes bTurnRing{0%,100%{transform:translateX(-50%) scale(.9);opacity:.5}50%{transform:translateX(-50%) scale(1.06);opacity:1}}
 @keyframes bSkillBanner{0%{opacity:0;transform:translate(-50%,5px) scale(.9)}16%{opacity:1;transform:translate(-50%,-6px) scale(1)}70%{opacity:1;transform:translate(-50%,-9px) scale(1)}100%{opacity:0;transform:translate(-50%,-18px) scale(.96)}}
 .pat-heart{position:absolute;left:50%;top:12px;font-size:18px;pointer-events:none;animation:heartPop 1.1s ease-out both;z-index:9}
@@ -6544,8 +6570,7 @@ function renderBattleScreenHTML(battle) {
       <div class="battle-top">
         <div class="battle-title">
           <span>${esc(c.emoji || '⚔️')}</span>
-          <div>${esc(c.title || '自动战斗')}<small>${esc(c.subtitle || '自动回合制 · 普攻攒怒气 · 100 怒气释放奥义')}</small></div>
-          <span class="battle-rounds" id="battleRoundText">第 0 回合</span>
+          <div>${esc(c.title || '自动战斗')}</div>
         </div>
         <div class="battle-controls">
           <button class="btn btn-ghost" type="button" data-act="battleEarlyUlt" id="btnEarlyUlt">⚡ 提前大招</button>
@@ -6562,19 +6587,19 @@ function renderBattleScreenHTML(battle) {
       ${bossBarHTML(battle)}
       <div class="b-hp-summary">
         <div class="b-hp-side ally"><span id="hpAllyText">我方 0/0</span><div class="b-hp-track"><i id="hpAllyBar"></i></div></div>
-        <div class="b-round-mini"><span id="roundProgressText">第 0/30 回合</span><div class="b-round-track"><i id="roundProgress"></i></div></div>
+        <div class="b-round-mini"><span id="roundProgressText">第 0/30 回合</span></div>
         <div class="b-hp-side enemy"><span id="hpEnemyText">敌方 0/0</span><div class="b-hp-track"><i id="hpEnemyBar"></i></div></div>
       </div>
       <div class="battle-field">
         ${battleSceneBgHtml(c)}
         ${c.mode === 'arena' ? '<div class="arena-deco left"></div><div class="arena-deco right"></div>' : ''}
         <div class="b-side ally">
-          <div class="b-side-label">我方 <span class="power">战力 ${fmt(sum(battle.allies.map(u => calcPower(u))))}</span></div>
+          <div class="b-side-label">我方</div>
           <div class="b-team">${battleTeamHTML(battle.allies)}</div>
         </div>
         <div class="b-vs">VS</div>
         <div class="b-side enemy">
-          <div class="b-side-label">敌方 <span class="power">战力 ${fmt(sum(battle.enemies.map(u => calcPower(u))))}</span></div>
+          <div class="b-side-label">敌方</div>
           <div class="b-team enemy-team">${battleTeamHTML(battle.enemies)}</div>
         </div>
       </div>
@@ -6591,9 +6616,8 @@ function battleUnitHTML(unit) {
   return `
     <div class="b-unit ${unit.row} rarity-${unit.rarity} ${unit.alive ? '' : 'dead'} ${unit.isBoss ? 'boss-unit' : ''}" data-boss-phase="${unit.isBoss ? bossPhaseOf(unit.hp / Math.max(1, unit.maxHp)) : ''}" data-uid="${esc(unit.uid)}" data-act="${unit.side === 'enemy' ? 'battleFocus' : ''}">
       <div class="b-top b-cap">
-        <span class="b-role">${unit.isBoss ? '👑 首领' : unit.row === 'front' ? '前排' : '后排'}</span>
+        ${unit.isBoss ? '<span class="b-role">👑 首领</span>' : ''}
         <span class="b-lv">Lv.${unit.level}</span>
-        <span class="b-el">${el.emoji}</span>
       </div>
       <div class="b-emoji-wrap">
         ${(unit.side === 'enemy' ? enemyArtFrame(unit) : allyBattleArtFrame(unit)) || `<span class="b-emoji">${unit.emoji}</span>`}
@@ -7431,11 +7455,11 @@ function renderBattleQueue() {
   const b = UI.battle;
   const root = $('#battleQueue');
   if (!b || !root) return;
-  const upcoming = b.queue.slice(b.idx).filter(u => u.alive).slice(0, 6);
+  const upcoming = b.queue.slice(b.idx).filter(u => u.alive).slice(0, 7);
   root.innerHTML = upcoming.map((u, i) => {
     const e = ELEMENTS[u.element] || ELEMENTS.light;
-    return `<span class="b-q-chip ${u.side} ${i === 0 ? 'now' : ''}">${e.emoji}${esc(u.name)}</span>`;
-  }).join('') || '<span class="b-q-chip empty">回合未开始，等待出手顺序…</span>';
+    return `<span class="b-q-chip ${u.side} ${i === 0 ? 'now' : ''}" title="${esc(u.name)}">${e.emoji}</span>`;
+  }).join('') || '<span class="b-q-chip empty">等待出手…</span>';
 }
 function healRing(uid) {
   const el = getBattleUnitEl(uid);

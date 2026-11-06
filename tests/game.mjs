@@ -478,6 +478,17 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('.battle-layer .b-row-line.back-line,.battle-layer .b-row-line.mob-line{transform:translateY(-3px) scale(.93)}'), '后排应有纵深缩放');
   check(text.includes('.battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}'), '栅格应用 minmax(0,1fr) 防止立绘撑破屏幕');
   check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:168px;height:168px}'), '首领立绘应放大到 168px');
+  check(!text.includes('id="battleRoundText"') && !text.includes('class="battle-rounds"'), '标题区不该再挂重复的回合胶囊');
+  check(!text.includes("<div>${esc(c.title || '自动战斗')}<small>"), '标题区不该再塞教程副标题');
+  check(!text.includes('战力 ${fmt(sum(battle.allies.map(u => calcPower(u))))}') && !text.includes('战力 ${fmt(sum(battle.enemies.map(u => calcPower(u))))}'), '战场两侧不该再显示战力数字');
+  check(!text.includes("unit.row === 'front' ? '前排' : '后排'"), '单位头顶不该再显示前排/后排');
+  check(!text.includes('<span class="b-el">${el.emoji}</span>'), '单位头顶不该再挂属性图标');
+  check(text.includes('.battle-layer .battle-log{max-height:52px;min-height:44px'), '战报默认应只露两行');
+  check(text.includes('.battle-controls{flex-wrap:nowrap;overflow-x:auto'), '控制条应收成一行');
+  check(text.includes('title="${esc(u.name)}">${e.emoji}</span>'), '出手顺序应只留表情、名字进 title');
+  check(text.includes('.battle-layer .b-unit.dead .art-frame{transform:rotate(78deg)'), '倒地后立绘应保持倒下');
+  check(text.includes('.battle-layer .b-side.enemy .b-unit.dead .art-frame{transform:scaleX(-1) rotate(78deg)'), '敌方倒地也要保持镜像');
+  check(text.includes('@keyframes bDeathFall{0%{opacity:1;transform:scale(1)}'), '死亡动画不该再整块旋转（避免尸体回正）');
   check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}'), '小屏首领立绘应放大到 128px');
   check(!text.includes('待命位'), '敌方空位不该再写「待命位」');
   check(globalThis.enemySlotsHtml({ allies: [1,2,3], enemies: [1] }) === '', '敌方空位应留成空地（enemySlotsHtml 返回空串）');
