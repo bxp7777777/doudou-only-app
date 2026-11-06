@@ -449,9 +449,11 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('art-alive') && text.includes('data-petanim'), '立绘动画样式缺失');
   check(text.includes('function togglePetAnim') && text.includes("case 'togglePetAnim'"), '立绘动画开关缺失');
   check(text.includes('art-fly') && text.includes('art-heavy'), '立绘分体质感节奏缺失');
-  check(text.includes('function rigArtHTML') && text.includes('rig-bone rig-b1') && text.includes('rig-bone rig-b2'), '骨骼分层缺失');
-  check(text.includes('@keyframes rigBend1') && text.includes('@keyframes rigBend2') && text.includes('@keyframes rigBreathe'), '骨骼关键帧缺失');
-  check(text.includes('home-pet-rig') && text.includes("'art-rig'") && text.includes('--amp2'), '骨骼挂载/节奏参数缺失');
+  check(text.includes('function rigArtHTML') && text.includes('rig-bone rig-b1') && text.includes('rig-bone rig-b2') && text.includes('rig-bone rig-b3'), '骨骼分层缺失（底座/躯干/胸/头四层）');
+  check(text.includes('@keyframes rigBend1') && text.includes('@keyframes rigBend2') && text.includes('@keyframes rigBend3') && text.includes('@keyframes rigBreathe'), '骨骼关键帧缺失');
+  check(text.includes('home-pet-rig') && text.includes("'art-rig'") && text.includes('--amp2') && text.includes('--amp3'), '骨骼挂载/节奏参数缺失');
+check(text.includes('artDrowse') && text.includes('art-act-drowse'), '空闲打盹动作缺失');
+check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.hit-recoil .rig-b3'), '三节骨骼的战斗跟随缺失');
 
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');

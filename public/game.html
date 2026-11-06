@@ -1758,13 +1758,16 @@ html[data-petanim="1"] .pal-img{animation:petFloat 3.2s ease-in-out infinite,art
 .rig>img,.rig-bone>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .rig-bone{position:absolute;inset:0;display:block;pointer-events:none;border-radius:inherit;will-change:transform}
 .rig-b1{transform-origin:50% 74%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 56%,rgba(0,0,0,.4) 66%,transparent 74%);mask-image:linear-gradient(180deg,#000 0%,#000 56%,rgba(0,0,0,.4) 66%,transparent 74%)}
-.rig-b2{transform-origin:50% 44%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 22%,rgba(0,0,0,.4) 32%,transparent 42%);mask-image:linear-gradient(180deg,#000 0%,#000 22%,rgba(0,0,0,.4) 32%,transparent 42%)}
+.rig-b2{transform-origin:50% 58%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 40%,rgba(0,0,0,.4) 50%,transparent 60%);mask-image:linear-gradient(180deg,#000 0%,#000 40%,rgba(0,0,0,.4) 50%,transparent 60%)}
+.rig-b3{transform-origin:50% 44%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 24%,rgba(0,0,0,.4) 34%,transparent 44%);mask-image:linear-gradient(180deg,#000 0%,#000 24%,rgba(0,0,0,.4) 34%,transparent 44%)}
 @keyframes rigBend1{0%,100%{transform:rotate(calc(-1 * var(--amp1,2deg))) translateX(calc(-1 * var(--shift,.35%))) scale(1.008,.986)}50%{transform:rotate(var(--amp1,2deg)) translateX(var(--shift,.35%)) scale(.994,1.018)}}
-@keyframes rigBend2{0%,100%{transform:rotate(var(--amp2,2.8deg)) translateY(-.45%)}50%{transform:rotate(calc(-1 * var(--amp2,2.8deg))) translateY(.35%)}}
+@keyframes rigBend2{0%,100%{transform:rotate(var(--amp2,1.7deg)) translateX(calc(-.5 * var(--shift,.3%))) translateY(-.3%)}50%{transform:rotate(calc(-1 * var(--amp2,1.7deg))) translateX(calc(.5 * var(--shift,.3%))) translateY(.24%)}}
+@keyframes rigBend3{0%,100%{transform:rotate(calc(-1 * var(--amp3,2deg))) translateY(.42%) scale(1,.992)}50%{transform:rotate(var(--amp3,2deg)) translateY(-.52%) scale(1,1.01)}}
 @keyframes rigBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.014,.986)}}
 html[data-petanim="1"] .rig{animation:rigBreathe var(--c1,8.6s) ease-in-out calc(-1 * var(--d1,0s)) infinite}
 html[data-petanim="1"] .rig-b1{animation:rigBend1 var(--c1,8.6s) ease-in-out calc(-1 * var(--d1,0s)) infinite}
 html[data-petanim="1"] .rig-b2{animation:rigBend2 var(--c2,6.4s) ease-in-out calc(-1 * var(--d2,0s)) infinite}
+html[data-petanim="1"] .rig-b3{animation:rigBend3 var(--c3,5.2s) ease-in-out calc(-1 * var(--d3,0s)) infinite}
 /* 有骨骼的框不要再整框摇摆，两层叠着晃会互相打架 */
 html[data-petanim="1"] .art-alive.art-rig{animation:none}
 html[data-petanim="1"] .art-alive.art-rig>img{animation:none}
@@ -1772,11 +1775,20 @@ html[data-petanim="1"] .home-pet-img.home-pet-rig{animation:homePetIn .5s cubic-
 /* 战斗里的二次跟随：出手前倾、挨打后仰、开大抬头 */
 html[data-petanim="1"] .b-unit.attack-forward .rig-b1{animation:none;transform:rotate(2.8deg)}
 html[data-petanim="1"] .b-side.enemy .b-unit.attack-forward .rig-b1{animation:none;transform:rotate(-2.8deg)}
-html[data-petanim="1"] .b-unit.cast-raise .rig-b2{animation:none;transform:rotate(-4.2deg)}
-html[data-petanim="1"] .b-unit.ult-lunge .rig-b2{animation:none;transform:rotate(-6deg)}
+html[data-petanim="1"] .b-unit.attack-forward .rig-b2{animation:none;transform:rotate(1.2deg)}
+html[data-petanim="1"] .b-side.enemy .b-unit.attack-forward .rig-b2{animation:none;transform:rotate(-1.2deg)}
+html[data-petanim="1"] .b-unit.attack-forward .rig-b3{animation:none;transform:rotate(-2.4deg)}
+html[data-petanim="1"] .b-side.enemy .b-unit.attack-forward .rig-b3{animation:none;transform:rotate(2.4deg)}
+html[data-petanim="1"] .b-unit.cast-raise .rig-b2{animation:none;transform:rotate(-3.2deg)}
+html[data-petanim="1"] .b-unit.cast-raise .rig-b3{animation:none;transform:rotate(-5.4deg)}
+html[data-petanim="1"] .b-unit.ult-lunge .rig-b2{animation:none;transform:rotate(-4.6deg)}
+html[data-petanim="1"] .b-unit.ult-lunge .rig-b3{animation:none;transform:rotate(-7.4deg)}
 html[data-petanim="1"] .b-unit.hit-recoil .rig-b1{animation:none;transform:rotate(-5deg)}
 html[data-petanim="1"] .b-side.enemy .b-unit.hit-recoil .rig-b1{animation:none;transform:rotate(5deg)}
-html[data-petanim="1"] .b-unit.hit-recoil .rig-b2{animation:none;transform:rotate(6deg)}
+html[data-petanim="1"] .b-unit.hit-recoil .rig-b2{animation:none;transform:rotate(2.6deg)}
+html[data-petanim="1"] .b-side.enemy .b-unit.hit-recoil .rig-b2{animation:none;transform:rotate(-2.6deg)}
+html[data-petanim="1"] .b-unit.hit-recoil .rig-b3{animation:none;transform:rotate(5.8deg)}
+html[data-petanim="1"] .b-side.enemy .b-unit.hit-recoil .rig-b3{animation:none;transform:rotate(-5.8deg)}
 html[data-petanim="1"] .b-unit.death-fall .rig-bone{animation:none;transform:none}
 html[data-petanim="1"] .art-alive.art-rig.art-act-bounce .rig{animation:artBounce .78s cubic-bezier(.3,.9,.4,1.2)}
 html[data-petanim="1"] .art-alive.art-rig.art-act-tilt .rig{animation:artTilt .86s ease-in-out}
@@ -1784,9 +1796,13 @@ html[data-petanim="1"] .art-alive.art-rig.art-act-tilt .rig{animation:artTilt .8
 @keyframes artShake{0%,100%{transform:rotate(0)}18%{transform:rotate(-2.6deg)}38%{transform:rotate(2.4deg)}58%{transform:rotate(-1.6deg)}78%{transform:rotate(1deg)}}
 @keyframes artStretch{0%{transform:scale(1,1)}32%{transform:scale(.972,1.05)}66%{transform:scale(1.018,.982)}100%{transform:scale(1,1)}}
 @keyframes artNod{0%,100%{transform:rotate(0)}40%{transform:rotate(-6.5deg)}72%{transform:rotate(3deg)}}
+@keyframes artDrowse{0%,100%{transform:rotate(0) scale(1,1)}26%{transform:rotate(-7.5deg) scale(1,.955)}62%{transform:rotate(-5.5deg) scale(1,.972)}84%{transform:rotate(2.4deg) scale(1,1.008)}}
+@keyframes artDrowseBody{0%,100%{transform:rotate(0)}30%{transform:rotate(-2.4deg)}74%{transform:rotate(1.1deg)}}
 html[data-petanim="1"] .art-alive.art-rig.art-act-shake .rig-b1{animation:artShake .7s ease-in-out}
 html[data-petanim="1"] .art-alive.art-rig.art-act-stretch .rig-b1{animation:artStretch .92s ease-in-out}
-html[data-petanim="1"] .art-alive.art-rig.art-act-nod .rig-b2{animation:artNod .96s ease-in-out}
+html[data-petanim="1"] .art-alive.art-rig.art-act-nod .rig-b3{animation:artNod .96s ease-in-out}
+html[data-petanim="1"] .art-alive.art-rig.art-act-drowse .rig-b2{animation:artDrowseBody 1.9s ease-in-out}
+html[data-petanim="1"] .art-alive.art-rig.art-act-drowse .rig-b3{animation:artDrowse 1.9s ease-in-out}
 @media (prefers-reduced-motion:reduce){
   .rig,.rig-bone{animation:none!important}
 }
@@ -4567,7 +4583,7 @@ const PET_ART_PNG = {
 const MOB_ART_PNG = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
 const BOSS_ART_PNG = {};
 // Boss 三阶段立绘：p1 常态 / p2 激愤 / p3 濒死爆发；缺哪张就沿「阶段图 → 基础 PNG → 基础 JPG」降级，绝不白图
-const BOSS_PHASE_ART = { slime_king:true, caramel_fox:true };  // 三张阶段图齐了才登记；tide_lord 已有 p1，等 p2/p3 补图后再开
+const BOSS_PHASE_ART = { slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
 function bossPhaseOf(ratio) {
   const r = num(ratio, 1);
   if (r <= 0.34) return 3;
@@ -4596,14 +4612,14 @@ function artChainAttr(urls, char, mode) {
   const arr = rest.map((u) => "'" + u + "'").join(',');
   return 'onerror="var f=+(this.dataset.f||0);var n=[' + arr + '];if(f<n.length){this.dataset.f=f+1;this.src=n[f];}else{' + end + '}"';
 }
-// 骨骼分层立绘：底座那层不动（地面/影子稳住），躯干骨绕 74% 高度转、头骨绕 44% 高度再叠一层，
-// 两层都用上端不透明、下端渐隐的软蒙版做蒙皮，转动时轮廓连续、不会出现切开的断口。
+// 骨骼分层立绘：底座那层不动（地面/影子稳住），躯干骨 74% / 胸骨 58% / 头骨 44% 三节级联，
+// 每节都用上端不透明、下端渐隐的软蒙版做蒙皮，级联转动时轮廓连续、不会出现切开的断口。
 function rigArtHTML(url, char, chainAttr) {
   const alt = esc(char || '');
   const copy = '<img src="' + url + '" alt="" aria-hidden="true" loading="lazy" onerror="this.remove()">';
   return '<span class="rig">'
     + '<img src="' + url + '" alt="' + alt + '" loading="lazy" ' + chainAttr + '>'
-    + '<span class="rig-bone rig-b1">' + copy + '<span class="rig-bone rig-b2">' + copy + '</span></span>'
+    + '<span class="rig-bone rig-b1">' + copy + '<span class="rig-bone rig-b2">' + copy + '<span class="rig-bone rig-b3">' + copy + '</span></span></span>'
     + '</span>';
 }
 function artFrameHTML(urls, char, sizeClass, withRig) {
@@ -11891,14 +11907,16 @@ function artRhythm(templateId) {
   const sway = (light ? 4.6 : heavy ? 9.4 : 6.6) + unit(7) * 2.2;
   const delay = unit(13) * 2.4;
   const amp1 = (light ? 3.6 : heavy ? 1.9 : 2.8) + unit(3) * 0.6;
-  const amp2 = (light ? 5.8 : heavy ? 3 : 4.4) + unit(11) * 0.9;
+  const amp2 = amp1 * 0.62 + unit(11) * 0.28;
+  const amp3 = amp2 * 0.78 + unit(19) * 0.22;
   const c1 = (light ? 5.4 : heavy ? 10.4 : 7.4) + unit(5) * 1.8;
   const c2 = (light ? 3.8 : heavy ? 7 : 5.2) + unit(17) * 1.2;
-  return { breathe: breathe, sway: sway, delay: delay, amp1: amp1, amp2: amp2, c1: c1, c2: c2, cls: light ? 'art-fly' : heavy ? 'art-heavy' : '' };
+  const c3 = c2 * 0.82 + unit(23) * 0.6;
+  return { breathe: breathe, sway: sway, delay: delay, amp1: amp1, amp2: amp2, amp3: amp3, c1: c1, c2: c2, c3: c3, cls: light ? 'art-fly' : heavy ? 'art-heavy' : '' };
 }
 function artIdFromSrc(src) {
   const name = String(src || '').split('/').pop().split('?')[0].replace(/\.(png|jpg|jpeg|webp)$/i, '');
-  return name.replace(/_(s1|s2)$/i, '');
+  return name.replace(/_s[12]$/i, '').replace(/_p[1-3]$/i, '');
 }
 function petAnimDecorate() {
   applyPetAnimPref();
@@ -11930,10 +11948,13 @@ function petAnimDecorate() {
     const rhythm = artRhythm(id);
     rig.style.setProperty('--amp1', rhythm.amp1.toFixed(2) + 'deg');
     rig.style.setProperty('--amp2', rhythm.amp2.toFixed(2) + 'deg');
+    rig.style.setProperty('--amp3', rhythm.amp3.toFixed(2) + 'deg');
     rig.style.setProperty('--c1', rhythm.c1.toFixed(2) + 's');
     rig.style.setProperty('--c2', rhythm.c2.toFixed(2) + 's');
+    rig.style.setProperty('--c3', rhythm.c3.toFixed(2) + 's');
     rig.style.setProperty('--d1', rhythm.delay.toFixed(2) + 's');
     rig.style.setProperty('--d2', (rhythm.delay * 1.37).toFixed(2) + 's');
+    rig.style.setProperty('--d3', (rhythm.delay * 1.88).toFixed(2) + 's');
     rig.style.setProperty('--shift', (0.22 + (rhythm.amp1 % 0.3)).toFixed(2) + '%');
     rig.dataset.rig = '1';
     const host = rig.parentElement;
@@ -11959,14 +11980,14 @@ function petIdleTick() {
   const node = nodes[Math.floor(Math.random() * nodes.length)];
   node.dataset.acting = '1';
   const acts = node.classList.contains('art-rig')
-    ? ['bounce', 'bounce', 'tilt', 'shake', 'stretch', 'nod']
+    ? ['bounce', 'bounce', 'tilt', 'shake', 'stretch', 'nod', 'nod', 'drowse']
     : ['bounce', 'tilt'];
   const act = acts[Math.floor(Math.random() * acts.length)];
   node.classList.add('art-act-' + act);
   setTimeout(() => {
-    node.classList.remove('art-act-bounce', 'art-act-tilt', 'art-act-shake', 'art-act-stretch', 'art-act-nod');
+    node.classList.remove('art-act-bounce', 'art-act-tilt', 'art-act-shake', 'art-act-stretch', 'art-act-nod', 'art-act-drowse');
     delete node.dataset.acting;
-  }, 1000);
+  }, act === 'drowse' ? 2000 : 1000);
 }
 function startPetAnim() {
   applyPetAnimPref();
