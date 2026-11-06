@@ -3483,16 +3483,16 @@ const PET_NATURE_KEYS = Object.keys(PET_NATURES).filter(k => k !== 'neutral');
 
 // 10 章 × 7 关 = 70 关。关底首领提供首次通关奖励与下一章解锁。
 const CHAPTERS = [
-  { id: 1, name: '奶油草原', emoji: '🌼', element: 'grass', boss: '棉花糖巨兽', bossEmoji: '🍡', desc: '风吹过奶油色的草浪，空气里都是甜味。', theme: 'cream' },
-  { id: 2, name: '草莓丘陵', emoji: '🍓', element: 'fire', boss: '焦糖狐火', bossEmoji: '🦊', desc: '一山丘的草莓熟透了，连风都冒着粉色泡泡。', theme: 'pink' },
-  { id: 3, name: '薄荷溪谷', emoji: '🌿', element: 'water', boss: '溪谷水灵', bossEmoji: '💧', desc: '溪水像薄荷汽水，脚丫踩进去凉丝丝的。', theme: 'mint' },
-  { id: 4, name: '蜂蜜森林', emoji: '🍯', element: 'grass', boss: '蜜糖熊王', bossEmoji: '🐻', desc: '树叶会滴下蜂蜜，熊王正在午睡，请轻声通过。', theme: 'honey' },
-  { id: 5, name: '月光遗迹', emoji: '🌙', element: 'dark', boss: '月蚀守卫', bossEmoji: '🗿', desc: '遗迹在月光下泛着银蓝，墙上的爪印仍在发光。', theme: 'night' },
-  { id: 6, name: '云朵高原', emoji: '☁️', element: 'light', boss: '云海巨鲸', bossEmoji: '🐋', desc: '云朵软得像刚出炉的面包，鲸鱼在云海里翻身。', theme: 'sky' },
-  { id: 7, name: '龙息火山', emoji: '🌋', element: 'fire', boss: '赤焰幼龙', bossEmoji: '🐲', desc: '熔岩像焦糖一样缓慢流动，小心烫爪。', theme: 'fire' },
-  { id: 8, name: '星砂海岸', emoji: '⭐', element: 'water', boss: '星潮海獭', bossEmoji: '🦦', desc: '退潮后沙滩上铺满会眨眼的小星星。', theme: 'star' },
-  { id: 9, name: '彩虹花园', emoji: '🌈', element: 'light', boss: '幻彩蝶后', bossEmoji: '🦋', desc: '每一次振翅都会抖落一小片彩虹。', theme: 'rainbow' },
-  { id: 10, name: '永恒之巅', emoji: '🏔️', element: 'earth', boss: '永恒守望者', bossEmoji: '🗿', desc: '所有旅途的尽头，风把故事吹成了永恒。', theme: 'peak' }
+  { id: 1, name: '奶油草原', emoji: '🌼', element: 'grass', boss: '棉花糖巨兽', bossEmoji: '🍡', desc: '「草莓不会烂」草是甜的，风也是甜的。这里的草莓没有一颗是软的，硬得像石头。', theme: 'cream' },
+  { id: 2, name: '草莓丘陵', emoji: '🍓', element: 'fire', boss: '焦糖狐火', bossEmoji: '🦊', desc: '「烧不完的那句话」山丘上全是火，可草一点没焦——烧的是二十年前那句话。', theme: 'pink' },
+  { id: 3, name: '薄荷溪谷', emoji: '🌿', element: 'water', boss: '溪谷水灵', bossEmoji: '💧', desc: '「替谁哭」溪水喝下去有点咸。水灵一直在哭，替一个早就忘了的人。', theme: 'mint' },
+  { id: 4, name: '蜂蜜森林', emoji: '🍯', element: 'grass', boss: '蜜糖熊王', bossEmoji: '🐻', desc: '「再睡五分钟」森林中间有一张会呼吸的床，熊王睡在上面，把位置让给你。', theme: 'honey' },
+  { id: 5, name: '月光遗迹', emoji: '🌙', element: 'dark', boss: '月蚀守卫', bossEmoji: '🗿', desc: '「没被叫醒的人」墙上的爪印一直亮着。那尊没脸的守卫，姿势和你挡梦时一样。', theme: 'night' },
+  { id: 6, name: '云朵高原', emoji: '☁️', element: 'light', boss: '云海巨鲸', bossEmoji: '🐋', desc: '「从没降落过」鲸在云里翻身，背上驮着所有人想去的地方，一次也没降落。', theme: 'sky' },
+  { id: 7, name: '龙息火山', emoji: '🌋', element: 'fire', boss: '赤焰幼龙', bossEmoji: '🐲', desc: '「烧不完的信」熔岩像焦糖一样慢。幼龙守着一封烧不坏的信，火一直烧，信一直不缺角。', theme: 'fire' },
+  { id: 8, name: '星砂海岸', emoji: '⭐', element: 'water', boss: '星潮海獭', bossEmoji: '🦦', desc: '「捡名字的人」退潮后沙滩上全是会眨眼的星星，每一颗是一个名字。海獭把它们摆成一桌晚饭，一颗也不吃。', theme: 'star' },
+  { id: 9, name: '彩虹花园', emoji: '🌈', element: 'light', boss: '幻彩蝶后', bossEmoji: '🦋', desc: '「永远漂亮」花开得一样大、一样颜色、一样朝向。蝶后翅膀张开，一动不动——它是标本。', theme: 'rainbow' },
+  { id: 10, name: '永恒之巅', emoji: '🏔️', element: 'earth', boss: '永恒守望者', bossEmoji: '🗿', desc: '「留下来吧」山顶只有一张椅子，和一口钟。钟停在 17:47。他坐在椅子上，像等了你很久。', theme: 'peak' }
 ];
 const STAGE_KINDS = [
   { type: 'mob', name: '小怪', label: '小怪', emoji: '🌱' },
@@ -3762,7 +3762,7 @@ const ARENA_NAMES = [
 const FRAMES = [
   { id: 'peach', name: '奶油光环', emoji: '🌼', cls: 'frame-peach', desc: '初始头像框，奶油色的温柔。' },
   { id: 'mint', name: '薄荷光环', emoji: '🍃', cls: 'frame-mint', desc: `图鉴收集达到 ${PETS.length} 种解锁。` },
-  { id: 'star', name: '星星光环', emoji: '⭐', cls: 'frame-star', desc: '通关 10 层爬塔解锁。' },
+  { id: 'star', name: '星星光环', emoji: '⭐', cls: 'frame-star', desc: '通关 10 层梦塔解锁。' },
   { id: 'moon', name: '月夜光环', emoji: '🌙', cls: 'frame-moon', desc: '完成七日签到解锁。' },
   { id: 'rainbow', name: '彩虹光环', emoji: '🌈', cls: 'frame-rainbow', desc: '集齐全部羁绊解锁。' }
 ];
@@ -3795,7 +3795,7 @@ const TUTORIAL_STEPS = [
   { step: 2, title: '第一场冒险', desc: '带上伙伴去冒险页挑战 1-1。战斗全自动，也可以中途加速。', button: '去冒险', tab: 'adventure' },
   { step: 3, title: '收下挂机收益', desc: '回到家园，领取驻守关卡已经产出的金币和经验果。', button: '回家园', tab: 'home' },
   { step: 4, title: '升级与进化', desc: '在宠物详情里喂经验果升级。进化需要等级和同属性进化石。', button: '去养成', tab: 'pets' },
-  { step: 5, title: '第一次爬塔', desc: '对战页的爬塔已经开启，挑战第一层吧。', button: '去爬塔', tab: 'battle' }
+  { step: 5, title: '第一次入梦', desc: '对战页的梦塔已经开启，去走一层别人的噩梦吧。', button: '去梦塔', tab: 'battle' }
 ];
 
 const HELP_FAQ = [
@@ -3863,8 +3863,8 @@ const ACHIEVEMENTS = [
   { id: 'a_pull100', name: '扭蛋狂热', desc: '累计抽蛋 100 次', icon: '🎰', target: 100, get: s => s.quests.metrics.pulls, reward: { crystal: 320, starShard: 15 } },
   { id: 'a_arena1', name: '竞技场首胜', desc: '竞技场胜利 1 次', icon: '🏟️', target: 1, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 60, crystal: 25 } },
   { id: 'a_arena20', name: '竞技场达人', desc: '竞技场胜利 20 次', icon: '🎖️', target: 20, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 220, crystal: 120 } },
-  { id: 'a_tower10', name: '登塔十层', desc: '爬塔达到第 10 层', icon: '🗼', target: 10, get: s => s.tower.best, reward: { crystal: 80, frame: 'star' } },
-  { id: 'a_tower30', name: '塔顶风景', desc: '爬塔达到第 30 层', icon: '🏯', target: 30, get: s => s.tower.best, reward: { crystal: 300, starShard: 20 } },
+  { id: 'a_tower10', name: '梦塔十层', desc: '梦塔达到第 10 层', icon: '🗼', target: 10, get: s => s.tower.best, reward: { crystal: 80, frame: 'star' } },
+  { id: 'a_tower30', name: '塔顶的灯', desc: '梦塔达到第 30 层', icon: '🏯', target: 30, get: s => s.tower.best, reward: { crystal: 300, starShard: 20 } },
   { id: 'a_boss1', name: '初次讨伐', desc: '挑战每日 Boss 1 次', icon: '👹', target: 1, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 40 } },
   { id: 'a_enc5', name: '奇遇探索者', desc: '完成奇遇 5 次', icon: '🧭', target: 5, get: s => s.quests.metrics.encounters, reward: { crystal: 55, fruit: 15 } },
   { id: 'a_enc20', name: '奇遇收藏家', desc: '完成奇遇 20 次', icon: '🗺️', target: 20, get: s => s.quests.metrics.encounters, reward: { crystal: 180, skillBook: 2 } },
@@ -3991,15 +3991,15 @@ const ACHIEVEMENTS = [
   { id: 'xb_abest_1550', name: '天梯攀登者·干练', desc: '历史最高竞技段位分达到 1,550', icon: '👑', target: 1550, get: s => s.hall.arenaBest, reward: { crystal: 18 } },
   { id: 'xb_abest_1850', name: '天梯攀登者·专家', desc: '历史最高竞技段位分达到 1,850', icon: '👑', target: 1850, get: s => s.hall.arenaBest, reward: { crystal: 18, eternal: 2 } },
   { id: 'xb_abest_2200', name: '天梯攀登者·传说', desc: '历史最高竞技段位分达到 2,200', icon: '👑', target: 2200, get: s => s.hall.arenaBest, reward: { crystal: 100, eternal: 2, starShard: 10 } },
-  { id: 'xb_tower_5', name: '高塔行者·初尝', desc: '爬塔最高层数达到 5', icon: '🗼', target: 5, get: s => s.tower.best, reward: { crystal: 10 } },
-  { id: 'xb_tower_15', name: '高塔行者·渐熟', desc: '爬塔最高层数达到 15', icon: '🗼', target: 15, get: s => s.tower.best, reward: { crystal: 18 } },
-  { id: 'xb_tower_20', name: '高塔行者·干练', desc: '爬塔最高层数达到 20', icon: '🗼', target: 20, get: s => s.tower.best, reward: { crystal: 18 } },
-  { id: 'xb_tower_25', name: '高塔行者·专家', desc: '爬塔最高层数达到 25', icon: '🗼', target: 25, get: s => s.tower.best, reward: { crystal: 18 } },
-  { id: 'xb_tower_28', name: '高塔行者·大师', desc: '爬塔最高层数达到 28', icon: '🗼', target: 28, get: s => s.tower.best, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
-  { id: 'xb_tclear_10', name: '层峰常客·初尝', desc: '爬塔通关次数达到 10', icon: '⛰️', target: 10, get: s => s.quests.metrics.towerClears, reward: { crystal: 10 } },
-  { id: 'xb_tclear_30', name: '层峰常客·渐熟', desc: '爬塔通关次数达到 30', icon: '⛰️', target: 30, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
-  { id: 'xb_tclear_80', name: '层峰常客·干练', desc: '爬塔通关次数达到 80', icon: '⛰️', target: 80, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
-  { id: 'xb_tclear_150', name: '层峰常客·大师', desc: '爬塔通关次数达到 150', icon: '⛰️', target: 150, get: s => s.quests.metrics.towerClears, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
+  { id: 'xb_tower_5', name: '梦塔行者·初尝', desc: '梦塔最高层数达到 5', icon: '🗼', target: 5, get: s => s.tower.best, reward: { crystal: 10 } },
+  { id: 'xb_tower_15', name: '梦塔行者·渐熟', desc: '梦塔最高层数达到 15', icon: '🗼', target: 15, get: s => s.tower.best, reward: { crystal: 18 } },
+  { id: 'xb_tower_20', name: '梦塔行者·干练', desc: '梦塔最高层数达到 20', icon: '🗼', target: 20, get: s => s.tower.best, reward: { crystal: 18 } },
+  { id: 'xb_tower_25', name: '梦塔行者·专家', desc: '梦塔最高层数达到 25', icon: '🗼', target: 25, get: s => s.tower.best, reward: { crystal: 18 } },
+  { id: 'xb_tower_28', name: '梦塔行者·大师', desc: '梦塔最高层数达到 28', icon: '🗼', target: 28, get: s => s.tower.best, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
+  { id: 'xb_tclear_10', name: '守梦常客·初尝', desc: '梦塔通关次数达到 10', icon: '⛰️', target: 10, get: s => s.quests.metrics.towerClears, reward: { crystal: 10 } },
+  { id: 'xb_tclear_30', name: '守梦常客·渐熟', desc: '梦塔通关次数达到 30', icon: '⛰️', target: 30, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
+  { id: 'xb_tclear_80', name: '守梦常客·干练', desc: '梦塔通关次数达到 80', icon: '⛰️', target: 80, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
+  { id: 'xb_tclear_150', name: '守梦常客·大师', desc: '梦塔通关次数达到 150', icon: '⛰️', target: 150, get: s => s.quests.metrics.towerClears, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
   { id: 'xb_boss_10', name: '讨伐先锋·初尝', desc: '挑战每日 Boss达到 10', icon: '👹', target: 10, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 10 } },
   { id: 'xb_boss_30', name: '讨伐先锋·渐熟', desc: '挑战每日 Boss达到 30', icon: '👹', target: 30, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
   { id: 'xb_boss_60', name: '讨伐先锋·干练', desc: '挑战每日 Boss达到 60', icon: '👹', target: 60, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
@@ -6789,7 +6789,7 @@ const ACH_CATEGORIES = [
   { id: 'evolve', name: '进化与星级', emoji: '✨', match: ['xb_evo', 'xb_star', 'a_evo', 'a_star'] },
   { id: 'growth', name: '养成与陪伴', emoji: '🍓', match: ['xb_lvl', 'xb_feed_', 'xb_intmax_', 'xb_intsum_', 'xb_skill_', 'xb_bond', 'a_bond', 'a_feed30', 'a_intimacy100'] },
   { id: 'arena', name: '竞技场', emoji: '🏟️', match: ['xb_awin_', 'xb_abat_', 'xb_streak_', 'xb_abest_', 'a_arena'] },
-  { id: 'tower', name: '爬塔与首领', emoji: '🗼', match: ['xb_tower_', 'xb_tclear_', 'xb_boss_', 'a_tower', 'a_boss'] },
+  { id: 'tower', name: '梦塔与首领', emoji: '🗼', match: ['xb_tower_', 'xb_tclear_', 'xb_boss_', 'a_tower', 'a_boss'] },
   { id: 'economy', name: '资源与装备', emoji: '🪙', match: ['xb_gold_', 'xb_enh_', 'xb_feq_', 'a_gold', 'a_enhance', 'a_fullgear'] },
   { id: 'idle', name: '挂机与日常', emoji: '🌙', match: ['xb_idle_', 'xb_daily_', 'xb_pull_', 'xb_enc_', 'xb_rebirth', 'xb_power', 'a_pull', 'a_idle', 'a_enc', 'a_sign', 'a_rebirth', 'a_power', 'a_daily50', 'merchant', 'orchard'] }
 ];
@@ -7916,7 +7916,7 @@ function endBattle(outcome) {
   b.win = outcome === 'win';
   markActiveTurn(null);
   if (b.timer) { clearTimeout(b.timer); b.timer = null; }
-  pushBattleLog(b, outcome === 'win' ? '🎉 战斗胜利！' : (outcome === 'timeout' ? '⌛ 回合耗尽' : '💧 战斗失败…'), 'result');
+  pushBattleLog(b, outcome === 'win' ? '🎉 战斗胜利！' : (outcome === 'timeout' ? '⌛ 回合耗尽 · 你撑住了' : '😴 你睡着了…'), 'result');
 }
 
 function battleLoop() {
@@ -8482,7 +8482,7 @@ function stageUpgradePlan(stage) {
     const lack = n.stones - haveStone;
     const ch = Math.min(CHAPTERS.length, Math.max(1, evoPet.evo === 0 ? 1 : 5));
     actions.push({
-      text: `进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、爬塔、开图鉴里程碑都会给。`,
+      text: `进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、梦塔、开图鉴里程碑都会给。`,
       weight: lack / (haveStone + 1)
     });
   }
@@ -8623,9 +8623,9 @@ function finishBattle() {
       resultTitle = `第 ${floor} 层通过！`;
       resultNote = repeat
         ? `重复挑战的收益是首通的 5 折。本周已推进到第 ${Math.min(30, state.tower.floor)} 层。`
-        : `塔灵消散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。`;
+        : `梦散了，下一层是第 ${Math.min(30, state.tower.floor)} 层。`;
     } else {
-      resultNote = '塔灵亮出了更强的姿态。强化装备、升星或试试属性克制再来吧。';
+      resultNote = '梦里的东西站起来了。强化装备、升星或试试属性克制再来吧。';
     }
     resultChips = [
       { icon: '🗼', label: '最高层', value: `${state.tower.best} / 30` },
@@ -8792,7 +8792,7 @@ const TABS = [
   { id: 'home', name: '家园', icon: '🏡', tip: '挂机与日常' },
   { id: 'adventure', name: '冒险', icon: '⚔️', tip: '主线与副本' },
   { id: 'pets', name: '宠物', icon: '🐾', tip: '队伍与养成' },
-  { id: 'battle', name: '对战', icon: '🏆', tip: '爬塔 / 竞技场 / Boss' },
+  { id: 'battle', name: '对战', icon: '🏆', tip: '梦塔 / 竞技场 / Boss' },
   { id: 'shop', name: '商店', icon: '🛍️', tip: '抽蛋与兑换' },
   { id: 'quest', name: '任务', icon: '📜', tip: '任务与成就' }
 ];
@@ -8942,7 +8942,7 @@ function renderTopbar() {
     <span class="res-pill" title="钻石：稀有抽蛋、商店兑换与加速"><span class="ico">${artIconFrame(resArtUrl('crystal'),'💎','art-resico') || '💎'}</span><em>钻石</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
     <span class="res-pill" title="经验果：宠物升级"><span class="ico">${artIconFrame(resArtUrl('fruit'),'🍎','art-resico') || '🍎'}</span><em>经验果</em><b id="resFruit">${fmt(state.resources.fruit)}</b></span>
     <span class="res-pill" title="体力：主线与每日副本"><span class="ico">⚡</span><em>体力</em><b id="resStamina">${stamina.value}/${stamina.max}</b></span>
-    <span class="res-pill" title="挑战券：爬塔、竞技场与每日 Boss"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
+    <span class="res-pill" title="挑战券：梦塔、竞技场与每日 Boss"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
   refreshHUD();
 }
 
@@ -9113,7 +9113,7 @@ function gardenHTML() {
   </section>`;
 }
 
-// 小镇总进度：主线 / 图鉴 / 成就 / 爬塔 四项各占 1/4
+// 小镇总进度：主线 / 图鉴 / 成就 / 梦塔 四项各占 1/4
 function townProgressPct() {
   const stage = Math.min(1, num(state.stage && state.stage.maxCleared, 0) / STAGES.length);
   const codex = Math.min(1, stateCodexSeenCount() / PETS.length);
@@ -9269,7 +9269,7 @@ function renderHome() {
           <button class="quick-btn" type="button" data-act="nav" data-tab="quest"><span class="emoji">📜</span>领奖励</button>
           <button class="quick-btn" type="button" data-act="openRebirth"><span class="emoji">🌀</span>轮回殿</button>
         </div>
-        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（敌人战力 ${fmt(stageDisplayPower(next))}）。` : '主线已全部通关，去爬塔或轮回吧。'} 当前队伍战力 ${fmt(power)}。</div>
+        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（敌人战力 ${fmt(stageDisplayPower(next))}）。` : '主线已全部通关，去梦塔或轮回吧。'} 当前队伍战力 ${fmt(power)}。</div>
       </div>
 
       <div class="grid">
@@ -9295,7 +9295,7 @@ function renderHome() {
             <div class="idle-stat"><span>最高关卡</span><b>${esc(maxClearedLabel)}</b></div>
             <div class="idle-stat"><span>图鉴</span><b>${stateCodexSeenCount()} / ${PETS.length}</b></div>
             <div class="idle-stat"><span>成就</span><b>${achievementDone} / ${ACHIEVEMENTS.length}</b></div>
-            <div class="idle-stat"><span>爬塔</span><b>${state.tower.best} / 30</b></div>
+            <div class="idle-stat"><span>梦塔</span><b>${state.tower.best} / 30</b></div>
           </div>
           <div class="note pink" style="margin-top:9px">当前章节：第 ${chapter} 章 · ${CHAPTERS[chapter - 1].name}。摸头、投喂、战斗都会提升亲密度。</div>
           ${state.stage.maxCleared >= 25 ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
@@ -9688,7 +9688,7 @@ function renderBattlePage() {
       <button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">调整队伍</button>`)}
     <div class="mode-grid">
       <div class="mode-card tower">
-        <div class="mode-head"><div class="mode-icon">🗼</div><div><h2>月影爬塔</h2><p>30 层塔灵，周一重置。每 5 层掉装备与技能书，第 30 层有塔顶宝箱。</p></div><span class="chip">${towerDone ? '本周已登顶' : `本周第 ${towerFloor} / 30 层`}</span></div>
+        <div class="mode-head"><div class="mode-icon">🗼</div><div><h2>梦塔</h2><p>30 层别人的噩梦，周一重置。每 5 层掉装备与技能书，第 30 层是梦的尽头，有一盏灯。</p></div><span class="chip">${towerDone ? '本周已登顶' : `本周第 ${towerFloor} / 30 层`}</span></div>
         <div class="mode-body">
           <div class="idle-stats" style="margin:0 0 8px">
             <div class="idle-stat"><span>推荐战力</span><b>${fmt(towerPower)}</b></div>
@@ -9770,7 +9770,7 @@ function renderBattlePage() {
       <div class="card-head"><div><h2>🏅 本地名人堂</h2><p>记录本机存档里的最好成绩，轮回与赛季结算都不清空。</p></div><span class="chip">永久纪录</span></div>
       <div class="idle-stats" style="margin:0">
         <div class="idle-stat"><span>主线最高关</span><b>${stageLabel}</b></div>
-        <div class="idle-stat"><span>爬塔最高层</span><b>${state.tower.best} / 30</b></div>
+        <div class="idle-stat"><span>梦塔最高层</span><b>${state.tower.best} / 30</b></div>
         <div class="idle-stat"><span>Boss 最高伤害</span><b>${fmt(state.boss.bestDamage)}</b></div>
         <div class="idle-stat"><span>最高段位分</span><b>${fmt(state.hall.arenaBest)}</b></div>
         <div class="idle-stat"><span>竞技场最长连胜</span><b>${state.hall.arenaWinStreak} 场</b></div>
@@ -9889,7 +9889,7 @@ function renderShop() {
         </div>
       </div>
       <div class="card" id="ex-ticket">
-        <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>月影爬塔、竞技场、每日 Boss 的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
+        <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>梦塔、竞技场、每日 Boss 的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
         <div class="flex between" style="gap:10px;align-items:center">
           <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
           <button class="btn btn-lav btn-xs" type="button" data-act="buyChallengeTicket" ${state.challenge.value >= state.challenge.max || state.resources.crystal < CHALLENGE_TICKET_PRICE ? 'disabled' : ''}>💎${CHALLENGE_TICKET_PRICE} 换 1</button>
@@ -9993,10 +9993,10 @@ const ACH_NOTE_GROUPS = [
   ] },
   { key: 'arena', re: /arena|hall\.|tower/, notes: [
     '竞技场的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本。',
-    '连胜那几天，连走路都带风。', '塔里的对手一层比一层难缠。', '爬塔爬到一半，才想起要带奶。',
-    '青铜到白银，隔的不是运气。', '被人反杀一次，就学会留一手。', '塔灵的话很少，但很扎人。',
+    '连胜那几天，连走路都带风。', '梦里的对手一层比一层难缠。', '梦塔爬到一半，才想起要带奶——它已经睡着了。',
+    '青铜到白银，隔的不是运气。', '被人反杀一次，就学会留一手。', '残影的话很少，但很扎人。',
     '防守阵容也是要磨的。', '越往上，越知道「差一点」有多远。', '赢下来的名次，才敢截图。',
-    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。', '名次掉下去，再爬回来就好。', '塔里的每一层，都记得谁先倒。', '竞技场也是练习场。', '爬塔爬累了，就看看风景。', '连胜有连胜的打法，连败有连败的教训。', '排行榜上，你比上周高了一点。', '输了不丢人，不上场才丢。'
+    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。', '名次掉下去，再爬回来就好。', '梦里的每一层，都记得谁先倒。', '竞技场也是练习场。', '梦塔爬累了，就看看风景。', '连胜有连胜的打法，连败有连败的教训。', '排行榜上，你比上周高了一点。', '输了不丢人，不上场才丢。'
   ] },
   { key: 'gacha', re: /pulls/, notes: [
     '第十连的保底，是抽卡人的底气。', '保底是给坚持的人的。', '重复的伙伴，也换来了碎片。', '开蛋的声音，总能让人安静两秒。', '抽到新伙伴那天，屋子里会亮一下。', '开出一只重复的，也笑得出来。'
@@ -10209,13 +10209,13 @@ function profileHighlightsHTML() {
     ['💪', '装备强化', '×' + fmt(enh), '战力淬炼'],
     ['🍖', '亲手喂食', '×' + fmt(feed), '亲密度积累'],
     ['⭐', '星级提升', '×' + fmt(star), '闪亮突破'],
-    ['🪜', '爬塔通关', '×' + fmt(tower), '守层记录']
+    ['🪜', '梦塔通关', '×' + fmt(tower), '守层记录']
   ];
   let title = '萌芽驯兽师';
   if (wins >= 100) title = '百战驯兽师';
   if (evo >= 5) title = '进化引导者';
   if (streak >= 5) title = '连胜旋风';
-  if (tower >= 10) title = '高塔征服者';
+  if (tower >= 10) title = '梦塔征服者';
   return `<div class="card">
     <div class="card-head"><div><h2>🌟 战绩亮点</h2><p>只汇总已有记录做展示，不影响成就与奖励。</p></div><span class="chip gold">${esc(title)}</span></div>
     <div class="bag-res-grid">
@@ -10707,7 +10707,7 @@ function openRebirthConfirm() {
   if (state.stage.maxCleared < 25) { toast('还未解锁轮回之泉', 'bad'); return; }
   const gain = rebirthEternalPreview();
   const body = `
-    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、钻石、经验果、关卡、爬塔、竞技场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
+    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、钻石、经验果、关卡、梦塔、竞技场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
     <div class="offline-rewards"><div class="offline-reward"><span>🌀</span><div><small>获得永恒结晶</small><b>${fmt(gain)}</b></div></div></div>
     <div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="openRebirth">再想想</button><button class="btn btn-lav" type="button" data-act="rebirthConfirm">确认轮回</button></div>`;
   openModal('🌀 最后的确认', body, { wide: false });
@@ -11657,7 +11657,7 @@ function openTeamPresets() {
       </div>
     </div>`;
   }).join('');
-  openModal('📌 阵容预设', `<p class="note">爬塔、竞技、主线可以各存一套阵容，一键切回来。预设只记上阵位置，不复制宠物。</p>${rows}`);
+  openModal('📌 阵容预设', `<p class="note">梦塔、竞技、主线可以各存一套阵容，一键切回来。预设只记上阵位置，不复制宠物。</p>${rows}`);
 }
 function teamPresetSave(slot) {
   if (!state.team.presets) state.team.presets = [];
@@ -11986,7 +11986,7 @@ function startTower() {
   const chapter = CHAPTERS[(floor - 1) % CHAPTERS.length];
   const pool = PETS.filter(p => p.element === chapter.element && !templateHasHeal(p));
   const lineup = [];
-  // 一律 3 只：单只塔灵会吃掉整层战力，显示数字就完全失真了
+  // 一律 3 只：单只残影会吃掉整层战力，显示数字就完全失真了
   const count = 3;
   for (let i = 0; i < count; i++) lineup.push(pick(pool.length ? pool : enemyPetPool()).id);
   const enemies = createEnemyFormation(power, {
@@ -11994,9 +11994,9 @@ function startTower() {
     lineup,
     element: chapter.element,
     boss: isBossFloor,
-    bossName: `第 ${floor} 层塔灵`,
+    bossName: `第 ${floor} 层残影`,
     bossEmoji: '🗼',
-    name: `第 ${floor} 层塔灵`,
+    name: `第 ${floor} 层残影`,
     emoji: '🗼',
     bossHpMult: isBossFloor ? 2.0 : 1,
     powerFactor: 1,
@@ -12008,8 +12008,8 @@ function startTower() {
   const ok = startBattle({
     mode: 'tower',
     floor,
-    title: `月影爬塔 · 第 ${floor} 层`,
-    subtitle: '逐层挑战塔灵 · 每 5 层有额外装备奖励',
+    title: `梦塔 · 第 ${floor} 层`,
+    subtitle: '一层一层走进别人的噩梦 · 每 5 层有额外装备奖励',
     emoji: '🗼',
     enemies,
     maxRounds: 30
@@ -12221,7 +12221,7 @@ function buyMaterial(key, price) {
 }
 function buyChallengeTicket() {
   regenAll();
-  if (state.challenge.value >= state.challenge.max) { toast('挑战券已满，先去爬塔/竞技场消耗一些吧', 'bad'); return; }
+  if (state.challenge.value >= state.challenge.max) { toast('挑战券已满，先去梦塔/竞技场消耗一些吧', 'bad'); return; }
   if (state.resources.crystal < CHALLENGE_TICKET_PRICE) { toast(`钻石不足，需要 💎${CHALLENGE_TICKET_PRICE}`, 'bad'); return; }
   state.resources.crystal -= CHALLENGE_TICKET_PRICE;
   state.challenge.value = Math.min(state.challenge.max, state.challenge.value + 1);

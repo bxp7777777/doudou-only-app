@@ -260,7 +260,7 @@ const required = [
   ['装备', '装备系统'],
   ['羁绊', '羁绊系统'],
   ['亲密度', '亲密度'],
-  ['爬塔', '爬塔模式'],
+  ['梦塔', '梦塔模式'],
   ['竞技场', '竞技场'],
   ['奇遇', '奇遇事件'],
   ['图鉴', '图鉴'],
@@ -419,11 +419,11 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('const GOLD_EXCHANGE = [') && text.includes('function buyGoldExchange'), '缺少金币转化出口');
   check(text.includes("case 'buyGoldExchange'"), '金币转化缺少事件分发');
 
-  // 爬塔重做：曲线对齐主线、每周重置、连战、3 只塔灵
-  check(/function towerFloorPower/.test(text) && text.includes('1150 * Math.pow(1.118'), '爬塔战力曲线应为 1150×1.118^(层-1)');
-  check(text.includes('function ensureTowerWeek') && text.includes('function towerRush'), '缺少爬塔每周重置 / 连战');
-  check(text.includes("case 'towerRush'"), '爬塔连战缺少事件分发');
-  check(text.includes('function makeTowerReward(floor, repeat)'), '爬塔重复层应打折结算');
+  // 梦塔：曲线对齐主线、每周重置、连战、每层 3 只残影
+  check(/function towerFloorPower/.test(text) && text.includes('1150 * Math.pow(1.118'), '梦塔战力曲线应为 1150×1.118^(层-1)');
+  check(text.includes('function ensureTowerWeek') && text.includes('function towerRush'), '缺少梦塔每周重置 / 连战');
+  check(text.includes("case 'towerRush'"), '梦塔连战缺少事件分发');
+  check(text.includes('function makeTowerReward(floor, repeat)'), '梦塔重复层应打折结算');
   // 小陪伴：进度奖励、连陪、陪伴加成
   check(text.includes('function selfCareReward') && text.includes('function selfCareBonusMult'), '缺少陪伴奖励/加成逻辑');
   check(text.includes('function careCooldownLeft'), '抱抱/晚安缺少冷却');
