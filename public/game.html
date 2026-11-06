@@ -5196,7 +5196,7 @@ function petEmojiById(templateId, stage = 0) {
   return t.emoji[clamp(stage, 0, 2)] || t.emoji[0];
 }
 // Q版立绘素材：键为 templateId，仅已生成的基础形态；缺图自动回退 emoji，不影响存档结构与战斗数值
-const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true,gull:true,flysquirrel:true,sparrow:true,moth:true,albatross:true,penguin:true,seal:true,arcticfox:true,polarbear:true,walrus:true,koala:true,flamingo:true,octopus:true,mushroom:true,bat:true,lynx:true,alpaca:true,mole:true,jellyfish:true,peacock:true };
+const PET_ART = { pig:true,golden:true,shiba:true,orange:true,rabbit:true,hamster:true,panda:true,fox:true,sheep:true,otter:true,dragon:true,phoenix:true,turtle:true,bee:true,owl:true,deer:true,koi:true,lion:true,unicorn:true,goat:true,gull:true,flysquirrel:true,sparrow:true,moth:true,albatross:true,penguin:true,seal:true,arcticfox:true,polarbear:true,walrus:true,koala:true,flamingo:true,octopus:true,mushroom:true,bat:true,lynx:true,alpaca:true,mole:true,jellyfish:true,peacock:true,qilin:true,narwhal:true,wolf:true,raccoon:true,rhino:true,squid:true,hummingbird:true };
 const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth:true,wind:true,ice:true };
 const RES_ART = { gold:true,crystal:true,fruit:true };
 // 敌方独立形象图集：生图入库后逐只置 true；未登记时返回 null，由调用方逐级回退 emoji，绝不白图破版
@@ -5243,7 +5243,8 @@ const PET_ART_PNG = {
   pig: true, golden: true, shiba: true, orange: true, rabbit: true, hamster: true, panda: true, fox: true, sheep: true, otter: true,
   dragon: true, phoenix: true, turtle: true, bee: true, owl: true, deer: true, koi: true, lion: true, unicorn: true, goat: true,
   gull: true, flysquirrel: true, sparrow: true, moth: true, albatross: true, penguin: true, seal: true, arcticfox: true, polarbear: true, walrus: true,
-  koala: true, flamingo: true, octopus: true, mushroom: true, bat: true, lynx: true, alpaca: true, mole: true, jellyfish: true, peacock: true
+  koala: true, flamingo: true, octopus: true, mushroom: true, bat: true, lynx: true, alpaca: true, mole: true, jellyfish: true, peacock: true,
+  qilin: true, narwhal: true, wolf: true, raccoon: true, rhino: true, squid: true, hummingbird: true
 };
 const MOB_ART_PNG = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
 const BOSS_ART_PNG = {};
@@ -5304,7 +5305,21 @@ const EVO_ART_PNG = {
   shiba_s2: true,
   turtle_s1: true,
   turtle_s2: true,
-  unicorn_s2: true
+  unicorn_s2: true,
+  qilin_s1: true,
+  qilin_s2: true,
+  narwhal_s1: true,
+  narwhal_s2: true,
+  wolf_s1: true,
+  wolf_s2: true,
+  raccoon_s1: true,
+  raccoon_s2: true,
+  rhino_s1: true,
+  rhino_s2: true,
+  squid_s1: true,
+  squid_s2: true,
+  hummingbird_s1: true,
+  hummingbird_s2: true,
 };
 // 老 jpg 进化图（早期 5 只主角）：PNG 缺失时作为兜底
 const EVO_ART_JPG = { pig_s1: true, pig_s2: true, golden_s1: true, golden_s2: true, dragon_s1: true, dragon_s2: true, lion_s1: true, lion_s2: true, unicorn_s1: true, unicorn_s2: true };
