@@ -6,12 +6,13 @@ import path from 'node:path';
 import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const OUT = path.join(root, 'art-src', 'monsters');
+const JOBS_FILE = process.argv[5] || 'monster-jobs.json';
+const OUT = path.join(root, 'art-src', process.argv[6] || 'monsters');
 fs.mkdirSync(OUT, { recursive: true });
 const yaml = fs.readFileSync(path.join(os.homedir(), '.dsh', '.credentials.yaml'), 'utf8');
 const KEY = (yaml.match(/ZSXMYONLY_API_KEY:\s*["\']?([^\s"\']+)/) || [])[1];
 if (!KEY) { console.log('NO KEY'); process.exit(1); }
-const jobs = JSON.parse(fs.readFileSync(path.join(root, 'scripts', 'monster-jobs.json'), 'utf8'));
+const jobs = JSON.parse(fs.readFileSync(path.join(root, 'scripts', JOBS_FILE), 'utf8'));
 const conc = Math.max(1, Math.min(6, Number(process.argv[2]) || 3));
 const only = process.argv[3] || '';
 const filter = process.argv[4] || '';

@@ -242,18 +242,18 @@ const required = [
   ['钻石', '资源栏钻石'],
   ['经验果', '经验果'],
   ['体力', '体力/挑战次数'],
-  ['猪猪', '招牌小猪'],
-  ['金毛', '招牌小金毛'],
-  ['柴犬', '种族柴犬'],
-  ['橘猫', '种族橘猫'],
-  ['垂耳兔', '种族垂耳兔'],
-  ['仓鼠', '种族仓鼠'],
-  ['熊猫', '种族熊猫'],
-  ['狐狸', '种族狐狸'],
-  ['绵羊', '种族绵羊'],
-  ['水獭', '种族水獭'],
-  ['小龙', '种族小龙'],
-  ['小凤', '种族小凤'],
+  ['泥兜猪', '招牌小猪'],
+  ['金毛崽', '招牌小金毛'],
+  ['橙柴犬', '种族柴犬'],
+  ['橘胖猫', '种族橘猫'],
+  ['月耳兔', '种族垂耳兔'],
+  ['粮袋仓鼠', '种族仓鼠'],
+  ['竹团熊猫', '种族熊猫'],
+  ['焰尾狐', '种族狐狸'],
+  ['云卷羊', '种族绵羊'],
+  ['水花獭', '种族水獭'],
+  ['水鳞幼龙', '种族小龙'],
+  ['火羽雏凤', '种族小凤'],
   ['SSR', '稀有度 SSR'],
   ['进化', '进化系统'],
   ['升星', '升星系统'],
@@ -452,9 +452,51 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function rigArtHTML') && text.includes('rig-bone rig-b1') && text.includes('rig-bone rig-b2') && text.includes('rig-bone rig-b3'), '骨骼分层缺失（底座/躯干/胸/头四层）');
   check(text.includes('@keyframes rigBend1') && text.includes('@keyframes rigBend2') && text.includes('@keyframes rigBend3') && text.includes('@keyframes rigBreathe'), '骨骼关键帧缺失');
   check(text.includes('home-pet-rig') && text.includes("'art-rig'") && text.includes('--amp2') && text.includes('--amp3'), '骨骼挂载/节奏参数缺失');
-check(text.includes('artDrowse') && text.includes('art-act-drowse'), '空闲打盹动作缺失');
+  check(text.includes('artDrowse') && text.includes('art-act-drowse'), '空闲打盹动作缺失');
+  check(text.includes('@keyframes rigBend1{0%,100%{transform:rotate(calc(-1 * var(--amp1,2deg)))}50%{transform:rotate(var(--amp1,2deg))}}'), '骨骼关键帧应只做绕骨点的纯旋转（挤压/横移留在整框上，否则蒙版带里会出现重影）');
+  check(!/@keyframes rigBend[123][^@]*?scale\(1\.00/.test(text) && !/@keyframes rigBend[123][^@]*?translateX/.test(text), '骨头层不应再带 scale/translateX，重影就是这么来的');
+check(text.includes('-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 68%') && text.includes('#000 0%,#000 52%') && text.includes('#000 0%,#000 38%'), '三层蒙版带应贴住各自骨点（68/52/38%）');
+check(text.includes('@keyframes rigBreathe{0%,100%{transform:scale(1,1) translateX'), '整框呼吸应承担挤压与横移');
+check(!text.includes('.rig-bone{position:absolute;inset:0;display:block;pointer-events:none;border-radius:inherit;will-change:transform}'), '骨头层不该再开 will-change（GPU 位图化会糊出第二道轮廓）');
 check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.hit-recoil .rig-b3'), '三节骨骼的战斗跟随缺失');
 
+  // 三阶命名 + 等级进化：40 只宠物各有幼体/成长体/究极体三个名字，到等级自动进化
+  check(text.includes('const PET_STAGE_NAME = {'), '缺少三阶名字表');
+  const stageBlock = text.slice(text.indexOf('const PET_STAGE_NAME = {'), text.indexOf('const BONDS = ['));
+  const stageIds = [...stageBlock.matchAll(/^  (\w+): \['/gm)].map(m => m[1]);
+  check(stageIds.length === 40, '三阶名字表应覆盖 40 只宠物，实际 ' + stageIds.length);
+  const perLine = [...stageBlock.matchAll(/^  \w+: \[([^\]]*)\]/gm)].map(m => (m[1].match(/'/g) || []).length / 2);
+  check(perLine.every(c => c === 3), '每个宠物应有 3 个阶段名（幼体/成长体/究极体），发现 ' + JSON.stringify(perLine.filter(c => c !== 3)));
+  const stageTable = JSON.parse(stageBlock.slice(stageBlock.indexOf('{'), stageBlock.lastIndexOf('}') + 1).replace(/(\w+):/g, '"$1":').replace(/'/g, '"'));
+  const stageNames = new Set();
+  Object.values(stageTable).forEach(a => a.forEach(nm => stageNames.add(nm)));
+  check(stageNames.size === 120, '120 个阶段名应互不重复，实际 ' + stageNames.size);
+  check(typeof globalThis.autoEvolvePet === 'function', '缺少等级自动进化 autoEvolvePet');
+  const p1 = { templateId: 'pig', evo: 0, level: 9 };
+  check(globalThis.autoEvolvePet(p1) === 0 && p1.evo === 0, '9 级不该进化');
+  const p2 = { templateId: 'pig', evo: 0, level: 10 };
+  check(globalThis.autoEvolvePet(p2) === 1 && p2.evo === 1, '10 级应进化到成长体');
+  const p3 = { templateId: 'pig', evo: 0, level: 30 };
+  check(globalThis.autoEvolvePet(p3) === 2 && p3.evo === 2, '30 级应一口气进化到究极体');
+  check(globalThis.petDisplayName({ templateId: 'pig', evo: 0, level: 1 }) === '泥兜猪', '幼体名应为泥兜猪');
+  check(globalThis.petDisplayName({ templateId: 'pig', evo: 1, level: 12 }) === '铁背哼哼', '成长体名应为铁背哼哼');
+  check(globalThis.petDisplayName({ templateId: 'pig', evo: 2, level: 40 }) === '山岳泥甲王', '究极体名应为山岳泥甲王');
+  check(globalThis.petDisplayName({ templateId: 'pig', evo: 2, level: 40, nickname: '小土豆' }) === '小土豆', '昵称应优先于阶段名');
+  check(text.includes('const evoUps = autoEvolvePet(pet);'), '升级流程里没有接自动进化');
+  check(text.includes('migratedEvo += autoEvolvePet(p)'), '读档时没有补算自动进化');
+  // 进化立绘：40 只宠物 × s1/s2 全部登记并落盘
+  const evoPng = text.match(/const EVO_ART_PNG = \{([^}]*)\}/);
+  const evoKeys = evoPng ? [...evoPng[1].matchAll(/(\w+):\s*(?:true|1)/g)].map(m => m[1]) : [];
+  check(evoKeys.length > 0 && evoKeys.length <= 80, '进化立绘登记数应在 1~80 之间，实际 ' + evoKeys.length);
+  const evoMissing = evoKeys.filter(k => !fs.existsSync(path.join(process.cwd(), 'public', 'art', 'pets-evo', k + '.png')));
+  check(evoMissing.length === 0, '进化立绘文件缺失：' + evoMissing.slice(0, 6).join(', '));
+  const evoArt = globalThis.evoArtCandidates('pig', 2);
+  check(evoArt.length === 2 && evoArt[0].endsWith('pig_s2.png') && evoArt[1].endsWith('pig_s2.jpg'), '二阶进化立绘候选链应为 png→jpg，实际 ' + JSON.stringify(evoArt));
+  check(globalThis.evoArtCandidates('mole', 1).length === 0, '还没画的一阶进化立绘应回落到基础图，实际 ' + JSON.stringify(globalThis.evoArtCandidates('mole', 1)));
+  check(globalThis.evoArtCandidates('deer', 1).length === 0 && globalThis.evoArtCandidates('deer', 2)[0].endsWith('deer_s2.png'), '只有二阶图的宠物应一阶回落、二阶用图');
+  check(globalThis.evoArtCandidates('pig', 0).length === 0, '未进化时不应套用进化立绘');
+  check(text.includes('/art\/pets|(art)\/mobs|(art)\/bosses/') || /art\/\)\?\/pets|pets-evo/.test(text), '骨骼未覆盖进化立绘目录');
+  
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');
   check(text.includes("const SAVE_KEY = 'ddgame:v1';"), '存档键名不应改变');

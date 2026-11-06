@@ -1,0 +1,402 @@
+[
+ {
+  "name": "pig_s1",
+  "dir": "evos",
+  "prompt": "a plump round piglet pet with a soft pink snout, short trotting legs and a curly tail, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "pig_s2",
+  "dir": "evos",
+  "prompt": "a plump round piglet pet with a soft pink snout, short trotting legs and a curly tail, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "golden_s1",
+  "dir": "evos",
+  "prompt": "a fluffy golden retriever puppy pet with long ears, feathery tail and warm friendly eyes, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "golden_s2",
+  "dir": "evos",
+  "prompt": "a fluffy golden retriever puppy pet with long ears, feathery tail and warm friendly eyes, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "shiba_s1",
+  "dir": "evos",
+  "prompt": "a small shiba inu pet with curled tail, pointy ears and a cheeky smile, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "shiba_s2",
+  "dir": "evos",
+  "prompt": "a small shiba inu pet with curled tail, pointy ears and a cheeky smile, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "orange_s1",
+  "dir": "evos",
+  "prompt": "a chubby orange tabby cat pet with round cheeks and a thick striped tail, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "orange_s2",
+  "dir": "evos",
+  "prompt": "a chubby orange tabby cat pet with round cheeks and a thick striped tail, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "rabbit_s1",
+  "dir": "evos",
+  "prompt": "a lop-eared rabbit pet with soft drooping ears and a moon-white coat, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "rabbit_s2",
+  "dir": "evos",
+  "prompt": "a lop-eared rabbit pet with soft drooping ears and a moon-white coat, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "hamster_s1",
+  "dir": "evos",
+  "prompt": "a tiny hamster pet with bulging cheek pouches and tiny paws, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "hamster_s2",
+  "dir": "evos",
+  "prompt": "a tiny hamster pet with bulging cheek pouches and tiny paws, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "panda_s1",
+  "dir": "evos",
+  "prompt": "a chubby panda pet holding a bamboo shoot, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "panda_s2",
+  "dir": "evos",
+  "prompt": "a chubby panda pet holding a bamboo shoot, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "fox_s1",
+  "dir": "evos",
+  "prompt": "a slender fox pet with a flame-colored tail and clever narrow eyes, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "fox_s2",
+  "dir": "evos",
+  "prompt": "a slender fox pet with a flame-colored tail and clever narrow eyes, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "sheep_s1",
+  "dir": "evos",
+  "prompt": "a fluffy cloud-like sheep pet with curled horns and wool like cotton, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "sheep_s2",
+  "dir": "evos",
+  "prompt": "a fluffy cloud-like sheep pet with curled horns and wool like cotton, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "otter_s1",
+  "dir": "evos",
+  "prompt": "a playful river otter pet floating with a small shell in its paws, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "otter_s2",
+  "dir": "evos",
+  "prompt": "a playful river otter pet floating with a small shell in its paws, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "dragon_s1",
+  "dir": "evos",
+  "prompt": "a small serpentine water dragon pet with antler horns and pearl-like scales, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "dragon_s2",
+  "dir": "evos",
+  "prompt": "a small serpentine water dragon pet with antler horns and pearl-like scales, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "phoenix_s1",
+  "dir": "evos",
+  "prompt": "a chick-sized phoenix pet with fiery tail feathers, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "phoenix_s2",
+  "dir": "evos",
+  "prompt": "a chick-sized phoenix pet with fiery tail feathers, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "turtle_s1",
+  "dir": "evos",
+  "prompt": "a small sea turtle pet with a patterned shell and flippers, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "turtle_s2",
+  "dir": "evos",
+  "prompt": "a small sea turtle pet with a patterned shell and flippers, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "bee_s1",
+  "dir": "evos",
+  "prompt": "a round bumblebee pet with translucent wings and a striped body, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "bee_s2",
+  "dir": "evos",
+  "prompt": "a round bumblebee pet with translucent wings and a striped body, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "owl_s1",
+  "dir": "evos",
+  "prompt": "a small owl pet with huge round eyes and a book tucked under its wing, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "owl_s2",
+  "dir": "evos",
+  "prompt": "a small owl pet with huge round eyes and a book tucked under its wing, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "deer_s1",
+  "dir": "evos",
+  "prompt": "a young deer pet with budding antlers and dappled fur, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "deer_s2",
+  "dir": "evos",
+  "prompt": "a young deer pet with budding antlers and dappled fur, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "koi_s1",
+  "dir": "evos",
+  "prompt": "a plump koi fish pet with flowing fins and a golden spot, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "koi_s2",
+  "dir": "evos",
+  "prompt": "a plump koi fish pet with flowing fins and a golden spot, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "lion_s1",
+  "dir": "evos",
+  "prompt": "a lion cub pet with a tiny fluffy mane, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "lion_s2",
+  "dir": "evos",
+  "prompt": "a lion cub pet with a tiny fluffy mane, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "unicorn_s1",
+  "dir": "evos",
+  "prompt": "a small white unicorn foal pet with a spiraling horn and pastel mane, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "unicorn_s2",
+  "dir": "evos",
+  "prompt": "a small white unicorn foal pet with a spiraling horn and pastel mane, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "goat_s1",
+  "dir": "evos",
+  "prompt": "a stubborn mountain goat pet with curved horns and a shaggy coat, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "goat_s2",
+  "dir": "evos",
+  "prompt": "a stubborn mountain goat pet with curved horns and a shaggy coat, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "gull_s1",
+  "dir": "evos",
+  "prompt": "a white seagull pet with grey wings and a bright orange beak, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "gull_s2",
+  "dir": "evos",
+  "prompt": "a white seagull pet with grey wings and a bright orange beak, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "flysquirrel_s1",
+  "dir": "evos",
+  "prompt": "a flying squirrel pet with a gliding membrane and huge dark eyes, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "flysquirrel_s2",
+  "dir": "evos",
+  "prompt": "a flying squirrel pet with a gliding membrane and huge dark eyes, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "sparrow_s1",
+  "dir": "evos",
+  "prompt": "a tiny songbird pet with a puffed chest and open beak, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "sparrow_s2",
+  "dir": "evos",
+  "prompt": "a tiny songbird pet with a puffed chest and open beak, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "moth_s1",
+  "dir": "evos",
+  "prompt": "a soft moth pet with powdery pale wings and feathery antennae, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "moth_s2",
+  "dir": "evos",
+  "prompt": "a soft moth pet with powdery pale wings and feathery antennae, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "albatross_s1",
+  "dir": "evos",
+  "prompt": "a large albatross pet with long narrow wings and a calm gaze, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "albatross_s2",
+  "dir": "evos",
+  "prompt": "a large albatross pet with long narrow wings and a calm gaze, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "penguin_s1",
+  "dir": "evos",
+  "prompt": "a round penguin pet with a sleek coat and stubby wings, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "penguin_s2",
+  "dir": "evos",
+  "prompt": "a round penguin pet with a sleek coat and stubby wings, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "seal_s1",
+  "dir": "evos",
+  "prompt": "a plump white seal pup pet with round black eyes, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "seal_s2",
+  "dir": "evos",
+  "prompt": "a plump white seal pup pet with round black eyes, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "arcticfox_s1",
+  "dir": "evos",
+  "prompt": "a small arctic fox pet with thick white fur and a fluffy tail, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "arcticfox_s2",
+  "dir": "evos",
+  "prompt": "a small arctic fox pet with thick white fur and a fluffy tail, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "polarbear_s1",
+  "dir": "evos",
+  "prompt": "a chubby polar bear cub pet with heavy paws, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "polarbear_s2",
+  "dir": "evos",
+  "prompt": "a chubby polar bear cub pet with heavy paws, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "walrus_s1",
+  "dir": "evos",
+  "prompt": "a stout walrus pet with long tusks and whiskers, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "walrus_s2",
+  "dir": "evos",
+  "prompt": "a stout walrus pet with long tusks and whiskers, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "koala_s1",
+  "dir": "evos",
+  "prompt": "a sleepy koala pet clinging to a branch with fluffy ears, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "koala_s2",
+  "dir": "evos",
+  "prompt": "a sleepy koala pet clinging to a branch with fluffy ears, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "flamingo_s1",
+  "dir": "evos",
+  "prompt": "a slender flamingo pet with pink feathers standing on one leg, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "flamingo_s2",
+  "dir": "evos",
+  "prompt": "a slender flamingo pet with pink feathers standing on one leg, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "octopus_s1",
+  "dir": "evos",
+  "prompt": "a small octopus pet with eight curly arms and a big head, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "octopus_s2",
+  "dir": "evos",
+  "prompt": "a small octopus pet with eight curly arms and a big head, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "mushroom_s1",
+  "dir": "evos",
+  "prompt": "a mushroom spirit pet with a spotted cap and tiny feet, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "mushroom_s2",
+  "dir": "evos",
+  "prompt": "a mushroom spirit pet with a spotted cap and tiny feet, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "bat_s1",
+  "dir": "evos",
+  "prompt": "a small bat pet with leathery wings and big ears, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "bat_s2",
+  "dir": "evos",
+  "prompt": "a small bat pet with leathery wings and big ears, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "lynx_s1",
+  "dir": "evos",
+  "prompt": "a lynx pet with tufted ears and snow-dusted paws, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "lynx_s2",
+  "dir": "evos",
+  "prompt": "a lynx pet with tufted ears and snow-dusted paws, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "alpaca_s1",
+  "dir": "evos",
+  "prompt": "a fluffy alpaca pet with a long neck and a goofy expression, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "alpaca_s2",
+  "dir": "evos",
+  "prompt": "a fluffy alpaca pet with a long neck and a goofy expression, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "mole_s1",
+  "dir": "evos",
+  "prompt": "a mole pet with digger claws and tiny dark eyes, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "mole_s2",
+  "dir": "evos",
+  "prompt": "a mole pet with digger claws and tiny dark eyes, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "jellyfish_s1",
+  "dir": "evos",
+  "prompt": "a translucent jellyfish pet with glowing tentacles, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "jellyfish_s2",
+  "dir": "evos",
+  "prompt": "a translucent jellyfish pet with glowing tentacles, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "peacock_s1",
+  "dir": "evos",
+  "prompt": "a peacock pet with a small fan of iridescent tail feathers, evolved middle form: noticeably larger and more confident, added armor plates or elemental markings, sharper silhouette, brighter accent glow, still cute, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ },
+ {
+  "name": "peacock_s2",
+  "dir": "evos",
+  "prompt": "a peacock pet with a small fan of iridescent tail feathers, fully evolved final form: majestic and imposing yet adorable, ornate crest and flowing aura, royal elemental regalia, dramatic lighting, ultimate stage, cute stylized game pet mascot, soft painterly shading, big expressive eyes, rounded appealing shapes, crisp clean silhouette, full body, three-quarter view, centered, isolated on a pure flat white background, no ground shadow, no frame, no text, no watermark"
+ }
+]
