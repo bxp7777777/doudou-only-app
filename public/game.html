@@ -1067,6 +1067,24 @@ background:radial-gradient(ellipse at 50% 50%,rgba(66,50,82,.28),rgba(66,50,82,0
 .battle-layer .b-round-mini span{color:#8a6a3a}
 .battle-layer .b-hp-track{height:7px;border-radius:999px}
 .battle-layer .b-round-track{height:7px;border-radius:999px}
+/* ===== 前后两排站位：首领一行、前排居中、后排两翼略小并向内错位 ===== */
+.battle-layer .b-team{display:flex;flex-direction:column;gap:4px;min-height:0;position:relative}
+.battle-layer .b-row-line{display:flex;justify-content:center;align-items:flex-start;gap:6px}
+.battle-layer .b-row-line .b-unit{flex:1 1 0;min-width:0;max-width:112px;position:relative}
+.battle-layer .b-row-line.front-line{padding-right:9px;z-index:2}
+.battle-layer .b-row-line.back-line,.battle-layer .b-row-line.mob-line{padding-left:9px;margin-top:-7px;z-index:1}
+.battle-layer .b-row-line.back-line .b-unit,.battle-layer .b-row-line.mob-line .b-unit{max-width:100px;opacity:.95}
+.battle-layer .b-row-line.back-line .b-unit .b-role,.battle-layer .b-row-line.mob-line .b-unit .b-role{background:#efeaf9;color:#8a76b6}
+.battle-layer .b-row-line.boss-line{padding:0}
+.battle-layer .b-row-line.boss-line .b-unit{max-width:none}
+/* 台地纹理：草影 + 碎石，只落在敌方一侧的站位区底部 */
+.battle-layer .b-side.enemy .b-team::before{content:"";position:absolute;left:1%;right:1%;bottom:-10px;height:30px;pointer-events:none;z-index:0;border-radius:0 0 46% 46%;
+background:radial-gradient(2.6px 2.1px at 13% 72%,rgba(96,84,104,.34),rgba(96,84,104,0) 100%),radial-gradient(3.2px 2.5px at 33% 88%,rgba(96,84,104,.30),rgba(96,84,104,0) 100%),radial-gradient(2.2px 1.8px at 58% 78%,rgba(96,84,104,.26),rgba(96,84,104,0) 100%),radial-gradient(3.4px 2.7px at 79% 90%,rgba(96,84,104,.32),rgba(96,84,104,0) 100%),repeating-linear-gradient(90deg,rgba(86,106,86,.34) 0 1.6px,rgba(0,0,0,0) 1.6px 9px);
+-webkit-mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 42%,rgba(0,0,0,.92) 100%);mask-image:linear-gradient(180deg,transparent 0%,rgba(0,0,0,.55) 42%,rgba(0,0,0,.92) 100%)}
+/* 顶部横贯细进度条：3px，随回合推进 */
+.battle-layer .b-top-progress{position:absolute;left:0;right:0;top:0;height:3px;z-index:9;background:rgba(120,96,74,.14);overflow:hidden}
+.battle-layer .b-top-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd98a,#f2a94e);box-shadow:0 0 8px rgba(242,169,78,.6);transition:width .35s ease}
+@media (max-width:420px){.battle-layer .b-row-line{gap:4px}.battle-layer .b-row-line .b-unit{max-width:96px}.battle-layer .b-row-line.back-line .b-unit{max-width:88px}.battle-layer .b-row-line.front-line{padding-right:6px}.battle-layer .b-row-line.back-line{padding-left:6px}}
 @media (max-width:420px){.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:104px;height:104px}.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:108px}.battle-layer .b-unit.boss-unit .b-name{font-size:10px}}
 .b-hp-summary{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:2px 2px 0}
 .b-hp-side{display:flex;flex-direction:column;gap:2px}
@@ -6464,6 +6482,7 @@ function renderBattleScreenHTML(battle) {
   const c = battle.config;
   return `
     <div class="battle-shell">
+      <div class="b-top-progress" aria-hidden="true"><i id="topRoundFill"></i></div>
       <div class="battle-top">
         <div class="battle-title">
           <span>${esc(c.emoji || '⚔️')}</span>
@@ -6493,12 +6512,12 @@ function renderBattleScreenHTML(battle) {
         ${c.mode === 'arena' ? '<div class="arena-deco left"></div><div class="arena-deco right"></div>' : ''}
         <div class="b-side ally">
           <div class="b-side-label">我方 <span class="power">战力 ${fmt(sum(battle.allies.map(u => calcPower(u))))}</span></div>
-          <div class="b-team">${battle.allies.map(battleUnitHTML).join('')}</div>
+          <div class="b-team">${battleTeamHTML(battle.allies)}</div>
         </div>
         <div class="b-vs">VS</div>
         <div class="b-side enemy">
           <div class="b-side-label">敌方 <span class="power">战力 ${fmt(sum(battle.enemies.map(u => calcPower(u))))}</span></div>
-          <div class="b-team enemy-team">${battle.enemies.map(battleUnitHTML).join('')}${enemySlotsHtml(battle)}</div>
+          <div class="b-team enemy-team">${battleTeamHTML(battle.enemies)}</div>
         </div>
       </div>
       <div class="battle-log" id="battleLog"></div>
@@ -6535,6 +6554,17 @@ function battleUnitHTML(unit) {
     </div>`;
 }
 
+// 战斗站位：首领单独一行（横跨），前排居中一行，后排两翼一行并略小错位，读起来是「前后两排」而不是四个等大格子
+function battleTeamHTML(list) {
+  const boss = list.find(u => u.isBoss);
+  const rest = list.filter(u => !u.isBoss);
+  const fronts = rest.filter(u => u.row !== 'back');
+  const backs = rest.filter(u => u.row === 'back');
+  const line = (cls, arr) => arr.length ? `<div class="b-row-line ${cls}">${arr.map(battleUnitHTML).join('')}</div>` : '';
+  // 有首领时：首领独占一行，随行小怪统一排一行跟在下面（不再一个前一个后拆成两条单只的排）
+  if (boss) return line('boss-line', [boss]) + line('mob-line', rest);
+  return line('front-line', fronts) + line('back-line', backs);
+}
 function enemySlotsHtml() {
   // 敌方没站满的位置留成空地：不画虚线框、不写占位文案，首领本身横跨两列撑住版面
   return '';
@@ -6606,6 +6636,8 @@ function updateSideHpSummary() {
   const rp = $('#roundProgress'), rt = $('#roundProgressText');
   if (rp) rp.style.width = clamp(b.round / Math.max(1, b.maxRounds) * 100, 0, 100) + '%';
   if (rt) rt.textContent = `第 ${b.round}/${b.maxRounds} 回合`;
+  const topFill = $('#topRoundFill');
+  if (topFill) topFill.style.width = clamp(b.round / Math.max(1, b.maxRounds) * 100, 0, 100) + '%';
 }
 function updateBattleControls() {
   const b = UI.battle;
