@@ -551,6 +551,46 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
     for (const p of PETS) rat[p.rarity] = (rat[p.rarity] || 0) + 1;
     check(rat.SSR >= 5 && rat.SSR <= 10, 'SSR 数量应控制在 5~10，实际 ' + rat.SSR);
   }
+  // 卡池只有 R / SR / SSR
+  if (typeof GACHA_RATES === 'object') {
+    const NLEFT = ['normal', 'rare'].some(k => 'N' in GACHA_RATES[k]);
+    check(!NLEFT, '卡池不该再有 N 档概率');
+    const sum = k => Object.values(GACHA_RATES[k]).reduce((a, b) => a + b, 0);
+    check(Math.abs(sum('normal') - 1) < 1e-9 && Math.abs(sum('rare') - 1) < 1e-9, '概率之和应为 100%');
+    check(RARITY_ORDER.join() === 'R,SR,SSR', '稀有度顺序应只有 R/SR/SSR');
+  }
+  if (typeof PETS !== 'undefined') {
+    check(PETS.every(p => p.rarity !== 'N'), '不能有 N 稀有度宠物');
+    const seen = {};
+    for (let i = 0; i < 200; i++) { const r = globalThis.rollRarity ? globalThis.rollRarity('rare') : 'R'; seen[r] = 1; }
+    check(!('N' in seen), '抽卡不应抽出 N');
+  }
+  // 剧情奇遇
+  if (typeof ENCOUNTER_STORIES !== 'undefined') {
+    check(ENCOUNTER_STORIES.length >= 6, '剧情奇遇应至少 6 本，实际 ' + ENCOUNTER_STORIES.length);
+    let badNext = 0, badEnd = 0, shallow = 0, noBranch = 0, endings = 0;
+    for (const st of ENCOUNTER_STORIES) {
+      const ids = Object.keys(st.nodes);
+      if (ids.length < 6) shallow++;
+      const first = st.nodes[st.start];
+      if (!first || (first.choices || []).length < 3) noBranch++;
+      for (const id of ids) {
+        const n = st.nodes[id];
+        if (n.ending) { endings++; if (!n.ending.rewards || !n.ending.title) badEnd++; }
+        for (const c of (n.choices || [])) { if (!st.nodes[c.next]) badNext++; }
+      }
+    }
+    check(shallow === 0, '每本剧情至少 6 幕，短的：' + shallow);
+    check(noBranch === 0, '第一幕至少 3 个分支，不足的：' + noBranch);
+    check(badNext === 0, '有分支指向不存在的下一幕：' + badNext);
+    check(badEnd === 0, '结局缺标题或奖励：' + badEnd);
+    check(endings >= 18, '结局总数应 ≥18，实际 ' + endings);
+    check(typeof globalThis.storyEndingTotal === 'function' && globalThis.storyEndingTotal() >= 24, '结局总数应 ≥24');
+    const depth = ENCOUNTER_STORIES.filter(st => st.acts >= 4).length;
+    check(depth >= 2, '至少要 2 本 4 幕长剧本，实际 ' + depth);
+    check('endings' in state.encounter || typeof globalThis.storyEndingCount === 'function', '缺结局收集');
+    check(typeof globalThis.exploreStory === 'function' && typeof globalThis.storyChoose === 'function', '缺剧情奇遇流程');
+  }
   check(text.includes('const GARDEN_FRUIT_BOOST = 1.7;') && text.includes('num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST'), '收菜经验果应乘产出系数');
   check(text.includes('t.fruit * GARDEN_FRUIT_BOOST * (60 / t.minutes)'), '菜园时产预览也要算系数');
   check(text.includes('const IDLE_FRUIT_BOOST = 1.5;') && text.includes('idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR'), '挂机经验果应有单独加成');
