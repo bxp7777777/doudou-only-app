@@ -461,6 +461,14 @@ check(!text.includes('.rig-bone{position:absolute;inset:0;display:block;pointer-
 check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.hit-recoil .rig-b3'), '三节骨骼的战斗跟随缺失');
 
   // 三阶命名 + 等级进化：40 只宠物各有幼体/成长体/究极体三个名字，到等级自动进化
+  // 战斗界面：首领横跨两列放大、空位不再画「待命位」、血线换阶段有标记
+  check(text.includes('.battle-layer .b-unit.boss-unit{grid-column:1/-1'), '首领应横跨两列撑住版面');
+  check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:136px;height:136px}'), '首领立绘应放大到 136px');
+  check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:104px;height:104px}'), '小屏首领立绘应放大到 104px');
+  check(!text.includes('待命位'), '敌方空位不该再写「待命位」');
+  check(globalThis.enemySlotsHtml({ allies: [1,2,3], enemies: [1] }) === '', '敌方空位应留成空地（enemySlotsHtml 返回空串）');
+  check(text.includes('data-boss-phase="${unit.isBoss ? bossPhaseOf'), '首领会输出阶段标记');
+  check(text.includes("content:\"\\5F62\\6001\\2161\"") && text.includes("content:\"\\6FD2\\6B7B\\2162\""), '首领换阶段应显示「形态Ⅱ / 濒死Ⅲ」');
   check(text.includes('const PET_STAGE_NAME = {'), '缺少三阶名字表');
   const stageBlock = text.slice(text.indexOf('const PET_STAGE_NAME = {'), text.indexOf('const BONDS = ['));
   const stageIds = [...stageBlock.matchAll(/^  (\w+): \['/gm)].map(m => m[1]);
