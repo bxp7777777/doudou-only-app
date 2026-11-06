@@ -330,11 +330,23 @@ if (typeof globalThis.petArtCandidates === 'function') {
   // 小怪 / Boss 走同一套候选链：透明底 PNG 优先，缺图自动回退 JPG
   if (typeof globalThis.mobArtCandidates === 'function' && typeof globalThis.bossArtCandidates === 'function') {
     const mc = globalThis.mobArtCandidates('aurora_wolf');
-    const bc = globalThis.bossArtCandidates('caramel_fox');
-    // 目前小怪 / Boss 还没有抠图，候选链应只有 JPG（不能白 404 一次）；登记后自动变 PNG 优先
-    check(mc.length === 1 && mc[0] === 'art/mobs/aurora_wolf.jpg', '小怪未登记抠图时应只走 JPG：' + mc.join(','));
-    check(bc.length === 1 && bc[0] === 'art/bosses/caramel_fox.jpg', 'Boss 未登记抠图时应只走 JPG：' + bc.join(','));
-    check(text.includes('const MOB_ART_PNG = {}') && text.includes('const BOSS_ART_PNG = {}') && text.includes('const PET_ART_PNG = {'), '缺少 PNG 抠图就绪登记表');
+    const bc = globalThis.bossArtCandidates('caramel_fox', 2);
+    // 小怪：登记抠图后 PNG 优先、JPG 兜底；Boss：阶段图优先，再退回基础 PNG / 基础 JPG
+    check(mc.length === 2 && mc[0] === 'art/mobs/aurora_wolf.png' && mc[1] === 'art/mobs/aurora_wolf.jpg', '小怪抠图候选链不对：' + mc.join(','));
+    check(bc.length === 4 && bc[0] === 'art/bosses/caramel_fox_p2.png' && bc[3] === 'art/bosses/caramel_fox.jpg', 'Boss 阶段候选链不对：' + bc.join(','));
+    check(globalThis.bossPhaseOf(1) === 1 && globalThis.bossPhaseOf(0.5) === 2 && globalThis.bossPhaseOf(0.2) === 3, 'Boss 阶段阈值不对');
+    check(text.includes('const MOB_ART_PNG = {') && text.includes('const BOSS_ART_PNG = {') && text.includes('const PET_ART_PNG = {'), '缺少 PNG 抠图就绪登记表');
+    // 登记即须有图：小怪 PNG 必须真的在盘上，避免登记了却 404
+    const mobIds = ['moss_slime', 'thorncap', 'ember_newt', 'flame_imp', 'bubble_fish', 'tide_crab', 'glow_wisp', 'prism_sprite', 'shade_bat', 'night_wraith', 'pebble_golem', 'rock_boar', 'gale_chick', 'storm_imp', 'frost_pup', 'aurora_wolf'];
+    const missingMob = mobIds.filter(id => !fs.existsSync(path.join(process.cwd(), 'public', 'art', 'mobs', id + '.png')));
+    check(missingMob.length === 0, '小怪 PNG 缺图：' + missingMob.join(','));
+    // 登记了三阶段立绘的 Boss：三张图必须都在盘上（登记了却 404 是硬伤）
+    const regMatch = text.match(/const BOSS_PHASE_ART = \{([^}]*)\}/);
+    const phaseIds = regMatch ? regMatch[1].split(',').map(s => s.split(':')[0].trim()).filter(Boolean) : [];
+    const missingPhase = [];
+    for (const id of phaseIds) for (const p of [1, 2, 3]) if (!fs.existsSync(path.join(process.cwd(), 'public', 'art', 'bosses', id + '_p' + p + '.png'))) missingPhase.push(id + '_p' + p);
+    check(missingPhase.length === 0, 'Boss 阶段 PNG 缺图：' + missingPhase.join(','));
+    check(phaseIds.length >= 1, '至少要有一只 Boss 接上三阶段立绘');
     check(globalThis.mobArtCandidates('__none__').length === 0, '未登记的小怪不应返回候选链');
   }
 }

@@ -7,3 +7,6 @@ data/
 
 # 生图临时下载映射与下载日志（scripts/*.mjs 工具脚本仍入库）
 scripts/fetch/
+
+# 生图原始白底大图（1024，约 60MB）：只入抠图后的 public/art
+art-src/
