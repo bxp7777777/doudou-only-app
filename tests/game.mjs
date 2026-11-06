@@ -265,7 +265,7 @@ const required = [
   ['奇遇', '奇遇事件'],
   ['图鉴', '图鉴'],
   ['成就', '成就系统'],
-  ['转生', '转生'],
+  ['入梦', '入梦'],
   ['签到', '七日签到'],
   ['存档', '存档导出/导入'],
   ['离线', '离线收益']
@@ -494,7 +494,7 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes("function battleMoreMenu()") && text.includes("function closeBattleMore()"), '更多菜单应可开可关');
   check(text.includes('data-act="battleLogToggle"'), '战报浮层应可点开');
   const monBlock = text.slice(text.indexOf('const MONSTER_SKILLS = {'), text.indexOf('Object.assign(SKILLS, MONSTER_SKILLS);'));
-  check((monBlock.match(/^  (x_|b_)[a-z0-9_]+: \{ name: /gm) || []).length === 80, '小怪/首领应有 80 个专属技能');
+  check((monBlock.match(/^  (x_|b_)[a-z0-9_]+: \{ name: /gm) || []).length === 90, '小怪/首领应有 90 个专属技能（含晚安先生 6 个、执念 4 个）');
   check(text.includes('Object.assign(SKILLS, MONSTER_SKILLS);') && text.includes('const MOB_SKILL_KEYS = {') && text.includes('const BOSS_SKILL_KEYS = {'), '怪物技能应挂进技能表并绑定到小怪/首领');
   check(text.includes("skills: enemySkillSlots(options.artKind, options.artId, options.element || template.element)"), '小怪应改用自己的技能组');
   check(text.includes("skills: enemySkillSlots('boss', info.bossId, info.element)"), '每日首领应改用自己的技能组');
@@ -503,7 +503,7 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
     const petNames = new Set();
     for (const p of PETS) for (const id of p.skills) if (SKILLS[id]) petNames.add(SKILLS[id].name);
     for (const sk of Object.values(MONSTER_SKILLS)) if (petNames.has(sk.name)) clash++;
-    check(Object.keys(MONSTER_SKILLS).length === 80, '怪物技能表应有 80 条');
+    check(Object.keys(MONSTER_SKILLS).length === 90, '怪物技能表应有 90 条');
     check(Object.values(MONSTER_SKILLS).every(sk => sk.desc && sk.effects && sk.effects.length), '每条怪物技能都要有说明和效果');
   }
   check(clash === 0, '怪物技能名字不能和宠物技能重名（重名 ' + clash + ' 条）');
