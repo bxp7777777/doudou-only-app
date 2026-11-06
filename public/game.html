@@ -924,7 +924,7 @@ body.modal-open{overflow:hidden}
 .battle-layer .b-side.ally .b-unit.attack-forward{transform:translateX(15px)}
 .battle-layer .b-side.enemy .b-unit.attack-forward{transform:translateX(-15px)}
 .battle-layer .b-unit.hit-flash .art-frame img,.battle-layer .b-unit.hit-flash .b-emoji{filter:brightness(1.32) saturate(1.18)}
-@media (max-width:420px){.battle-layer .art-frame.art-battle{width:58px;height:58px}.battle-layer .b-emoji-wrap{min-height:56px}}
+@media (max-width:420px){.battle-layer .art-frame.art-battle{width:68px;height:68px}.battle-layer .b-emoji-wrap{min-height:62px}}
 /* 主页立绘：立绘本身就是方图，改成圆形头像——圆形裁切只切掉四角背景，主体完整保留 */
 .home-pet-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 8px 18px rgba(111,82,54,.20)}
 .pal-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:none}
@@ -1028,15 +1028,15 @@ body.modal-open{overflow:hidden}
 .battle-layer .b-side{align-items:stretch;justify-content:center}
 .battle-layer .b-slot-empty{border:1.5px dashed rgba(150,130,110,.34);border-radius:15px;min-height:148px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:rgba(122,106,90,.38);font-size:11px;background:rgba(255,255,255,.16)}
 .battle-layer .b-slot-empty .se-emo{font-size:26px;opacity:.55}
-.battle-layer .art-frame.art-battle{width:72px;height:72px}
-.battle-layer .b-emoji-wrap{min-height:64px}
+.battle-layer .art-frame.art-battle{width:84px;height:84px}
+.battle-layer .b-emoji-wrap{min-height:74px}
 .battle-layer .b-unit .progress{height:6px;border-radius:999px}
 .battle-layer .b-unit .progress.rage{height:5px}
 .battle-layer .b-unit .bar-label{font-size:8px;margin-bottom:2px}
 .battle-layer .b-unit .b-hp-text{font-weight:800;color:#2f7a58}
 .battle-layer .b-unit .b-rage-text{font-weight:800;color:#b06a1e}
 /* ===== 首领站位：横跨两列 + 立绘放大到 136px，怪群让位在下方，空位不再画占位框 ===== */
-.battle-layer .b-unit.boss-unit{grid-column:1/-1;justify-self:stretch;background:linear-gradient(180deg,rgba(255,247,244,.66),rgba(255,238,236,.30));border:0;padding:6px 8px 9px;box-shadow:inset 0 0 0 1.5px rgba(232,180,176,.30),0 9px 22px rgba(160,96,88,.10)}
+.battle-layer .b-unit.boss-unit{grid-column:1/-1;justify-self:stretch;background:transparent;border:0;padding:4px 6px 8px;box-shadow:none}
 .battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:138px}
 .battle-layer .b-unit.boss-unit .art-frame.art-battle{width:136px;height:136px}
 .battle-layer .b-unit.boss-unit .b-emoji-wrap::after{width:96px;height:12px;background:rgba(70,48,36,.20)}
@@ -1049,6 +1049,24 @@ body.modal-open{overflow:hidden}
 .battle-layer .b-unit.boss-unit[data-boss-phase="3"]::before{content:"\6FD2\6B7B\2162";background:#c2536a;box-shadow:0 2px 8px rgba(170,60,90,.34)}
 .battle-layer .b-unit.boss-unit[data-boss-phase="2"] .b-hp-fill{background:linear-gradient(90deg,#ffd692,#f0a85c)}
 .battle-layer .b-unit.boss-unit[data-boss-phase="3"] .b-hp-fill{background:linear-gradient(90deg,#ffb0b0,#e0617d);box-shadow:0 0 10px rgba(224,97,125,.45)}
+/* ===== 敌方半边：不要白色/粉色卡片，改成直接透出战场场景的台地 ===== */
+.battle-layer .b-side.enemy{background:transparent;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;position:relative;isolation:isolate}
+.battle-layer .b-side.enemy::before{content:"";position:absolute;inset:-8px -6px -10px -6px;border-radius:38px;z-index:0;pointer-events:none;
+background:radial-gradient(118% 76% at 50% 98%,rgba(84,66,104,.34) 0%,rgba(84,66,104,.15) 44%,rgba(84,66,104,0) 72%),linear-gradient(180deg,rgba(255,244,238,0) 42%,rgba(126,100,140,.10) 76%,rgba(84,66,104,.20) 100%)}
+.battle-layer .b-side.enemy::after{content:"";position:absolute;left:3%;right:3%;bottom:-4px;height:15px;border-radius:50%;z-index:0;pointer-events:none;
+background:radial-gradient(ellipse at 50% 50%,rgba(66,50,82,.28),rgba(66,50,82,0) 74%)}
+.battle-layer .b-side.enemy .b-side-label,.battle-layer .b-side.enemy .b-team{position:relative;z-index:1}
+/* 更显眼的速度开关：常态金黄描边，2 倍速时实心高亮并在右上角挂 ×2 角标 */
+.battle-layer #btnBattleSpeed{background:rgba(255,247,229,.92);border:1.5px solid #e8bf72;color:#8a5f13;font-weight:800;letter-spacing:.3px;position:relative;box-shadow:0 2px 0 rgba(196,148,60,.30),inset 0 1px 0 rgba(255,255,255,.9)}
+.battle-layer.speed-2 #btnBattleSpeed{background:linear-gradient(180deg,#ffd98a,#f5b94e);border-color:#e0a238;color:#5c3a06;box-shadow:0 2px 0 rgba(170,116,26,.42),0 0 12px rgba(245,185,78,.55),inset 0 1px 0 rgba(255,255,255,.8)}
+.battle-layer #btnBattleSpeed::after{content:"×2";position:absolute;top:-7px;right:-6px;font-size:7.5px;font-weight:900;color:#fff;background:#f0a63c;border-radius:7px;padding:0 4px;line-height:12px;box-shadow:0 1px 3px rgba(180,120,30,.35);opacity:0;transition:opacity .18s}
+.battle-layer.speed-2 #btnBattleSpeed::after{opacity:1;background:#e2791f}
+/* 回合条：中间回合数 + 两侧存活数，条加高一点更像进度条 */
+.battle-layer .b-hp-summary{background:rgba(255,255,255,.55);border-radius:14px;padding:5px 8px;gap:8px}
+.battle-layer .b-hp-summary span{font-size:8.5px;font-weight:800}
+.battle-layer .b-round-mini span{color:#8a6a3a}
+.battle-layer .b-hp-track{height:7px;border-radius:999px}
+.battle-layer .b-round-track{height:7px;border-radius:999px}
 @media (max-width:420px){.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:104px;height:104px}.battle-layer .b-unit.boss-unit .b-emoji-wrap{min-height:108px}.battle-layer .b-unit.boss-unit .b-name{font-size:10px}}
 .b-hp-summary{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:2px 2px 0}
 .b-hp-side{display:flex;flex-direction:column;gap:2px}
@@ -1075,7 +1093,7 @@ body.modal-open{overflow:hidden}
 .battle-layer .battle-log div{white-space:normal;overflow:visible;text-overflow:clip;opacity:.86}
 .battle-layer .battle-log div.log-last{opacity:1}
 @media (max-width:420px){
-  .battle-layer .art-frame.art-battle{width:58px;height:58px}
+  .battle-layer .art-frame.art-battle{width:68px;height:68px}
   .battle-layer .b-team{min-height:176px}
   .battle-layer .b-slot-empty{min-height:118px}
   .b-hp-summary{gap:5px}
@@ -6467,7 +6485,7 @@ function renderBattleScreenHTML(battle) {
       ${bossBarHTML(battle)}
       <div class="b-hp-summary">
         <div class="b-hp-side ally"><span id="hpAllyText">我方 0/0</span><div class="b-hp-track"><i id="hpAllyBar"></i></div></div>
-        <div class="b-round-mini"><span id="roundProgressText">0/30</span><div class="b-round-track"><i id="roundProgress"></i></div></div>
+        <div class="b-round-mini"><span id="roundProgressText">第 0/30 回合</span><div class="b-round-track"><i id="roundProgress"></i></div></div>
         <div class="b-hp-side enemy"><span id="hpEnemyText">敌方 0/0</span><div class="b-hp-track"><i id="hpEnemyBar"></i></div></div>
       </div>
       <div class="battle-field">
@@ -6574,16 +6592,20 @@ function updateSideHpSummary() {
   if (!b) return;
   const sumHp = arr => arr.reduce((a, u) => a + Math.max(0, u.hp), 0);
   const sumMax = arr => arr.reduce((a, u) => a + Math.max(1, u.maxHp), 0);
-  const setBar = (barSel, textSel, h, m) => {
+  const aliveN = arr => arr.filter(u => u.alive).length;
+  const setBar = (barSel, textSel, h, m, label) => {
     const bar = $(barSel), text = $(textSel);
-    if (bar) bar.style.width = clamp(h / Math.max(1, m) * 100, 0, 100) + '%';
-    if (text) text.textContent = `${h}/${m}`;
+    if (bar) {
+      bar.style.width = clamp(h / Math.max(1, m) * 100, 0, 100) + '%';
+      bar.parentElement && (bar.parentElement.title = `剩余生命 ${fmt(h)}/${fmt(m)}`);
+    }
+    if (text) text.textContent = label;
   };
-  setBar('#hpAllyBar', '#hpAllyText', sumHp(b.allies), sumMax(b.allies));
-  setBar('#hpEnemyBar', '#hpEnemyText', sumHp(b.enemies), sumMax(b.enemies));
+  setBar('#hpAllyBar', '#hpAllyText', sumHp(b.allies), sumMax(b.allies), `我方 ${aliveN(b.allies)}/${b.allies.length}`);
+  setBar('#hpEnemyBar', '#hpEnemyText', sumHp(b.enemies), sumMax(b.enemies), `敌方 ${aliveN(b.enemies)}/${b.enemies.length}`);
   const rp = $('#roundProgress'), rt = $('#roundProgressText');
   if (rp) rp.style.width = clamp(b.round / Math.max(1, b.maxRounds) * 100, 0, 100) + '%';
-  if (rt) rt.textContent = `${b.round}/${b.maxRounds}`;
+  if (rt) rt.textContent = `第 ${b.round}/${b.maxRounds} 回合`;
 }
 function updateBattleControls() {
   const b = UI.battle;
