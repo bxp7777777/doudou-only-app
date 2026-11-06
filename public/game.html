@@ -932,7 +932,7 @@ body.modal-open{overflow:hidden}
 /* 主页立绘：立绘本身就是方图，改成圆形头像——圆形裁切只切掉四角背景，主体完整保留 */
 .home-pet-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:0 0 0 3px rgba(255,255,255,.92),0 8px 18px rgba(111,82,54,.20)}
 .pal-img{border-radius:50%;object-fit:cover;background:transparent;box-shadow:none}
-/* ===== 表现层增强：奥义冲击环 / Boss置顶血条 / 竞技场剪影 / 结算明细 / 主宠放大落地（纯表现，不碰数值） ===== */
+/* ===== 表现层增强：奥义冲击环 / Boss置顶血条 / 梦练场剪影 / 结算明细 / 主宠放大落地（纯表现，不碰数值） ===== */
 .ult-flash .ult-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.85);box-shadow:inset 0 0 22px rgba(255,226,170,.55);opacity:0;pointer-events:none}
 .ult-flash .ult-ring.r1,.ult-flash .ult-ring.r2{width:130px;height:130px}
 .ult-flash .ult-ring.r2{animation-delay:.12s}
@@ -1450,7 +1450,7 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .cosmetic-card.locked{opacity:.82}
 .cosmetic-card.active{border-color:#b8e2ce;background:linear-gradient(150deg,#f8fffb,#eefaf4)}
 
-/* 竞技场 / Boss 榜单 */
+/* 梦练场 / Boss 榜单 */
 .arena-opponents{display:flex;flex-direction:column;gap:6px}
 .arena-opponent{
   display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:11px;
@@ -3492,7 +3492,9 @@ const CHAPTERS = [
   { id: 7, name: '龙息火山', emoji: '🌋', element: 'fire', boss: '赤焰幼龙', bossEmoji: '🐲', desc: '「烧不完的信」熔岩像焦糖一样慢。幼龙守着一封烧不坏的信，火一直烧，信一直不缺角。', theme: 'fire' },
   { id: 8, name: '星砂海岸', emoji: '⭐', element: 'water', boss: '星潮海獭', bossEmoji: '🦦', desc: '「捡名字的人」退潮后沙滩上全是会眨眼的星星，每一颗是一个名字。海獭把它们摆成一桌晚饭，一颗也不吃。', theme: 'star' },
   { id: 9, name: '彩虹花园', emoji: '🌈', element: 'light', boss: '幻彩蝶后', bossEmoji: '🦋', desc: '「永远漂亮」花开得一样大、一样颜色、一样朝向。蝶后翅膀张开，一动不动——它是标本。', theme: 'rainbow' },
-  { id: 10, name: '永恒之巅', emoji: '🏔️', element: 'earth', boss: '永恒守望者', bossEmoji: '🗿', desc: '「留下来吧」山顶只有一张椅子，和一口钟。钟停在 17:47。他坐在椅子上，像等了你很久。', theme: 'peak' }
+  { id: 10, name: '永恒之巅', emoji: '🏔️', element: 'earth', boss: '永恒守望者', bossEmoji: '🗿', desc: '「留下来吧」山顶只有一张椅子，和一口钟。钟停在 17:47。他坐在椅子上，像等了你很久。', theme: 'peak' },
+  { id: 11, name: '自己的梦', emoji: '🪞', element: 'dark', boss: '守梦人·执念', bossEmoji: '👤', desc: '「不逃走」走廊一节一节地长。每一节都站着一个人，脸朝墙——其中一个是你的背影。', theme: 'night', stages: 8 },
+  { id: 12, name: '梦的外面', emoji: '🌅', element: 'light', boss: '晚安先生', bossEmoji: '🌙', desc: '「外面也是梦」门后不是白天，是另一层梦。门外提着灯等你的人，长得和你一模一样。', theme: 'sky', stages: 8 }
 ];
 const STAGE_KINDS = [
   { type: 'mob', name: '小怪', label: '小怪', emoji: '🌱' },
@@ -3548,7 +3550,9 @@ const BOSS_DEFS = [
   { chapter: 7,  id: 'magma_drake',  name: '熔核赤焰幼龙', emoji: '🐲', element: 'fire',  rarity: 'UR', hpMult: 3.20, atkMult: 1.38, defMult: 1.18, spd: 22, flavor: '熔岩巨龙的幼崽，吐息灼热。' },
   { chapter: 8,  id: 'star_beast',    name: '星潮怒涛巨兽', emoji: '🌊', element: 'water', rarity: 'UR', hpMult: 3.40, atkMult: 1.26, defMult: 1.22, spd: 20, flavor: '潮水与星光缠绕的巨兽，攻守均衡。' },
   { chapter: 9,  id: 'prism_queen', name: '幻光蝶后',     emoji: '🦋', element: 'light', rarity: 'UR', hpMult: 3.10, atkMult: 1.34, defMult: 1.10, spd: 28, flavor: '振翅即是幻光，高速且连击。' },
-  { chapter: 10, id: 'peak_titan',   name: '永恒石心魔神', emoji: '🗿', element: 'earth', rarity: 'UR', hpMult: 4.20, atkMult: 1.30, defMult: 1.55, spd: 12, flavor: '旅途尽头的守护者，血厚防高，需要队伍成型再挑战。' }
+  { chapter: 10, id: 'peak_titan',   name: '永恒石心魔神', emoji: '🗿', element: 'earth', rarity: 'UR', hpMult: 4.20, atkMult: 1.30, defMult: 1.55, spd: 12, flavor: '旅途尽头的守护者，血厚防高，需要队伍成型再挑战。' },
+  { chapter: 11, id: 'watcher',      name: '守梦人·执念', emoji: '👤', element: 'dark',  rarity: 'UR', hpMult: 3.60, atkMult: 1.45, defMult: 1.30, spd: 26, flavor: '它用你的招式，穿你的衣服。它不肯放手，因为它就是你。' },
+  { chapter: 12, id: 'goodnight',    name: '晚安先生',     emoji: '🌙', element: 'light', rarity: 'UR', hpMult: 4.80, atkMult: 1.50, defMult: 1.60, spd: 20, flavor: '他总是很客气，从不强迫谁，只是替你决定。' }
 ];
 const BOSS_MAP = Object.fromEntries(BOSS_DEFS.map(b => [b.id, b]));
 const BOSS_BY_CHAPTER = Object.fromEntries(BOSS_DEFS.map(b => [b.chapter, b]));
@@ -3655,13 +3659,22 @@ function allyBattleQuip(b, unit, hurtOnly) {
   const nat = (pet && BATTLE_QUIPS[pet.nature]) ? pet.nature : 'neutral';
   pushBattleLog(b, '💬 ' + pick(BATTLE_QUIPS[nat]));
 }
-// 每章 7 关：4 小怪 + 2 精英 + 首领；首领固定在最后一关，负责解锁下一章
+// 1-10 章 7 关，11-12 章 8 关（第 7 关多一只小怪）；首领固定在最后一关，负责解锁下一章
 const STAGES_PER_CHAPTER = 7;
+const STAGE_KINDS_8 = [...STAGE_KINDS.slice(0, 6), { type: 'mob', name: '小怪', label: '小怪', emoji: '👾' }, STAGE_KINDS[6]];
+const STAGE_COUNTS = CHAPTERS.map(c => c.stages || STAGES_PER_CHAPTER);
+const STAGE_PREFIX = (() => { const a = [0]; let s = 0; for (const n of STAGE_COUNTS) { s += n; a.push(s); } return a; })();
+function stageCountOf(ch) { return STAGE_COUNTS[ch - 1] || STAGES_PER_CHAPTER; }
+function chapterStageStart(ch) { return STAGE_PREFIX[ch - 1] || 0; }
+function stageIndexOf(ch, sub) { return chapterStageStart(ch) + sub; }
+function chapterOfStage(index) { for (let k = CHAPTERS.length; k >= 1; k--) if (index > chapterStageStart(k)) return k; return 1; }
+function subOfStage(index) { return index - chapterStageStart(chapterOfStage(index)); }
 const STAGES = [];
 for (const chapter of CHAPTERS) {
-  for (let i = 1; i <= STAGES_PER_CHAPTER; i++) {
-    const kind = STAGE_KINDS[i - 1];
-    const index = (chapter.id - 1) * STAGES_PER_CHAPTER + i;
+  const kindsFor = stageCountOf(chapter.id) === 8 ? STAGE_KINDS_8 : STAGE_KINDS;
+  for (let i = 1; i <= stageCountOf(chapter.id); i++) {
+    const kind = kindsFor[i - 1] || STAGE_KINDS[0];
+    const index = stageIndexOf(chapter.id, i);
     const recPower = Math.round(650 * Math.pow(1.42, chapter.id - 1) * (1 + 0.16 * (i - 1)));
     const baseGold = Math.round((1.0 + (chapter.id - 1) * 0.9 + i * 0.18) * 10) / 10;
     const bdef = kind.type === 'boss' ? bossByChapter(chapter.id) : null;
@@ -3690,7 +3703,7 @@ for (const chapter of CHAPTERS) {
 function getStage(index) {
   return STAGES[clamp(index, 1, STAGES.length) - 1] || STAGES[0];
 }
-function stageIndex(chapter, sub) { return (chapter - 1) * STAGES_PER_CHAPTER + sub; }
+function stageIndex(chapter, sub) { return stageIndexOf(chapter, sub); }
 // 难度系数：敌人实际战力 = recPower × 章系数 × 关卡类型系数。只影响敌人强度与展示，不改奖励公式
 // 章系数保持"前期明显加压、后期收敛"的走向；第 10 章少于 1 是为了抵消 7 关布局带来的 recPower 抬升
 const STAGE_DIFFICULTY = { 1: 3.4, 2: 2.7, 3: 2.4, 4: 2.1, 5: 1.55, 6: 1.2, 7: 1.15, 8: 1.05, 9: 0.88, 10: 0.84 };
@@ -3775,7 +3788,7 @@ const DAILY_TASKS = [
   { id: 'd_pull', name: '遇见新朋友', icon: '🥚', desc: '抽蛋 1 次。', metric: 'pulls', target: 1, reward: { gold: 500, crystal: 15 } },
   { id: 'd_feed', name: '爱心投喂', icon: '🍓', desc: '喂食 3 次。', metric: 'feeds', target: 3, reward: { fruit: 30, bondBadge: 1 } },
   { id: 'd_sweep', name: '清剿一回', icon: '🧹', desc: '扫荡或通关任意关卡 1 次。', metric: 'stageClears', target: 1, reward: { gold: 700, equipShard: 10 } },
-  { id: 'd_arena', name: '竞技场露脸', icon: '🏟️', desc: '参加 1 场竞技场。', metric: 'arenaBattles', target: 1, reward: { arenaCoin: 20, crystal: 20 } },
+  { id: 'd_arena', name: '梦练场露脸', icon: '🏟️', desc: '参加 1 场梦练场。', metric: 'arenaBattles', target: 1, reward: { arenaCoin: 20, crystal: 20 } },
   { id: 'd_level', name: '成长一点点', icon: '🌱', desc: '宠物升级 5 次。', metric: 'levelUps', target: 5, reward: { fruit: 38, skillBook: 1 } },
   { id: 'd_enhance', name: '装备保养', icon: '🔨', desc: '强化装备 1 次。', metric: 'enhancements', target: 1, reward: { enhanceStone: 3, gold: 600 } }
 ];
@@ -3806,7 +3819,7 @@ const HELP_FAQ = [
   ['升星碎片不够怎么办？', '升星时可以用「升星碎片」按 2:1 补足缺口。升星碎片来自任务、签到、塔与奇遇。'],
   ['进化要什么？', '第一次进化需要等级 10、对应属性进化石 3 枚和金币；第二次需要等级 30、进化石 8 枚和金币。进化改变形态与成长倍率。'],
   ['羁绊怎么点亮？', '把指定宠物同时放进前/后排即可自动点亮羁绊。羁绊徽章可以永久强化已点亮的羁绊。'],
-  ['竞技场什么时候结算？', '每天可领取一次段位结算奖励；赛季 7 天重置，重置时按当前段位发放额外竞技币。'],
+  ['梦练场什么时候结算？', '每天可领取一次段位结算奖励；赛季 7 天重置，重置时按当前段位发放额外梦练币。'],
   ['怎么重生？', '通关第 5 章首领（关卡 5-5）后开启轮回之泉。重生会重置成长进度，保留成就、图鉴、装扮与永恒强化。'],
   ['存档在哪？', '浏览器 localStorage 的 ddgame:v1。设置里可导出/导入 JSON。清除浏览器数据会导致存档丢失，请定期导出。']
 ];
@@ -3845,7 +3858,7 @@ const ACHIEVEMENTS = [
   { id: 'a_clear10', name: '章节英雄', desc: '通关 10 个关卡', icon: '📖', target: 10, get: s => s.stage.maxCleared, reward: { crystal: 80, fruit: 20 } },
   { id: 'a_clear15', name: '草原霸主', desc: '通关第 3 章首领', icon: '🌾', target: 21, get: s => s.stage.maxCleared, reward: { crystal: 120, stonesRandom: 3 } },
   { id: 'a_clear25', name: '远征勇者', desc: '通关第 5 章首领', icon: '🌙', target: 35, get: s => s.stage.maxCleared, reward: { crystal: 200, frame: 'moon' } },
-  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 70, get: s => s.stage.maxCleared, reward: { crystal: 500, eternal: 10 } },
+  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 86, get: s => s.stage.maxCleared, reward: { crystal: 500, eternal: 10 } },
   { id: 'a_pet1', name: '第一只萌宠', desc: '拥有 1 只宠物', icon: '🥚', target: 1, get: s => Object.keys(s.pets).length, reward: { crystal: 25 } },
   { id: 'a_pet5', name: '毛茸茸小队', desc: '收集 5 种不同宠物', icon: '🐾', target: 5, get: s => stateUniqueCount(s), reward: { crystal: 80, equipShard: 20 } },
   { id: 'a_pet12', name: '图鉴大师', desc: `收集全部 ${PETS.length} 种宠物`, icon: '📚', target: PETS.length, get: s => stateUniqueCount(s), reward: { crystal: 300, frame: 'mint' } },
@@ -3861,11 +3874,11 @@ const ACHIEVEMENTS = [
   { id: 'a_idle10h', name: '时间的朋友', desc: '累计挂机 10 小时', icon: '🕰️', target: 36000, get: s => Math.floor(s.quests.metrics.idleSeconds), reward: { crystal: 120, fruit: 50 } },
   { id: 'a_pull10', name: '抽蛋新手', desc: '累计抽蛋 10 次', icon: '🥚', target: 10, get: s => s.quests.metrics.pulls, reward: { crystal: 45 } },
   { id: 'a_pull100', name: '扭蛋狂热', desc: '累计抽蛋 100 次', icon: '🎰', target: 100, get: s => s.quests.metrics.pulls, reward: { crystal: 320, starShard: 15 } },
-  { id: 'a_arena1', name: '竞技场首胜', desc: '竞技场胜利 1 次', icon: '🏟️', target: 1, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 60, crystal: 25 } },
-  { id: 'a_arena20', name: '竞技场达人', desc: '竞技场胜利 20 次', icon: '🎖️', target: 20, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 220, crystal: 120 } },
+  { id: 'a_arena1', name: '梦练场首胜', desc: '梦练场胜利 1 次', icon: '🏟️', target: 1, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 60, crystal: 25 } },
+  { id: 'a_arena20', name: '梦练场达人', desc: '梦练场胜利 20 次', icon: '🎖️', target: 20, get: s => s.quests.metrics.arenaWins, reward: { arenaCoin: 220, crystal: 120 } },
   { id: 'a_tower10', name: '梦塔十层', desc: '梦塔达到第 10 层', icon: '🗼', target: 10, get: s => s.tower.best, reward: { crystal: 80, frame: 'star' } },
   { id: 'a_tower30', name: '塔顶的灯', desc: '梦塔达到第 30 层', icon: '🏯', target: 30, get: s => s.tower.best, reward: { crystal: 300, starShard: 20 } },
-  { id: 'a_boss1', name: '初次讨伐', desc: '挑战每日 Boss 1 次', icon: '👹', target: 1, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 40 } },
+  { id: 'a_boss1', name: '初次讨伐', desc: '挑战长夜之影 1 次', icon: '👹', target: 1, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 40 } },
   { id: 'a_enc5', name: '奇遇探索者', desc: '完成奇遇 5 次', icon: '🧭', target: 5, get: s => s.quests.metrics.encounters, reward: { crystal: 55, fruit: 15 } },
   { id: 'a_enc20', name: '奇遇收藏家', desc: '完成奇遇 20 次', icon: '🗺️', target: 20, get: s => s.quests.metrics.encounters, reward: { crystal: 180, skillBook: 2 } },
   { id: 'a_feed30', name: '投喂大师', desc: '喂食累计 30 次', icon: '🍓', target: 30, get: s => s.quests.metrics.feeds, reward: { crystal: 60, bondBadge: 3 } },
@@ -3973,19 +3986,19 @@ const ACHIEVEMENTS = [
   { id: 'xb_feq_2', name: '全副武装·初尝', desc: '穿满四件装备的宠物达到 2', icon: '🎽', target: 2, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 10 } },
   { id: 'xb_feq_3', name: '全副武装·渐熟', desc: '穿满四件装备的宠物达到 3', icon: '🎽', target: 3, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 18 } },
   { id: 'xb_feq_4', name: '全副武装·大师', desc: '穿满四件装备的宠物达到 4', icon: '🎽', target: 4, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
-  { id: 'xb_awin_50', name: '竞技能手·初尝', desc: '竞技场胜利达到 50', icon: '🏟️', target: 50, get: s => s.quests.metrics.arenaWins, reward: { crystal: 10 } },
-  { id: 'xb_awin_120', name: '竞技能手·渐熟', desc: '竞技场胜利达到 120', icon: '🏟️', target: 120, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
-  { id: 'xb_awin_250', name: '竞技能手·干练', desc: '竞技场胜利达到 250', icon: '🏟️', target: 250, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
-  { id: 'xb_awin_500', name: '竞技能手·专家', desc: '竞技场胜利达到 500', icon: '🏟️', target: 500, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
-  { id: 'xb_awin_800', name: '竞技能手·传说', desc: '竞技场胜利达到 800', icon: '🏟️', target: 800, get: s => s.quests.metrics.arenaWins, reward: { crystal: 100, eternal: 2, starShard: 10, arenaCoin: 150 } },
-  { id: 'xb_abat_30', name: '逐鹿擂台·初尝', desc: '竞技场对局达到 30', icon: '🥊', target: 30, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 10 } },
-  { id: 'xb_abat_80', name: '逐鹿擂台·渐熟', desc: '竞技场对局达到 80', icon: '🥊', target: 80, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
-  { id: 'xb_abat_150', name: '逐鹿擂台·干练', desc: '竞技场对局达到 150', icon: '🥊', target: 150, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
-  { id: 'xb_abat_300', name: '逐鹿擂台·大师', desc: '竞技场对局达到 300', icon: '🥊', target: 300, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
-  { id: 'xb_streak_3', name: '连胜旋风·初尝', desc: '竞技场最长连胜达到 3', icon: '🔥', target: 3, get: s => s.hall.arenaWinStreak, reward: { crystal: 10 } },
-  { id: 'xb_streak_5', name: '连胜旋风·渐熟', desc: '竞技场最长连胜达到 5', icon: '🔥', target: 5, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
-  { id: 'xb_streak_8', name: '连胜旋风·干练', desc: '竞技场最长连胜达到 8', icon: '🔥', target: 8, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
-  { id: 'xb_streak_12', name: '连胜旋风·传说', desc: '竞技场最长连胜达到 12', icon: '🔥', target: 12, get: s => s.hall.arenaWinStreak, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_awin_50', name: '竞技能手·初尝', desc: '梦练场胜利达到 50', icon: '🏟️', target: 50, get: s => s.quests.metrics.arenaWins, reward: { crystal: 10 } },
+  { id: 'xb_awin_120', name: '竞技能手·渐熟', desc: '梦练场胜利达到 120', icon: '🏟️', target: 120, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
+  { id: 'xb_awin_250', name: '竞技能手·干练', desc: '梦练场胜利达到 250', icon: '🏟️', target: 250, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
+  { id: 'xb_awin_500', name: '竞技能手·专家', desc: '梦练场胜利达到 500', icon: '🏟️', target: 500, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
+  { id: 'xb_awin_800', name: '竞技能手·传说', desc: '梦练场胜利达到 800', icon: '🏟️', target: 800, get: s => s.quests.metrics.arenaWins, reward: { crystal: 100, eternal: 2, starShard: 10, arenaCoin: 150 } },
+  { id: 'xb_abat_30', name: '逐鹿擂台·初尝', desc: '梦练场对局达到 30', icon: '🥊', target: 30, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 10 } },
+  { id: 'xb_abat_80', name: '逐鹿擂台·渐熟', desc: '梦练场对局达到 80', icon: '🥊', target: 80, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
+  { id: 'xb_abat_150', name: '逐鹿擂台·干练', desc: '梦练场对局达到 150', icon: '🥊', target: 150, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
+  { id: 'xb_abat_300', name: '逐鹿擂台·大师', desc: '梦练场对局达到 300', icon: '🥊', target: 300, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
+  { id: 'xb_streak_3', name: '连胜旋风·初尝', desc: '梦练场最长连胜达到 3', icon: '🔥', target: 3, get: s => s.hall.arenaWinStreak, reward: { crystal: 10 } },
+  { id: 'xb_streak_5', name: '连胜旋风·渐熟', desc: '梦练场最长连胜达到 5', icon: '🔥', target: 5, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
+  { id: 'xb_streak_8', name: '连胜旋风·干练', desc: '梦练场最长连胜达到 8', icon: '🔥', target: 8, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
+  { id: 'xb_streak_12', name: '连胜旋风·传说', desc: '梦练场最长连胜达到 12', icon: '🔥', target: 12, get: s => s.hall.arenaWinStreak, reward: { crystal: 100, eternal: 2, starShard: 10 } },
   { id: 'xb_abest_1100', name: '天梯攀登者·初尝', desc: '历史最高竞技段位分达到 1,100', icon: '👑', target: 1100, get: s => s.hall.arenaBest, reward: { crystal: 10 } },
   { id: 'xb_abest_1300', name: '天梯攀登者·渐熟', desc: '历史最高竞技段位分达到 1,300', icon: '👑', target: 1300, get: s => s.hall.arenaBest, reward: { crystal: 18 } },
   { id: 'xb_abest_1550', name: '天梯攀登者·干练', desc: '历史最高竞技段位分达到 1,550', icon: '👑', target: 1550, get: s => s.hall.arenaBest, reward: { crystal: 18 } },
@@ -4000,11 +4013,11 @@ const ACHIEVEMENTS = [
   { id: 'xb_tclear_30', name: '守梦常客·渐熟', desc: '梦塔通关次数达到 30', icon: '⛰️', target: 30, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
   { id: 'xb_tclear_80', name: '守梦常客·干练', desc: '梦塔通关次数达到 80', icon: '⛰️', target: 80, get: s => s.quests.metrics.towerClears, reward: { crystal: 18 } },
   { id: 'xb_tclear_150', name: '守梦常客·大师', desc: '梦塔通关次数达到 150', icon: '⛰️', target: 150, get: s => s.quests.metrics.towerClears, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
-  { id: 'xb_boss_10', name: '讨伐先锋·初尝', desc: '挑战每日 Boss达到 10', icon: '👹', target: 10, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 10 } },
-  { id: 'xb_boss_30', name: '讨伐先锋·渐熟', desc: '挑战每日 Boss达到 30', icon: '👹', target: 30, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
-  { id: 'xb_boss_60', name: '讨伐先锋·干练', desc: '挑战每日 Boss达到 60', icon: '👹', target: 60, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
-  { id: 'xb_boss_120', name: '讨伐先锋·专家', desc: '挑战每日 Boss达到 120', icon: '👹', target: 120, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
-  { id: 'xb_boss_200', name: '讨伐先锋·传说', desc: '挑战每日 Boss达到 200', icon: '👹', target: 200, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_boss_10', name: '讨伐先锋·初尝', desc: '挑战长夜之影达到 10', icon: '👹', target: 10, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 10 } },
+  { id: 'xb_boss_30', name: '讨伐先锋·渐熟', desc: '挑战长夜之影达到 30', icon: '👹', target: 30, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
+  { id: 'xb_boss_60', name: '讨伐先锋·干练', desc: '挑战长夜之影达到 60', icon: '👹', target: 60, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
+  { id: 'xb_boss_120', name: '讨伐先锋·专家', desc: '挑战长夜之影达到 120', icon: '👹', target: 120, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
+  { id: 'xb_boss_200', name: '讨伐先锋·传说', desc: '挑战长夜之影达到 200', icon: '👹', target: 200, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 100, eternal: 2, starShard: 10 } },
   { id: 'xb_enc_40', name: '奇遇旅人·初尝', desc: '奇遇完成次数达到 40', icon: '🧭', target: 40, get: s => s.quests.metrics.encounters, reward: { crystal: 10 } },
   { id: 'xb_enc_80', name: '奇遇旅人·渐熟', desc: '奇遇完成次数达到 80', icon: '🧭', target: 80, get: s => s.quests.metrics.encounters, reward: { crystal: 18 } },
   { id: 'xb_enc_150', name: '奇遇旅人·干练', desc: '奇遇完成次数达到 150', icon: '🧭', target: 150, get: s => s.quests.metrics.encounters, reward: { crystal: 18 } },
@@ -4044,85 +4057,125 @@ const ACHIEVEMENTS = [
 /* ===== 剧情奇遇：多幕分支 + 不同结局（选择决定路线与奖励） ===== */
 const ENCOUNTER_STORIES = [
   { id: 's_rain', emoji: '🐈', title: '雨夜迷路的小猫', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🌧️', sp: '旁白', text: '雨把小镇的灯都浇暗了。屋檐下蹲着一只湿透的小猫，它抬头看你一眼，又缩回去，尾巴尖滴着水。', choices: [{ t: '把伞分它一半，蹲下来陪它', gain: {intimacyAll:2}, next: 'a2a' }, { t: '先跑回家拿条干毛巾', next: 'a2b' }, { t: '掰一小块面包递过去', cost: {fruit:3}, next: 'a2c' }] },
-    a2a: { act: 2, em: '🐈', sp: '小猫', text: '它犹豫了一下，往伞下挪了半步，把脑袋顶在你鞋尖上。呼噜声盖过了雨声。「……喵。」像是道谢，又像是抱怨你来晚了。', choices: [{ t: '就这样陪它到雨停', next: 'a3a' }, { t: '抱它回小镇，给它一个窝', next: 'a3b' }] },
-    a2b: { act: 2, em: '🚪', sp: '旁白', text: '你跑回家又跑回来，毛巾捂在怀里是热的。屋檐下却空了，只剩一小摊水渍和一个湿脚印，朝巷子深处去了。', choices: [{ t: '顺着脚印追进巷子', next: 'a3c' }, { t: '把毛巾留在屋檐下，明晚再来', next: 'a3b' }] },
-    a2c: { act: 2, em: '🧺', sp: '小猫', text: '它吃掉面包，舔了舔爪子，忽然「喵」了一声跑掉。你以为它走了，它却叼来一枚亮亮的小东西，放在你掌心。', choices: [{ t: '收下这份谢礼', next: 'a3c' }, { t: '跟它去看看它藏了什么', next: 'a3a' }] },
-    a3a: { act: 3, em: '🌙', sp: '结局', text: '雨停了，猫在伞下睡熟了。你没叫醒它，只把伞留下。第二天早上，伞下多了一只小猫的爪印，像一枚印章。', ending: { title: '结局 · 雨停之后', rewards: {gold:320,bondBadge:1,intimacyAll:3} } },
-    a3b: { act: 3, em: '🏠', sp: '结局', text: '猫在镇口的窝里住下了。它不亲人，却总在你经过时从窝里探出半个脑袋。小镇从此多了一盏不会灭的灯。', ending: { title: '结局 · 它有了名字', rewards: {fruit:18,bondBadge:2,intimacyAll:4} } },
-    a3c: { act: 3, em: '🧣', sp: '结局', text: '那枚亮亮的东西是一块旧怀表，表盖内侧刻着一个名字。你把表交给镇上的老人——他说，这是他丢了很多年的东西。', ending: { title: '结局 · 遗落的礼物', rewards: {gold:260,crystal:45,starShard:1} } },
+    a1: { act: 1, em: '🌧️', sp: '旁白', text: '雨从傍晚下到夜里，钟还是 17:47。屋檐下蹲着一只湿透的小猫，不肯进任何一扇门。「我在等人。他怕猫。」', choices: [{ t: '蹲下来，陪它等', next: 'a2a' }, { t: '先去找那个怕猫的人', next: 'a2b' }, { t: '把伞留在它头上', next: 'a2c' }] },
+    a2a: { act: 2, em: '🐈', sp: '小猫', text: '后半夜雨停了。它一直朝巷口看，脖子都僵了。屋檐还在滴水，一滴一滴打在它耳朵上。', choices: [{ t: '问它：他走了多久了', next: 'a3a' }, { t: '去巷口看看', next: 'a3b' }] },
+    a2b: { act: 2, em: '🚪', sp: '旁白', text: '你敲了三家门。第三扇门里有人说：「我不怕猫。我怕它认不出我。」他把手放在门把上，一直没拧。', choices: [{ t: '带他过去', next: 'a3b' }, { t: '先问他为什么不进去', next: 'a3c' }] },
+    a2c: { act: 2, em: '☂️', sp: '小猫', text: '伞被雨打歪了，猫抬头看你。它忽然站起来，朝巷子深处走了两步，又回头。', choices: [{ t: '跟它走', next: 'a3c' }, { t: '把伞收起来，抱它回去', next: 'a3a' }] },
+    a3a: { act: 3, em: '🌙', sp: '结局', text: '天亮时猫还在等。你陪它等到有人开门——开门的人说，那只猫每天这个时候都在这儿。', ending: { title: '结局 · 它等到天亮', rewards: { bondBadge: 1, intimacyAll: 3 } } },
+    a3b: { act: 3, em: '🐾', sp: '结局', text: '猫站起来，抖了抖毛，没有立刻跑过去。它走了三步，回头看了一眼，第四步才跑起来。', ending: { title: '结局 · 认得出的', rewards: { gold: 320, bondBadge: 2 } } },
+    a3c: { act: 3, em: '🧣', sp: '结局', text: '巷子深处有一个旧项圈，挂着一枚小牌子。牌子上刻着一个名字，磨得快看不清了。', ending: { title: '结局 · 巷子深处', rewards: { crystal: 45, starShard: 1 } } },
   } },
   { id: 's_bakery', emoji: '🥐', title: '面包房的深夜委托', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🥐', sp: '面包师', text: '「帮忙看一炉面包，就二十分钟。」面包师把围裙塞给你，匆匆出门。烤箱里的面团正在醒，空气发甜，墙上的钟却停了。', choices: [{ t: '守着烤箱，一步不离', next: 'a2a' }, { t: '先去后厨看看面粉袋为什么在动', next: 'a2b' }, { t: '按食谱给他多做一盘', cost: {gold:200}, next: 'a2c' }] },
-    a2a: { act: 2, em: '🍞', sp: '旁白', text: '面团在炉里鼓起来，像有人在里面呼吸。你听见很轻的一声「谢谢」，随后是面包皮绽开的脆响。', choices: [{ t: '打开炉门看看', next: 'a3a' }, { t: '等它自己好，绝不多手', next: 'a3b' }] },
-    a2b: { act: 2, em: '🥣', sp: '小面团', text: '面粉袋里滚出一团会走的面团，顶着两粒芝麻眼睛。它指了指烤箱，又指了指停住的钟，急得直打转。', choices: [{ t: '把它抱进烤箱作伴', next: 'a3a' }, { t: '先修好钟', next: 'a3c' }] },
-    a2c: { act: 2, em: '🧈', sp: '旁白', text: '你照着食谱做了第二盘。手上沾满黄油，围裙也脏了，可屋里香得像在拥抱人。面包师回来时愣在门口。', choices: [{ t: '说这是多做的', next: 'a3c' }, { t: '请他一起吃掉', next: 'a3b' }] },
-    a3a: { act: 3, em: '⏰', sp: '结局', text: '炉门一开，小面团跳出来，怀里抱着一个烤得完美的面包。面包师说，那是店里的「酵母仔」，只对有心人现身。', ending: { title: '结局 · 会呼吸的面包', rewards: {fruit:24,skillBook:1} } },
-    a3b: { act: 3, em: '🥖', sp: '结局', text: '你没动炉子，也没动钟。二十分钟后钟自己走起来，面包刚刚好。面包师回来只说了一句：「你适合开分店。」', ending: { title: '结局 · 守规矩的人', rewards: {gold:480,equipShard:12} } },
-    a3c: { act: 3, em: '🍯', sp: '结局', text: '多出来的那盘摆在窗台上，镇上的孩子分着吃了。面包师在你的账上记了一笔「学徒份」，说以后每天留一个。', ending: { title: '结局 · 多出来的一盘', rewards: {gold:220,crystal:40,bondBadge:1} } },
+    a1: { act: 1, em: '🥐', sp: '面包师', text: '「帮我送一趟。地址在纸上。」纸的背面还有一行小字：「如果他问起，就说我还在烤。」', choices: [{ t: '按地址送', next: 'a2a' }, { t: '先问地址对不对', next: 'a2b' }, { t: '拆开纸包看看', next: 'a2c' }] },
+    a2a: { act: 2, em: '🏚️', sp: '年轻人', text: '第九条街拆了，第三个门牌的位置站着一个年轻人。他闻了闻纸包：「这个味道，我妈以前每天早上都买。」', choices: [{ t: '告诉他面包是谁烤的', next: 'a3a' }, { t: '放下就走', next: 'a3b' }] },
+    a2b: { act: 2, em: '🧓', sp: '面包师', text: '他沉默了很久，说：「不对。是我记错了。」说完把那炉面包又摆回窗台，摆得端端正正。', choices: [{ t: '陪他把这炉送完', next: 'a3b' }, { t: '问他记错的是谁', next: 'a3c' }] },
+    a2c: { act: 2, em: '📄', sp: '旁白', text: '纸包夹着一小片纸条，字被油浸开了，只认得出一句：「今天也擦好了。」', choices: [{ t: '把纸条带回去', next: 'a3c' }, { t: '塞回面包里一起送', next: 'a3a' }] },
+    a3a: { act: 3, em: '🍞', sp: '结局', text: '他哭了，一边哭一边吃。第二天早上，他站到了面包房门口，手里拿着那半只面包。', ending: { title: '结局 · 送上门', rewards: { gold: 8000, bondBadge: 1 } } },
+    a3b: { act: 3, em: '💧', sp: '结局', text: '他每天来买一只，从不说话，只把钱放在台子上。面包师每天多留一只，摆在同一个位置。', ending: { title: '结局 · 放下就走', rewards: { gold: 6000, crystal: 40 } } },
+    a3c: { act: 3, em: '🕯️', sp: '结局', text: '面包师每天多烤一炉。他说，地址也许是记错了，人也许是搬走了，「但面包是热的」。', ending: { title: '结局 · 写错的地址', rewards: { fruit: 20, intimacyAll: 3 } } },
   } },
   { id: 's_bell', emoji: '🔔', title: '老钟楼的钟声', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🔔', sp: '旁白', text: '钟楼三年没响了。今晚它自己敲了一下，全镇的狗都跟着叫。守钟人站在楼梯口，递给你一盏油灯：「上去看看，别碰那只钟。」', choices: [{ t: '提灯上楼', next: 'a2a' }, { t: '先问守钟人为什么不能碰', next: 'a2b' }, { t: '带一块布，想把钟擦干净', cost: {fruit:5}, next: 'a2c' }] },
-    a2a: { act: 2, em: '🕯️', sp: '钟', text: '楼顶很冷。钟身上有一道细缝，缝里卡着一枚硬币，一晃就响。你伸手又收回去——它好像真的在等你决定。', choices: [{ t: '取出硬币', next: 'a3a' }, { t: '把油灯留在钟边，转身下楼', next: 'a3b' }] },
-    a2b: { act: 2, em: '🧓', sp: '守钟人', text: '「三十年前，有人敲它许愿，第二天就离开了小镇。」他顿了顿，「钟不响，是因为没人敢先开口。」', choices: [{ t: '那我先敲一下', next: 'a3c' }, { t: '陪他坐着，等天亮', next: 'a3b' }] },
-    a2c: { act: 2, em: '🧼', sp: '旁白', text: '你把钟擦得发亮。缝里的硬币被布卷出来，落在你脚边。楼下传来守钟人很小声的一句：「……原来还在这儿。」', choices: [{ t: '把硬币还给他', next: 'a3a' }, { t: '把硬币投进钟口，让它响', next: 'a3c' }] },
-    a3a: { act: 3, em: '🪙', sp: '结局', text: '守钟人接过硬币，手抖得厉害。钟没响，可是第二天他把钟楼的门打开了，往后每天都有人上去。', ending: { title: '结局 · 三十年的硬币', rewards: {gold:380,bondBadge:2} } },
-    a3b: { act: 3, em: '🌅', sp: '结局', text: '你和守钟人坐到天亮。他没再讲从前，只说了句「有人听着就好」。钟楼没响，但屋顶的灯一直亮着。', ending: { title: '结局 · 一盏灯的陪伴', rewards: {fruit:26,intimacyAll:3,crystal:30} } },
-    a3c: { act: 3, em: '🔔', sp: '结局', text: '钟声传遍整个小镇，所有窗户一起亮起来。有人推开窗喊：「终于响了！」守钟人笑着骂了一句，眼里却有水光。', ending: { title: '结局 · 第一声', rewards: {crystal:90,starShard:2,bondBadge:1} } },
+    a1: { act: 1, em: '🔔', sp: '守钟人', text: '守钟人把钥匙放在你手里。钥匙是热的，他揣了一整天。「你上去。我在下面听着。」', choices: [{ t: '上弦', next: 'a2a' }, { t: '先问他为什么不上', next: 'a2b' }, { t: '把钥匙收起来', next: 'a2c' }] },
+    a2a: { act: 2, em: '🕯️', sp: '旁白', text: '钟走了半格。整个小镇的灯同时闪了一下。楼下没有声音——安静得像他屏住了呼吸。', choices: [{ t: '下楼看看他', next: 'a3a' }, { t: '再上弦一格', next: 'a3b' }] },
+    a2b: { act: 2, em: '🧓', sp: '守钟人', text: '他说了三十年前那天。说到一半停了：「后面的事，我记不清了。」他没看你，一直看自己的手。', choices: [{ t: '替他把话说完', next: 'a3b' }, { t: '陪他坐到天亮', next: 'a3c' }] },
+    a2c: { act: 2, em: '🪜', sp: '旁白', text: '他在台阶上坐着，钥匙在你手里，他不敢看。钟楼上很静，能听见风穿过空钟身的声音。', choices: [{ t: '把钥匙还给他', next: 'a2b' }, { t: '替他插进锁孔', next: 'a2a' }] },
+    a3a: { act: 3, em: '🌅', sp: '结局', text: '他坐在原地哭，哭得很轻。他说：「原来它还在走。」第二天他把钟楼的门打开了。', ending: { title: '结局 · 半格', rewards: { bondBadge: 2, intimacyAll: 3 } } },
+    a3b: { act: 3, em: '🔔', sp: '结局', text: '钟走了两格。楼下传来他笑的声音，笑得很难听，像是很久没用过。', ending: { title: '结局 · 两格', rewards: { crystal: 60, starShard: 1 } } },
+    a3c: { act: 3, em: '🚪', sp: '结局', text: '钟没走。但钟楼的门第一次开着，风从里面穿过去，声音很好听。他说：「有人听着就好。」', ending: { title: '结局 · 门开着', rewards: { gold: 5000, bondBadge: 1 } } },
   } },
   { id: 's_river', emoji: '🏮', title: '河上的许愿灯', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🏮', sp: '旁白', text: '河面漂着几十盏纸灯，每盏上写着一句话。你捡到一盏没写字的，笔就搁在岸边——好像专门留给你的。', choices: [{ t: '写下自己的愿望', cost: {gold:300}, next: 'a2a' }, { t: '替不会写字的小朋友写', next: 'a2b' }, { t: '什么也不写，让它空着漂走', next: 'a2c' }] },
-    a2a: { act: 2, em: '🕯️', sp: '灯', text: '灯下水时，火苗歪了一下又立起来。旁边一位老人说：「写了就要负责，灯是替你去跑的。」', choices: [{ t: '跟着灯往下游走', next: 'a3a' }, { t: '站在原地看它漂远', next: 'a3b' }] },
-    a2b: { act: 2, em: '👧', sp: '小女孩', text: '「写：希望小狗不要再咳嗽。」她说完就跑了。你写完把灯放下，风却把它吹回了岸边，像在犹豫。', choices: [{ t: '再放一次，这次推得远些', next: 'a3c' }, { t: '干脆带灯回去，去看那只小狗', next: 'a3a' }] },
-    a2c: { act: 2, em: '🌊', sp: '旁白', text: '空灯漂得最远，一直漂到看不见。有人问你怎么不写，你说：「我还没想好。」那人笑了，说他等了四十年也没想好。', choices: [{ t: '陪他一起等', next: 'a3b' }, { t: '忽然想好了，再点一盏', next: 'a3c' }] },
-    a3a: { act: 3, em: '🌠', sp: '结局', text: '灯在下游拐弯处停住，被一双手捞起——是镇上那位一直许愿的人。他说：「今年我替你跑。」', ending: { title: '结局 · 愿望往前走', rewards: {crystal:60,gold:300,bondBadge:1} } },
-    a3b: { act: 3, em: '🌌', sp: '结局', text: '你和陌生人坐在岸边聊到很晚，灯一盏盏灭了，他讲完了自己所有的故事。天快亮时，他说：「谢谢你还愿意听。」', ending: { title: '结局 · 河边的长夜', rewards: {fruit:30,intimacyAll:4} } },
-    a3c: { act: 3, em: '🐕', sp: '结局', text: '你带着灯去了小女孩家。小狗趴在门口咳嗽，看见灯灭了咳嗽就轻了。她把灯抢过去抱着睡了一夜。', ending: { title: '结局 · 写在灯上的药方', rewards: {fruit:22,bondBadge:2,skillBook:1} } },
+    a1: { act: 1, em: '🏮', sp: '旁白', text: '河边有人在放灯。一盏一盏推出去，走到拐弯就看不见了。「写上去，就放下了。」猪小声说：「写个名字就行。」', choices: [{ t: '写下一个名字，放走', next: 'a2a' }, { t: '把名字写进手账，不放', next: 'a2b' }, { t: '什么也不写，空着放', next: 'a2c' }] },
+    a2a: { act: 2, em: '🕯️', sp: '灯', text: '你的灯漂到河心，撞上一盏更旧的灯。两盏在原地转，谁也不肯先走。旧灯上写着一个词：「回来。」', choices: [{ t: '把旧灯推开', next: 'a3a' }, { t: '把旧灯捞起来', next: 'a3b' }] },
+    a2b: { act: 2, em: '👴', sp: '老人', text: '河边的老人看着你：「不放，就不算许过。」他自己的灯早就灭了，还摆在脚边。', choices: [{ t: '问他放过几盏', next: 'a3b' }, { t: '把灯推出去', next: 'a3a' }] },
+    a2c: { act: 2, em: '🌊', sp: '旁白', text: '空灯漂得最远，一直漂到看不见。有人在岸上问：「你怎么不写？」', choices: [{ t: '说还没想好', next: 'a3c' }, { t: '回头再点一盏', next: 'a3a' }] },
+    a3a: { act: 3, em: '🌠', sp: '结局', text: '两盏灯一起走远，走到拐弯处灭了。你把这件事记下来，没写愿望。', ending: { title: '结局 · 推开', rewards: { crystal: 40, bondBadge: 1 } } },
+    a3b: { act: 3, em: '📜', sp: '结局', text: '旧灯里没有蜡烛，只有一张纸。纸上写着你的名字，字迹很旧，像是很久以前就写好了。', ending: { title: '结局 · 旧灯', rewards: { starShard: 1, intimacyAll: 3 } } },
+    a3c: { act: 3, em: '🌌', sp: '结局', text: '他在岸上站了很久，最后说：「我等的也不是灯。」天亮时他还站着。', ending: { title: '结局 · 空着漂走', rewards: { gold: 3500, fruit: 18 } } },
   } },
   { id: 's_garden', emoji: '🌱', title: '会说话的种子', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🌱', sp: '种子', text: '「别埋太深。」种子在你手心里说，「也别太浅。上一个把我种下去的人，弄疼我了。」', choices: [{ t: '按它说的，仔细埋好', next: 'a2a' }, { t: '先问它想长成什么', next: 'a2b' }, { t: '把它放进最好的花盆', cost: {fruit:6}, next: 'a2c' }] },
-    a2a: { act: 2, em: '🌿', sp: '种子', text: '「就这里。」它安静下来。第二天清晨土面裂开一点绿，旁边多了一行小字，是它自己长的：「谢谢，不疼。」', choices: [{ t: '给它搭个小支架', next: 'a3a' }, { t: '把那行字拍给镇上的孩子看', next: 'a3b' }] },
-    a2b: { act: 2, em: '🌻', sp: '种子', text: '「我想长成一棵树，高到能看见镇子外面。」它说这话时，壳上有一道细纹，像在笑。', choices: [{ t: '把它种在镇口最开阔的地方', next: 'a3b' }, { t: '种在你的窗下，天天看着', next: 'a3c' }] },
-    a2c: { act: 2, em: '🪴', sp: '旁白', text: '花盆是镇上最好的一只，陶土里还掺着一点星光。种子进去后整夜发光，把半间屋子照成暖黄色。', choices: [{ t: '整夜守着它', next: 'a3c' }, { t: '白天搬出去晒太阳', next: 'a3a' }] },
-    a3a: { act: 3, em: '🌳', sp: '结局', text: '它长得很快，枝上挂着小小的果。风一过就有细细的声音，像在说「谢谢，不疼」。', ending: { title: '结局 · 一棵会道谢的树', rewards: {fruit:34,bondBadge:1} } },
-    a3b: { act: 3, em: '🏞️', sp: '结局', text: '树长到镇口上方，孩子们排队爬上去看远处。它说：「原来镇子外面是海。」', ending: { title: '结局 · 看得见的远方', rewards: {crystal:70,gold:260,starShard:1} } },
-    a3c: { act: 3, em: '🌙', sp: '结局', text: '它没长成大树，只长到窗台高，却每晚发光。你说它是灯，它说：「我是种子的时候，你就这么看我。」', ending: { title: '结局 · 窗下的一盏灯', rewards: {fruit:28,intimacyAll:3,skillBook:1} } },
+    a1: { act: 1, em: '🌱', sp: '种子', text: '花匠给你一颗种子，说：「它话多。」半夜，盆里传出很小的声音：「上面是什么？」', choices: [{ t: '把它种到院子里', next: 'a2a' }, { t: '留在窗台上', next: 'a2b' }, { t: '先问它想长成什么', next: 'a2c' }] },
+    a2a: { act: 2, em: '🌿', sp: '种子', text: '它长出两片叶子，第一件事是朝墙的方向歪。墙外什么也没有，它就是一直歪着。', choices: [{ t: '告诉它：外面是海', next: 'a3a' }, { t: '骗它：外面也是这样', next: 'a3b' }] },
+    a2b: { act: 2, em: '🪴', sp: '种子', text: '它每天只长一点点，长到第三片叶子就不长了。它说：「够高了。」', choices: [{ t: '搬去院子', next: 'a3a' }, { t: '陪它待在窗台', next: 'a3c' }] },
+    a2c: { act: 2, em: '🌻', sp: '种子', text: '「我想看看。」它说，「不是想出去，是想看看。」说完把叶子举得很高，只到窗框一半。', choices: [{ t: '带它去看海', next: 'a3c' }, { t: '说等它长高', next: 'a3b' }] },
+    a3a: { act: 3, em: '🌳', sp: '结局', text: '它一晚上长了一寸。第二天你看见它把叶子贴在墙上，一点一点往上爬。', ending: { title: '结局 · 贴墙', rewards: { fruit: 5, bondBadge: 1 } } },
+    a3b: { act: 3, em: '🪟', sp: '结局', text: '它长到窗框就停了。花匠后来问你：「它是不是知道自己在被骗？」你说不知道。', ending: { title: '结局 · 窗框', rewards: { bondBadge: 1, intimacyAll: 3 } } },
+    a3c: { act: 3, em: '🌼', sp: '结局', text: '它在你手心里开了一朵很小的花，只开了一个下午。谢的时候它说：「看见啦。」', ending: { title: '结局 · 一朵很小的花', rewards: { crystal: 50, skillBook: 1 } } },
   } },
   { id: 's_train', emoji: '🚂', title: '开往云上的末班车', sub: '3 幕 · 3 结局', acts: 3, start: 'a1', nodes: {
-    a1: { act: 1, em: '🚉', sp: '站长', text: '「末班车，只去云上。回程票要自己赢。」站长把一张空白车票递给你，站台空得能听见风。', choices: [{ t: '上车', next: 'a2a' }, { t: '问他不去的理由', next: 'a2b' }, { t: '买一张靠窗的票', cost: {gold:400}, next: 'a2c' }] },
-    a2a: { act: 2, em: '☁️', sp: '车厢', text: '车厢里坐满沉默的乘客，每个人怀里抱着一样东西：旧伞、断弦、没送出的信。你也抱着自己的。', choices: [{ t: '和邻座搭话', next: 'a3a' }, { t: '闭眼等终点', next: 'a3b' }] },
-    a2b: { act: 2, em: '🧓', sp: '站长', text: '「我坐过。回来了，可什么也没带回来。」他指指自己空着的双手，「所以现在我留在这儿，替别人检票。」', choices: [{ t: '那我去替你带点什么回来', next: 'a3a' }, { t: '留下来陪他检票', next: 'a3c' }] },
-    a2c: { act: 2, em: '🪟', sp: '旁白', text: '靠窗的位置能看见云像海一样翻。玻璃上慢慢浮出一行字：「你要找的东西，一直在你口袋里。」', choices: [{ t: '摸摸口袋', next: 'a3b' }, { t: '问玻璃是谁在写字', next: 'a3a' }] },
-    a3a: { act: 3, em: '🎫', sp: '结局', text: '终点什么都没有，只有一句写在站牌上的话：「你已经拥有全部。」你把它带回来，站长的空白车票忽然有了字。', ending: { title: '结局 · 带回来的一句话', rewards: {crystal:110,starShard:2,bondBadge:1} } },
-    a3b: { act: 3, em: '👝', sp: '结局', text: '口袋里是一枚旧钥匙，不知道开哪扇门。你说要找的东西可能不是物件，是还愿意去开的勇气。', ending: { title: '结局 · 口袋里的东西', rewards: {gold:520,fruit:26,equipShard:15} } },
-    a3c: { act: 3, em: '🚉', sp: '结局', text: '你没上车，替站长卖了整夜的票。天亮时他给你倒了杯茶，说：「你比票更像回家的路。」', ending: { title: '结局 · 留在站台的人', rewards: {bondBadge:2,intimacyAll:4,skillBook:1} } },
+    a1: { act: 1, em: '🚉', sp: '站长', text: '站台只卖一种票：去云上，单程。站长把票夹在指间：「17:47 开。你看，还有一分钟。」', choices: [{ t: '买一张', next: 'a2a' }, { t: '陪他坐一会儿', next: 'a2b' }, { t: '把他的票撕了', next: 'a2c' }] },
+    a2a: { act: 2, em: '☁️', sp: '车厢', text: '车厢里坐满沉默的人，每人都抱着一样东西：旧伞、断弦、没送出的信。你抱着的是一张纸。', choices: [{ t: '和邻座搭话', next: 'a3a' }, { t: '闭眼等终点', next: 'a3b' }] },
+    a2b: { act: 2, em: '🧓', sp: '站长', text: '他把票放回抽屉，擦了两遍长椅。「它会来的。」他说，「我在这儿等了三十年，它一直没来。所以它一定会来。」', choices: [{ t: '替他检票', next: 'a3a' }, { t: '和他一起等', next: 'a3c' }] },
+    a2c: { act: 2, em: '🎫', sp: '旁白', text: '他骂了你很久，骂到最后坐在地上哭：「那我今天干什么呢。」', choices: [{ t: '陪他擦长椅', next: 'a3c' }, { t: '把票粘回去', next: 'a3b' }] },
+    a3a: { act: 3, em: '🛤️', sp: '结局', text: '他站起来，走到站台边上等车。车没来。他一直站到天亮，鞋尖对着铁轨。', ending: { title: '结局 · 站台边上', rewards: { starShard: 1, bondBadge: 1 } } },
+    a3b: { act: 3, em: '👝', sp: '结局', text: '票粘好了，边角有一点歪。他把票夹回指间，重新坐直，像什么也没发生过。', ending: { title: '结局 · 粘好的票', rewards: { gold: 5000, fruit: 20 } } },
+    a3c: { act: 3, em: '🚉', sp: '结局', text: '车还是没来。他说：「明天再来等吧。」这是他第一次说「明天」。', ending: { title: '结局 · 明天再来等', rewards: { bondBadge: 2, intimacyAll: 4 } } },
   } },
   { id: 's_letter', emoji: '📮', title: '邮筒里的旧信', sub: '4 幕 · 4 结局', acts: 4, start: 'a1', nodes: {
-    a1: { act: 1, em: '📮', sp: '旁白', text: '镇口那只绿邮筒生锈了，可今天你听见它「咚」地响了一声。里面躺着一封没有收件人的信，邮戳是二十年前的。', choices: [{ t: '拆开看看', next: 'a2a' }, { t: '先拿去问邮差', next: 'a2b' }, { t: '贴上新邮票，试着寄出去', cost: {gold:250}, next: 'a2c' }] },
-    a2a: { act: 2, em: '✉️', sp: '信', text: '信纸很软，写着：「如果有人捡到，请告诉晒谷场的阿满，我没有生气。」字迹被雨洇开过，又小心地描了回去。', choices: [{ t: '去晒谷场找人', next: 'a3a' }, { t: '先把信收好，想想怎么开口', next: 'a3b' }] },
-    a2b: { act: 2, em: '🧑‍🔧', sp: '邮差', text: '老邮差戴上眼镜看了半天：「这封信我送过。那天收件人搬走了，我在门口站到最后。」他把信推回来，「要不……你再送一次？」', choices: [{ t: '接下这趟送信', next: 'a3a' }, { t: '问清楚当年的地址先去看看', set: 'case', next: 'a3c' }] },
-    a2c: { act: 2, em: '📨', sp: '邮筒', text: '你把信投了回去，邮筒「咚」了一声，随后轻轻震了三下，像在笑。第二天，信出现在你自己的门缝里。', choices: [{ t: '把信收进抽屉', next: 'a3c' }, { t: '再投一次，这次写上自己的名字', next: 'a3b' }] },
-    a3a: { act: 3, em: '🌾', sp: '阿满', text: '晒谷场只剩一个老人。他听你说完，接过信看了很久，说：「那年我走得太急。」他抬头，「她现在还好吗？」', choices: [{ t: '告诉他信里的话', next: 'a4a' }, { t: '问他要不要写封回信', next: 'a4b' }] },
-    a3b: { act: 3, em: '🕯️', sp: '旁白', text: '你把信放在窗边，看了三夜。第四夜，信纸自己折好，邮戳那一行的日期改了——变成今天。', choices: [{ t: '现在就去送', next: 'a4a' }, { t: '让它在窗边继续等', next: 'a4c' }] },
-    a3c: { act: 3, em: '🏚️', sp: '旧址', text: '老地址是一间空屋，门缝里塞着二十年的时光。门槛上刻着一行小字：「若是有人来，就说我一直在等。」', choices: [{ t: '把信留在门槛上', next: 'a4c' }, { t: '把信也刻进去，让它留得更久', next: 'a4d' }] },
-    a4a: { act: 4, em: '🤝', sp: '结局', text: '老人把信贴在胸口，说了一句「没生气就好」，然后哭得像个孩子。他说，谢谢你把二十年前的那句话送到。', ending: { title: '结局 · 迟到二十年的回话', rewards: {bondBadge:2,intimacyAll:5,crystal:40} } },
-    a4b: { act: 4, em: '🖋️', sp: '结局', text: '老人写了一封回信，字很大，写得手抖。你替他贴上邮票投回邮筒——当天下午，他收到了一封更旧的信。', ending: { title: '结局 · 一封信的回声', rewards: {gold:460,skillBook:1,bondBadge:1} } },
-    a4c: { act: 4, em: '🪟', sp: '结局', text: '信一直没送出去，却在窗边安安静静地亮着。路过的邻居说，这屋里的灯比从前暖。你说，那大概是一封信的热度。', ending: { title: '结局 · 窗边的邮戳', rewards: {fruit:30,intimacyAll:4,starShard:1} } },
-    a4d: { act: 4, em: '🪵', sp: '结局', text: '你把信的内容刻在门上，成了小镇最短的一封信。后来搬来的人都念过它，念到「我没有生气」时总会笑。', ending: { title: '结局 · 门上的短箋', rewards: {crystal:70,gold:320,equipShard:14} } },
+    a1: { act: 1, em: '📮', sp: '旁白', text: '邮筒的锁锈住了。你敲开它，里面只有一封。收信人：阿满。信封背面有一行字：「我没有生气。」', choices: [{ t: '拆开看看', next: 'a2a' }, { t: '先去晒谷场找阿满', next: 'a2b' }, { t: '先看看邮筒里还有没有别的', next: 'a2b' }] },
+    a2a: { act: 2, em: '✉️', sp: '信', text: '信纸只有三行。前两行是道歉，第三行被水泡开了，看不清。', choices: [{ t: '去晒谷场', next: 'a3a' }, { t: '先把信烘干', next: 'a3b' }] },
+    a2b: { act: 2, em: '🌾', sp: '旁白', text: '晒谷场上有个老人，正在晒一场早就晒干了的谷子。', choices: [{ t: '把信给他', next: 'a3a' }, { t: '先问他：为什么当年没去', next: 'a3b' }] },
+    a3a: { act: 3, em: '🧓', sp: '阿满', text: '他把信接过去，没有立刻拆。他用拇指把信封抹平，抹了三遍。「这个字，是他写的。」', choices: [{ t: '告诉他：信里说没生气', next: 'a4a' }, { t: '把信留下，先走', next: 'a4b' }] },
+    a3b: { act: 3, em: '🌗', sp: '阿满', text: '「那天我等了一下午。」他说，「我以为他不来了。」他顿了顿，「后来我搬走了。我不想让人看见我在等。」', choices: [{ t: '把信给他', next: 'a4a' }, { t: '把信带回去', next: 'a4b' }] },
+    a4a: { act: 4, em: '💌', sp: '旁白', text: '他把信贴在胸口，说了一句「没生气就好」，然后哭得像个孩子。', choices: [{ t: '再陪他一会儿', next: 'e1' }, { t: '说该走了', next: 'e2' }] },
+    a4b: { act: 4, em: '🌙', sp: '旁白', text: '夜里你回到邮筒前。信还在你手上，信封上那行旧字被月光照得发白。', choices: [{ t: '寄出去', next: 'e3' }, { t: '自己留着', next: 'e4' }] },
+    e1: { act: 4, em: '🫂', sp: '结局', text: '你陪他坐到最后。他把信折好放进胸口的口袋，说：「这句我等了二十年。」', ending: { title: '结局 · 迟到二十年的回话', rewards: { bondBadge: 2, intimacyAll: 5, crystal: 40 } } },
+    e2: { act: 4, em: '📭', sp: '结局', text: '你走的时候，他还在抹信封。抽屉里还有几百封信，都叠得很整齐。', ending: { title: '结局 · 他早就不等了', rewards: { starShard: 1, fruit: 20 } } },
+    e3: { act: 4, em: '📮', sp: '结局', text: '信又回到邮筒里。你听见里面很轻的一声，像是有人叹了口气。', ending: { title: '结局 · 放回邮筒', rewards: { bondBadge: 1, intimacyAll: 2 } } },
+    e4: { act: 4, em: '🕯️', sp: '结局', text: '你把它抄了一遍，寄给了现在的自己。三天后你收到，字迹是二十年前的。', ending: { title: '结局 · 寄给自己', rewards: { crystal: 100, starShard: 2 } } },
   } },
   { id: 's_mirror', emoji: '🪞', title: '照出另一个你的镜子', sub: '4 幕 · 4 结局', acts: 4, start: 'a1', nodes: {
-    a1: { act: 1, em: '🪞', sp: '镜子', text: '旧货摊最里面立着一面蒙尘的镜子。你擦了一下，镜子里的人比你慢了半秒才抬头。', choices: [{ t: '问它是谁', next: 'a2a' }, { t: '什么都不说，先看看它要做什么', next: 'a2b' }, { t: '买下这面镜子', cost: {gold:500}, next: 'a2c' }] },
-    a2a: { act: 2, em: '🪞', sp: '镜中人', text: '「我是你。」它说，「是十年后那个还在等的人。你只要答应我一件事——别把今天当作最后一次。」', choices: [{ t: '答应它', gain: { bondBadge: 1 }, set: 'promise', next: 'a3a' }, { t: '问它十年后发生了什么', next: 'a3b' }] },
-    a2b: { act: 2, em: '🪞', sp: '旁白', text: '镜面像水面一样晃。它伸出手，指尖抵在玻璃内侧，正好对着你的掌心。你后退半步，它却没有退。', choices: [{ t: '把手贴上去', next: 'a3b' }, { t: '转身离开，把镜子留在原地', next: 'a3c' }] },
-    a2c: { act: 2, em: '🪞', sp: '老板', text: '「这块不许照第二个人。」老板收钱时叮嘱，「它只记得第一个买家。」你抱着镜子回家，里面的人一直在看你。', choices: [{ t: '用布把镜子蒙起来', next: 'a3c' }, { t: '夜里再看一次', next: 'a3a' }] },
-    a3a: { act: 3, em: '🌃', sp: '镜中人', text: '它给你看了小镇十年后的样子：有的店关了，有的孩子长高了，而你还在。它说：「你一直在做的事，都还在。」', choices: [{ t: '问它我做得够不够好', next: 'a4a' }, { t: '让它带你去看看那些人', next: 'a4b' }] },
-    a3b: { act: 3, em: '🕯️', sp: '镜中人', text: '「发生了什么不重要。」它说，「重要的是你现在还想不想往前走。」镜面慢慢暗下去，只留下你自己的影子。', choices: [{ t: '对着镜子说：那就走', next: 'a4b' }, { t: '把这段对话记下来', next: 'a4c' }] },
-    a3c: { act: 3, em: '🚪', sp: '结局', text: '镜子被你留在了旧货摊，或者用布蒙住。第二天你路过时，镜中那个身影已经不再跟你的动作同步——它开始自己走。', ending: { title: '结局 · 各自朝前走', rewards: {fruit:28,intimacyAll:3,crystal:30} } },
-    a4a: { act: 4, em: '🫧', sp: '结局', text: '它笑了一下，说：「比我那时候好。」镜面恢复平静，只映出你现在的样子，看着看着，你发现自己也在笑。', ending: { title: '结局 · 比自己更好一点', rewards: {gold:420,starShard:1,bondBadge:1} } },
-    a4b: { act: 4, em: '🌟', sp: '结局', text: '它带你看了很多人：还在坚持的、已经放下的、笑着走的。回神时镜面很亮，你第一次觉得往后也没什么可怕。', ending: { title: '结局 · 看过十年之后', rewards: {crystal:120,gold:300,skillBook:1} } },
-    a4c: { act: 4, em: '📔', sp: '结局', text: '你把对话一字一字抄进手账。写完最后一句时镜子碎了，碎片里没有你的人像——因为它已经不需要留住你了。', ending: { title: '结局 · 抄下来的话', rewards: {fruit:34,equipShard:16,crystal:40} } },
+    a1: { act: 1, em: '🪞', sp: '旁白', text: '废屋的墙上挂着一面镜子，镜面比屋子里的任何东西都干净。你照了一下，镜中的你慢了半拍才抬手。', choices: [{ t: '再照一次', next: 'a2a' }, { t: '用布把镜子盖上', next: 'a2b' }, { t: '先擦一擦镜面', next: 'a2a' }] },
+    a2a: { act: 2, em: '👤', sp: '镜中人', text: '这次它先抬手。它开口：「你也想留住谁吗？」声音和你一模一样。', choices: [{ t: '问它：你叫什么', next: 'a3a' }, { t: '问它：你要走吗', next: 'a3b' }] },
+    a2b: { act: 2, em: '🧵', sp: '旁白', text: '布里传来很轻的呼吸，一下一下，很稳。', choices: [{ t: '掀开布', next: 'a2a' }, { t: '抱着镜子走', next: 'a3b' }] },
+    a3a: { act: 3, em: '🪞', sp: '镜中人', text: '「我忘了。」它想了很久，「你替我起一个吧。」', choices: [{ t: '把自己的名字给它', next: 'a4a' }, { t: '问它想不想出来', next: 'a4b' }] },
+    a3b: { act: 3, em: '🚪', sp: '镜中人', text: '「我走不了。」它说，「我只是在这里面。」', choices: [{ t: '把镜子带走', next: 'a4b' }, { t: '把镜子留在原地', next: 'a4a' }] },
+    a4a: { act: 4, em: '🌙', sp: '旁白', text: '你抱着镜子往回走。镜中人跟着你走，一步不差。到镇口时，镜子里有人在数数：「……还差一天。」', choices: [{ t: '带它回家', next: 'e1' }, { t: '把它留在原地', next: 'e2' }] },
+    a4b: { act: 4, em: '🕯️', sp: '旁白', text: '镜子里的屋子和你的屋子一模一样，只是多了一张椅子、一盏灯。灯照出去只有三步远。', choices: [{ t: '把灯放进去', next: 'e3' }, { t: '把镜子砸了', next: 'e4' }] },
+    e1: { act: 4, em: '🏠', sp: '结局', text: '镜子挂在你门口的墙上。每天你出门，它都先替你抬一下手。', ending: { title: '结局 · 带它回家', rewards: { bondBadge: 1, intimacyAll: 4 } } },
+    e2: { act: 4, em: '🧱', sp: '结局', text: '镜子留在原地，蒙了一层灰。你回头看时，它里面的你还在往外走。', ending: { title: '结局 · 留在原地', rewards: { crystal: 60, starShard: 1 } } },
+    e3: { act: 4, em: '💡', sp: '结局', text: '灯放进去以后，镜子里的屋子亮了。它说：「原来有人照的时候，是这种感觉。」', ending: { title: '结局 · 镜中的灯', rewards: { starShard: 2, bondBadge: 2 } } },
+    e4: { act: 4, em: '🪞', sp: '结局', text: '镜子碎得很安静。你捡起一块碎片，里面还是完整的你。', ending: { title: '结局 · 碎掉的镜子', rewards: { crystal: 80, fruit: 24 } } },
   } },
 ];
+
+// 梦的尽头：三次入梦 × 三种选择 = 九种结局
+const FINAL_ENDINGS = {
+  A1: { code: 'A1', title: '结局 · 规则之外', text: '你替他把钟拨回 17:47。他坐回椅子上，笑了一下：「你看，我说得对吧。」钟又停了。小镇又安静了。你的手还举在钟面上。' },
+  B1: { code: 'B1', title: '结局 · 破晓', text: '你叫醒了他。他站起来，走出门，站在早上七点的光里，眯着眼，很久没有说话。所有人都醒了。只有你开始困。' },
+  C1: { code: 'C1', title: '结局 · 一起醒', text: '你牵着他们走出小镇，小路上没有一个人回头。到路口时小猪问：「明天还回来吗？」你说：「明天是哪儿？」' },
+  A2: { code: 'A2', title: '结局 · 循环', text: '梦又从头来过：还是那口钟，还是那张椅子，还是那句「再睡五分钟」。你站在门口，忽然想起来——这一句你听过。' },
+  B2: { code: 'B2', title: '结局 · 第二次叫醒', text: '这次你记得：叫他之前，先握住他的手。他愣了愣，说：「你的手怎么这么凉。」然后他自己坐了起来。' },
+  C2: { code: 'C2', title: '结局 · 重复的路', text: '走到第三天，你在门口放下灯，说：「我明天还来。」门里没有回答。但灯没被拿出来，也没被吹灭。' },
+  A3: { code: 'A3', title: '结局 · 你终于成了那个不肯放手的人', text: '你终于成了那个不肯放手的人。钟停了，椅子空了。你坐下，替他把灯扶正，等下一个提灯的人问：「能不能，让他再睡五分钟？」你说：「可以。」' },
+  B3: { code: 'B3', title: '结局 · 醒来的人', text: '白天真的来了。你的手空了，但不再抖。小猪和小金毛在你脚边睡着，睡得很沉，没有做梦。你数了数——五只，一只不少。' },
+  C3: { code: 'C3', title: '结局 · 五分钟', text: '📅 五月二十八日 · 星期四。门口的日历自己翻了一页，字是印上去的，不是写上去的。他终于坐起来，说：「再等五分钟。」你说：「好。」——这一次，五分钟真的只有五分钟。' }
+};
+function finalEndingLoop() { return clamp(num(state.rebirth && state.rebirth.count, 0) + 1, 1, 3); }
+function finalEndingsOwned() {
+  const list = (state.encounter && Array.isArray(state.encounter.endings)) ? state.encounter.endings : [];
+  return list.filter(k => String(k).indexOf('final:') === 0).map(k => String(k).slice(6));
+}
+function openFinalEndingModal() {
+  const loop = finalEndingLoop();
+  const ownedSet = new Set(finalEndingsOwned());
+  if (['A', 'B', 'C'].every(k => ownedSet.has(k + loop))) return;
+  const owned = ownedSet;
+  const rows = ['A', 'B', 'C'].map(k => {
+    const e = FINAL_ENDINGS[k + loop];
+    const got = owned.has(k + loop);
+    return '<button class="btn ' + (got ? 'btn-ghost' : 'btn-primary') + '" type="button" data-act="finalEnding" data-code="' + k + loop + '" style="display:block;width:100%;margin:0 0 8px;text-align:left;padding:10px 12px">' + '<b>' + esc(e.title) + '</b><br><span class="tiny muted">' + (got ? '这条路已经走过。' : '走这条路。') + '</span></button>';
+  }).join('');
+  openModal('🌅 梦的尽头', '<p class="note">钟停在 17:47。他坐在椅子上，抬眼看你，没有说话。他知道你在做一个决定。</p>' + rows, { wide: true });
+}
+function chooseFinalEnding(code) {
+  const e = FINAL_ENDINGS[code];
+  if (!e) return;
+  state.encounter.endings = Array.isArray(state.encounter.endings) ? state.encounter.endings : [];
+  const key = 'final:' + code;
+  if (!state.encounter.endings.includes(key)) state.encounter.endings.push(key);
+  saveGame();
+  openModal(e.title, '<p class="note" style="line-height:1.9">' + esc(e.text) + '</p><p class="tiny muted">已记下这条路 · 共 ' + finalEndingsOwned().length + '/9</p><div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="closeModal">合上</button></div>', { wide: true });
+}
 
 const ENCOUNTERS = [
   {
@@ -4410,7 +4463,7 @@ const ENCOUNTERS = [
       { label: '带两碗热茶汤分给路过的伙伴', cost: { gold: 250 }, outcomes: [
         { w: 58, text: '伙伴们暖到心里，全队亲密度小幅上升。', rewards: { intimacyAll: 3, fruit: 10 } },
         { w: 27, text: '旁观者往桌上放了几枚钻石。', rewards: { crystal: 45 } },
-        { w: 15, text: '茶博士回赠一罐茶，折算成竞技币。', rewards: { arenaCoin: 25 } },
+        { w: 15, text: '茶博士回赠一罐茶，折算成梦练币。', rewards: { arenaCoin: 25 } },
       ] },
     ]
   },
@@ -4475,7 +4528,7 @@ const ENCOUNTERS = [
       { label: '买下一把分给伙伴', cost: { fruit: 6 }, outcomes: [
         { w: 58, text: '大家甜到眯眼，亲密度上升。', rewards: { intimacyAll: 3, randomShards: 10 } },
         { w: 26, text: '摊主见你大方，送升星碎片。', rewards: { starShard: 2 } },
-        { w: 16, text: '围观孩童塞来一枚竞技币。', rewards: { arenaCoin: 20 } },
+        { w: 16, text: '围观孩童塞来一枚梦练币。', rewards: { arenaCoin: 20 } },
       ] },
     ]
   },
@@ -4505,7 +4558,7 @@ const ENCOUNTERS = [
       { label: '沿着江岸目送雁群', outcomes: [
         { w: 58, text: '岸边湿泥里埋着几颗星砂。', rewards: { starShard: 2 } },
         { w: 27, text: '风送来一股清新体力。', rewards: { energy: 12 } },
-        { w: 15, text: '遗落的雁羽可换竞技币。', rewards: { arenaCoin: 28 } },
+        { w: 15, text: '遗落的雁羽可换梦练币。', rewards: { arenaCoin: 28 } },
       ] },
       { label: '撒一把谷物喂雁', cost: { fruit: 8 }, outcomes: [
         { w: 56, text: '雁群低飞盘旋，落下随机宠物碎片。', rewards: { randomShards: 14 } },
@@ -4554,7 +4607,7 @@ const ENCOUNTERS = [
       ] },
       { label: '买一盏河灯放生', cost: { gold: 280 }, outcomes: [
         { w: 52, text: '心愿被月光记下，得进化石。', rewards: { stoneChoice: 1 } },
-        { w: 30, text: '河畔许愿人群换来竞技币。', rewards: { arenaCoin: 30 } },
+        { w: 30, text: '河畔许愿人群换来梦练币。', rewards: { arenaCoin: 30 } },
         { w: 18, text: '河灯碰撞出一件史诗装备。', rewards: { equipment: 'epic' } },
       ] },
     ]
@@ -4590,7 +4643,7 @@ const ENCOUNTERS = [
       { label: '只捡些打铁余料', outcomes: [
         { w: 66, text: '敲碎铁料得到装备碎片。', rewards: { equipShard: 28 } },
         { w: 22, text: '边角料里夹着一颗钻石。', rewards: { crystal: 35 } },
-        { w: 12, text: '炉灰埋着竞技币。', rewards: { arenaCoin: 22 } },
+        { w: 12, text: '炉灰埋着梦练币。', rewards: { arenaCoin: 22 } },
       ] },
     ]
   },
@@ -4603,7 +4656,7 @@ const ENCOUNTERS = [
         { w: 14, text: '榫卯间卡着强化石。', rewards: { enhanceStone: 3 } },
       ] },
       { label: '收一把刨花当引火', outcomes: [
-        { w: 57, text: '刨花晒干可换竞技币。', rewards: { arenaCoin: 26 } },
+        { w: 57, text: '刨花晒干可换梦练币。', rewards: { arenaCoin: 26 } },
         { w: 28, text: '木纹里藏着星砂。', rewards: { starShard: 2 } },
         { w: 15, text: '木缝露出一枚钻石。', rewards: { crystal: 37 } },
       ] },
@@ -4645,7 +4698,7 @@ const ENCOUNTERS = [
       { label: '顺着脚印探过去', outcomes: [
         { w: 55, text: '脚印尽头埋着宝箱残片，得装备碎片。', rewards: { equipShard: 22 } },
         { w: 29, text: '雪地里半埋一颗钻石。', rewards: { crystal: 44 } },
-        { w: 16, text: '脚印主人留下竞技币。', rewards: { arenaCoin: 24 } },
+        { w: 16, text: '脚印主人留下梦练币。', rewards: { arenaCoin: 24 } },
       ] },
       { label: '堆一只雪团伙伴', outcomes: [
         { w: 63, text: '雪团融化成清甜经验果。', rewards: { fruit: 20, intimacyAll: 2 } },
@@ -4735,7 +4788,7 @@ const ENCOUNTERS = [
       { label: '展开信纸阅读', outcomes: [
         { w: 57, text: '字句温暖，全队心情与亲密上升。', rewards: { intimacyAll: 3 } },
         { w: 28, text: '瓶底系着一枚钻石。', rewards: { crystal: 47 } },
-        { w: 15, text: '信纸夹着竞技币。', rewards: { arenaCoin: 28 } },
+        { w: 15, text: '信纸夹着梦练币。', rewards: { arenaCoin: 28 } },
       ] },
       { label: '回写一封瓶中信', outcomes: [
         { w: 55, text: '投入海中后，浪送回一袋金币。', rewards: { gold: 560 } },
@@ -4790,7 +4843,7 @@ const ENCOUNTERS = [
       { label: '买两串分给伙伴', cost: { fruit: 6 }, outcomes: [
         { w: 58, text: '酸甜入心，亲密度与体力双补。', rewards: { intimacyAll: 3, energy: 10 } },
         { w: 27, text: '摊主赠升星碎片。', rewards: { starShard: 2 } },
-        { w: 15, text: '糖纸包着竞技币。', rewards: { arenaCoin: 22 } },
+        { w: 15, text: '糖纸包着梦练币。', rewards: { arenaCoin: 22 } },
       ] },
       { label: '在摊边帮忙收摊', outcomes: [
         { w: 63, text: '师傅谢你几个经验果。', rewards: { fruit: 22 } },
@@ -4839,7 +4892,7 @@ const ENCOUNTERS = [
       ] },
       { label: '只取少量蜜尝鲜', cost: { gold: 350 }, outcomes: [
         { w: 58, text: '甘甜回劲，补回体力。', rewards: { energy: 16 } },
-        { w: 27, text: '养蜂人回赠竞技币。', rewards: { arenaCoin: 30 } },
+        { w: 27, text: '养蜂人回赠梦练币。', rewards: { arenaCoin: 30 } },
         { w: 15, text: '蜂巢碎屑换金币。', rewards: { gold: 430 } },
       ] },
     ]
@@ -4875,7 +4928,7 @@ const ENCOUNTERS = [
       { label: '站在人群后排看角', outcomes: [
         { w: 66, text: '曲子悠扬，亲密度上升。', rewards: { intimacyAll: 2 } },
         { w: 22, text: '散场拾到铜钱。', rewards: { gold: 380 } },
-        { w: 12, text: '灯笼勾落竞技币。', rewards: { arenaCoin: 18 } },
+        { w: 12, text: '灯笼勾落梦练币。', rewards: { arenaCoin: 18 } },
       ] },
     ]
   },
@@ -4909,7 +4962,7 @@ const ENCOUNTERS = [
       ] },
       { label: '趁凉挖半筐花蛤', cost: { fruit: 5 }, outcomes: [
         { w: 60, text: '煮成鲜汤，补回体力与亲密度。', rewards: { energy: 14, intimacyAll: 2 } },
-        { w: 26, text: '渔获富余换竞技币。', rewards: { arenaCoin: 28 } },
+        { w: 26, text: '渔获富余换梦练币。', rewards: { arenaCoin: 28 } },
         { w: 14, text: '筐底压着金币。', rewards: { gold: 400 } },
       ] },
     ]
@@ -4945,7 +4998,7 @@ const ENCOUNTERS = [
       { label: '拍一张晚霞留念', outcomes: [
         { w: 55, text: '光影灵感凝成技能心得。', rewards: { skillBook: 1 } },
         { w: 28, text: '镜头反光里藏着星砂。', rewards: { starShard: 2 } },
-        { w: 17, text: '晚风捎来竞技币。', rewards: { arenaCoin: 24 } },
+        { w: 17, text: '晚风捎来梦练币。', rewards: { arenaCoin: 24 } },
       ] },
       { label: '把晚霞讲给伙伴听', cost: { fruit: 4 }, outcomes: [
         { w: 62, text: '故事哄得大家开心，掉落碎片。', rewards: { randomShards: 11 } },
@@ -6078,7 +6131,7 @@ function ensureArenaSeason(s = state, now = Date.now()) {
     const tier = arenaTierOf(s.arena.rating);
     const bonus = Math.floor(tier.reward * 1.6);
     s.items.arenaCoin += bonus;
-    // 赛季奖励除了竞技币，还按段位发养成材料，让冲段位有实感
+    // 赛季奖励除了梦练币，还按段位发养成材料，让冲段位有实感
     if (tier.order >= 2) s.items.starShard += 6 + tier.order * 4;
     if (tier.order >= 3) s.items.skillBook += 1;
     s.arena.rating = 1000;
@@ -6175,7 +6228,7 @@ function resourceLabel(key) {
   return ({
     gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书',
     equipShard: '装备碎片', starShard: '升星碎片', bondBadge: '羁绊徽章',
-    enhanceStone: '强化石', arenaCoin: '竞技币', eternal: '永恒结晶'
+    enhanceStone: '强化石', arenaCoin: '梦练币', eternal: '永恒结晶'
   })[key] || key;
 }
 function resourceIcon(key) {
@@ -6378,7 +6431,7 @@ function equipmentInventory(s = state) {
   });
 }
 
-/* -------- Boss / 竞技场信息 -------- */
+/* -------- Boss / 梦练场信息 -------- */
 function getDailyBossInfo() {
   const today = localDateKey();
   const seed = hashString('boss-' + today);
@@ -6788,7 +6841,7 @@ const ACH_CATEGORIES = [
   { id: 'collect', name: '收集与图鉴', emoji: '📚', match: ['xb_kind_', 'xb_seen_', 'xb_own_', 'xb_shiny_', 'xb_pair', 'a_pet'] },
   { id: 'evolve', name: '进化与星级', emoji: '✨', match: ['xb_evo', 'xb_star', 'a_evo', 'a_star'] },
   { id: 'growth', name: '养成与陪伴', emoji: '🍓', match: ['xb_lvl', 'xb_feed_', 'xb_intmax_', 'xb_intsum_', 'xb_skill_', 'xb_bond', 'a_bond', 'a_feed30', 'a_intimacy100'] },
-  { id: 'arena', name: '竞技场', emoji: '🏟️', match: ['xb_awin_', 'xb_abat_', 'xb_streak_', 'xb_abest_', 'a_arena'] },
+  { id: 'arena', name: '梦练场', emoji: '🏟️', match: ['xb_awin_', 'xb_abat_', 'xb_streak_', 'xb_abest_', 'a_arena'] },
   { id: 'tower', name: '梦塔与首领', emoji: '🗼', match: ['xb_tower_', 'xb_tclear_', 'xb_boss_', 'a_tower', 'a_boss'] },
   { id: 'economy', name: '资源与装备', emoji: '🪙', match: ['xb_gold_', 'xb_enh_', 'xb_feq_', 'a_gold', 'a_enhance', 'a_fullgear'] },
   { id: 'idle', name: '挂机与日常', emoji: '🌙', match: ['xb_idle_', 'xb_daily_', 'xb_pull_', 'xb_enc_', 'xb_rebirth', 'xb_power', 'a_pull', 'a_idle', 'a_enc', 'a_sign', 'a_rebirth', 'a_power', 'a_daily50', 'merchant', 'orchard'] }
@@ -8301,13 +8354,13 @@ function starRow(stars) {
   return `<div class="result-stars">${[1, 2, 3].map(i => `<span class="${i <= stars ? '' : 'off'}">★</span>`).join('')}</div>`;
 }
 
-// 竞技场连胜档一次性奖励：达到档位且未领过才发，连败清零重新计数，避免重复发奖
+// 梦练场连胜档一次性奖励：达到档位且未领过才发，连败清零重新计数，避免重复发奖
 const ARENA_STREAK_REWARDS = [
   { streak: 3, reward: { arenaCoin: 30, gold: 600 }, label: '3 连胜' },
   { streak: 5, reward: { arenaCoin: 60, crystal: 5 }, label: '5 连胜' },
   { streak: 8, reward: { arenaCoin: 100, crystal: 12 }, label: '8 连胜' }
 ];
-// 竞技商店：竞技币换养成材料。每日限量，让「打竞技场」有实打实的产出，又不会刷穿经济
+// 竞技商店：梦练币换养成材料。每日限量，让「打梦练场」有实打实的产出，又不会刷穿经济
 const ARENA_SHOP = [
   { id: 'stone3', name: '进化石福袋', emoji: '💎', cost: 180, limit: 1, desc: '随机属性进化石 ×3', reward: { stonesRandom: 3 } },
   { id: 'star10', name: '星尘碎片包', emoji: '🌠', cost: 240, limit: 1, desc: '星尘碎片 ×10', reward: { starShard: 10 } },
@@ -8401,14 +8454,14 @@ function levelUpTeam() {
   toast(`一键升级：共升 ${ups} 级，花掉 ${fmt(spent)} 经验果`, 'good', 3000);
   playSfx('level');
 }
-// 竞技场每日兑换
+// 梦练场每日兑换
 function buyArenaItem(id) {
   const item = ARENA_SHOP_MAP[id];
   if (!item) return;
   const counts = arenaShopReset();
   const bought = Math.max(0, Math.floor(num(counts[id], 0)));
   if (bought >= item.limit) { toast('今天这件已经换完了，明天再来', 'bad'); return; }
-  if (state.items.arenaCoin < item.cost) { toast(`竞技币不足，需要 ${item.cost}`, 'bad'); return; }
+  if (state.items.arenaCoin < item.cost) { toast(`梦练币不足，需要 ${item.cost}`, 'bad'); return; }
   if (item.reward.challenge && state.challenge.value >= state.challenge.max) { toast('挑战券已经满额，先花掉几张再来换', 'bad'); return; }
   state.items.arenaCoin -= item.cost;
   counts[id] = bought + 1;
@@ -8557,6 +8610,7 @@ function finishBattle() {
       const rewards = makeStageRewards(stage, firstClear);
       logs = addReward(rewards);
       state.stage.maxCleared = Math.max(state.stage.maxCleared, stage.index);
+  if (stage.index >= STAGES.length) setTimeout(() => { try { openFinalEndingModal(); } catch (e) {} }, 900);
       state.stage.stars[stage.index] = Math.max(num(state.stage.stars[stage.index], 0), b.stars);
       bumpMetric('stageClears', 1);
       resultTitle = firstClear ? '首通成功！' : pick(['再次胜利！', '漂亮取胜！', '稳稳拿下！']);
@@ -8574,11 +8628,12 @@ function finishBattle() {
         storyLine = feels.filter(Boolean).join(' ');
         if (stage.type === 'boss') {
           const chObj = CHAPTERS.find(c => c.id === stage.chapter);
-          const base = (stage.chapter - 1) * STAGES_PER_CHAPTER;
-          const chStars = Array.from({ length: STAGES_PER_CHAPTER }, (_, k) => num(state.stage.stars[base + k + 1], 0)).reduce((sum, v) => sum + v, 0);
+          const base = chapterStageStart(stage.chapter);
+          const cnt = stageCountOf(stage.chapter);
+          const chStars = Array.from({ length: cnt }, (_, k) => num(state.stage.stars[base + k + 1], 0)).reduce((sum, v) => sum + v, 0);
           review = {
             title: `第${stage.chapter}章 · ${chObj ? chObj.name : ''} 通关回顾`,
-            stars: `本章星级 ${chStars}/${STAGES_PER_CHAPTER * 3}`,
+            stars: `本章星级 ${chStars}/${cnt * 3}`,
             boss: `首领「${stage.name}」已被击退`,
             vibe: chObj ? chObj.desc : ''
           };
@@ -8588,7 +8643,7 @@ function finishBattle() {
       }
       resultNote = firstClear
         ? `第 ${stage.chapter} 章进度推进了，新的挂机上限已更新到 ${stage.chapter}-${stage.sub}。`
-        : `扫荡与重复挑战都会继续产出资源。当前最高通关：${Math.floor((state.stage.maxCleared - 1) / STAGES_PER_CHAPTER) + 1}-${((state.stage.maxCleared - 1) % STAGES_PER_CHAPTER) + 1}。`;
+        : `扫荡与重复挑战都会继续产出资源。当前最高通关：${chapterOfStage(state.stage.maxCleared)}-${subOfStage(state.stage.maxCleared)}。`;
     } else {
       storyLine = pick(FAIL_FEEL);
       resultSub = pick(FAIL_SUB_POOL);
@@ -8679,7 +8734,7 @@ function finishBattle() {
     resultNote = `对 ${opp.name} ${win ? '胜利' : '失败'}，段位分 ${delta > 0 ? '+' : ''}${delta}。当前段位：${arenaTierOf(state.arena.rating).name}。` + streakNote;
     resultChips = [
       { icon: '🏟️', label: '段位分', value: fmt(state.arena.rating) },
-      { icon: '🎖️', label: '竞技币', value: fmt(state.items.arenaCoin) },
+      { icon: '🎖️', label: '梦练币', value: fmt(state.items.arenaCoin) },
       ...streakExtra
     ];
   } else if (mode === 'boss') {
@@ -8687,10 +8742,10 @@ function finishBattle() {
     const before = state.boss.bestDamage;
     state.boss.bestDamage = Math.max(before, damage);
     const board = getBossLeaderboard();
-    // 每日 Boss 以伤害排名，不发放普通通关奖励；排名奖励在面板领取。
+    // 长夜之影 以伤害排名，不发放普通通关奖励；排名奖励在面板领取。
     resultTitle = damage > before ? '伤害新纪录！' : '讨伐结束';
     resultEmoji = '👹';
-    resultNote = `本次打出 ${fmt(damage)} 点伤害，今日最佳 ${fmt(state.boss.bestDamage)}。当前预计排名第 ${board.rank || '—'} 名。排名奖励可在每日 Boss 面板领取。`;
+    resultNote = `本次打出 ${fmt(damage)} 点伤害，今日最佳 ${fmt(state.boss.bestDamage)}。当前预计排名第 ${board.rank || '—'} 名。排名奖励可在长夜之影 面板领取。`;
     resultChips = [
       { icon: '💥', label: '本次伤害', value: fmt(damage) },
       { icon: '👑', label: '预计排名', value: board.rank ? `第 ${board.rank} 名` : '未上榜' }
@@ -8792,7 +8847,7 @@ const TABS = [
   { id: 'home', name: '家园', icon: '🏡', tip: '挂机与日常' },
   { id: 'adventure', name: '冒险', icon: '⚔️', tip: '主线与副本' },
   { id: 'pets', name: '宠物', icon: '🐾', tip: '队伍与养成' },
-  { id: 'battle', name: '对战', icon: '🏆', tip: '梦塔 / 竞技场 / Boss' },
+  { id: 'battle', name: '对战', icon: '🏆', tip: '梦塔 / 梦练场 / 长夜之影' },
   { id: 'shop', name: '商店', icon: '🛍️', tip: '抽蛋与兑换' },
   { id: 'quest', name: '任务', icon: '📜', tip: '任务与成就' }
 ];
@@ -8828,11 +8883,11 @@ function pageHead(eyebrow, title, sub, actions = '') {
   return `<div class="page-head"><div><p class="eyebrow">${esc(eyebrow)}</p><h1 class="page-title">${title}</h1><p class="page-sub">${sub}</p></div><div class="head-actions">${actions}</div></div>`;
 }
 function currentChapterNumber() {
-  return clamp(Math.ceil((state.stage.maxCleared + 1) / STAGES_PER_CHAPTER), 1, CHAPTERS.length);
+  return clamp(chapterOfStage(Math.max(1, state.stage.maxCleared + 1)), 1, CHAPTERS.length);
 }
 function chapterUnlocked(chapterId) {
   if (chapterId <= 1) return true;
-  return state.stage.maxCleared >= (chapterId - 1) * STAGES_PER_CHAPTER;
+  return state.stage.maxCleared >= chapterStageStart(chapterId);
 }
 function highestStageLabel() {
   if (!state.stage.maxCleared) return '尚未通关';
@@ -8942,7 +8997,7 @@ function renderTopbar() {
     <span class="res-pill" title="钻石：稀有抽蛋、商店兑换与加速"><span class="ico">${artIconFrame(resArtUrl('crystal'),'💎','art-resico') || '💎'}</span><em>钻石</em><b id="resCrystal">${fmt(state.resources.crystal)}</b></span>
     <span class="res-pill" title="经验果：宠物升级"><span class="ico">${artIconFrame(resArtUrl('fruit'),'🍎','art-resico') || '🍎'}</span><em>经验果</em><b id="resFruit">${fmt(state.resources.fruit)}</b></span>
     <span class="res-pill" title="体力：主线与每日副本"><span class="ico">⚡</span><em>体力</em><b id="resStamina">${stamina.value}/${stamina.max}</b></span>
-    <span class="res-pill" title="挑战券：梦塔、竞技场与每日 Boss"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
+    <span class="res-pill" title="挑战券：梦塔、梦练场与长夜之影"><span class="ico">🎟️</span><em>挑战</em><b id="resChallenge">${challenge.value}/${challenge.max}</b></span>`;
   refreshHUD();
 }
 
@@ -9308,7 +9363,7 @@ function addRewardPreview(reward) {
   const out = [];
   const labelMap = {
     gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书', equipShard: '装备碎片',
-    enhanceStone: '强化石', bondBadge: '羁绊徽章', arenaCoin: '竞技币', starShard: '升星碎片',
+    enhanceStone: '强化石', bondBadge: '羁绊徽章', arenaCoin: '梦练币', starShard: '升星碎片',
     stonesRandom: '随机进化石', stoneChoice: '随机进化石', randomShards: '随机碎片',
     intimacyAll: '全队亲密', frame: '头像框', equipment: '装备', eternal: '永恒结晶'
   };
@@ -9341,13 +9396,14 @@ function renderAdventure() {
   UI.adventureChapter = clamp(UI.adventureChapter, 1, CHAPTERS.length);
   const ch = CHAPTERS[UI.adventureChapter - 1];
   const unlocked = chapterUnlocked(ch.id);
-  const stageStart = (ch.id - 1) * STAGES_PER_CHAPTER;
+  const stageStart = chapterStageStart(ch.id);
+  const stageCount = stageCountOf(ch.id);
   const teamPower = calcTeamPower();
   const next = nextStageInfo();
   const modeIndex = currentDungeonModeIndex();
   const dungeon = DUNGEON_MODES[modeIndex];
   const dungeonReward = makeDungeonReward(modeIndex);
-  const chapterStars = Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => state.stage.stars[stageStart + i + 1] || 0);
+  const chapterStars = Array.from({ length: stageCount }, (_, i) => state.stage.stars[stageStart + i + 1] || 0);
   const earnedStars = sum(chapterStars);
   return `
   <div class="page">
@@ -9364,14 +9420,14 @@ function renderAdventure() {
     </div>
     <div class="chapter-banner">
       <div class="flex"><span class="ch-large">${ch.emoji}</span><div><h2>第 ${ch.id} 章 · ${esc(ch.name)} ${unlocked ? '' : '🔒'}</h2><p>${esc(ch.desc)}</p>${(CHAPTER_NARRATIVE[ch.id] || {}).enter ? `<p class="chapter-story">📖 ${esc(CHAPTER_NARRATIVE[ch.id].enter)}</p>` : ''}</div></div>
-      <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/${STAGES_PER_CHAPTER * 3}</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
+      <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/${stageCount * 3}</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
     </div>
     <div class="card">
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>4 小怪 + 2 精英 + 章节首领（每章 7 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
       <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageNeedPower(next) ? 'mint' : 'pink'}">${teamPower >= stageNeedPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(stageNeedPower(next))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
-        ${Array.from({ length: STAGES_PER_CHAPTER }, (_, i) => {
+        ${Array.from({ length: stageCount }, (_, i) => {
           const stage = getStage(stageStart + i + 1);
           const isLocked = !unlocked || stage.index > state.stage.maxCleared + 1;
           const isCleared = state.stage.maxCleared >= stage.index;
@@ -9548,6 +9604,7 @@ function renderPets() {
       <div class="card">
         <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。轮回后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
         ${codexBar}
+        ${(() => { const own = finalEndingsOwned(); const loop = finalEndingLoop(); const list = ['A', 'B', 'C'].map(k => FINAL_ENDINGS[k + loop]); return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>第 ' + loop + ' 次入梦可选的结局 · 已记下 ' + own.length + '/9</p></div></div><div class="note">' + list.map(e => own.indexOf(e.code) >= 0 ? '✅ ' + esc(e.title) : '⬜ ' + esc(e.title)).join('<br>') + '</div></div>'; })()}
         <div class="codex-grid">
           ${codexList.length ? codexList.map(t => {
             const recorded = seenIds.has(t.id);
@@ -9679,7 +9736,7 @@ function renderBattlePage() {
   const teamPower = calcTeamPower();
   const topList = board.list.slice(0, 5);
   const clearedStage = state.stage.maxCleared || 0;
-  const stageLabel = clearedStage > 0 ? `${Math.floor((clearedStage - 1) / STAGES_PER_CHAPTER) + 1}-${((clearedStage - 1) % STAGES_PER_CHAPTER) + 1}` : '尚未通关';
+  const stageLabel = clearedStage > 0 ? `${chapterOfStage(clearedStage)}-${subOfStage(clearedStage)}` : '尚未通关';
 
   return `
   <div class="page">
@@ -9705,7 +9762,7 @@ function renderBattlePage() {
       </div>
 
       <div class="mode-card arena">
-        <div class="mode-head"><div class="mode-icon">🏟️</div><div><h2>软糖竞技场</h2><p>与小镇居民切磋，胜利提升段位分，每日可领段位奖励。</p></div><span class="chip" style="color:${tier.color}">${tier.emoji} ${tier.name}</span></div>
+        <div class="mode-head"><div class="mode-icon">🏟️</div><div><h2>梦练场</h2><p>梦里对练，不伤真身。赢的升段，输的只是醒一次——反正睡前还会再来。</p></div><span class="chip" style="color:${tier.color}">${tier.emoji} ${tier.name}</span></div>
         <div class="mode-body">
           <div class="idle-stats" style="margin:0 0 8px">
             <div class="idle-stat"><span>段位分</span><b>${fmt(state.arena.rating)}</b></div>
@@ -9724,15 +9781,15 @@ function renderBattlePage() {
             <button class="btn btn-ghost btn-xs" type="button" data-act="refreshArena">🔄 换一批对手</button>
             <button class="btn ${settleReady ? 'btn-mint' : 'btn-ghost'} btn-xs" type="button" data-act="arenaSettle" ${settleReady ? '' : 'disabled'}>${settleReady ? `今日结算 🎖️${settleReward}` : '今日已结算'}</button>
           </div>
-          <div class="note lav" style="margin-top:8px">赛季每 7 天重置到 1000 分，并按段位发放额外竞技币与养成材料。竞技币可在「商店 · 竞技」换进化石、星尘、技能书、挑战券，也能换装扮。</div>
+          <div class="note lav" style="margin-top:8px">梦每 7 天换一层，段位重置到 1000 分。结算时按段位发梦练币与养成材料，梦练币可在「商店 · 竞技」换进化石、星尘、技能书、挑战券，也能换装扮。</div>
         </div>
       </div>
 
       <div class="mode-card boss">
-        <div class="mode-head"><div class="mode-icon">${boss.emoji}</div><div><h2>每日 Boss · ${esc(boss.name)}</h2><p>${esc(boss.flavor)}</p></div><span class="chip">今日 ${state.boss.attempts}/3 次</span></div>
+        <div class="mode-head"><div class="mode-icon">${boss.emoji}</div><div><h2>长夜之影 · ${esc(boss.name)}</h2><p>${esc(boss.flavor)}</p></div><span class="chip">今日 ${state.boss.attempts}/3 次</span></div>
         <div class="mode-body">
           <div class="idle-stats" style="margin:0 0 8px">
-            <div class="idle-stat"><span>Boss 等级</span><b>Lv.${boss.level}</b></div>
+            <div class="idle-stat"><span>长夜等级</span><b>Lv.${boss.level}</b></div>
             <div class="idle-stat"><span>属性</span><b>${elementTag(boss.element)}</b></div>
             <div class="idle-stat"><span>今日最佳</span><b>${fmt(state.boss.bestDamage)} 伤害</b></div>
           </div>
@@ -9773,7 +9830,7 @@ function renderBattlePage() {
         <div class="idle-stat"><span>梦塔最高层</span><b>${state.tower.best} / 30</b></div>
         <div class="idle-stat"><span>Boss 最高伤害</span><b>${fmt(state.boss.bestDamage)}</b></div>
         <div class="idle-stat"><span>最高段位分</span><b>${fmt(state.hall.arenaBest)}</b></div>
-        <div class="idle-stat"><span>竞技场最长连胜</span><b>${state.hall.arenaWinStreak} 场</b></div>
+        <div class="idle-stat"><span>梦练场最长连胜</span><b>${state.hall.arenaWinStreak} 场</b></div>
         <div class="idle-stat"><span>当前连胜</span><b>${state.hall.arenaStreak} 场</b></div>
       </div>
     </div>
@@ -9872,7 +9929,7 @@ function renderShop() {
         </div>
       </div>
       <div class="card" id="ex-supply">
-        <div class="card-head"><div><h2>🪙 材料补给</h2><p>稀有材料用钻石兑换，竞技币与装扮在另一页。</p></div><span class="chip">💎 ${fmt(state.resources.crystal)}</span></div>
+        <div class="card-head"><div><h2>🪙 材料补给</h2><p>稀有材料用钻石兑换，梦练币与装扮在另一页。</p></div><span class="chip">💎 ${fmt(state.resources.crystal)}</span></div>
         <div class="grid three">
           ${materialRows.map(row => `<div class="shop-item">
             <span class="shop-ico">${row.icon}</span><b>${row.name}</b><p>${esc(row.desc)}</p>
@@ -9889,7 +9946,7 @@ function renderShop() {
         </div>
       </div>
       <div class="card" id="ex-ticket">
-        <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>梦塔、竞技场、每日 Boss 的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
+        <div class="card-head"><div><h2>🎟️ 对战补给 · 挑战券</h2><p>梦塔、梦练场、长夜之影的入场券；自然每 30 分钟回 1 张、上限 ${MAX_CHALLENGE} 张，钻石可应急补票。</p></div><span class="chip">持有 ${state.challenge.value}/${state.challenge.max}</span></div>
         <div class="flex between" style="gap:10px;align-items:center">
           <div><b>🎟️ 挑战券 ×1</b><p class="tiny muted" style="margin:2px 0 0">满额或钻石不足时按钮禁用，购买不会超出上限。</p></div>
           <button class="btn btn-lav btn-xs" type="button" data-act="buyChallengeTicket" ${state.challenge.value >= state.challenge.max || state.resources.crystal < CHALLENGE_TICKET_PRICE ? 'disabled' : ''}>💎${CHALLENGE_TICKET_PRICE} 换 1</button>
@@ -9931,7 +9988,7 @@ function renderShop() {
     const firstWinDone = state.arena.lastWinBonusDate === localDateKey();
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>🏟️ 竞技商店</h2><p>竞技币在这里花：进化石、星尘、技能书、挑战券。每日限量，第二天刷新。</p></div><span class="chip">🎖️ 竞技币 ${fmt(state.items.arenaCoin)}</span></div>
+        <div class="card-head"><div><h2>🏟️ 竞技商店</h2><p>梦练币在这里花：进化石、星尘、技能书、挑战券。每日限量，第二天刷新。</p></div><span class="chip">🎖️ 梦练币 ${fmt(state.items.arenaCoin)}</span></div>
         <div class="grid two">
           ${ARENA_SHOP.map(item => {
             const bought = Math.max(0, Math.floor(num(counts[item.id], 0)));
@@ -9944,11 +10001,11 @@ function renderShop() {
             </div>`;
           }).join('')}
         </div>
-        <div class="note lav" style="margin-top:10px">竞技币来源：每日段位结算、每日首胜（+30）、连胜档、赛季重置。段位越高，结算越多。</div>
+        <div class="note lav" style="margin-top:10px">梦练币来源：每日段位结算、每日首胜（+30）、连胜档、赛季重置。段位越高，结算越多。</div>
       </div>
       <div class="card">
-        <div class="card-head"><div><h2>🏆 今天的竞技场</h2><p>段位 <b style="color:${tier.color}">${tier.emoji} ${tier.name}</b> · 今日首胜 ${firstWinDone ? '已领取' : '还没拿'} · 三档对手分别是队伍战力的 85% / 95% / 105%。</p></div></div>
-        <div class="flex" style="gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="nav" data-tab="battle">去竞技场</button><button class="btn btn-ghost" type="button" data-act="nav" data-tab="quest">看看每日任务</button></div>
+        <div class="card-head"><div><h2>🏆 今天的梦练场</h2><p>段位 <b style="color:${tier.color}">${tier.emoji} ${tier.name}</b> · 今日首胜 ${firstWinDone ? '已领取' : '还没拿'} · 三档对手分别是队伍战力的 85% / 95% / 105%。</p></div></div>
+        <div class="flex" style="gap:8px;flex-wrap:wrap"><button class="btn btn-primary" type="button" data-act="nav" data-tab="battle">去梦练场</button><button class="btn btn-ghost" type="button" data-act="nav" data-tab="quest">看看每日任务</button></div>
       </div>`;
   } else {
     const main = getMainPet();
@@ -9971,16 +10028,16 @@ function renderShop() {
     };
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>🏡 家园场景</h2><p>场景会改变挂机小屋的天气与背景。</p></div><span class="chip">🎖️ 竞技币 ${fmt(state.items.arenaCoin)}</span></div>
+        <div class="card-head"><div><h2>🏡 家园场景</h2><p>场景会改变挂机小屋的天气与背景。</p></div><span class="chip">🎖️ 梦练币 ${fmt(state.items.arenaCoin)}</span></div>
         <div class="cos-grid">${bgs.map(cosmeticCard).join('')}</div>
       </div>
       <div class="card">
         <div class="card-head"><div><h2>🎀 宠物饰品</h2><p>购买后可给主宠佩戴，随时切换。</p></div>${main ? `<span class="chip">主宠 ${esc(petDisplayName(main))}</span>` : '<span class="chip pink">还没有宠物</span>'}</div>
         <div class="cos-grid">${accs.map(cosmeticCard).join('')}</div>
       </div>
-      <div class="note lav">竞技场、每日结算和赛季重置会获得竞技币。所有装扮只改变外观，不影响战力。</div>`;
+      <div class="note lav">梦练场、每日结算和赛季重置会获得梦练币。所有装扮只改变外观，不影响战力。</div>`;
   }
-  return `<div class="page">${pageHead('SHOP · 奶油杂货铺', `<span class="emoji">🛍️</span>商店`, `金币 ${fmt(state.resources.gold)} · 钻石 ${fmt(state.resources.crystal)} · 竞技币 ${fmt(state.items.arenaCoin)}`, `<button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">查看名册</button>`)}${subnav}${body}</div>`;
+  return `<div class="page">${pageHead('SHOP · 奶油杂货铺', `<span class="emoji">🛍️</span>商店`, `金币 ${fmt(state.resources.gold)} · 钻石 ${fmt(state.resources.crystal)} · 梦练币 ${fmt(state.items.arenaCoin)}`, `<button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="pets">查看名册</button>`)}${subnav}${body}</div>`;
 }
 
 /* -------- 任务 -------- */
@@ -9992,11 +10049,11 @@ const ACH_NOTE_GROUPS = [
     '有些加成，一辈子都在。', '转生那天，会想把每个伙伴都看一遍。', '轮回一开，路又长又短。'
   ] },
   { key: 'arena', re: /arena|hall\.|tower/, notes: [
-    '竞技场的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本。',
+    '梦练场里的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本——反正醒来就忘了。',
     '连胜那几天，连走路都带风。', '梦里的对手一层比一层难缠。', '梦塔爬到一半，才想起要带奶——它已经睡着了。',
     '青铜到白银，隔的不是运气。', '被人反杀一次，就学会留一手。', '残影的话很少，但很扎人。',
     '防守阵容也是要磨的。', '越往上，越知道「差一点」有多远。', '赢下来的名次，才敢截图。',
-    '下一层永远比这层难一点。', '竞技场没有朋友，只有更熟的朋友。', '名次掉下去，再爬回来就好。', '梦里的每一层，都记得谁先倒。', '竞技场也是练习场。', '梦塔爬累了，就看看风景。', '连胜有连胜的打法，连败有连败的教训。', '排行榜上，你比上周高了一点。', '输了不丢人，不上场才丢。'
+    '下一层永远比这层难一点。', '梦练场没有朋友，只有更熟的朋友。', '名次掉下去，再爬回来就好。', '梦里的每一层，都记得谁先倒。', '梦练场也是练习场。', '梦塔爬累了，就看看风景。', '连胜有连胜的打法，连败有连败的教训。', '排行榜上，你比上周高了一点。', '输了不丢人，不上场才丢。'
   ] },
   { key: 'gacha', re: /pulls/, notes: [
     '第十连的保底，是抽卡人的底气。', '保底是给坚持的人的。', '重复的伙伴，也换来了碎片。', '开蛋的声音，总能让人安静两秒。', '抽到新伙伴那天，屋子里会亮一下。', '开出一只重复的，也笑得出来。'
@@ -10181,7 +10238,7 @@ function renderQuest() {
             ['🏆', '胜利次数', state.quests.metrics.wins],
             ['🥚', '累计抽蛋', state.quests.metrics.pulls],
             ['🧹', '扫荡次数', state.quests.metrics.sweeps],
-            ['🏟️', '竞技场胜利', state.quests.metrics.arenaWins],
+            ['🏟️', '梦练场胜利', state.quests.metrics.arenaWins],
             ['🧭', '奇遇完成', state.quests.metrics.encounters],
             ['🌀', '轮回次数', state.rebirth.count],
             ['⏳', '累计挂机', fmt(state.quests.metrics.idleSeconds) + '秒']
@@ -10203,7 +10260,7 @@ function profileHighlightsHTML() {
   const star = num(m.starUps, 0), tower = num(m.towerClears, 0), streak = num(b.arenaWinStreak, 0);
   const rows = [
     ['🎯', '战斗胜率', battles ? winRate + '%' : '—', `胜 ${fmt(wins)} / 战 ${fmt(battles)}`],
-    ['🔥', '最长连胜', '×' + fmt(streak), '竞技场'],
+    ['🔥', '最长连胜', '×' + fmt(streak), '梦练场'],
     ['🏅', '当前段位', tier ? tier.name : '—', `段位分 ${fmt(rating)}`],
     ['🦕', '宠物进化', '×' + fmt(evo), '形态解锁'],
     ['💪', '装备强化', '×' + fmt(enh), '战力淬炼'],
@@ -10670,7 +10727,7 @@ function openEquipPetPicker(itemId) {
 
 /* -------- 轮回之泉 -------- */
 function rebirthEternalPreview() {
-  return 10 + Math.floor(calcTeamPower() / 1500) + Math.floor(state.stage.maxCleared / STAGES_PER_CHAPTER) * 2;
+  return 10 + Math.floor(calcTeamPower() / 1500) + Math.max(0, chapterOfStage(Math.max(1, state.stage.maxCleared)) - 1) * 2;
 }
 function rebirthUpgradeCost(upgrade) {
   const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
@@ -10700,14 +10757,14 @@ function openRebirthModal() {
     <div class="note lav">已通关 ${state.stage.maxCleared} 关 · 队伍战力 ${fmt(calcTeamPower())}。通关章节越多，轮回获得的永恒结晶越多。</div>
     <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入轮回</button>
     <div class="tiny muted center" style="margin-top:6px">需要再次确认，不会误触。</div>`
-    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>轮回之泉还在沉睡</h3><p>通关第 5 章首领（5-${STAGES_PER_CHAPTER}）后开启。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, 5 * STAGES_PER_CHAPTER - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
+    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>轮回之泉还在沉睡</h3><p>通关第 5 章首领（5-7）后开启。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, 5 * STAGES_PER_CHAPTER - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
   openModal('🌀 轮回之泉', body, { wide: true });
 }
 function openRebirthConfirm() {
   if (state.stage.maxCleared < 25) { toast('还未解锁轮回之泉', 'bad'); return; }
   const gain = rebirthEternalPreview();
   const body = `
-    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、钻石、经验果、关卡、梦塔、竞技场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
+    <div class="warning-box"><b>确定要轮回吗？</b><p>宠物、等级、星级、进化、装备、金币、钻石、经验果、关卡、梦塔、梦练场与背包材料会被重置。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶和永恒强化会保留。</p></div>
     <div class="offline-rewards"><div class="offline-reward"><span>🌀</span><div><small>获得永恒结晶</small><b>${fmt(gain)}</b></div></div></div>
     <div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="openRebirth">再想想</button><button class="btn btn-lav" type="button" data-act="rebirthConfirm">确认轮回</button></div>`;
   openModal('🌀 最后的确认', body, { wide: false });
@@ -10851,7 +10908,7 @@ function openSettingsModal() {
         <div><span>我方队伍</span><b>${fmt(power)}</b></div>
         <div><span>下一关敌人战力</span><b>${next ? fmt(stageDisplayPower(next)) : '已通关'}</b></div>
         <div><span>当前塔层推荐</span><b>${fmt(towerFloorPower(Math.min(30, state.tower.floor)))}</b></div>
-        <div><span>竞技场对手均值</span><b>${fmt(UI.arenaOpponents.length ? Math.round(sum(UI.arenaOpponents.map(o => o.power)) / UI.arenaOpponents.length) : power)}</b></div>
+        <div><span>梦练场对手均值</span><b>${fmt(UI.arenaOpponents.length ? Math.round(sum(UI.arenaOpponents.map(o => o.power)) / UI.arenaOpponents.length) : power)}</b></div>
       </div>
     </div>
     <div class="settings-section">
@@ -11029,7 +11086,7 @@ function gardenTier(i) { return GARDEN_TIERS[i] || GARDEN_TIERS[GARDEN_TIERS.len
 const GARDEN_FRUIT_BOOST = 1.7;
 // 金币收成随主线温和成长（最高 ×1.42），经验果不缩放：果实是稀缺资源，不能靠种地无限刷
 function gardenProgressMult() {
-  return 1 + clamp(num(state.stage.maxCleared, 0), 0, 70) * 0.006;
+  return 1 + clamp(num(state.stage.maxCleared, 0), 0, STAGES.length) * 0.006;
 }
 // 收菜时的稀有掉落：星尘碎片 / 进化石，让菜园也是养成材料来源
 function gardenDropBonus() {
@@ -11657,7 +11714,7 @@ function openTeamPresets() {
       </div>
     </div>`;
   }).join('');
-  openModal('📌 阵容预设', `<p class="note">梦塔、竞技、主线可以各存一套阵容，一键切回来。预设只记上阵位置，不复制宠物。</p>${rows}`);
+  openModal('📌 阵容预设', `<p class="note">梦塔、梦练、主线可以各存一套阵容，一键切回来。预设只记上阵位置，不复制宠物。</p>${rows}`);
 }
 function teamPresetSave(slot) {
   if (!state.team.presets) state.team.presets = [];
@@ -12077,7 +12134,7 @@ function startArena(index) {
   const ok = startBattle({
     mode: 'arena',
     opponent: { name: opp.name, rating: opp.rating, power: opp.power, index: index, factor: opp.factor },
-    title: `竞技场 · 对阵 ${opp.name}`,
+    title: `梦练场 · 对阵 ${opp.name}`,
     subtitle: `对手战力 ${fmt(opp.power)} · 胜利提升段位分`,
     emoji: '🏟️',
     enemyPower: opp.power,
@@ -12107,7 +12164,7 @@ function settleArena() {
   const logs = addReward({ arenaCoin: reward });
   saveGame();
   renderAll();
-  toast(`竞技场结算：${tier.emoji}${tier.name} · ${rewardLogText(logs)}`, 'gold', 3000);
+  toast(`梦练场结算：${tier.emoji}${tier.name} · ${rewardLogText(logs)}`, 'gold', 3000);
   playSfx('claim');
 }
 function startBoss() {
@@ -12124,7 +12181,7 @@ function startBoss() {
   saveGame();
   const ok = startBattle({
     mode: 'boss',
-    title: `每日 Boss · ${info.name}`,
+    title: `长夜之影 · ${info.name}`,
     subtitle: '12 回合内打出最高伤害 · 高生命高防御',
     emoji: info.emoji,
     enemies: [enemy],
@@ -12221,7 +12278,7 @@ function buyMaterial(key, price) {
 }
 function buyChallengeTicket() {
   regenAll();
-  if (state.challenge.value >= state.challenge.max) { toast('挑战券已满，先去梦塔/竞技场消耗一些吧', 'bad'); return; }
+  if (state.challenge.value >= state.challenge.max) { toast('挑战券已满，先去梦塔/梦练场消耗一些吧', 'bad'); return; }
   if (state.resources.crystal < CHALLENGE_TICKET_PRICE) { toast(`钻石不足，需要 💎${CHALLENGE_TICKET_PRICE}`, 'bad'); return; }
   state.resources.crystal -= CHALLENGE_TICKET_PRICE;
   state.challenge.value = Math.min(state.challenge.max, state.challenge.value + 1);
@@ -12244,7 +12301,7 @@ function buyCosmetic(id) {
   const cosmetic = COSMETIC_MAP[id];
   if (!cosmetic) return;
   if (state.cosmetics.owned.includes(id)) { toast('已经拥有这件装扮', 'bad'); return; }
-  if (state.items.arenaCoin < cosmetic.cost) { toast(`竞技币不足，需要 ${cosmetic.cost}`, 'bad'); return; }
+  if (state.items.arenaCoin < cosmetic.cost) { toast(`梦练币不足，需要 ${cosmetic.cost}`, 'bad'); return; }
   state.items.arenaCoin -= cosmetic.cost;
   state.cosmetics.owned.push(id);
   saveGame();
@@ -12492,6 +12549,7 @@ function handleActionClick(event) {
     case 'skipTutorial': skipTutorial(); break;
 
     case 'closeModal': closeModal(); break;
+    case 'finalEnding': chooseFinalEnding(target.dataset.code); break;
     case 'openSettings': openSettingsModal(); break;
     case 'openRebirth': openRebirthModal(); break;
 

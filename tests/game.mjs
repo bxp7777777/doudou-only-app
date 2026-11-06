@@ -261,7 +261,7 @@ const required = [
   ['羁绊', '羁绊系统'],
   ['亲密度', '亲密度'],
   ['梦塔', '梦塔模式'],
-  ['竞技场', '竞技场'],
+  ['梦练场', '梦练场'],
   ['奇遇', '奇遇事件'],
   ['图鉴', '图鉴'],
   ['成就', '成就系统'],
@@ -351,7 +351,7 @@ if (typeof globalThis.petArtCandidates === 'function') {
   }
 }
 
-/* 关卡结构：10 章 × 7 关 = 70 关，每章最后一关是首领；第 1 章难度系数 3.4×，开局 5 只宠也能感到阻力 */
+/* 关卡结构：1-10 章各 7 关、11-12 章各 8 关 = 86 关，每章最后一关是首领；第 1 章难度系数 3.4×，开局 5 只宠也能感到阻力 */
 if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPower === 'function') {
   let total = 0;
   for (let i = 1; i <= 100; i++) {
@@ -359,19 +359,20 @@ if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPow
     if (!st || st.index !== i) break;
     total = i;
   }
-  check(total === 70, '主线应为 70 关（10 章 × 7），实际 ' + total);
+  check(total === 86, '主线应为 86 关（10 章 × 7 + 2 章 × 8），实际 ' + total);
   const perChapter = new Map();
   for (let i = 1; i <= total; i++) {
     const st = globalThis.getStage(i);
     if (!perChapter.has(st.chapter)) perChapter.set(st.chapter, []);
     perChapter.get(st.chapter).push(st);
   }
-  check(perChapter.size === 10, '主线应为 10 章，实际 ' + perChapter.size);
+  check(perChapter.size === 12, '主线应为 12 章，实际 ' + perChapter.size);
   for (const [ch, list] of perChapter) {
-    check(list.length === 7, '第 ' + ch + ' 章应为 7 关，实际 ' + list.length);
-    check(list[6].type === 'boss', '第 ' + ch + ' 章最后一关应是首领，实际 ' + list[6].type);
+    const wide = ch >= 11;
+    check(list.length === (wide ? 8 : 7), '第 ' + ch + ' 章应为 ' + (wide ? 8 : 7) + ' 关，实际 ' + list.length);
+    check(list[list.length - 1].type === 'boss', '第 ' + ch + ' 章最后一关应是首领，实际 ' + list[list.length - 1].type);
     check(list.filter((s) => s.type === 'elite').length === 2, '第 ' + ch + ' 章应有 2 个精英关');
-    check(list.filter((s) => s.type === 'mob').length === 4, '第 ' + ch + ' 章应有 4 个小怪关');
+    check(list.filter((s) => s.type === 'mob').length === (wide ? 5 : 4), '第 ' + ch + ' 章应有 ' + (wide ? 5 : 4) + ' 个小怪关');
   }
   const s11 = globalThis.getStage(1);
   const expect11 = Math.round(s11.recPower * 3.4 * 0.92);
