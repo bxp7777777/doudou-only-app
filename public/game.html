@@ -2266,46 +2266,13 @@ const PET_STAGE_NAME = {
   mole: ['掘土鼹', '铁爪鼹', '地脉掘进王'],
   jellyfish: ['浮灯水母', '澄光水母', '深海水月母'],
   peacock: ['光羽孔雀', '开屏孔雀', '万象羽后'],
-  dolphin: ['跃浪海豚', '潮声海豚', '沧海跃浪王'],
-  sailfish: ['旗枪鱼', '长枪旗鱼', '裂浪旗枪王'],
-  anglerfish: ['灯笼小鱼', '诱灯鮟鱇', '深潭诱灯王'],
-  lobster: ['铁壳龙虾', '钢钳龙虾', '深海铁甲王'],
-  swan: ['湖心天鹅', '白羽天鹅', '月湖白羽后'],
-  giraffe: ['长颈小鹿', '高颈长颈鹿', '云顶长颈王'],
-  zebra: ['条纹小马', '疾驰斑马', '草原条纹客'],
-  ladybug: ['红壳小虫', '圆点瓢虫', '草原红壳使'],
-  cicada: ['夏鸣小蝉', '长夏鸣蝉', '酷暑长鸣王'],
-  poisonfrog: ['斑纹小蛙', '毒腺花蛙', '沼地毒腺王'],
-  turkey: ['蓬羽火鸡', '烈焰火鸡', '灶前蓬羽王'],
   qilin: ['火麟幼兽', '踏火麒麟', '焚天火麒麟'],
-  gecko: ['熔甲小蜥', '岩浆壁虎', '熔岩断尾王'],
-  fireant: ['灼咬小蚁', '焰火蚂蚁', '蚁群灼咬王'],
   raccoon: ['灰脸小浣熊', '烟火浣熊', '炮竹灰脸王'],
-  magpie: ['喜讯小鹊', '报喜喜鹊', '祥云报喜王'],
-  butterfly: ['鳞粉小蝶', '幻彩蝴蝶', '花海鳞粉后'],
-  coral: ['光珊小枝', '珊瑚光珊', '浅海珊瑚王'],
   narwhal: ['独角小鲸', '圣角独角鲸', '极光圣角王'],
-  dove: ['橄榄小鸽', '白羽信鸽', '和平白羽使'],
-  crow: ['黑羽小鸦', '厄运黑鸦', '长夜黑羽王'],
-  skull: ['骨甲小兵', '骸骨卫士', '万骨骨甲王'],
-  viper: ['影毒小蛇', '幽影蝰蛇', '夜沼影毒王'],
   squid: ['墨囊小鱿', '浓墨乌贼', '深潭墨潮王'],
-  centipede: ['百足小虫', '百足蜈蚣', '暗谷百足王'],
-  yeti: ['雪团小雪人', '厚毛雪人', '雪山雪掌王'],
   wolf: ['霜牙小狼', '冰原霜狼', '极夜霜牙王'],
-  icefish: ['冰鳍小鱼', '寒潭冰鳍', '极地冰鳍使'],
-  crane: ['霜羽仙鹤', '长腿霜鹤', '寒汀霜羽君'],
-  yak: ['雪岭小牛', '雪域牦牛', '雪岭踏雪王'],
   rhino: ['铁角小犀', '岩甲犀牛', '山岳铁角王'],
-  camel: ['驼峰小驼', '沙漠双峰驼', '金沙驼峰王'],
-  sandworm: ['沙虫宝宝', '流沙巨虫', '黄沙流沙王'],
-  hyena: ['斑鬣小兽', '狞笑鬣狗', '荒原狞笑王'],
-  hippo: ['河马小宝', '泥河河马', '大泥河马王'],
-  vulture: ['秃头小鹫', '荒原秃鹫', '黄沙秃鹫王'],
-  hummingbird: ['振翅小蜂鸟', '残影蜂鸟', '千翼残影使'],
-  dragonfly: ['薄翼小蜓', '碧空蜻蜓', '晴空薄翼王'],
-  windweed: ['风滚草苗', '滚地风草', '荒原风滚王'],
-  kite: ['纸鸢小童', '云端纸鸢', '长空纸鸢使']
+  hummingbird: ['振翅小蜂鸟', '残影蜂鸟', '千翼残影使']
 };
 const BONDS = [
   { id: 'cuteDuo', name: '可爱二人组', pets: ['pig', 'golden'], effect: { hpPct: 0.10 }, emoji: '🐷🐶', desc: '泥兜猪 + 金毛崽同场：全队生命 +10%。', quote: '你拱一下、我摇一下尾巴，今天也要黏在一起。' },
@@ -3040,105 +3007,6 @@ const PETS = [
   },
 
   {
-    id: 'dolphin', name: '跃浪海豚', title: '逐浪小快艇', species: '跃浪海豚系', element: 'water', rarity: 'SR', role: 'front',
-    emoji: ["🐬", "🐬", "🌊"], shiny: "✨🐬✨",
-    base: {hp:730, atk:70, def:58, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:46, atk:4.5, def:4, spd:0.32},
-    skills: ['pb_water', 'dolphin_sig', 'rk_speed', 'pu_water'],
-    lines: ['我叫跃浪海豚，请多指教。', '见谁都先笑一下。', '尾鳍拍浪，要看看吗？'],
-    codex: "跳得高，是为了看清楚岸上有没有人。||他跳起来的时候喊了我的名字。我跟着跳了一次。"
-  },
-  {
-    id: 'sailfish', name: '旗枪鱼', title: '长枪小刺头', species: '旗枪鱼系', element: 'water', rarity: 'R', role: 'back',
-    emoji: ["🐟", "🐠", "🗡️"], shiny: "✨🐟✨",
-    base: {hp:480, atk:80, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:30, atk:5.1, def:2, spd:0.48},
-    skills: ['pb_water', 'sailfish_sig', 'rk_assassin', 'pu_water'],
-    lines: ['我叫旗枪鱼，请多指教。', '背鳍从不服软。', '旗枪突刺，要看看吗？'],
-    codex: "游得最快的那一种，快到自己都追不上自己的影子。||他说我游得太快，追不上。他就不追了。"
-  },
-  {
-    id: 'anglerfish', name: '灯笼小鱼', title: '深水小灯泡', species: '灯笼小鱼系', element: 'water', rarity: 'R', role: 'back',
-    emoji: ["🐡", "🐟", "💡"], shiny: "✨🐡✨",
-    base: {hp:480, atk:80, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:30, atk:5.1, def:2, spd:0.48},
-    skills: ['pb_water', 'anglerfish_sig', 'rk_controller', 'pu_water'],
-    lines: ['我叫灯笼小鱼，请多指教。', '喜欢在黑暗里笑。', '诱灯吞咬，要看看吗？'],
-    codex: "头顶的灯是借来的。它每天晚上都担心那个人来要回去。||他把灯点在我头上，说借我用一晚上。"
-  },
-  {
-    id: 'lobster', name: '铁壳龙虾', title: '硬壳小钳工', species: '铁壳龙虾系', element: 'water', rarity: 'SR', role: 'front',
-    emoji: ["🦞", "🦞", "🛡️"], shiny: "✨🦞✨",
-    base: {hp:730, atk:70, def:58, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:46, atk:4.5, def:4, spd:0.32},
-    skills: ['pb_water', 'lobster_sig', 'rk_tank', 'pu_water'],
-    lines: ['我叫铁壳龙虾，请多指教。', '见硬壳就往上撞。', '钳甲硬壳，要看看吗？'],
-    codex: "壳很硬，肉很软。它不喜欢被敲。||他敲我的壳，敲得很小心。他说怕疼。"
-  },
-  {
-    id: 'swan', name: '湖心天鹅', title: '水面小公主', species: '湖心天鹅系', element: 'water', rarity: 'SR', role: 'back',
-    emoji: ["🦢", "🦢", "🌙"], shiny: "✨🦢✨",
-    base: {hp:540, atk:91, def:33, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:34, atk:5.8, def:2.3, spd:0.48},
-    skills: ['pb_water', 'swan_sig', 'rk_support', 'pu_water'],
-    lines: ['我叫湖心天鹅，请多指教。', '走路都要照镜子。', '湖心清波，要看看吗？'],
-    codex: "脖子长，能看见很远。它说看见得越远，越不想动。||他说我脖子长，能看见很远。可我看见的是他。"
-  },
-  {
-    id: 'giraffe', name: '长颈小鹿', title: '够得着小树顶', species: '长颈小鹿系', element: 'grass', rarity: 'SR', role: 'front',
-    emoji: ["🦒", "🦒", "🌳"], shiny: "✨🦒✨",
-    base: {hp:755, atk:66, def:61, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:48, atk:4.2, def:4.2, spd:0.32},
-    skills: ['pb_grass', 'giraffe_sig', 'rk_bruiser', 'pu_grass'],
-    lines: ['我叫长颈小鹿，请多指教。', '总想看得更远一点。', '长颈重锤，要看看吗？'],
-    codex: "吃高处的叶子。低头很费劲，所以它很少看地上。||他仰头看我，看到脖子酸。他说值得。"
-  },
-  {
-    id: 'zebra', name: '条纹小马', title: '跑起来像风', species: '条纹小马系', element: 'grass', rarity: 'R', role: 'front',
-    emoji: ["🦓", "🦓", "💨"], shiny: "✨🦓✨",
-    base: {hp:670, atk:59, def:54, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:42, atk:3.8, def:3.7, spd:0.32},
-    skills: ['pb_grass', 'zebra_sig', 'rk_speed', 'pu_grass'],
-    lines: ['我叫条纹小马，请多指教。', '数不清自己有几条纹。', '疾驰条纹，要看看吗？'],
-    codex: "条纹是天生用来认亲的。它认错过一次，之后就不敢认了。||他数我的条纹，数错了。他说明天再数。"
-  },
-  {
-    id: 'ladybug', name: '红壳小虫', title: '背着一身圆点', species: '红壳小虫系', element: 'grass', rarity: 'R', role: 'back',
-    emoji: ["🐞", "🐞", "🍀"], shiny: "✨🐞✨",
-    base: {hp:425, atk:66, def:27, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:27, atk:4.2, def:1.9, spd:0.48},
-    skills: ['pb_grass', 'ladybug_sig', 'rk_support', 'pu_grass'],
-    lines: ['我叫红壳小虫，请多指教。', '紧张时会喷黄水。', '红壳守护，要看看吗？'],
-    codex: "背上的点有多少，它自己没数过。别人替它数，它会害羞。||他让我停在手指上，许了个愿。愿是什么他没说。"
-  },
-  {
-    id: 'cicada', name: '夏鸣小蝉', title: '夏天的主唱', species: '夏鸣小蝉系', element: 'grass', rarity: 'R', role: 'front',
-    emoji: ["🦗", "🦗", "🎵"], shiny: "✨🦗✨",
-    base: {hp:670, atk:59, def:54, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:42, atk:3.8, def:3.7, spd:0.32},
-    skills: ['pb_grass', 'cicada_sig', 'rk_mage', 'pu_grass'],
-    lines: ['我叫夏鸣小蝉，请多指教。', '一叫就是一整季。', '夏日长鸣，要看看吗？'],
-    codex: "在土里待了很多年，出来只叫一个夏天。它说够了。||他听我叫，听了一整个夏天。最后他说吵。"
-  },
-  {
-    id: 'poisonfrog', name: '斑纹小蛙', title: '一身漂亮花纹', species: '斑纹小蛙系', element: 'grass', rarity: 'SR', role: 'front',
-    emoji: ["🐸", "🐸", "☠️"], shiny: "✨🐸✨",
-    base: {hp:755, atk:66, def:61, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:48, atk:4.2, def:4.2, spd:0.32},
-    skills: ['pb_grass', 'poisonfrog_sig', 'rk_controller', 'pu_grass'],
-    lines: ['我叫斑纹小蛙，请多指教。', '被摸背会鼓起肚子。', '毒腺喷射，要看看吗？'],
-    codex: "跳得远，落得准。它说落不准的那几次，都有人在旁边看。||他摸我的时候戴了手套。他说不是嫌弃。"
-  },
-  {
-    id: 'turkey', name: '蓬羽火鸡', title: '羽毛炸开的样子', species: '蓬羽火鸡系', element: 'fire', rarity: 'R', role: 'back',
-    emoji: ["🦃", "🦃", "🔥"], shiny: "✨🦃✨",
-    base: {hp:440, atk:84, def:29, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:28, atk:5.4, def:2, spd:0.48},
-    skills: ['pb_fire', 'turkey_sig', 'rk_support', 'pu_fire'],
-    lines: ['我叫蓬羽火鸡，请多指教。', '嗓门比火还大。', '振羽烈焰，要看看吗？'],
-    codex: "平时看着笨重，急了能飞上一棵矮树。它自己也不太相信。||他在节日那天抱了我，抱得很紧。那天他在哭。"
-  },
-  {
     id: 'qilin', name: '火麟幼兽', title: '一步一朵火', species: '火麟幼兽系', element: 'fire', rarity: 'SSR', role: 'front',
     emoji: ["🦄", "🐎", "🔥"], shiny: "✨🦄✨",
     base: {hp:755, atk:82, def:65, spd:16, crit:0.07, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
@@ -3146,24 +3014,6 @@ const PETS = [
     skills: ['pb_fire', 'qilin_sig', 'rk_bruiser', 'pu_fire'],
     lines: ['我叫火麟幼兽，请多指教。', '只在雷雨天现身。', '麒麟踏火，要看看吗？'],
     codex: "浑身是火，唯一不烫的地方是肚子。它把肚子留给最亲近的人。||他说我像火。我说火会烧完。"
-  },
-  {
-    id: 'gecko', name: '熔甲小蜥', title: '断尾也不认输', species: '熔甲小蜥系', element: 'fire', rarity: 'R', role: 'front',
-    emoji: ["🦎", "🦎", "🌋"], shiny: "✨🦎✨",
-    base: {hp:595, atk:65, def:51, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:37, atk:4.2, def:3.5, spd:0.32},
-    skills: ['pb_fire', 'gecko_sig', 'rk_tank', 'pu_fire'],
-    lines: ['我叫熔甲小蜥，请多指教。', '贴着岩壁晒太阳。', '熔甲断尾，要看看吗？'],
-    codex: "断掉的尾巴会长回来，颜色总差一点。它说那是记号。||他把我放在手心，说别动。我就一直没动。"
-  },
-  {
-    id: 'fireant', name: '灼咬小蚁', title: '扛着火星搬家', species: '灼咬小蚁系', element: 'fire', rarity: 'R', role: 'front',
-    emoji: ["🐜", "🐜", "🔥"], shiny: "✨🐜✨",
-    base: {hp:595, atk:65, def:51, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:37, atk:4.2, def:3.5, spd:0.32},
-    skills: ['pb_fire', 'fireant_sig', 'rk_assassin', 'pu_fire'],
-    lines: ['我叫灼咬小蚁，请多指教。', '谁踩窝就咬谁。', '蚁群灼咬，要看看吗？'],
-    codex: "咬人不重，但会记仇。记仇的方式是下次咬得更轻。||他踩了我一脚，又蹲下来看。他看了很久。"
   },
   {
     id: 'raccoon', name: '灰脸小浣熊', title: '总在翻垃圾找火药', species: '灰脸小浣熊系', element: 'fire', rarity: 'SR', role: 'back',
@@ -3175,33 +3025,6 @@ const PETS = [
     codex: "什么都要洗一遍，洗到最后连自己都湿了。||他偷看过我的口袋。我假装没看见。"
   },
   {
-    id: 'magpie', name: '喜讯小鹊', title: '站在枝头报喜', species: '喜讯小鹊系', element: 'light', rarity: 'R', role: 'front',
-    emoji: ["🐦", "🐦", "🍀"], shiny: "✨🐦✨",
-    base: {hp:655, atk:62, def:52, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:41, atk:4, def:3.6, spd:0.32},
-    skills: ['pb_light', 'magpie_sig', 'rk_speed', 'pu_light'],
-    lines: ['我叫喜讯小鹊，请多指教。', '见谁都要讲两句。', '喜讯急报，要看看吗？'],
-    codex: "叫声很响，报的都是好事。它不太会报坏事，所以坏事来的时候它只会闭嘴。||他听见我叫，就笑了。他以为是好消息。"
-  },
-  {
-    id: 'butterfly', name: '鳞粉小蝶', title: '飞一程撒一路粉', species: '鳞粉小蝶系', element: 'light', rarity: 'SR', role: 'back',
-    emoji: ["🦋", "🦋", "🌸"], shiny: "✨🦋✨",
-    base: {hp:550, atk:91, def:34, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:35, atk:5.8, def:2.3, spd:0.48},
-    skills: ['pb_light', 'butterfly_sig', 'rk_support', 'pu_light'],
-    lines: ['我叫鳞粉小蝶，请多指教。', '停在人肩上不肯走。', '鳞粉疗愈，要看看吗？'],
-    codex: "翅膀上的粉蹭到谁身上，谁就会做一场很短的梦。||他把我夹进书里。我后来才知道那是标本。"
-  },
-  {
-    id: 'coral', name: '光珊小枝', title: '海底的小房子', species: '光珊小枝系', element: 'light', rarity: 'SR', role: 'front',
-    emoji: ["🪸", "🪸", "✨"], shiny: "✨🪸✨",
-    base: {hp:745, atk:70, def:59, spd:16, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:47, atk:4.5, def:4.1, spd:0.32},
-    skills: ['pb_light', 'coral_sig', 'rk_tank', 'pu_light'],
-    lines: ['我叫光珊小枝，请多指教。', '被浪打了也不动。', '珊瑚屏障，要看看吗？'],
-    codex: "长得很慢，一年只长长一点。它记得自己每一年的样子。||他潜下去看我，看了一次就不来了。水太凉。"
-  },
-  {
     id: 'narwhal', name: '独角小鲸', title: '角上缠着极光', species: '独角小鲸系', element: 'light', rarity: 'SSR', role: 'front',
     emoji: ["🐋", "🐳", "🦄"], shiny: "✨🐋✨",
     base: {hp:835, atk:78, def:66, spd:16, crit:0.07, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
@@ -3209,42 +3032,6 @@ const PETS = [
     skills: ['pb_light', 'narwhal_sig', 'rk_bruiser', 'pu_light'],
     lines: ['我叫独角小鲸，请多指教。', '唱歌能传很远。', '圣角穿浪，要看看吗？'],
     codex: "角是用来听声音的，不是用来顶的。它听得见很远的地方有人在哭。||他用我的角指过方向。他说那边是家。"
-  },
-  {
-    id: 'dove', name: '橄榄小鸽', title: '嘴里总叼着叶子', species: '橄榄小鸽系', element: 'light', rarity: 'R', role: 'back',
-    emoji: ["🕊️", "🕊️", "🌿"], shiny: "✨🕊️✨",
-    base: {hp:490, atk:80, def:30, spd:24, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:31, atk:5.1, def:2.1, spd:0.48},
-    skills: ['pb_light', 'dove_sig', 'rk_healer', 'pu_light'],
-    lines: ['我叫橄榄小鸽，请多指教。', '吵架时它会飞来。', '橄榄回春，要看看吗？'],
-    codex: "飞出去会带一根树枝回来，插在同一个地方，插了很多根。||他放我飞，我飞了一圈回来。他说你怎么不飞远点。"
-  },
-  {
-    id: 'crow', name: '黑羽小鸦', title: '站在枯枝上数人', species: '黑羽小鸦系', element: 'dark', rarity: 'R', role: 'back',
-    emoji: ["🐦‍⬛", "🐦‍⬛", "🌑"], shiny: "✨🐦‍⬛✨",
-    base: {hp:460, atk:83, def:29, spd:24.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:29, atk:5.3, def:2, spd:0.49},
-    skills: ['pb_dark', 'crow_sig', 'rk_controller', 'pu_dark'],
-    lines: ['我叫黑羽小鸦，请多指教。', '叫声很像在笑。', '厄运啼鸣，要看看吗？'],
-    codex: "会学人说话，学得最像的是叹气。||他嫌我叫得难听，可他每天都来听。"
-  },
-  {
-    id: 'skull', name: '骨甲小兵', title: '走路会咔咔响', species: '骨甲小兵系', element: 'dark', rarity: 'R', role: 'front',
-    emoji: ["💀", "☠️", "🦴"], shiny: "✨💀✨",
-    base: {hp:620, atk:64, def:51, spd:16.3, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:39, atk:4.1, def:3.5, spd:0.33},
-    skills: ['pb_dark', 'skull_sig', 'rk_tank', 'pu_dark'],
-    lines: ['我叫骨甲小兵，请多指教。', '掉一颗牙会自己捡回来。', '骨甲硬抗，要看看吗？'],
-    codex: "甲很硬，里面很空。它喜欢站在门口，一站一整天。||他把我的甲摆正。他说这样看起来没那么吓人。"
-  },
-  {
-    id: 'viper', name: '影毒小蛇', title: '在影子里蜕皮', species: '影毒小蛇系', element: 'dark', rarity: 'SR', role: 'back',
-    emoji: ["🐍", "🐍", "🩸"], shiny: "✨🐍✨",
-    base: {hp:520, atk:94, def:33, spd:24.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:33, atk:6, def:2.3, spd:0.49},
-    skills: ['pb_dark', 'viper_sig', 'rk_assassin', 'pu_dark'],
-    lines: ['我叫影毒小蛇，请多指教。', '咬完就躲回暗处。', '影毒獠牙，要看看吗？'],
-    codex: "身上是凉的，摸久了会以为是自己手凉。||他不敢碰我。他说我冷。我说我一直都冷。"
   },
   {
     id: 'squid', name: '墨囊小鱿', title: '一紧张就喷墨', species: '墨囊小鱿系', element: 'dark', rarity: 'SR', role: 'back',
@@ -3256,24 +3043,6 @@ const PETS = [
     codex: "受惊就喷墨，喷完自己看不见路，只能停在原地等墨散。||他摸了一手黑。他说正好，可以写字。"
   },
   {
-    id: 'centipede', name: '百足小虫', title: '脚多到自己数不过来', species: '百足小虫系', element: 'dark', rarity: 'R', role: 'front',
-    emoji: ["🐛", "🐛", "🦶"], shiny: "✨🐛✨",
-    base: {hp:620, atk:64, def:51, spd:16.3, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:39, atk:4.1, def:3.5, spd:0.33},
-    skills: ['pb_dark', 'centipede_sig', 'rk_bruiser', 'pu_dark'],
-    lines: ['我叫百足小虫，请多指教。', '穿鞋要穿很久。', '百足缠击，要看看吗？'],
-    codex: "脚多，走得却慢。它说脚多是为了站得稳，不是为了走得快。||他数我的脚，数烦了。他说明天再说。"
-  },
-  {
-    id: 'yeti', name: '雪团小雪人', title: '走到哪都撒雪', species: '雪团小雪人系', element: 'ice', rarity: 'SR', role: 'front',
-    emoji: ["⛄", "☃️", "❄️"], shiny: "✨⛄✨",
-    base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:46, atk:4.2, def:4.5, spd:0.31},
-    skills: ['pb_ice', 'yeti_sig', 'rk_tank', 'pu_ice'],
-    lines: ['我叫雪团小雪人，请多指教。', '夏天会躲进冰柜。', '雪掌拍击，要看看吗？'],
-    codex: "是堆出来的，所以怕春天。它每年都要重新堆一次自己。||他堆了我，怕我化，就搬进屋里。屋里也化了。"
-  },
-  {
     id: 'wolf', name: '霜牙小狼', title: '对着月亮练嗓子', species: '霜牙小狼系', element: 'ice', rarity: 'SR', role: 'front',
     emoji: ["🐺", "🐺", "🌨️"], shiny: "✨🐺✨",
     base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
@@ -3281,33 +3050,6 @@ const PETS = [
     skills: ['pb_ice', 'wolf_sig', 'rk_bruiser', 'pu_ice'],
     lines: ['我叫霜牙小狼，请多指教。', '雪里能闻出人味。', '霜牙突袭，要看看吗？'],
     codex: "对着空气哈气，看有没有白雾。有雾就说明还活着。||他对我吹了口气，看有没有白雾。有。他笑了。"
-  },
-  {
-    id: 'icefish', name: '冰鳍小鱼', title: '冰下游得比谁都快', species: '冰鳍小鱼系', element: 'ice', rarity: 'R', role: 'front',
-    emoji: ["🐟", "🐠", "🧊"], shiny: "✨🐟✨",
-    base: {hp:645, atk:59, def:57, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:41, atk:3.8, def:3.9, spd:0.31},
-    skills: ['pb_ice', 'icefish_sig', 'rk_speed', 'pu_ice'],
-    lines: ['我叫冰鳍小鱼，请多指教。', '撞冰面也不疼。', '冰鳍掠影，要看看吗？'],
-    codex: "在冰下面游，头顶是白的。它说白的有时候比黑还闷。||他砸开冰，把我捞出来。他在冰上坐了一会儿。"
-  },
-  {
-    id: 'crane', name: '霜羽仙鹤', title: '单腿站着能睡', species: '霜羽仙鹤系', element: 'ice', rarity: 'SR', role: 'back',
-    emoji: ["🐦", "🕊️", "❄️"], shiny: "✨🐦✨",
-    base: {hp:540, atk:86, def:37, spd:23.5, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:34, atk:5.5, def:2.6, spd:0.47},
-    skills: ['pb_ice', 'crane_sig', 'rk_healer', 'pu_ice'],
-    lines: ['我叫霜羽仙鹤，请多指教。', '踩水不会起波纹。', '霜羽清唳，要看看吗？'],
-    codex: "站着不动的时候像画。它不喜欢被看太久。||他学我站着不动。他站不住。我替他多站了一会儿。"
-  },
-  {
-    id: 'yak', name: '雪岭小牛', title: '毛厚得能塞下雪', species: '雪岭小牛系', element: 'ice', rarity: 'SR', role: 'front',
-    emoji: ["🐂", "🐃", "🏔️"], shiny: "✨🐂✨",
-    base: {hp:730, atk:66, def:65, spd:15.7, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:46, atk:4.2, def:4.5, spd:0.31},
-    skills: ['pb_ice', 'yak_sig', 'rk_tank', 'pu_ice'],
-    lines: ['我叫雪岭小牛，请多指教。', '下山时刹不住。', '雪岭冲撞，要看看吗？'],
-    codex: "背很宽，能挡风。它挡了很多年的风，自己一次也没躲过。||他靠在我背上取暖。他说我像一堵墙。"
   },
   {
     id: 'rhino', name: '铁角小犀', title: '角上磨出了光', species: '铁角小犀系', element: 'earth', rarity: 'SR', role: 'front',
@@ -3319,51 +3061,6 @@ const PETS = [
     codex: "冲着东西跑的时候不看路，撞上来之前会闭眼。它撞赢过很多次，也记不清赢过谁。||他撞过我一次。那次是他输的。"
   },
   {
-    id: 'camel', name: '驼峰小驼', title: '背上驮着两包水', species: '驼峰小驼系', element: 'earth', rarity: 'R', role: 'front',
-    emoji: ["🐪", "🐫", "🏜️"], shiny: "✨🐪✨",
-    base: {hp:680, atk:59, def:56, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:43, atk:3.8, def:3.9, spd:0.31},
-    skills: ['pb_earth', 'camel_sig', 'rk_tank', 'pu_earth'],
-    lines: ['我叫驼峰小驼，请多指教。', '走三天不喝水。', '驼峰蓄力，要看看吗？'],
-    codex: "走路慢，因为它觉得慢一点就不会踩到别人。||他说我很能忍。他没说他自己。"
-  },
-  {
-    id: 'sandworm', name: '沙虫宝宝', title: '在沙里打洞睡觉', species: '沙虫宝宝系', element: 'earth', rarity: 'SR', role: 'front',
-    emoji: ["🪱", "🪱", "🏖️"], shiny: "✨🪱✨",
-    base: {hp:770, atk:67, def:63, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:49, atk:4.3, def:4.3, spd:0.31},
-    skills: ['pb_earth', 'sandworm_sig', 'rk_mage', 'pu_earth'],
-    lines: ['我叫沙虫宝宝，请多指教。', '沙子进耳朵会打喷嚏。', '流沙漩涡，要看看吗？'],
-    codex: "沙子底下一钻就是一天。它喜欢被人找，但从不主动出声。||他在沙里埋过我，说藏好了。找了一下午没找到。"
-  },
-  {
-    id: 'hyena', name: '斑鬣小兽', title: '笑起来停不下来', species: '斑鬣小兽系', element: 'earth', rarity: 'R', role: 'back',
-    emoji: ["🐕", "🐕", "🦴"], shiny: "✨🐕✨",
-    base: {hp:505, atk:77, def:32, spd:23, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:32, atk:4.9, def:2.2, spd:0.46},
-    skills: ['pb_earth', 'hyena_sig', 'rk_bruiser', 'pu_earth'],
-    lines: ['我叫斑鬣小兽，请多指教。', '抢骨头第一名。', '荒原狞笑，要看看吗？'],
-    codex: "笑起来像在哭。它自己分不清，就干脆一直笑。||他笑的时候我也笑。他问我笑什么，我说不知道。"
-  },
-  {
-    id: 'hippo', name: '河马小宝', title: '张嘴像打哈欠', species: '河马小宝系', element: 'earth', rarity: 'SR', role: 'front',
-    emoji: ["🦛", "🦛", "💧"], shiny: "✨🦛✨",
-    base: {hp:770, atk:67, def:63, spd:15.4, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:49, atk:4.3, def:4.3, spd:0.31},
-    skills: ['pb_earth', 'hippo_sig', 'rk_tank', 'pu_earth'],
-    lines: ['我叫河马小宝，请多指教。', '在泥里泡一整天。', '泥河张嘴，要看看吗？'],
-    codex: "泡在水里只露两只眼睛，谁叫它都装没听见。走出水的时候，背上会挂一圈草。||他在我旁边洗过脚。水很浑，他很开心。"
-  },
-  {
-    id: 'vulture', name: '秃头小鹫', title: '盘旋时最安静', species: '秃头小鹫系', element: 'wind', rarity: 'SR', role: 'front',
-    emoji: ["🦅", "🦅", "🪶"], shiny: "✨🦅✨",
-    base: {hp:685, atk:71, def:56, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:43, atk:4.5, def:3.9, spd:0.35},
-    skills: ['pb_wind', 'vulture_sig', 'rk_bruiser', 'pu_wind'],
-    lines: ['我叫秃头小鹫，请多指教。', '专挑快倒的看。', '俯冲撕扯，要看看吗？'],
-    codex: "盘旋的时候很安静，等的时候更安静。它等的东西从没落下过。||他抬头等我。我飞得很高，他看得很久。"
-  },
-  {
     id: 'hummingbird', name: '振翅小蜂鸟', title: '翅膀快得看不见', species: '振翅小蜂鸟系', element: 'wind', rarity: 'R', role: 'front',
     emoji: ["🐦", "🐦", "💨"], shiny: "✨🐦✨",
     base: {hp:610, atk:62, def:50, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
@@ -3371,33 +3068,6 @@ const PETS = [
     skills: ['pb_wind', 'hummingbird_sig', 'rk_speed', 'pu_wind'],
     lines: ['我叫振翅小蜂鸟，请多指教。', '喝蜜要喝很久。', '振翅残影，要看看吗？'],
     codex: "停不下来，一停下来心跳就慢到吓人。||他数我的心跳，数不过来。他说这样活着多累。"
-  },
-  {
-    id: 'dragonfly', name: '薄翼小蜓', title: '停在荷叶尖上', species: '薄翼小蜓系', element: 'wind', rarity: 'R', role: 'back',
-    emoji: ["🪰", "🪰", "💠"], shiny: "✨🪰✨",
-    base: {hp:450, atk:81, def:29, spd:26.4, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:28, atk:5.2, def:2, spd:0.53},
-    skills: ['pb_wind', 'dragonfly_sig', 'rk_assassin', 'pu_wind'],
-    lines: ['我叫薄翼小蜓，请多指教。', '复眼能看到你在想什么。', '四翼急袭，要看看吗？'],
-    codex: "停在草尖上，翅膀薄得能看见后面的天。||他追过我。追不动了，就坐下来看我。"
-  },
-  {
-    id: 'windweed', name: '风滚草苗', title: '一有风就出发', species: '风滚草苗系', element: 'wind', rarity: 'R', role: 'back',
-    emoji: ["🌾", "🌾", "🍃"], shiny: "✨🌾✨",
-    base: {hp:450, atk:81, def:29, spd:26.4, crit:0.1, critDmg:0.6, dr:0.04, hit:0.03, dodge:0.04},
-    growth: {hp:28, atk:5.2, def:2, spd:0.53},
-    skills: ['pb_wind', 'windweed_sig', 'rk_mage', 'pu_wind'],
-    lines: ['我叫风滚草苗，请多指教。', '滚过的地方都很干净。', '风草滚袭，要看看吗？'],
-    codex: "风往哪吹就往哪滚，滚到哪里都算家。它一直没找到落脚的地方。||他把我从路边拔出来，说去看世界。世界在哪儿他没说。"
-  },
-  {
-    id: 'kite', name: '纸鸢小童', title: '线一断就乱飞', species: '纸鸢小童系', element: 'wind', rarity: 'R', role: 'front',
-    emoji: ["🪁", "🪁", "☁️"], shiny: "✨🪁✨",
-    base: {hp:610, atk:62, def:50, spd:17.6, crit:0.05, critDmg:0.5, dr:0.1, hit:0.02, dodge:0.02},
-    growth: {hp:38, atk:4, def:3.5, spd:0.35},
-    skills: ['pb_wind', 'kite_sig', 'rk_speed', 'pu_wind'],
-    lines: ['我叫纸鸢小童，请多指教。', '喜欢有人在下面拉着。', '纸鸢掠空，要看看吗？'],
-    codex: "是纸做的，怕雨。飞得再高，最后都被人收回来。||他放我，线断了。他说断了就断了吧。"
   }
 ];
 const PET_MAP = Object.fromEntries(PETS.map(p => [p.id, p]));
@@ -5167,7 +4837,7 @@ function defaultState() {
     nextPetId: 1,
     equipment: [],
     nextEquipId: 1,
-    stage: { maxCleared: 0, stars: {}, layout: STAGES_PER_CHAPTER },
+    stage: { maxCleared: 0, stars: {}, recall: 0, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0, weekStart: 0, weekClears: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
     boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
@@ -5295,6 +4965,7 @@ function sanitizeState(s) {
 
   s.stage = s.stage && typeof s.stage === 'object' ? s.stage : {};
   s.stage.maxCleared = clamp(Math.floor(num(s.stage.maxCleared, 0)), 0, STAGES.length);
+  s.stage.recall = clamp(Math.floor(num(s.stage.recall, s.stage.maxCleared)), 0, STAGES.length);
   s.stage.stars = s.stage.stars && typeof s.stage.stars === 'object' ? s.stage.stars : {};
   s.tower = s.tower && typeof s.tower === 'object' ? s.tower : {};
   s.tower.floor = clamp(Math.floor(num(s.tower.floor, 1)), 1, 31);
@@ -5530,7 +5201,7 @@ const ELEMENT_ART = { fire:true,grass:true,water:true,light:true,dark:true,earth
 const RES_ART = { gold:true,crystal:true,fruit:true };
 // 敌方独立形象图集：生图入库后逐只置 true；未登记时返回 null，由调用方逐级回退 emoji，绝不白图破版
 const MOB_ART = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
-const BOSS_ART = { goodnight:true, slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
+const BOSS_ART = { goodnight:true, watcher:true, slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
 // 小怪 / Boss 立绘同样优先透明底 PNG（四周无白边），缺失才退回原 JPG
 function mobArtCandidates(id) {
   if (!MOB_ART[id]) return [];
@@ -5577,7 +5248,7 @@ const PET_ART_PNG = {
 const MOB_ART_PNG = { moss_slime:true, thorncap:true, ember_newt:true, flame_imp:true, bubble_fish:true, tide_crab:true, glow_wisp:true, prism_sprite:true, shade_bat:true, night_wraith:true, pebble_golem:true, rock_boar:true, gale_chick:true, storm_imp:true, frost_pup:true, aurora_wolf:true };
 const BOSS_ART_PNG = {};
 // Boss 三阶段立绘：p1 常态 / p2 激愤 / p3 濒死爆发；缺哪张就沿「阶段图 → 基础 PNG → 基础 JPG」降级，绝不白图
-const BOSS_PHASE_ART = { goodnight:true, slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
+const BOSS_PHASE_ART = { goodnight:true, watcher:true, slime_king:true, caramel_fox:true, tide_lord:true, honey_bear:true, moon_demon:true, cloud_whale:true, magma_drake:true, star_beast:true, prism_queen:true, peak_titan:true };
 function bossPhaseOf(ratio) {
   const r = num(ratio, 1);
   if (r <= 0.34) return 3;
@@ -9366,7 +9037,8 @@ function renderHome() {
             <div class="idle-stat"><span>梦塔</span><b>${state.tower.best} / 30</b></div>
           </div>
           <div class="note pink" style="margin-top:9px">当前章节：第 ${chapter} 章 · ${CHAPTERS[chapter - 1].name}。摸头、投喂、战斗都会提升亲密度。</div>
-          ${state.stage.maxCleared >= STAGES.length ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
+          ${state.stage.recall > state.stage.maxCleared ? `<button class="btn btn-mint btn-sm btn-wide" type="button" data-act="recallRush" style="margin-top:8px">🌀 回忆速通：直接回到 ${chapterOfStage(state.stage.recall)}-${subOfStage(state.stage.recall)}</button><div class="tiny muted center" style="margin-top:4px">跳过已经走过的路，不发奖励，只把进度接上。</div>` : ''}
+${state.stage.maxCleared >= STAGES.length ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
         </div>
       </div>
     </div>
@@ -10745,6 +10417,17 @@ function rebirthEternalPreview() {
 function rebirthUpgradeCost(upgrade) {
   const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
   return Math.round(upgrade.baseCost * Math.pow(1.55, level));
+}
+
+// 回忆速通：入梦之后，把上一条走到最远的进度直接接上（不发奖励，只解锁关卡）
+function recallRush() {
+  const target = clamp(num(state.stage.recall, 0), 0, STAGES.length);
+  if (target <= state.stage.maxCleared) { toast('没有可以速通的回忆', 'bad'); return; }
+  state.stage.maxCleared = target;
+  UI.adventureChapter = chapterOfStage(Math.max(1, target));
+  saveGame();
+  renderAll();
+  toast('回忆接上了：现在走到 ' + chapterOfStage(target) + '-' + subOfStage(target) + '。', 'gold', 3000);
 }
 function openRebirthModal() {
   const unlocked = state.stage.maxCleared >= STAGES.length;
@@ -12393,6 +12076,7 @@ function doRebirth() {
   state.rebirth.count = num(state.rebirth.count, 0) + 1;
   state.items.eternal = num(state.items.eternal, 0) + gain;
   state.quests.metrics.rebirths = num(state.quests.metrics.rebirths, 0) + 1;
+  state.stage.recall = Math.max(num(state.stage.recall, 0), num(state.stage.maxCleared, 0));
   state.stage.maxCleared = 0;
   state.stage.stars = {};
   UI.tab = 'home';
@@ -12546,6 +12230,7 @@ function handleActionClick(event) {
 
     case 'closeModal': closeModal(); break;
     case 'finalEnding': chooseFinalEnding(target.dataset.code); break;
+    case 'recallRush': recallRush(); break;
     case 'openSettings': openSettingsModal(); break;
     case 'openRebirth': openRebirthModal(); break;
 
