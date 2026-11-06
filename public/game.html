@@ -591,6 +591,10 @@ img{max-width:100%}
 .skill-ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;font-size:17px;background:#fff1dd;border:1px solid #f0d8b7;flex:0 0 auto}
 .skill-row.ult .skill-ico{background:#f0e8ff;border-color:#d8c4f4}
 .skill-row.active .skill-ico{background:#eaf8f1;border-color:#c5e9da}
+.skill-stats{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.skill-stat{display:inline-block;padding:1px 6px;border-radius:7px;background:#fff8ec;border:1px solid #efdcc2;color:#8a6b4a;font-size:9.5px;font-weight:600;line-height:15px;white-space:nowrap}
+.skill-stat:first-child{background:#fff1d6;border-color:#eccd97;color:#7a5a26}
+.skill-row .skill-info{min-width:0}
 .skill-info{flex:1;min-width:0}
 .skill-info b{font-size:12px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .skill-info p{margin:2px 0 0;font-size:10px;color:var(--muted);line-height:1.5}
@@ -2394,6 +2398,134 @@ const SKILLS = {
   i_ult: { name: '凛冬帷幕', kind: 'ult', icon: '🌨️', rageCost: 100, desc: '奥义：凛冬落下，伤害全体敌人，并为全队套盾、提升减伤。', effects: [{ type: 'damage', mult: 1.05, target: 'enemy_all' }, { type: 'shield', hpPct: 0.10, turns: 2, target: 'ally_all' }, { type: 'buff', stat: 'dr', pct: 0.08, turns: 2, target: 'ally_all' }] }
 };
 
+/* ===== 怪物专属技能：小怪与首领各有一套，不再借用宠物招式的名字与数值 =====
+   效果量级与宠物主动技同一档，避免动摇既有难度曲线 */
+const MONSTER_SKILLS = {
+  x_basic_grass: { name: "苔叶抽打", kind: "basic", icon: "🌿", rageGain: 35, desc: "把带着湿气的叶片甩向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_grass: { name: "藤蔓缠足", kind: "active", icon: "🌿", cooldown: 2, rageGain: 10, desc: "藤蔓绕住最前排，造成伤害并降低其速度 15%（2 回合）。", effects: [{ type: "damage", mult: 1.35, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.15, turns: 2, target: "enemy_front" }] },
+  x_ult_grass: { name: "蔓生怒潮", kind: "ult", icon: "🌿", rageCost: 100, desc: "整片藤蔓翻涌，伤害全体敌人，并为友方挂上持续回复。", effects: [{ type: "damage", mult: 1.05, target: "enemy_all" }, { type: "hot", target: "ally_all", hpPct: 0.03, turns: 2 }] },
+  x_basic_fire: { name: "灼手挠击", kind: "basic", icon: "🔥", rageGain: 35, desc: "带着火苗的爪子抓向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_fire: { name: "余烬飞溅", kind: "active", icon: "🔥", cooldown: 2, rageGain: 10, desc: "火星越过前排砸向后排，并挂上 3 回合灼烧。", effects: [{ type: "damage", mult: 1.45, target: "enemy_back" }, { type: "dot", dotKind: "burn", target: "enemy_back", mult: 0.06, turns: 3 }] },
+  x_ult_fire: { name: "焚风掠境", kind: "ult", icon: "🔥", rageCost: 100, desc: "热风扫遍全场，伤害全体并留下灼烧。", effects: [{ type: "damage", mult: 1.08, target: "enemy_all" }, { type: "dot", dotKind: "burn", target: "enemy_all", mult: 0.05, turns: 2 }] },
+  x_basic_water: { name: "潮泡拍击", kind: "basic", icon: "💧", rageGain: 35, desc: "鼓胀的水泡糊在前排脸上。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_water: { name: "漩涡拖拽", kind: "active", icon: "💧", cooldown: 2, rageGain: 10, desc: "旋流把人拽住，造成伤害并降低速度 20%。", effects: [{ type: "damage", mult: 1.4, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.2, turns: 2, target: "enemy_front" }] },
+  x_ult_water: { name: "涨潮奔涌", kind: "ult", icon: "💧", rageCost: 100, desc: "潮水漫过战场，伤害全体并治疗友方。", effects: [{ type: "damage", mult: 1.05, target: "enemy_all" }, { type: "heal", atkPct: 0.4, hpPct: 0.04, target: "ally_all" }] },
+  x_basic_light: { name: "光刺戳击", kind: "basic", icon: "✨", rageGain: 35, desc: "一束细光直戳前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_light: { name: "棱镜折射", kind: "active", icon: "✨", cooldown: 2, rageGain: 10, desc: "光被棱镜折向后排，伤害更高。", effects: [{ type: "damage", mult: 1.45, target: "enemy_back" }] },
+  x_ult_light: { name: "光辉普照", kind: "ult", icon: "✨", rageCost: 100, desc: "强光笼罩全场，伤害全体并为友方套盾。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "shield", hpPct: 0.08, turns: 2, target: "ally_all" }] },
+  x_basic_dark: { name: "影爪撕扯", kind: "basic", icon: "🌑", rageGain: 35, desc: "从阴影里伸出的爪子抓向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_dark: { name: "夜噬", kind: "active", icon: "🌑", cooldown: 2, rageGain: 10, desc: "黑暗咬住后排并吞下伤害化为自身生命。", effects: [{ type: "damage", mult: 1.5, target: "enemy_back" }, { type: "heal", atkPct: 0.3, hpPct: 0.05, target: "self" }] },
+  x_ult_dark: { name: "蚀月笼罩", kind: "ult", icon: "🌑", rageCost: 100, desc: "月光被吞掉，伤害全体并削弱防御。", effects: [{ type: "damage", mult: 1.05, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.1, turns: 2, target: "enemy_all" }] },
+  x_basic_earth: { name: "碎石砸击", kind: "basic", icon: "🪨", rageGain: 35, desc: "抓起碎石砸向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_earth: { name: "岩壁横推", kind: "active", icon: "🪨", cooldown: 2, rageGain: 10, desc: "整面岩壁推过去，同时给自己糊上碎石护甲。", effects: [{ type: "damage", mult: 1.4, target: "enemy_front" }, { type: "shield", hpPct: 0.15, turns: 2, target: "self" }] },
+  x_ult_earth: { name: "地脉震怒", kind: "ult", icon: "🪨", rageCost: 100, desc: "地脉一震，伤害全体并加固友方防御。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "buff", stat: "def", pct: 0.1, turns: 2, target: "ally_all" }] },
+  x_basic_wind: { name: "疾风啄", kind: "basic", icon: "🌪️", rageGain: 35, desc: "借风势啄向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_wind: { name: "旋切气流", kind: "active", icon: "🌪️", cooldown: 2, rageGain: 10, desc: "气流切成刃扫向后排，自身更轻快。", effects: [{ type: "damage", mult: 1.45, target: "enemy_back" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  x_ult_wind: { name: "狂风过境", kind: "ult", icon: "🌪️", rageCost: 100, desc: "全场被狂风扫过，伤害全体并提速。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "buff", stat: "spd", pct: 0.15, turns: 2, target: "ally_all" }] },
+  x_basic_ice: { name: "冰棱刺", kind: "basic", icon: "❄️", rageGain: 35, desc: "凝出一根冰棱刺向前排。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  x_active_ice: { name: "霜封", kind: "active", icon: "❄️", cooldown: 2, rageGain: 10, desc: "寒霜封住前排行动，伤害并降低速度 20%。", effects: [{ type: "damage", mult: 1.45, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.2, turns: 2, target: "enemy_front" }] },
+  x_ult_ice: { name: "极地暴雪", kind: "ult", icon: "❄️", rageCost: 100, desc: "暴雪压场，伤害全体并为友方套上冰盾。", effects: [{ type: "damage", mult: 1, target: "enemy_all" }, { type: "shield", hpPct: 0.08, turns: 2, target: "ally_all" }] },
+  x_sig_moss_slime: { name: "黏浆喷射", kind: "active", icon: "🟢", cooldown: 2, rageGain: 10, desc: "喷出黏浆糊住前排，自己回一点血。", effects: [{ type: "damage", mult: 1.25, target: "enemy_front" }, { type: "heal", atkPct: 0.2, hpPct: 0.06, target: "self" }] },
+  x_sig_thorncap: { name: "孢子散播", kind: "active", icon: "🍄", cooldown: 3, rageGain: 10, desc: "散开孢子，轻伤全体并挂上 3 回合毒蚀。", effects: [{ type: "damage", mult: 0.9, target: "enemy_all" }, { type: "dot", dotKind: "poison", target: "enemy_all", mult: 0.05, turns: 3 }] },
+  x_sig_ember_newt: { name: "烫尾横扫", kind: "active", icon: "🦎", cooldown: 2, rageGain: 10, desc: "火烫的尾巴扫向后排。", effects: [{ type: "damage", mult: 1.35, target: "enemy_back" }] },
+  x_sig_flame_imp: { name: "爆燃跳火", kind: "active", icon: "👺", cooldown: 3, rageGain: 10, desc: "纵身引爆火星，伤害全体并留下灼烧。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "dot", dotKind: "burn", target: "enemy_all", mult: 0.06, turns: 2 }] },
+  x_sig_bubble_fish: { name: "泡沫乱舞", kind: "active", icon: "🐟", cooldown: 2, rageGain: 10, desc: "满场泡沫糊住后排并拖慢对方。", effects: [{ type: "damage", mult: 1.3, target: "enemy_back" }, { type: "buff", stat: "spd", pct: -0.1, turns: 2, target: "enemy_back" }] },
+  x_sig_tide_crab: { name: "铁钳绞杀", kind: "active", icon: "🦀", cooldown: 3, rageGain: 10, desc: "钳住前排狠狠一绞，同时横起硬壳。", effects: [{ type: "damage", mult: 1.6, target: "enemy_front" }, { type: "shield", hpPct: 0.2, turns: 2, target: "self" }] },
+  x_sig_glow_wisp: { name: "微光乱闪", kind: "active", icon: "✨", cooldown: 2, rageGain: 10, desc: "乱闪的光点晃过去，自己也亮起来。", effects: [{ type: "damage", mult: 1.25, target: "enemy_back" }, { type: "energy", target: "self", rage: 10 }] },
+  x_sig_prism_sprite: { name: "折光斩", kind: "active", icon: "🌟", cooldown: 3, rageGain: 10, desc: "折成一道光刃切开后排，自身攻击更凶。", effects: [{ type: "damage", mult: 1.55, target: "enemy_back" }, { type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "self" }] },
+  x_sig_shade_bat: { name: "暗影扑", kind: "active", icon: "🦇", cooldown: 2, rageGain: 10, desc: "贴地飞扑后排。", effects: [{ type: "damage", mult: 1.4, target: "enemy_back" }] },
+  x_sig_night_wraith: { name: "夜啼", kind: "active", icon: "👻", cooldown: 3, rageGain: 10, desc: "一声夜啼震得全体发虚，攻击下降。", effects: [{ type: "damage", mult: 1.15, target: "enemy_all" }, { type: "buff", stat: "atk", pct: -0.15, turns: 2, target: "enemy_all" }] },
+  x_sig_pebble_golem: { name: "碎石投掷", kind: "active", icon: "🗿", cooldown: 2, rageGain: 10, desc: "抡起碎石砸后排，碎片溅到旁边。", effects: [{ type: "damage", mult: 1.45, target: "enemy_back", splash: 0.3 }] },
+  x_sig_rock_boar: { name: "岩甲冲锋", kind: "active", icon: "🐗", cooldown: 3, rageGain: 10, desc: "顶着岩甲整头撞向前排，自身变硬。", effects: [{ type: "damage", mult: 1.65, target: "enemy_front" }, { type: "buff", stat: "def", pct: 0.15, turns: 2, target: "self" }] },
+  x_sig_gale_chick: { name: "疾风连啄", kind: "active", icon: "🐦", cooldown: 2, rageGain: 10, desc: "连啄带风，顺势越打越快。", effects: [{ type: "damage", mult: 1.3, target: "enemy_front" }, { type: "buff", stat: "spd", pct: 0.2, turns: 2, target: "self" }] },
+  x_sig_storm_imp: { name: "雷暴滚筒", kind: "active", icon: "🌀", cooldown: 3, rageGain: 10, desc: "滚成一道雷暴扫过全场，自身加速。", effects: [{ type: "damage", mult: 1.2, target: "enemy_all" }, { type: "buff", stat: "spd", pct: 0.25, turns: 2, target: "self" }] },
+  x_sig_frost_pup: { name: "霜牙撕咬", kind: "active", icon: "🐺", cooldown: 2, rageGain: 10, desc: "咬着寒气扑上去，冻得对方变慢。", effects: [{ type: "damage", mult: 1.4, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.15, turns: 2, target: "enemy_front" }] },
+  x_sig_aurora_wolf: { name: "极光嚎叫", kind: "active", icon: "❄️", cooldown: 3, rageGain: 10, desc: "长嚎撕开极光，伤害全体并削弱防御。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.12, turns: 2, target: "enemy_all" }] },
+  b_basic_slime_king: { name: "王者弹压", kind: "basic", icon: "🟢", rageGain: 38, desc: "整个身子压下来，压完还回点血。", effects: [{ type: "damage", mult: 1.05, target: "enemy_front" }, { type: "heal", atkPct: 0.15, hpPct: 0.04, target: "self" }] },
+  b_sig1_slime_king: { name: "巨黏冲撞", kind: "active", icon: "🧪", cooldown: 2, rageGain: 12, desc: "黏成一坨撞向前排，并把自己裹进黏液护盾。", effects: [{ type: "damage", mult: 1.6, target: "enemy_front" }, { type: "shield", hpPct: 0.2, turns: 2, target: "self" }] },
+  b_sig2_slime_king: { name: "果冻震荡", kind: "active", icon: "🫨", cooldown: 3, rageGain: 12, desc: "全身一颤，冲击全体并泡软对方护甲。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.1, turns: 2, target: "enemy_all" }] },
+  b_ult_slime_king: { name: "王冠崩落", kind: "ult", icon: "👑", rageCost: 100, desc: "奥义：王冠砸落，重创全体并大量自愈。", effects: [{ type: "damage", mult: 1.25, target: "enemy_all" }, { type: "heal", atkPct: 0.4, hpPct: 0.1, target: "self" }] },
+  b_basic_caramel_fox: { name: "焦糖爪", kind: "basic", icon: "🔥", rageGain: 38, desc: "裹着焦糖火焰的一爪。", effects: [{ type: "damage", mult: 1.1, target: "enemy_front" }] },
+  b_sig1_caramel_fox: { name: "焰尾回旋", kind: "active", icon: "🦊", cooldown: 2, rageGain: 12, desc: "尾巴扫出一圈火，专打后排。", effects: [{ type: "damage", mult: 1.55, target: "enemy_back" }] },
+  b_sig2_caramel_fox: { name: "糖衣爆裂", kind: "active", icon: "🍬", cooldown: 3, rageGain: 12, desc: "糖衣炸开，伤害全体并留下灼烧。", effects: [{ type: "damage", mult: 1.15, target: "enemy_all" }, { type: "dot", dotKind: "burn", target: "enemy_all", mult: 0.07, turns: 3 }] },
+  b_ult_caramel_fox: { name: "焦糖焚野", kind: "ult", icon: "🔥", rageCost: 100, desc: "奥义：整片原野烧成焦糖色，重创全体并激怒自己。", effects: [{ type: "damage", mult: 1.3, target: "enemy_all" }, { type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "self" }] },
+  b_basic_tide_lord: { name: "潮语重压", kind: "basic", icon: "💧", rageGain: 38, desc: "水压沉下来，压得前排迈不动腿。", effects: [{ type: "damage", mult: 1.05, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.1, turns: 2, target: "enemy_front" }] },
+  b_sig1_tide_lord: { name: "涡流绞缠", kind: "active", icon: "🌀", cooldown: 2, rageGain: 12, desc: "涡流把人卷住，伤害并大幅降速。", effects: [{ type: "damage", mult: 1.5, target: "enemy_front" }, { type: "buff", stat: "spd", pct: -0.2, turns: 2, target: "enemy_front" }] },
+  b_sig2_tide_lord: { name: "深海帷幕", kind: "active", icon: "🫧", cooldown: 3, rageGain: 12, desc: "拉下深海的帷幕，为全队套盾并加防。", effects: [{ type: "shield", hpPct: 0.15, turns: 2, target: "ally_all" }, { type: "buff", stat: "def", pct: 0.12, turns: 2, target: "ally_all" }] },
+  b_ult_tide_lord: { name: "领主潮汐", kind: "ult", icon: "🌊", rageCost: 100, desc: "奥义：潮汐淹没战场，重创全体并治疗友方。", effects: [{ type: "damage", mult: 1.2, target: "enemy_all" }, { type: "heal", atkPct: 0.45, hpPct: 0.06, target: "ally_all" }] },
+  b_basic_honey_bear: { name: "蜜甲拍击", kind: "basic", icon: "🍯", rageGain: 38, desc: "一巴掌拍向前排，蜂蜜甲越拍越硬。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }, { type: "buff", stat: "def", pct: 0.1, turns: 2, target: "self" }] },
+  b_sig1_honey_bear: { name: "金甲碾压", kind: "active", icon: "🐻", cooldown: 2, rageGain: 12, desc: "整身金甲碾过去，同时更硬。", effects: [{ type: "damage", mult: 1.6, target: "enemy_front" }, { type: "shield", hpPct: 0.22, turns: 2, target: "self" }] },
+  b_sig2_honey_bear: { name: "蜂群援护", kind: "active", icon: "🐝", cooldown: 3, rageGain: 12, desc: "唤起蜂群，治疗全队并加防。", effects: [{ type: "heal", atkPct: 0.5, hpPct: 0.06, target: "ally_all" }, { type: "buff", stat: "def", pct: 0.12, turns: 2, target: "ally_all" }] },
+  b_ult_honey_bear: { name: "熊王坐镇", kind: "ult", icon: "👑", rageCost: 100, desc: "奥义：怒吼坐镇，伤害全体并为全队糊上蜜甲护盾。", effects: [{ type: "damage", mult: 1.15, target: "enemy_all" }, { type: "shield", hpPct: 0.12, turns: 2, target: "ally_all" }] },
+  b_basic_moon_demon: { name: "蚀月刺", kind: "basic", icon: "🌑", rageGain: 38, desc: "月蚀下的一记暗刺，专挑后排。", effects: [{ type: "damage", mult: 1.15, target: "enemy_back" }] },
+  b_sig1_moon_demon: { name: "幽影连斩", kind: "active", icon: "🗡️", cooldown: 2, rageGain: 12, desc: "影子连斩两下，重伤后排。", effects: [{ type: "damage", mult: 1.6, target: "enemy_back" }] },
+  b_sig2_moon_demon: { name: "月蚀诅咒", kind: "active", icon: "🌒", cooldown: 3, rageGain: 12, desc: "月光被吞，全体攻击下降并持续蚀血。", effects: [{ type: "buff", stat: "atk", pct: -0.18, turns: 2, target: "enemy_all" }, { type: "dot", dotKind: "poison", target: "enemy_all", mult: 0.05, turns: 2 }] },
+  b_ult_moon_demon: { name: "蚀月降临", kind: "ult", icon: "🌑", rageCost: 100, desc: "奥义：月亮彻底被吞，重创全体。", effects: [{ type: "damage", mult: 1.3, target: "enemy_all" }] },
+  b_basic_cloud_whale: { name: "光翼拍浪", kind: "basic", icon: "🐋", rageGain: 38, desc: "巨翼拍下，前排一晃。", effects: [{ type: "damage", mult: 1, target: "enemy_front" }] },
+  b_sig1_cloud_whale: { name: "云涛喷射", kind: "active", icon: "💠", cooldown: 2, rageGain: 12, desc: "喷出一整片云涛，波及旁边的敌人。", effects: [{ type: "damage", mult: 1.5, target: "enemy_front", splash: 0.3 }] },
+  b_sig2_cloud_whale: { name: "云端护佑", kind: "active", icon: "☁️", cooldown: 3, rageGain: 12, desc: "云层裹住全队，回血并套盾。", effects: [{ type: "heal", atkPct: 0.55, hpPct: 0.06, target: "ally_all" }, { type: "shield", hpPct: 0.1, turns: 2, target: "ally_all" }] },
+  b_ult_cloud_whale: { name: "鲸落光潮", kind: "ult", icon: "🌊", rageCost: 100, desc: "奥义：光潮随鲸落压下来，重创全体并治疗友方。", effects: [{ type: "damage", mult: 1.2, target: "enemy_all" }, { type: "heal", atkPct: 0.35, hpPct: 0.05, target: "ally_all" }] },
+  b_basic_magma_drake: { name: "熔爪", kind: "basic", icon: "🐲", rageGain: 38, desc: "熔岩爪子抓下来。", effects: [{ type: "damage", mult: 1.1, target: "enemy_front" }] },
+  b_sig1_magma_drake: { name: "熔核吐息", kind: "active", icon: "🌋", cooldown: 2, rageGain: 12, desc: "一口熔核吐息，前排重伤并灼烧 3 回合。", effects: [{ type: "damage", mult: 1.65, target: "enemy_front" }, { type: "dot", dotKind: "burn", target: "enemy_front", mult: 0.08, turns: 3 }] },
+  b_sig2_magma_drake: { name: "岩浆涌动", kind: "active", icon: "🔥", cooldown: 3, rageGain: 12, desc: "岩浆漫过全场，伤害全体并灼烧。", effects: [{ type: "damage", mult: 1.1, target: "enemy_all" }, { type: "dot", dotKind: "burn", target: "enemy_all", mult: 0.05, turns: 2 }] },
+  b_ult_magma_drake: { name: "熔狱喷发", kind: "ult", icon: "🌋", rageCost: 100, desc: "奥义：地底熔狱喷发，重创全体。", effects: [{ type: "damage", mult: 1.35, target: "enemy_all" }] },
+  b_basic_star_beast: { name: "星潮撞", kind: "basic", icon: "🌊", rageGain: 38, desc: "裹着星光的浪头撞向前排。", effects: [{ type: "damage", mult: 1.05, target: "enemy_front" }] },
+  b_sig1_star_beast: { name: "潮涌冲压", kind: "active", icon: "🌠", cooldown: 2, rageGain: 12, desc: "潮水加压，撞开前排并波及旁人。", effects: [{ type: "damage", mult: 1.55, target: "enemy_front", splash: 0.25 }] },
+  b_sig2_star_beast: { name: "星辉屏障", kind: "active", icon: "🛡️", cooldown: 3, rageGain: 12, desc: "星光织成屏障，为全队套上厚盾。", effects: [{ type: "shield", hpPct: 0.18, turns: 2, target: "ally_all" }] },
+  b_ult_star_beast: { name: "星潮灭顶", kind: "ult", icon: "🌌", rageCost: 100, desc: "奥义：星潮漫过顶，重创全体并削弱护甲。", effects: [{ type: "damage", mult: 1.25, target: "enemy_all" }, { type: "buff", stat: "def", pct: -0.1, turns: 2, target: "enemy_all" }] },
+  b_basic_prism_queen: { name: "幻光翎", kind: "basic", icon: "🦋", rageGain: 38, desc: "一片会折射的翎羽飞向后排。", effects: [{ type: "damage", mult: 1, target: "enemy_back" }] },
+  b_sig1_prism_queen: { name: "棱镜双斩", kind: "active", icon: "✨", cooldown: 2, rageGain: 12, desc: "折出两道刃，斩向后排并溅射。", effects: [{ type: "damage", mult: 1.5, target: "enemy_back", splash: 0.35 }] },
+  b_sig2_prism_queen: { name: "幻彩罩", kind: "active", icon: "🌈", cooldown: 3, rageGain: 12, desc: "幻彩罩住全队，护盾加提速。", effects: [{ type: "shield", hpPct: 0.14, turns: 2, target: "ally_all" }, { type: "buff", stat: "spd", pct: 0.15, turns: 2, target: "ally_all" }] },
+  b_ult_prism_queen: { name: "万花折射", kind: "ult", icon: "🌈", rageCost: 100, desc: "奥义：万花镜展开，重创全体并激励友方攻击。", effects: [{ type: "damage", mult: 1.25, target: "enemy_all" }, { type: "buff", stat: "atk", pct: 0.15, turns: 2, target: "ally_all" }] },
+  b_basic_peak_titan: { name: "石心锤", kind: "basic", icon: "🗿", rageGain: 38, desc: "石心凝成锤子砸下来，砸完更硬。", effects: [{ type: "damage", mult: 1.05, target: "enemy_front" }, { type: "buff", stat: "def", pct: 0.1, turns: 2, target: "self" }] },
+  b_sig1_peak_titan: { name: "山岳崩塌", kind: "active", icon: "⛰️", cooldown: 2, rageGain: 12, desc: "整座山压向前排，极重的一击。", effects: [{ type: "damage", mult: 1.7, target: "enemy_front" }] },
+  b_sig2_peak_titan: { name: "岩心硬化", kind: "active", icon: "🛡️", cooldown: 3, rageGain: 12, desc: "岩心锁死，厚盾加高防。", effects: [{ type: "shield", hpPct: 0.25, turns: 2, target: "self" }, { type: "buff", stat: "def", pct: 0.2, turns: 2, target: "self" }] },
+  b_ult_peak_titan: { name: "大地裂变", kind: "ult", icon: "🌋", rageCost: 100, desc: "奥义：大地裂开，重创全体并为全队加防。", effects: [{ type: "damage", mult: 1.2, target: "enemy_all" }, { type: "buff", stat: "def", pct: 0.12, turns: 2, target: "ally_all" }] },
+};
+Object.assign(SKILLS, MONSTER_SKILLS);
+// 小怪：元素通用普攻 + 元素主动 + 自己的招牌技 + 元素奥义
+const MOB_SKILL_KEYS = {
+  moss_slime: ['x_basic_grass', 'x_active_grass', 'x_sig_moss_slime', 'x_ult_grass'],
+  thorncap: ['x_basic_grass', 'x_active_grass', 'x_sig_thorncap', 'x_ult_grass'],
+  ember_newt: ['x_basic_fire', 'x_active_fire', 'x_sig_ember_newt', 'x_ult_fire'],
+  flame_imp: ['x_basic_fire', 'x_active_fire', 'x_sig_flame_imp', 'x_ult_fire'],
+  bubble_fish: ['x_basic_water', 'x_active_water', 'x_sig_bubble_fish', 'x_ult_water'],
+  tide_crab: ['x_basic_water', 'x_active_water', 'x_sig_tide_crab', 'x_ult_water'],
+  glow_wisp: ['x_basic_light', 'x_active_light', 'x_sig_glow_wisp', 'x_ult_light'],
+  prism_sprite: ['x_basic_light', 'x_active_light', 'x_sig_prism_sprite', 'x_ult_light'],
+  shade_bat: ['x_basic_dark', 'x_active_dark', 'x_sig_shade_bat', 'x_ult_dark'],
+  night_wraith: ['x_basic_dark', 'x_active_dark', 'x_sig_night_wraith', 'x_ult_dark'],
+  pebble_golem: ['x_basic_earth', 'x_active_earth', 'x_sig_pebble_golem', 'x_ult_earth'],
+  rock_boar: ['x_basic_earth', 'x_active_earth', 'x_sig_rock_boar', 'x_ult_earth'],
+  gale_chick: ['x_basic_wind', 'x_active_wind', 'x_sig_gale_chick', 'x_ult_wind'],
+  storm_imp: ['x_basic_wind', 'x_active_wind', 'x_sig_storm_imp', 'x_ult_wind'],
+  frost_pup: ['x_basic_ice', 'x_active_ice', 'x_sig_frost_pup', 'x_ult_ice'],
+  aurora_wolf: ['x_basic_ice', 'x_active_ice', 'x_sig_aurora_wolf', 'x_ult_ice'],
+};
+// 首领：自己的普攻 + 两个招牌技 + 自己的奥义
+const BOSS_SKILL_KEYS = {
+  slime_king: ['b_basic_slime_king', 'b_sig1_slime_king', 'b_sig2_slime_king', 'b_ult_slime_king'],
+  caramel_fox: ['b_basic_caramel_fox', 'b_sig1_caramel_fox', 'b_sig2_caramel_fox', 'b_ult_caramel_fox'],
+  tide_lord: ['b_basic_tide_lord', 'b_sig1_tide_lord', 'b_sig2_tide_lord', 'b_ult_tide_lord'],
+  honey_bear: ['b_basic_honey_bear', 'b_sig1_honey_bear', 'b_sig2_honey_bear', 'b_ult_honey_bear'],
+  moon_demon: ['b_basic_moon_demon', 'b_sig1_moon_demon', 'b_sig2_moon_demon', 'b_ult_moon_demon'],
+  cloud_whale: ['b_basic_cloud_whale', 'b_sig1_cloud_whale', 'b_sig2_cloud_whale', 'b_ult_cloud_whale'],
+  magma_drake: ['b_basic_magma_drake', 'b_sig1_magma_drake', 'b_sig2_magma_drake', 'b_ult_magma_drake'],
+  star_beast: ['b_basic_star_beast', 'b_sig1_star_beast', 'b_sig2_star_beast', 'b_ult_star_beast'],
+  prism_queen: ['b_basic_prism_queen', 'b_sig1_prism_queen', 'b_sig2_prism_queen', 'b_ult_prism_queen'],
+  peak_titan: ['b_basic_peak_titan', 'b_sig1_peak_titan', 'b_sig2_peak_titan', 'b_ult_peak_titan'],
+};
+function mobIdByElement(element) {
+  const m = MOB_DEFS.find(x => x.element === element && !x.elite) || MOB_DEFS[0];
+  return m ? m.id : 'moss_slime';
+}
+function enemySkillSlots(kind, id, element) {
+  const keys = kind === 'boss' ? BOSS_SKILL_KEYS[id] : (kind === 'mob' ? MOB_SKILL_KEYS[id] : null);
+  const list = keys || (kind === 'mob' ? MOB_SKILL_KEYS[mobIdByElement(element)] : null);
+  if (!list) return null;
+  return list.map((key, i) => ({ def: SKILLS[key], level: 1, index: i })).filter(e => e.def);
+}
+
 // 20 只萌宠。base 为 1 级基础值，growth 为每级线性成长值。
 const PETS = [
   {
@@ -3141,25 +3273,25 @@ const FRAMES = [
 const FRAME_MAP = Object.fromEntries(FRAMES.map(f => [f.id, f]));
 
 const DAILY_TASKS = [
-  { id: 'd_login', name: '小镇报到', icon: '🐾', desc: '打开周思汐的小镇即可完成。', metric: 'login', target: 1, reward: { crystal: 20, fruit: 5 } },
-  { id: 'd_battle', name: '热身战斗', icon: '⚔️', desc: '进行 3 场战斗。', metric: 'battles', target: 3, reward: { gold: 900, fruit: 8 } },
+  { id: 'd_login', name: '小镇报到', icon: '🐾', desc: '打开周思汐的小镇即可完成。', metric: 'login', target: 1, reward: { crystal: 20, fruit: 8 } },
+  { id: 'd_battle', name: '热身战斗', icon: '⚔️', desc: '进行 3 场战斗。', metric: 'battles', target: 3, reward: { gold: 900, fruit: 14 } },
   { id: 'd_win', name: '认真赢一场', icon: '🏅', desc: '赢得 1 场战斗。', metric: 'wins', target: 1, reward: { crystal: 35 } },
   { id: 'd_pull', name: '遇见新朋友', icon: '🥚', desc: '抽蛋 1 次。', metric: 'pulls', target: 1, reward: { gold: 500, crystal: 15 } },
-  { id: 'd_feed', name: '爱心投喂', icon: '🍓', desc: '喂食 3 次。', metric: 'feeds', target: 3, reward: { fruit: 20, bondBadge: 1 } },
+  { id: 'd_feed', name: '爱心投喂', icon: '🍓', desc: '喂食 3 次。', metric: 'feeds', target: 3, reward: { fruit: 30, bondBadge: 1 } },
   { id: 'd_sweep', name: '清剿一回', icon: '🧹', desc: '扫荡或通关任意关卡 1 次。', metric: 'stageClears', target: 1, reward: { gold: 700, equipShard: 10 } },
   { id: 'd_arena', name: '竞技场露脸', icon: '🏟️', desc: '参加 1 场竞技场。', metric: 'arenaBattles', target: 1, reward: { arenaCoin: 20, crystal: 20 } },
-  { id: 'd_level', name: '成长一点点', icon: '🌱', desc: '宠物升级 5 次。', metric: 'levelUps', target: 5, reward: { fruit: 25, skillBook: 1 } },
+  { id: 'd_level', name: '成长一点点', icon: '🌱', desc: '宠物升级 5 次。', metric: 'levelUps', target: 5, reward: { fruit: 38, skillBook: 1 } },
   { id: 'd_enhance', name: '装备保养', icon: '🔨', desc: '强化装备 1 次。', metric: 'enhancements', target: 1, reward: { enhanceStone: 3, gold: 600 } }
 ];
 
 const SIGNIN_REWARDS = [
-  { gold: 1200, fruit: 10 },
-  { fruit: 25, crystal: 30 },
+  { gold: 1200, fruit: 16 },
+  { fruit: 40, crystal: 30 },
   { crystal: 120, equipShard: 15 },
   { gold: 3000, skillBook: 1 },
   { stonesRandom: 3, starShard: 5 },
   { crystal: 200, enhanceStone: 5 },
-  { crystal: 300, fruit: 50, frame: 'moon' }
+  { crystal: 300, fruit: 75, frame: 'moon' }
 ];
 
 const TUTORIAL_STEPS = [
@@ -4318,6 +4450,8 @@ const MAX_STAMINA = 100;
 const MAX_CHALLENGE = 10;
 const STAMINA_REGEN_MS = 5 * 60 * 1000;
 const IDLE_RATE_DIVISOR = 15;
+// 挂机经验果单独再加 50%：金币节奏不动，只补果子（升级需求比金币重得多）
+const IDLE_FRUIT_BOOST = 1.5;
 const CHALLENGE_REGEN_MS = 30 * 60 * 1000;
 const STAGE_STAMINA_COST = 6;
 // 扫荡只是省时间，不该和真打一样贵
@@ -5761,7 +5895,7 @@ function calcIdleRates(ignoreBoost = false) {
   return {
     // 挂机产出 ÷15：原来 1 小时挂机 ≈ 60 关的金币、120 关的果实，把关卡经济彻底淹掉了
     gold: stage.baseGold * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
-    fruit: stage.baseFruit * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
+    fruit: stage.baseFruit * efficiency * eternalBonus * boostMult * idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR,
     stage,
     teamPower,
     efficiency,
@@ -6333,7 +6467,7 @@ function makeEnemyRuntime(templateId, level, index, options = {}) {
     isBoss,
     artKind: options.artKind || null,
     artId: options.artId || null,
-    skills: template.skills.map((id, i) => ({ def: SKILLS[id], level: 1, index: i }))
+    skills: enemySkillSlots(options.artKind, options.artId, options.element || template.element) || template.skills.map((id, i) => ({ def: SKILLS[id], level: 1, index: i }))
   };
 }
 
@@ -6467,7 +6601,7 @@ function buildDailyBossEnemy() {
     shiny: false,
     isBoss: true,
     raidBoss: true,
-    skills: template.skills.map((id, i) => ({ def: SKILLS[id], level: 2, index: i }))
+    skills: enemySkillSlots('boss', info.bossId, info.element) || template.skills.map((id, i) => ({ def: SKILLS[id], level: 2, index: i }))
   };
 }
 
@@ -7291,6 +7425,39 @@ function markActiveTurn(uid) {
   if (!uid) return;
   const el = getBattleUnitEl(uid);
   if (el) el.classList.add('active-turn');
+}
+const SKILL_STAT_LABEL = { hp: '生命', atk: '攻击', def: '防御', spd: '速度' };
+const SKILL_TARGET_LABEL = { enemy_front: '前排', enemy_back: '后排', enemy_all: '全体', enemy_lowest: '残血', ally_all: '我方全体', ally_lowest: '最脆友方', ally_fallen: '倒下友方', self: '自身' };
+// 把技能效果翻译成可读的数值标签（技能等级越高，数字越大）
+function skillStatChips(skill, lv = 1) {
+  const effects = (skill && skill.effects) || [];
+  const scale = 1 + (Math.max(1, Math.min(10, lv)) - 1) * 0.06;
+  const pct = v => Math.round(v * scale * 100) + '%';
+  const who = tg => SKILL_TARGET_LABEL[tg] || '';
+  const chips = [];
+  for (const e of effects) {
+    if (e.type === 'damage') chips.push(`⚔ 伤害 ${pct(num(e.mult, 1))}${who(e.target) ? '·' + who(e.target) : ''}${num(e.splash, 0) ? '（溅射 ' + pct(num(e.splash, 0)) + '）' : ''}`);
+    else if (e.type === 'heal') {
+      const bits = [];
+      if (num(e.atkPct, 0)) bits.push('攻击×' + pct(num(e.atkPct, 0)));
+      if (num(e.hpPct, 0)) bits.push('生命' + pct(num(e.hpPct, 0)));
+      chips.push('💚 治疗 ' + bits.join('+') + (who(e.target) ? '·' + who(e.target) : ''));
+    }
+    else if (e.type === 'shield') chips.push('🛡 护盾 ' + pct(num(e.hpPct, 0)) + ' · ' + Math.max(1, Math.floor(num(e.turns, 2))) + '回合');
+    else if (e.type === 'buff') {
+      const stat = SKILL_STAT_LABEL[e.stat] || e.stat;
+      const v = num(e.pct, 0);
+      chips.push('📈 ' + stat + (v >= 0 ? '+' : '') + Math.round(v * 100) + '% · ' + Math.max(1, Math.floor(num(e.turns, 2))) + '回合');
+    }
+    else if (e.type === 'dot') chips.push('🔥 ' + (e.dotKind === 'poison' ? '毒蚀' : '灼烧') + ' ' + pct(num(e.mult, 0.05)) + '×' + Math.max(1, Math.floor(num(e.turns, 3))) + '回合');
+    else if (e.type === 'hot') chips.push('🌿 回复 ' + pct(num(e.hpPct, 0.03)) + '×' + Math.max(1, Math.floor(num(e.turns, 2))) + '回合');
+    else if (e.type === 'energy') chips.push('⚡ 充能 +' + Math.round(num(e.rage, 8)));
+    else if (e.type === 'revive') chips.push('🪶 复活 ' + pct(num(e.hpPct, 0.35)));
+  }
+  if (skill && skill.kind === 'ult') chips.push('🔥 奥义 · 耗怒 100');
+  else if (skill && skill.kind === 'basic') chips.push('⚡ 怒气 +' + Math.round(num(skill.rageGain, 35)));
+  else if (skill && num(skill.cooldown, 0)) chips.push('⏱ 冷却 ' + num(skill.cooldown, 0) + ' 回合');
+  return chips;
 }
 function skillEffectTags(skill) {
   const effects = (skill && skill.effects) || [];
@@ -9716,9 +9883,10 @@ function openPetModal(uid) {
     if (!skill) return '';
     const lv = getSkillLevel(pet, i);
     const label = i === 0 ? '普攻' : i === 1 ? '主动一' : i === 2 ? '主动二' : '奥义';
+    const statChips = skillStatChips(skill, lv);
     return `<div class="skill-row">
       <span class="skill-ico">${skill.icon}</span>
-      <div class="skill-info"><b>${esc(skill.name)} <span class="chip">Lv.${lv}</span> <span class="tiny muted">${label}</span></b><p>${esc(skill.desc)}</p></div>
+      <div class="skill-info"><b>${esc(skill.name)} <span class="chip">Lv.${lv}</span> <span class="tiny muted">${label}</span></b><p>${esc(skill.desc)}</p><div class="skill-stats">${statChips.map(c => `<span class="skill-stat">${esc(c)}</span>`).join('')}</div></div>
       <button class="btn btn-ghost btn-xs" type="button" data-act="upgradeSkill" data-uid="${pet.uid}" data-index="${i}" ${lv >= 10 || state.items.skillBook < 1 ? 'disabled' : ''}>📘升级</button>
     </div>`;
   }).join('');
@@ -10181,6 +10349,8 @@ const GARDEN_TIERS = [
   { minutes: 60,  gold: 260, fruit: 28 }
 ];
 function gardenTier(i) { return GARDEN_TIERS[i] || GARDEN_TIERS[GARDEN_TIERS.length - 1]; }
+// 经验果产出系数：升级吃果子太凶，菜园是主要果园，统一乘一个可调系数（金币不动）
+const GARDEN_FRUIT_BOOST = 1.7;
 // 金币收成随主线温和成长（最高 ×1.42），经验果不缩放：果实是稀缺资源，不能靠种地无限刷
 function gardenProgressMult() {
   return 1 + clamp(num(state.stage.maxCleared, 0), 0, 70) * 0.006;
@@ -10198,7 +10368,7 @@ function gardenPerHour() {
   for (let i = 0; i < GARDEN_SIZE; i++) {
     const t = gardenTier(i);
     gold += Math.round(t.gold * mult) * (60 / t.minutes);
-    fruit += t.fruit * (60 / t.minutes);
+    fruit += t.fruit * GARDEN_FRUIT_BOOST * (60 / t.minutes);
   }
   return { gold: Math.round(gold), fruit: Math.round(fruit) };
 }
@@ -10320,7 +10490,7 @@ function gardenHarvest(i) {
   const t = gardenTier(i);
   const mult = gardenProgressMult();
   const gold = Math.round(num(p.gold, t.gold) * mult);
-  const fruit = Math.round(num(p.fruit, t.fruit));
+  const fruit = Math.round(num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST);
   addReward({ gold, fruit, ...gardenDropBonus() });
   bumpMetric('gardens', 1);
   p.state = 'empty';

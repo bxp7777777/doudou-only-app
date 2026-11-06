@@ -492,6 +492,42 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('data-act="battleMoreMenu" id="btnMoreMenu"') && text.includes('id="battleMoreMenu"'), '控制条应有「⋯ 更多」菜单');
   check(text.includes("function battleMoreMenu()") && text.includes("function closeBattleMore()"), '更多菜单应可开可关');
   check(text.includes('data-act="battleLogToggle"'), '战报浮层应可点开');
+  const monBlock = text.slice(text.indexOf('const MONSTER_SKILLS = {'), text.indexOf('Object.assign(SKILLS, MONSTER_SKILLS);'));
+  check((monBlock.match(/^  (x_|b_)[a-z0-9_]+: \{ name: /gm) || []).length === 80, '小怪/首领应有 80 个专属技能');
+  check(text.includes('Object.assign(SKILLS, MONSTER_SKILLS);') && text.includes('const MOB_SKILL_KEYS = {') && text.includes('const BOSS_SKILL_KEYS = {'), '怪物技能应挂进技能表并绑定到小怪/首领');
+  check(text.includes("skills: enemySkillSlots(options.artKind, options.artId, options.element || template.element)"), '小怪应改用自己的技能组');
+  check(text.includes("skills: enemySkillSlots('boss', info.bossId, info.element)"), '每日首领应改用自己的技能组');
+  let clash = 0;
+  if (typeof SKILLS === 'object' && typeof MONSTER_SKILLS === 'object') {
+    const petNames = new Set();
+    for (const p of PETS) for (const id of p.skills) if (SKILLS[id]) petNames.add(SKILLS[id].name);
+    for (const sk of Object.values(MONSTER_SKILLS)) if (petNames.has(sk.name)) clash++;
+    check(Object.keys(MONSTER_SKILLS).length === 80, '怪物技能表应有 80 条');
+    check(Object.values(MONSTER_SKILLS).every(sk => sk.desc && sk.effects && sk.effects.length), '每条怪物技能都要有说明和效果');
+  }
+  check(clash === 0, '怪物技能名字不能和宠物技能重名（重名 ' + clash + ' 条）');
+  if (typeof enemySkillSlots === 'function') {
+    const m = enemySkillSlots('mob', 'frost_pup', 'ice');
+    const b = enemySkillSlots('boss', 'peak_titan', 'earth');
+    check(m.length === 4 && m[0].def.kind === 'basic' && m[3].def.kind === 'ult', '小怪技能应是 普攻/主动/主动/奥义 四格');
+    check(b.length === 4 && b.every(x => x.def && x.def.name), '首领技能应是 4 个专属技');
+    check(b[0].def.name !== m[0].def.name, '首领普攻不能和小怪普攻同名');
+  }
+  check(text.includes('function skillStatChips(skill, lv = 1)'), '技能应有数值标签生成函数');
+  check(text.includes('<div class="skill-stats">${statChips.map('), '宠物技能行应渲染数值标签');
+  check(text.includes('.skill-stat{display:inline-block;'), '数值标签应有样式');
+  if (typeof skillStatChips === 'function') {
+    const chips = skillStatChips(SKILLS.pig_ult, 1);
+    check(chips.some(c => /伤害 105%/.test(c)) && chips.some(c => /耗怒 100/.test(c)), '奥义标签应带伤害与耗怒数值');
+    const basic = skillStatChips(SKILLS.pig_basic, 1);
+    check(basic.some(c => /怒气 \+35/.test(c)), '普攻标签应带怒气数值');
+    const lv10 = skillStatChips(SKILLS.pig_ult, 10);
+    check(lv10.some(c => /伤害 162%/.test(c)), '技能等级应放大数值');
+  }
+  check(text.includes('const GARDEN_FRUIT_BOOST = 1.7;') && text.includes('num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST'), '收菜经验果应乘产出系数');
+  check(text.includes('t.fruit * GARDEN_FRUIT_BOOST * (60 / t.minutes)'), '菜园时产预览也要算系数');
+  check(text.includes('const IDLE_FRUIT_BOOST = 1.5;') && text.includes('idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR'), '挂机经验果应有单独加成');
+  check(text.includes("reward: { fruit: 30, bondBadge: 1 }") && text.includes("reward: { fruit: 38, skillBook: 1 }"), '每日任务经验果应提高');
   check(text.includes("early.classList.toggle('b-hide', !ready && !b.earlyUltUsed)"), '提前大招未就绪时应收起');
   check(text.includes('b.logIdleTimer = setTimeout') && text.includes('.battle-log.idle{opacity:.3}'), '战报安静后应转淡');
   check(text.includes('.battle-layer .b-unit.boss-unit .art-frame.art-battle{width:128px;height:128px}'), '小屏首领立绘应放大到 128px');
