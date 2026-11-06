@@ -433,6 +433,10 @@ if (typeof globalThis.migrateStageLayout5 === 'function') {
   check(text.includes('function teamPresetSave') && text.includes('function teamPresetLoad'), '缺少阵容预设');
   check(text.includes('data-act="exchangeJump"') && text.includes('id="ex-gold"'), '兑换页缺少分段锚点');
   check(text.includes('function offlineCapSec') && text.includes("case 'buyOfflineCap'"), '离线时长升级缺失');
+  check(text.includes('function artRhythm') && text.includes('function petAnimDecorate'), '立绘动画逻辑缺失');
+  check(text.includes('art-alive') && text.includes('data-petanim'), '立绘动画样式缺失');
+  check(text.includes('function togglePetAnim') && text.includes("case 'togglePetAnim'"), '立绘动画开关缺失');
+  check(text.includes('art-fly') && text.includes('art-heavy'), '立绘分体质感节奏缺失');
 
   check(text.includes("register('/sw.js')") || text.includes("register(\"/sw.js\")"), '开局页缺少 service worker 注册');
   check(text.includes('game.webmanifest'), '开局页缺少 PWA manifest 引用');

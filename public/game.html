@@ -1738,6 +1738,25 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .icon-btn{width:44px;height:44px}
 .btn-xs{min-height:44px;padding:6px 10px;font-size:11px}
 
+/* ---------- 立绘活物感：呼吸 + 摇摆 + 随机小动作 ---------- */
+@keyframes artBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(.984,1.032)}}
+@keyframes artSway{0%,100%{transform:rotate(-.9deg) translateY(.4px)}50%{transform:rotate(.9deg) translateY(-1.6px)}}
+@keyframes artFly{0%,100%{transform:rotate(-2.4deg) translate3d(0,1.6px,0)}50%{transform:rotate(2.4deg) translate3d(0,-3.6px,0)}}
+@keyframes artBounce{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-15%) scale(1.05,.95)}58%{transform:translateY(0) scale(.96,1.05)}100%{transform:translateY(0) scale(1)}}
+@keyframes artTilt{0%{transform:rotate(0)}26%{transform:rotate(-7deg) translateY(-2px)}62%{transform:rotate(7deg) translateY(-2px)}100%{transform:rotate(0)}}
+html[data-petanim="1"] .art-alive{animation:artSway var(--sway,8.4s) ease-in-out calc(-1 * var(--delay,0s)) infinite;transform-origin:50% 90%;will-change:transform}
+html[data-petanim="1"] .art-alive>img{animation:artBreathe var(--breathe,3.9s) ease-in-out calc(-1 * var(--delay,0s)) infinite;transform-origin:50% 86%}
+html[data-petanim="1"] .art-alive.art-fly{animation-name:artFly;animation-duration:var(--sway,5.2s)}
+html[data-petanim="1"] .art-alive.art-heavy{animation-duration:var(--sway,11s)}
+html[data-petanim="1"] .art-alive.art-act-bounce{animation:artBounce .78s cubic-bezier(.3,.9,.4,1.2)}
+html[data-petanim="1"] .art-alive.art-act-tilt{animation:artTilt .86s ease-in-out}
+html[data-petanim="1"] .home-pet-img{animation:homePetIn .5s cubic-bezier(.2,.9,.3,1.2) both,artBreathe var(--breathe,4.2s) ease-in-out .55s infinite;transform-origin:50% 86%}
+html[data-petanim="1"] .codex-img{animation:artFadeIn .32s ease both,artBreathe var(--breathe,4.6s) ease-in-out calc(-1 * var(--delay,0s)) infinite;transform-origin:50% 86%}
+html[data-petanim="1"] .pal-img{animation:petFloat 3.2s ease-in-out infinite,artBreathe 4.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){
+  .art-alive,.art-alive>img,.home-pet-img,.codex-img,.pal-img{animation:none!important}
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
@@ -4142,7 +4161,7 @@ function defaultState() {
     mini: { date: '', done: false, wins: 0 },
     cosmetics: { owned: ['bg_cream'], background: 'bg_cream', petAccessory: {} },
     tutorial: { step: 1, done: false },
-    settings: { sfx: true, music: false },
+    settings: { sfx: true, music: false, petAnim: true },
     rebirth: { count: 0 },
     eternal: { idle: 0, star: 0, gold: 0 },
     hall: { arenaBest: 0, arenaWinStreak: 0, arenaStreak: 0 },
@@ -7732,6 +7751,7 @@ function renderAll() {
   applyAvatar();
   renderPage();
   renderTutorial();
+  if (typeof petAnimDecorate === 'function') petAnimDecorate();
 }
 function renderPage() {
   const scroller = $('#main');
@@ -9573,6 +9593,7 @@ function openSettingsModal() {
     <div class="settings-section">
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
+      <div class="settings-row"><span>立绘小动作</span><button id="btnTogglePetAnim" class="btn btn-ghost btn-xs" type="button" data-act="togglePetAnim">${state.settings.petAnim === false ? '关闭' : '开启'}</button></div>
       <div class="settings-row"><span>轻音乐</span><button id="btnToggleMusic" class="btn btn-ghost btn-xs" type="button" data-act="toggleMusic">${state.settings.music ? '开启' : '关闭'}</button></div>
       <div class="settings-row"><span>风格</span><span class="music-opt-row"><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'light' ? ' on' : ''}" type="button" data-act="music-style" data-key="light">轻快小曲</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'calm' ? ' on' : ''}" type="button" data-act="music-style" data-key="calm">舒缓琶音</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'breeze' ? ' on' : ''}" type="button" data-act="music-style" data-key="breeze">清新风铃</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'lull' ? ' on' : ''}" type="button" data-act="music-style" data-key="lull">温柔摇篮</button></span></div>
       <div class="tiny muted">全部由浏览器 WebAudio 实时合成，不加载外部音频。切到后台会自动安静。</div>
@@ -11358,6 +11379,7 @@ function handleActionClick(event) {
     case 'renamePlayer': renamePlayerAction(); break;
     case 'toggleSfx': toggleSetting('sfx'); break;
     case 'toggleMusic': toggleSetting('music'); break;
+    case 'togglePetAnim': togglePetAnim(); break;
     case 'music-style': setMusicStyle(target.dataset.key); break;
     case 'saveNow': saveNow(); break;
     case 'gameSyncNow': void gameSyncNow(false).then(() => toast('云端同步请求已发出', 'good', 2000)); break;
@@ -11754,6 +11776,112 @@ function startGameLoop() {
   }
 }
 
+/* -------- 立绘活物感：呼吸节奏 / 随机小动作 / 开关 -------- */
+// 轻飘类动作幅度更大、节拍更快；厚重类反着来；同一种宠物永远同一套节拍
+const ART_LIGHT_PETS = { gull: 1, sparrow: 1, moth: 1, albatross: 1, bat: 1, jellyfish: 1, flysquirrel: 1, bee: 1, phoenix: 1, flamingo: 1, peacock: 1, owl: 1 };
+const ART_HEAVY_PETS = { polarbear: 1, walrus: 1, turtle: 1, penguin: 1, seal: 1, alpaca: 1, koala: 1, panda: 1, mole: 1 };
+function petAnimOn() {
+  return !!(state && state.settings ? state.settings.petAnim !== false : true) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+function applyPetAnimPref() {
+  try {
+    document.documentElement.setAttribute('data-petanim', petAnimOn() ? '1' : '0');
+  } catch (ignored) {}
+}
+function artRhythm(templateId) {
+  const key = String(templateId || '');
+  let hash = 2166136261;
+  for (let i = 0; i < key.length; i += 1) { hash ^= key.charCodeAt(i); hash = Math.imul(hash, 16777619); }
+  const unit = (shift) => (Math.abs(hash >>> shift) % 997) / 997;
+  const light = ART_LIGHT_PETS[key] === 1;
+  const heavy = ART_HEAVY_PETS[key] === 1;
+  const breathe = (light ? 2.9 : heavy ? 4.6 : 3.5) + unit(1) * 1.1;
+  const sway = (light ? 4.6 : heavy ? 9.4 : 6.6) + unit(7) * 2.2;
+  const delay = unit(13) * 2.4;
+  return { breathe: breathe, sway: sway, delay: delay, cls: light ? 'art-fly' : heavy ? 'art-heavy' : '' };
+}
+function artIdFromSrc(src) {
+  const name = String(src || '').split('/').pop().split('?')[0].replace(/\.(png|jpg|jpeg|webp)$/i, '');
+  return name.replace(/_(s1|s2)$/i, '');
+}
+function petAnimDecorate() {
+  applyPetAnimPref();
+  if (!petAnimOn()) return;
+  const frames = document.querySelectorAll('.art-frame');
+  for (const frame of frames) {
+    if (frame.classList.contains('art-alive') || frame.closest('.battle-layer')) continue;
+    const img = frame.querySelector('img');
+    if (!img) continue;
+    const src = img.getAttribute('src') || '';
+    if (src.indexOf('art/pets') < 0) continue;
+    if (frame.getBoundingClientRect().width < 30) continue;
+    const id = artIdFromSrc(src);
+    if (!id) continue;
+    const rhythm = artRhythm(id);
+    frame.style.setProperty('--breathe', rhythm.breathe.toFixed(2) + 's');
+    frame.style.setProperty('--sway', rhythm.sway.toFixed(2) + 's');
+    frame.style.setProperty('--delay', rhythm.delay.toFixed(2) + 's');
+    if (rhythm.cls) frame.classList.add(rhythm.cls);
+    frame.classList.add('art-alive');
+  }
+  const singles = document.querySelectorAll('.home-pet-img,.codex-img,.pal-img');
+  for (const img of singles) {
+    if (img.dataset.animReady) continue;
+    const id = artIdFromSrc(img.getAttribute('src'));
+    if (!id) continue;
+    const rhythm = artRhythm(id);
+    img.style.setProperty('--breathe', rhythm.breathe.toFixed(2) + 's');
+    img.style.setProperty('--delay', rhythm.delay.toFixed(2) + 's');
+    img.dataset.animReady = '1';
+  }
+}
+let petAnimTimer = 0;
+function petIdleTick() {
+  petAnimDecorate();
+  if (!petAnimOn() || document.hidden || UI.battle || UI.modal) return;
+  const nodes = document.querySelectorAll('.art-alive:not([data-acting])');
+  if (!nodes.length) return;
+  const node = nodes[Math.floor(Math.random() * nodes.length)];
+  node.dataset.acting = '1';
+  node.classList.add(Math.random() < 0.62 ? 'art-act-bounce' : 'art-act-tilt');
+  setTimeout(() => {
+    node.classList.remove('art-act-bounce', 'art-act-tilt');
+    delete node.dataset.acting;
+  }, 900);
+}
+function startPetAnim() {
+  applyPetAnimPref();
+  petAnimDecorate();
+  if (!startPetAnim.bound) {
+    startPetAnim.bound = true;
+    document.addEventListener('pointerdown', (ev) => {
+      const node = ev.target && ev.target.closest ? ev.target.closest('.art-alive') : null;
+      if (!node || !petAnimOn()) return;
+      node.classList.remove('art-act-bounce', 'art-act-tilt');
+      void node.offsetWidth;
+      node.classList.add('art-act-bounce');
+      setTimeout(() => node.classList.remove('art-act-bounce'), 820);
+    }, { passive: true });
+  }
+  if (petAnimTimer) return;
+  petAnimTimer = setInterval(petIdleTick, 2600);
+}
+function togglePetAnim() {
+  state.settings.petAnim = state.settings.petAnim === false;
+  saveGame();
+  const button = document.getElementById('btnTogglePetAnim');
+  if (button) button.textContent = state.settings.petAnim === false ? '关闭' : '开启';
+  applyPetAnimPref();
+  restartPetAnim();
+  renderAll();
+  toast(state.settings.petAnim === false ? '立绘小动作：已关闭' : '立绘小动作：已开启，它们会呼吸了', 'good');
+}
+function restartPetAnim() {
+  if (petAnimTimer) { clearInterval(petAnimTimer); petAnimTimer = 0; }
+  petAnimDecorate();
+  petAnimTimer = setInterval(petIdleTick, 2600);
+}
+
 function bootGame() {
   try {
     state = loadState();
@@ -11781,6 +11909,7 @@ function bootGame() {
     }
     saveGame();
     renderAll();
+    startPetAnim();
     bindGlobalEvents();
     startGameLoop();
     if (gameSyncCfg()) setTimeout(() => gameSyncNow(true), 1200);
