@@ -3236,11 +3236,11 @@ const BOSS_BY_CHAPTER = Object.fromEntries(BOSS_DEFS.map(b => [b.chapter, b]));
 function bossByChapter(ch) { return BOSS_BY_CHAPTER[ch] || BOSS_DEFS[BOSS_DEFS.length - 1]; }
 // 每章一套插画配色 + 一张场景底图（章节卡、开战剧情页共用，纯表现不影响任何数值）
 const CHAPTER_ART = {
-  1:  { scenes: ['art/scenes/scene_cream.jpg'], deep: '#8a7440', accent: '#f2c14e', light: '#fff7e0' },
-  2:  { scenes: ['art/scenes/scene_sakura.jpg'], deep: '#9a4f63', accent: '#f2789f', light: '#ffe9f0' },
-  3:  { scenes: ['art/scenes/scene_forest.jpg'], deep: '#2f6d5a', accent: '#6fcfa8', light: '#e8fbf3' },
+  1:  { scenes: ['art/scenes/ch_cream.jpg', 'art/scenes/scene_cream.jpg'], deep: '#8a7440', accent: '#f2c14e', light: '#fff7e0' },
+  2:  { scenes: ['art/scenes/ch_sakura.jpg', 'art/scenes/scene_sakura.jpg'], deep: '#9a4f63', accent: '#f2789f', light: '#ffe9f0' },
+  3:  { scenes: ['art/scenes/ch_seaside.jpg', 'art/scenes/scene_forest.jpg'], deep: '#2f6d5a', accent: '#6fcfa8', light: '#e8fbf3' },
   4:  { scenes: ['art/scenes/ch_honey.jpg', 'art/scenes/scene_autumn.jpg'], deep: '#8a5a1f', accent: '#f0a63c', light: '#fff2d6' },
-  5:  { scenes: ['art/scenes/scene_starry.jpg'], deep: '#2c2f63', accent: '#8f86e8', light: '#eceaff' },
+  5:  { scenes: ['art/scenes/ch_autumn.jpg', 'art/scenes/scene_starry.jpg'], deep: '#2c2f63', accent: '#8f86e8', light: '#eceaff' },
   6:  { scenes: ['art/scenes/ch_cloud.jpg', 'art/scenes/scene_seaside.jpg'], deep: '#3f6c94', accent: '#8fd0f2', light: '#eaf7ff' },
   7:  { scenes: ['art/scenes/ch_volcano.jpg', 'art/scenes/scene_autumn.jpg'], deep: '#8c2f22', accent: '#ff8f5e', light: '#ffe6d9' },
   8:  { scenes: ['art/scenes/ch_starchase.jpg', 'art/scenes/scene_starry.jpg'], deep: '#1d3a66', accent: '#78cfe8', light: '#e6f7ff' },
@@ -5472,6 +5472,7 @@ const BOND_ART = {
   nightForest: 'art/bonds/nightForest.jpg',
   royalDuo: 'art/bonds/royalDuo.jpg',
   honeyHill: 'art/bonds/honeyHill.jpg',
+  fluffyTrio: 'art/bonds/fluffyTrio.jpg',
   sunDance: 'art/bonds/sunDance.jpg'
 };
 function bondArtUrl(bondId) { return BOND_ART[bondId] || null; }
