@@ -11358,12 +11358,10 @@ function startStage(index) {
   launchStageBattle(stage);
 }
 function launchStageBattle(stage) {
+  if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
   const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
   const enemies = createEnemyFormation(enemyPower, buildStageEnemyOptions(stage));
-  if (!spendStamina(STAGE_STAMINA_COST)) { toast('体力不足', 'bad'); return; }
-  bumpMetric('battles', 1);
-  saveGame();
   const ok = startBattle({
     mode: 'stage',
     stage,
@@ -11378,12 +11376,14 @@ function launchStageBattle(stage) {
     staminaCost: STAGE_STAMINA_COST,
     maxRounds: 40
   });
-  if (ok) {
-    UI.adventureChapter = stage.chapter;
-    renderTopbar();
-    saveGame();
-    playSfx('battle');
-  }
+  if (!ok) return;
+  // 战斗真的开起来之后才扣体力：队伍为空、战斗没起来都不会白扣
+  spendStamina(STAGE_STAMINA_COST);
+  bumpMetric('battles', 1);
+  UI.adventureChapter = stage.chapter;
+  renderTopbar();
+  saveGame();
+  playSfx('battle');
 }
 function preBattleLines(stage) {
   const c = CHAPTER_NARRATIVE[stage.chapter] || {};
