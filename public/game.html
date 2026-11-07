@@ -7076,7 +7076,12 @@ function syncBossArtPhase(battle, boss) {
 
 /* -------- 战斗开场 -------- */
 function startBattle(config) {
-  if (UI.battle && !UI.battle.over) return false;
+  // 上一场若是异常中断（没有计时器、over 仍为 false），不再永久挡住新战斗
+  if (UI.battle && !UI.battle.over && UI.battle.timer) return false;
+  UI.battle = null;
+  const battleRoot = document.getElementById('battleRoot');
+  if (battleRoot) battleRoot.className = 'battle-layer open';
+  const bail = (msg) => { if (battleRoot) battleRoot.className = 'battle-layer'; if (msg) toast(msg, 'bad'); return false; };
   const allies = buildAllyBattleTeam();
   // 羁绊合体：同队凑齐一组羁绊（双宠）时，双方开战自带怒气、攻防小加成，战报里点名喊话
   let bondCombo = null;
@@ -7092,12 +7097,12 @@ function startBattle(config) {
       }
     }
   }
-  if (!allies.length) { toast('还没有上阵宠物，先去宠物页安排队伍吧', 'bad'); return false; }
+  if (!allies.length) return bail('还没有上阵宠物，先去宠物页安排队伍吧');
   let enemies = Array.isArray(config.enemies) && config.enemies.length ? config.enemies : null;
   if (!enemies) {
     enemies = createEnemyFormation(config.enemyPower || 1000, config.enemyOptions || {});
   }
-  if (!enemies.length) return false;
+  if (!enemies.length) return bail('这一关没有可出战的敌人，稍后重试');
   const battle = {
     config: { ...config },
     allies,
