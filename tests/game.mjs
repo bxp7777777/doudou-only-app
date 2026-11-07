@@ -636,7 +636,7 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   const evoArt = globalThis.evoArtCandidates('pig', 2);
   check(evoArt.length === 2 && evoArt[0].endsWith('pig_s2.png') && evoArt[1].endsWith('pig_s2.jpg'), '二阶进化立绘候选链应为 png→jpg，实际 ' + JSON.stringify(evoArt));
   check(globalThis.evoArtCandidates('no_such_pet', 2).length === 0, '没画的宠物应回落到基础图，实际 ' + JSON.stringify(globalThis.evoArtCandidates('no_such_pet', 2)));
-  check(globalThis.evoArtCandidates('deer', 1)[0].endsWith('deer_s1.png') && globalThis.evoArtCandidates('deer', 2)[0].endsWith('deer_s2.png'), '两阶都有图时应各自用图标');
+  check(/deer_s1\.(webp|png|jpg)$/.test(globalThis.evoArtCandidates('deer', 1)[0]) && /deer_s2\.(webp|png|jpg)$/.test(globalThis.evoArtCandidates('deer', 2)[0]), '两阶都有图时应各自用图标');
   check(globalThis.evoArtCandidates('pig', 0).length === 0, '未进化时不应套用进化立绘');
   check(text.includes('/art\/pets|(art)\/mobs|(art)\/bosses/') || /art\/\)\?\/pets|pets-evo/.test(text), '骨骼未覆盖进化立绘目录');
   

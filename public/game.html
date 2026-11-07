@@ -5351,7 +5351,10 @@ const EVO_ART_PNG = {
   squid_s1: true,
   squid_s2: true,
   hummingbird_s1: true,
-  hummingbird_s2: true,
+  hummingbird_s2: true
+};
+// 老 jpg 进化图（早期 5 只主角）：PNG 缺失时作为兜底
+const EVO_ART_WEBP = {
   deer_s1: true,
   goat_s2: true,
   gull_s2: true,
@@ -5373,7 +5376,7 @@ const EVO_ART_PNG = {
   alpaca_s2: true,
   mole_s2: true,
   jellyfish_s2: true,
-  peacock_s2: true,
+  peacock_s2: true
 };
 // 老 jpg 进化图（早期 5 只主角）：PNG 缺失时作为兜底
 const EVO_ART_JPG = { pig_s1: true, pig_s2: true, golden_s1: true, golden_s2: true, dragon_s1: true, dragon_s2: true, lion_s1: true, lion_s2: true, unicorn_s2: true, unicorn_s1: true, goat_s1: true, gull_s1: true, flysquirrel_s1: true, sparrow_s1: true, moth_s1: true, albatross_s1: true, penguin_s1: true, seal_s1: true, arcticfox_s1: true, polarbear_s1: true, walrus_s1: true, koala_s1: true, flamingo_s1: true, octopus_s1: true, mushroom_s1: true, bat_s1: true, lynx_s1: true, alpaca_s1: true, mole_s1: true, jellyfish_s1: true, peacock_s1: true };
@@ -5439,10 +5442,13 @@ function evoArtCandidates(templateId, evo) {
   if (evo < 1) return [];
   const stage = evo >= 2 ? '_s2' : '_s1';
   const key = templateId + stage;
-  // 某一阶还没画出来的宠物：这一阶直接回落到基础立绘（不产生 404，也不会白图）
-  if (!EVO_ART_PNG[key] && !EVO_ART_JPG[key]) return [];
   const base = 'art/pets-evo/' + key;
-  return EVO_ART_PNG[key] ? [base + '.png', base + '.jpg'] : [base + '.jpg'];
+  // 优先级：webp（抠图透明、体积最小）→ png → jpg；某一阶没图就直接回落基础立绘
+  const out = [];
+  if (EVO_ART_WEBP[key]) out.push(base + '.webp');
+  if (EVO_ART_PNG[key]) out.push(base + '.png');
+  if (EVO_ART_JPG[key]) out.push(base + '.jpg');
+  return out;
 }
 // 实景场景背景登记：键=存档背景键(state.cosmetics.background)，值=半透明叠加空景图；未登记或图片缺失时沿用底层 CSS 渐变场景，不产生白图
 const SCENE_PHOTOS = {
@@ -7552,8 +7558,19 @@ function executeUnitSkill(unit, index, events) {
   if (skill.kind === 'ult') {
     events.push({ type: 'ult', unitUid: unit.uid, name: skill.name, rarity: unit.rarity, element: unit.element });
     pushBattleLog(b, `✨ ${unit.name} 的奥义发动！`, 'ult');
+    // 合体技：任意一方满怒即可启动——羁绊队友在场、存活且怒气 ≥40 就会跟手
+    let comboBoost = 1;
+    if (unit.bondCombo) {
+      const mate = b.allies.find(a => a !== unit && a.alive && a.bondCombo === unit.bondCombo && num(a.rage, 0) >= 40);
+      if (mate) {
+        mate.rage = Math.max(0, num(mate.rage, 0) - 40);
+        comboBoost = 1.5;
+        events.push({ type: 'ult', unitUid: mate.uid, name: '合体 · ' + skill.name, rarity: mate.rarity, element: mate.element });
+        pushBattleLog(b, '💞 合体技 · ' + unit.name + ' × ' + mate.name + '！伤害 ×1.5', 'ult');
+      }
+    }
   }
-  const levelMult = 1 + (skillEntry.level - 1) * 0.06;
+  const levelMult = (1 + (skillEntry.level - 1) * 0.06) * comboBoost;
   for (const effect of skill.effects || []) {
     applySkillEffect(unit, skill, effect, levelMult, events);
     if (b.over) break;
