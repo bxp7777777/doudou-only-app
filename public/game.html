@@ -11758,18 +11758,25 @@ function buildStageEnemyOptions(stage) {
   const lineup = [];
   for (let i = 0; i < count; i++) lineup.push(pick(source.length ? source : enemyPetPool()).id);
   // 章节难度统一由 STAGE_DIFFICULTY 决定（见 stageEnemyPower），这里不再二次缩放
-  // 第 11 章「自己的梦」：守梦人把 SSR 伙伴一个个摆到你面前，每两关多摆一只，最后一关心上人全员到齐
+  // 第 11 章「自己的梦」：守梦人把别的 SSR 伙伴一个个摆到你面前；泥兜猪和金毛崽留到最后一关当守梦人
   if (stage.chapter === 11) {
-    const SSR_LINEUP = ['pig', 'golden', 'dragon', 'lion', 'unicorn', 'qilin', 'narwhal'];
-    const take = clamp(Math.floor((stage.sub - 1) / 2) + 2, 2, 5);
+    const SSR_OTHERS = ['dragon', 'lion', 'unicorn', 'qilin', 'narwhal'];
+    const isFinal = stage.sub >= stageCountOf(11);
     lineup.length = 0;
-    for (let i = 0; i < take; i++) lineup.push(SSR_LINEUP[i]);
+    if (isFinal) {
+      lineup.push('pig', 'golden');
+    } else {
+      const take = clamp(Math.floor((stage.sub - 1) / 2) + 1, 1, SSR_OTHERS.length);
+      for (let i = 0; i < take; i++) lineup.push(SSR_OTHERS[i]);
+    }
   }
+  const ch11Final = stage.chapter === 11 && stage.sub >= stageCountOf(11);
   const bossDef = stage.type === 'boss' ? bossByChapter(stage.chapter) : null;
   // 章节越早 Boss 档案倍率打折，避免新手首章被高血 Boss 劝退；后期足额高属性
   const bossScale = bossDef ? (stage.chapter <= 2 ? 0.82 : (stage.chapter <= 5 ? 0.92 : 1)) : 1;
   return {
     count: (stage.chapter === 11 && lineup.length ? lineup.length : count),
+    bossDef: ch11Final ? null : undefined,
     lineup,
     element: stage.element,
     type: stage.type,
