@@ -7219,6 +7219,15 @@ function startBattle(config) {
   if (battleRoot) battleRoot.className = 'battle-layer open';
   bgmPlay('battle');
   document.body.classList.add('battle-mode');
+  // 手机上面板太窄：名字/等级默认折叠，点一下宠物再浮出来
+  if (battleRoot && !battleRoot.dataset.infoBound) {
+    battleRoot.dataset.infoBound = '1';
+    battleRoot.addEventListener('click', (ev) => {
+      const u = ev.target && ev.target.closest ? ev.target.closest('.b-unit') : null;
+      if (!u) return;
+      u.classList.toggle('show-info');
+    });
+  }
   const bail = (msg) => { if (battleRoot) battleRoot.className = 'battle-layer'; if (msg) toast(msg, 'bad'); return false; };
   const allies = buildAllyBattleTeam();
   // 羁绊合体：同队凑齐一组羁绊（双宠）时，双方开战自带怒气、攻防小加成，战报里点名喊话
@@ -13613,13 +13622,13 @@ body.prebattle-open{overflow:hidden}
 /* 主页立绘同步缩小到同一档 */
 .home-pet-rig,.home-pet-img{max-width:104px!important;max-height:104px!important}
 
-/* 固定槽位：前排 2、后排 3（五人队），人数不足时也占住位置，站位不抖动 */
-.battle-layer .b-row-line.front-line{min-height:calc(2 * 64px);justify-content:center}
-.battle-layer .b-row-line.back-line{min-height:calc(3 * 64px);justify-content:center}
+/* 固定槽位：前排 3、后排 2（五人队），人数不足时也占住位置，站位不抖动 */
+.battle-layer .b-row-line.front-line{min-height:calc(3 * 64px);justify-content:center}
+.battle-layer .b-row-line.back-line{min-height:calc(2 * 64px);justify-content:center}
 .battle-layer .b-row-line .b-unit{min-height:62px}
 @media (max-width:420px){
-  .battle-layer .b-row-line.front-line{min-height:calc(2 * 58px)}
-  .battle-layer .b-row-line.back-line{min-height:calc(3 * 58px)}
+  .battle-layer .b-row-line.front-line{min-height:calc(3 * 58px)}
+  .battle-layer .b-row-line.back-line{min-height:calc(2 * 58px)}
   .battle-layer .b-row-line .b-unit{min-height:56px}
 }
 
@@ -13696,6 +13705,12 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 
 .modal-box h3{position:relative}
 .modal-box h3 .panel-x,.panel-x{position:absolute;right:0;top:-6px;width:26px;height:26px;border-radius:50%;border:1px solid #efe2d2;background:#fff;font-size:13px;line-height:1;cursor:pointer;color:#8a6f52}
+
+/* 战斗内名字/等级折叠，点宠物展开 */
+.battle-layer .b-unit .b-name,.battle-layer .b-unit .b-cap{display:none}
+.battle-layer .b-unit.show-info .b-name,.battle-layer .b-unit.show-info .b-cap,
+.battle-layer .b-unit:active .b-name,.battle-layer .b-unit:active .b-cap{display:block}
+.battle-layer .b-unit.boss-unit .b-name{display:block}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
