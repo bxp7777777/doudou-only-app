@@ -44,7 +44,6 @@ function greeting(period, seed) {
   if (parts.length > 1) {
     const last = parts[parts.length - 1].trim();
     if (/就好$/.test(last)) parts[parts.length - 1] = last.replace(/就好$/, '').trim();
-    else if (/好呀$/.test(last)) parts[parts.length - 1] = last.replace(/呀$/, '');
     else if (/^(好呀|好哦|好呢)$/.test(last)) parts.pop();
     line = parts.filter(Boolean).join('，');
   }
