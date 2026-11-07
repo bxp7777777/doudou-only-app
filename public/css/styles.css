@@ -1428,3 +1428,11 @@ html[data-dark="1"] input::placeholder, html[data-dark="1"] textarea::placeholde
 html[data-dark="1"] .input { color: #ffb0bf !important; }
 html[data-dark="1"] .wish-input { color: var(--ink-soft) !important; }
 html[data-dark="1"] .tomato-min { color: var(--ink-soft) !important; }
+
+/* 首页：小猪小金毛与今日一句并排 */
+.hero-buddy{display:flex;align-items:center;gap:12px;margin:2px 0 6px}
+.hero-buddy .hero-mascots{margin:0;flex:0 0 auto}
+.hero-quote{flex:1 1 auto;min-width:0;background:#fffdf8;border:1px solid #f3e7d8;border-radius:14px;padding:9px 11px}
+.hero-quote .hq-label{margin:0;font-size:11px;color:#a08a72;letter-spacing:.5px}
+.hero-quote .hq-body{margin:4px 0 0;font-size:13px;line-height:1.55;color:#4a382a}
+@media (max-width:420px){.hero-buddy{gap:9px}.hero-quote{padding:8px 9px}.hero-quote .hq-body{font-size:12.5px}}

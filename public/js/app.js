@@ -199,9 +199,12 @@ function homePage(now, period) {
         <h1 class="hero-hi">${esc(plan.greeting(period, dayRotSeed()))}</h1>
         <button class="gear" data-act="tab" data-tab="settings" aria-label="设置">⚙️</button>
       </div>
-      <div class="hero-mascots">
-        <img class="hero-mascot m-pig" src="/art/pets/pig.jpg" alt="小猪" loading="lazy" onerror="this.remove()">
-        <img class="hero-mascot m-dog" src="/art/pets/golden.jpg" alt="小金毛" loading="lazy" onerror="this.remove()">
+      <div class="hero-buddy">
+        <div class="hero-mascots">
+          <img class="hero-mascot m-pig" src="/art/pets/pig.jpg" alt="小猪" loading="lazy" onerror="this.remove()">
+          <img class="hero-mascot m-dog" src="/art/pets/golden.jpg" alt="小金毛" loading="lazy" onerror="this.remove()">
+        </div>
+        <div class="hero-quote">${healLineInner()}</div>
       </div>
       <p class="hero-date">${esc(date.cn(today))} · ${esc(date.weekdayCN(now))} · ${esc(date.PERIOD_LABEL[period] || '')}</p>
       <p class="hero-note">${esc(homeNote(period))}</p>
@@ -397,9 +400,6 @@ function toolsDrawerHTML(now) {
     moodTrendCardHTML(),
     milestoneCardHTML(),
     wishCardHTML(),
-    dailySignCardHTML(),
-    healLineHTML(),
-    personalityTagHTML(),
     moveCardHTML(now),
     musicCardHTML(),
     tomatoCardHTML(),
@@ -477,6 +477,11 @@ function dailySignCardHTML() {
     <p class="line">${esc(tip)}</p>
     <p class="card-sub" style="margin-top:6px">今日小彩蛋 ${icon} · 小标记 ${luckyNo}</p>
   </section>`;
+}
+
+function healLineInner() {
+  const di = Math.floor(Date.now() / 86400000);
+  return '<p class="hq-label">🌱 今日一句</p><p class="hq-body">' + esc(HEAL_LINES[di % HEAL_LINES.length]) + '</p>';
 }
 
 function healLineHTML() {
@@ -915,7 +920,7 @@ function storyPage() {
       <p class="line">${esc(dayPick(SLEEP_TIPS, 1))}</p>
     </section>`;
 
-  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}${sleepTipCard}</div>`;
+  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${storyCard}${jokeCard}${badgeCardHTML()}${softCard}${dailySignCardHTML()}${personalityTagHTML()}${sleepTipCard}</div>`;
 }
 
 /* ------------------------- 备忘 ------------------------- */
