@@ -5401,9 +5401,9 @@ function artChainAttr(urls, char, mode) {
 // 每节都用上端不透明、下端渐隐的软蒙版做蒙皮，级联转动时轮廓连续、不会出现切开的断口。
 function rigArtHTML(url, char, chainAttr) {
   const alt = esc(char || '');
-  const copy = '<img src="' + url + '" alt="" aria-hidden="true" loading="lazy" onerror="this.remove()">';
+  const copy = '<img src="' + url + '" alt="" aria-hidden="true" loading="lazy" decoding="async" onerror="this.remove()">';
   return '<span class="rig">'
-    + '<img src="' + url + '" alt="' + alt + '" loading="lazy" ' + chainAttr + '>'
+    + '<img src="' + url + '" alt="' + alt + '" loading="lazy" decoding="async" ' + chainAttr + '>'
     + '<span class="rig-bone rig-b1">' + copy + '<span class="rig-bone rig-b2">' + copy + '<span class="rig-bone rig-b3">' + copy + '</span></span></span>'
     + '<span class="rig-bone rig-b4">' + copy + '</span>'
     + '</span>';
@@ -7135,7 +7135,8 @@ function startBattle(config) {
   if (bgChapter) {
     const bgArt = chapterArt(bgChapter);
     const scrim = "linear-gradient(180deg," + chapterTint(bgArt.light, 0.86) + "," + chapterTint(bgArt.deep, 0.82) + ")";
-    const layers = [scrim].concat((bgArt.scenes || []).map(u => "url('" + u + "')")).concat(["url('art/battle-field.jpg')"]);
+    // 只取候选链第一张：多图叠加会让进战斗时并行解码好几张 1600×900，直接卡住
+    const layers = [scrim, "url('" + (bgArt.scenes || [])[0] + "')", "url('art/battle-field.jpg')"];
     root.style.backgroundImage = layers.join(",");
     root.style.backgroundSize = "cover";
     root.style.backgroundPosition = "center";
@@ -13365,6 +13366,8 @@ body.prebattle-open{overflow:hidden}
 .b-unit .b-rage.rage-full{box-shadow:0 0 6px rgba(255,170,80,.9)}
 .b-unit .b-rage.rage-full .b-rage-fill{background:linear-gradient(90deg,#ffe6a8,#ff9c3a)}
 .battle-layer .b-unit .b-rage{margin-top:3px}
+
+@media (max-width:760px){.battle-layer .rig-b4{display:none}}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
