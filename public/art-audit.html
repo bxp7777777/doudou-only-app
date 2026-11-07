@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>逐张朝向检查</title>
+<style>
+:root{--bg:#12131a;--card:#1b1d27;--line:#2b2e3d;--txt:#e9e6df;--dim:#9aa0b4;--warn:#ff8a8a;--ok:#8ee6a0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:13px/1.5 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+header{position:sticky;top:0;z-index:9;background:rgba(18,19,26,.95);border-bottom:1px solid var(--line);padding:10px 14px}
+h1{margin:0 0 4px;font-size:15px}
+.hint{color:var(--dim);font-size:12px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+button{background:#242838;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+button.on{background:#3a4258;border-color:#6f7bb0}
+.count{color:var(--warn);font-weight:600}
+textarea{width:100%;height:56px;background:#0e0f16;color:var(--ok);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-family:ui-monospace,monospace;font-size:12px;margin-top:8px}
+section{padding:14px}
+h2{font-size:13px;color:var(--dim);margin:6px 0 10px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;position:relative}
+.card:hover{border-color:#4a5168}
+.card.on{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset}
+.card img{width:100%;height:104px;object-fit:contain;display:block;transition:transform .12s}
+.card.on img{transform:scaleX(-1)}
+.name{margin-top:4px;font-size:12px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.id{font-size:10px;color:var(--dim);text-align:center;font-family:ui-monospace,monospace}
+.tag{position:absolute;top:4px;right:4px;font-size:10px;color:#1a1a1a;background:var(--warn);padding:0 4px;border-radius:5px;display:none}
+.card.on .tag{display:block}
+.hide{display:none}
+</style></head>
+<body>
+<header>
+  <h1>逐张朝向检查 · 点一张 = 这张要翻</h1>
+  <div class="hint">已标记 <b class="count" id="cnt">0</b> 张 · 点「复制清单」把文件名发我，我按文件名逐张翻转（宠物会同时更新对应 png/jpg）</div>
+  <div class="bar" id="filters">
+    <button data-f="all" class="on">全部</button>
+    <button data-f="幼体">幼体</button><button data-f="成长体">成长体</button><button data-f="究极体">究极体</button><button data-f="形态Ⅰ">形态Ⅰ</button><button data-f="形态Ⅱ">形态Ⅱ</button><button data-f="形态Ⅲ">形态Ⅲ</button>
+    <button data-f="boss">首领</button>
+    <button id="markAll">本页全标记</button>
+    <button id="markNone">取消本页</button>
+    <button id="copy">复制清单</button>
+    <button id="clear">清空</button>
+  </div>
+  <textarea id="out" placeholder="标记结果会出现在这里"></textarea>
+</header>
+<div id="list"></div>
+<script>
+const ITEMS = [{"key":"pig","file":"art/pets/pig.png","label":"泥兜猪","sub":"幼体","kind":"pet"},{"key":"pig_s1","file":"art/pets-evo/pig_s1.png","label":"泥兜猪","sub":"成长体","kind":"pet"},{"key":"pig_s2","file":"art/pets-evo/pig_s2.png","label":"泥兜猪","sub":"究极体","kind":"pet"},{"key":"golden","file":"art/pets/golden.png","label":"金毛崽","sub":"幼体","kind":"pet"},{"key":"golden_s1","file":"art/pets-evo/golden_s1.png","label":"金毛崽","sub":"成长体","kind":"pet"},{"key":"golden_s2","file":"art/pets-evo/golden_s2.png","label":"金毛崽","sub":"究极体","kind":"pet"},{"key":"shiba","file":"art/pets/shiba.png","label":"橙柴犬","sub":"幼体","kind":"pet"},{"key":"shiba_s1","file":"art/pets-evo/shiba_s1.png","label":"橙柴犬","sub":"成长体","kind":"pet"},{"key":"shiba_s2","file":"art/pets-evo/shiba_s2.png","label":"橙柴犬","sub":"究极体","kind":"pet"},{"key":"orange","file":"art/pets/orange.png","label":"橘胖猫","sub":"幼体","kind":"pet"},{"key":"orange_s1","file":"art/pets-evo/orange_s1.png","label":"橘胖猫","sub":"成长体","kind":"pet"},{"key":"orange_s2","file":"art/pets-evo/orange_s2.png","label":"橘胖猫","sub":"究极体","kind":"pet"},{"key":"rabbit","file":"art/pets/rabbit.png","label":"月耳兔","sub":"幼体","kind":"pet"},{"key":"rabbit_s1","file":"art/pets-evo/rabbit_s1.png","label":"月耳兔","sub":"成长体","kind":"pet"},{"key":"rabbit_s2","file":"art/pets-evo/rabbit_s2.png","label":"月耳兔","sub":"究极体","kind":"pet"},{"key":"hamster","file":"art/pets/hamster.png","label":"粮袋仓鼠","sub":"幼体","kind":"pet"},{"key":"hamster_s1","file":"art/pets-evo/hamster_s1.png","label":"粮袋仓鼠","sub":"成长体","kind":"pet"},{"key":"hamster_s2","file":"art/pets-evo/hamster_s2.png","label":"粮袋仓鼠","sub":"究极体","kind":"pet"},{"key":"panda","file":"art/pets/panda.png","label":"竹团熊猫","sub":"幼体","kind":"pet"},{"key":"panda_s1","file":"art/pets-evo/panda_s1.png","label":"竹团熊猫","sub":"成长体","kind":"pet"},{"key":"panda_s2","file":"art/pets-evo/panda_s2.png","label":"竹团熊猫","sub":"究极体","kind":"pet"},{"key":"fox","file":"art/pets/fox.png","label":"焰尾狐","sub":"幼体","kind":"pet"},{"key":"fox_s1","file":"art/pets-evo/fox_s1.png","label":"焰尾狐","sub":"成长体","kind":"pet"},{"key":"fox_s2","file":"art/pets-evo/fox_s2.png","label":"焰尾狐","sub":"究极体","kind":"pet"},{"key":"sheep","file":"art/pets/sheep.png","label":"云卷羊","sub":"幼体","kind":"pet"},{"key":"sheep_s1","file":"art/pets-evo/sheep_s1.png","label":"云卷羊","sub":"成长体","kind":"pet"},{"key":"sheep_s2","file":"art/pets-evo/sheep_s2.png","label":"云卷羊","sub":"究极体","kind":"pet"},{"key":"otter","file":"art/pets/otter.png","label":"水花獭","sub":"幼体","kind":"pet"},{"key":"otter_s1","file":"art/pets-evo/otter_s1.png","label":"水花獭","sub":"成长体","kind":"pet"},{"key":"otter_s2","file":"art/pets-evo/otter_s2.png","label":"水花獭","sub":"究极体","kind":"pet"},{"key":"dragon","file":"art/pets/dragon.png","label":"水鳞幼龙","sub":"幼体","kind":"pet"},{"key":"dragon_s1","file":"art/pets-evo/dragon_s1.png","label":"水鳞幼龙","sub":"成长体","kind":"pet"},{"key":"dragon_s2","file":"art/pets-evo/dragon_s2.png","label":"水鳞幼龙","sub":"究极体","kind":"pet"},{"key":"phoenix","file":"art/pets/phoenix.png","label":"火羽雏凤","sub":"幼体","kind":"pet"},{"key":"phoenix_s1","file":"art/pets-evo/phoenix_s1.png","label":"火羽雏凤","sub":"成长体","kind":"pet"},{"key":"phoenix_s2","file":"art/pets-evo/phoenix_s2.png","label":"火羽雏凤","sub":"究极体","kind":"pet"},{"key":"turtle","file":"art/pets/turtle.png","label":"石壳龟","sub":"幼体","kind":"pet"},{"key":"turtle_s1","file":"art/pets-evo/turtle_s1.png","label":"石壳龟","sub":"成长体","kind":"pet"},{"key":"turtle_s2","file":"art/pets-evo/turtle_s2.png","label":"石壳龟","sub":"究极体","kind":"pet"},{"key":"bee","file":"art/pets/bee.png","label":"蜜刺蜂","sub":"幼体","kind":"pet"},{"key":"bee_s1","file":"art/pets-evo/bee_s1.png","label":"蜜刺蜂","sub":"成长体","kind":"pet"},{"key":"bee_s2","file":"art/pets-evo/bee_s2.png","label":"蜜刺蜂","sub":"究极体","kind":"pet"},{"key":"owl","file":"art/pets/owl.png","label":"夜书鸮","sub":"幼体","kind":"pet"},{"key":"owl_s1","file":"art/pets-evo/owl_s1.png","label":"夜书鸮","sub":"成长体","kind":"pet"},{"key":"owl_s2","file":"art/pets-evo/owl_s2.png","label":"夜书鸮","sub":"究极体","kind":"pet"},{"key":"deer","file":"art/pets/deer.png","label":"林铃鹿","sub":"幼体","kind":"pet"},{"key":"deer_s2","file":"art/pets-evo/deer_s2.png","label":"林铃鹿","sub":"究极体","kind":"pet"},{"key":"koi","file":"art/pets/koi.png","label":"好运鲤","sub":"幼体","kind":"pet"},{"key":"koi_s1","file":"art/pets-evo/koi_s1.png","label":"好运鲤","sub":"成长体","kind":"pet"},{"key":"koi_s2","file":"art/pets-evo/koi_s2.png","label":"好运鲤","sub":"究极体","kind":"pet"},{"key":"lion","file":"art/pets/lion.png","label":"鬃毛狮崽","sub":"幼体","kind":"pet"},{"key":"lion_s1","file":"art/pets-evo/lion_s1.png","label":"鬃毛狮崽","sub":"成长体","kind":"pet"},{"key":"lion_s2","file":"art/pets-evo/lion_s2.png","label":"鬃毛狮崽","sub":"究极体","kind":"pet"},{"key":"unicorn","file":"art/pets/unicorn.png","label":"独角驹","sub":"幼体","kind":"pet"},{"key":"unicorn_s1","file":"art/pets-evo/unicorn_s1.jpg","label":"独角驹","sub":"成长体","kind":"pet"},{"key":"unicorn_s2","file":"art/pets-evo/unicorn_s2.png","label":"独角驹","sub":"究极体","kind":"pet"},{"key":"goat","file":"art/pets/goat.png","label":"倔角羊","sub":"幼体","kind":"pet"},{"key":"gull","file":"art/pets/gull.png","label":"浪花鸥","sub":"幼体","kind":"pet"},{"key":"flysquirrel","file":"art/pets/flysquirrel.png","label":"滑翔鼠","sub":"幼体","kind":"pet"},{"key":"sparrow","file":"art/pets/sparrow.png","label":"高歌雀","sub":"幼体","kind":"pet"},{"key":"moth","file":"art/pets/moth.png","label":"花雾蛾","sub":"幼体","kind":"pet"},{"key":"albatross","file":"art/pets/albatross.png","label":"长风信天翁","sub":"幼体","kind":"pet"},{"key":"penguin","file":"art/pets/penguin.png","label":"滑冰企鹅","sub":"幼体","kind":"pet"},{"key":"seal","file":"art/pets/seal.png","label":"雪球海豹","sub":"幼体","kind":"pet"},{"key":"arcticfox","file":"art/pets/arcticfox.png","label":"霜毛狐","sub":"幼体","kind":"pet"},{"key":"polarbear","file":"art/pets/polarbear.png","label":"雪原熊崽","sub":"幼体","kind":"pet"},{"key":"walrus","file":"art/pets/walrus.png","label":"长牙海象","sub":"幼体","kind":"pet"},{"key":"koala","file":"art/pets/koala.png","label":"桉叶考拉","sub":"幼体","kind":"pet"},{"key":"flamingo","file":"art/pets/flamingo.png","label":"绯羽火烈鸟","sub":"幼体","kind":"pet"},{"key":"octopus","file":"art/pets/octopus.png","label":"八腕章鱼","sub":"幼体","kind":"pet"},{"key":"mushroom","file":"art/pets/mushroom.png","label":"伞盖菇童","sub":"幼体","kind":"pet"},{"key":"bat","file":"art/pets/bat.png","label":"夜巷蝠","sub":"幼体","kind":"pet"},{"key":"lynx","file":"art/pets/lynx.png","label":"雪林猞猁","sub":"幼体","kind":"pet"},{"key":"alpaca","file":"art/pets/alpaca.png","label":"高原羊驼","sub":"幼体","kind":"pet"},{"key":"mole","file":"art/pets/mole.png","label":"掘土鼹","sub":"幼体","kind":"pet"},{"key":"jellyfish","file":"art/pets/jellyfish.png","label":"浮灯水母","sub":"幼体","kind":"pet"},{"key":"peacock","file":"art/pets/peacock.png","label":"光羽孔雀","sub":"幼体","kind":"pet"},{"key":"qilin","file":"art/pets/qilin.png","label":"火麟幼兽","sub":"幼体","kind":"pet"},{"key":"qilin_s1","file":"art/pets-evo/qilin_s1.png","label":"火麟幼兽","sub":"成长体","kind":"pet"},{"key":"qilin_s2","file":"art/pets-evo/qilin_s2.png","label":"火麟幼兽","sub":"究极体","kind":"pet"},{"key":"raccoon","file":"art/pets/raccoon.png","label":"灰脸小浣熊","sub":"幼体","kind":"pet"},{"key":"raccoon_s1","file":"art/pets-evo/raccoon_s1.png","label":"灰脸小浣熊","sub":"成长体","kind":"pet"},{"key":"raccoon_s2","file":"art/pets-evo/raccoon_s2.png","label":"灰脸小浣熊","sub":"究极体","kind":"pet"},{"key":"narwhal","file":"art/pets/narwhal.png","label":"独角小鲸","sub":"幼体","kind":"pet"},{"key":"narwhal_s1","file":"art/pets-evo/narwhal_s1.png","label":"独角小鲸","sub":"成长体","kind":"pet"},{"key":"narwhal_s2","file":"art/pets-evo/narwhal_s2.png","label":"独角小鲸","sub":"究极体","kind":"pet"},{"key":"squid","file":"art/pets/squid.png","label":"墨囊小鱿","sub":"幼体","kind":"pet"},{"key":"squid_s1","file":"art/pets-evo/squid_s1.png","label":"墨囊小鱿","sub":"成长体","kind":"pet"},{"key":"squid_s2","file":"art/pets-evo/squid_s2.png","label":"墨囊小鱿","sub":"究极体","kind":"pet"},{"key":"wolf","file":"art/pets/wolf.png","label":"霜牙小狼","sub":"幼体","kind":"pet"},{"key":"wolf_s1","file":"art/pets-evo/wolf_s1.png","label":"霜牙小狼","sub":"成长体","kind":"pet"},{"key":"wolf_s2","file":"art/pets-evo/wolf_s2.png","label":"霜牙小狼","sub":"究极体","kind":"pet"},{"key":"rhino","file":"art/pets/rhino.png","label":"铁角小犀","sub":"幼体","kind":"pet"},{"key":"rhino_s1","file":"art/pets-evo/rhino_s1.png","label":"铁角小犀","sub":"成长体","kind":"pet"},{"key":"rhino_s2","file":"art/pets-evo/rhino_s2.png","label":"铁角小犀","sub":"究极体","kind":"pet"},{"key":"hummingbird","file":"art/pets/hummingbird.png","label":"振翅小蜂鸟","sub":"幼体","kind":"pet"},{"key":"hummingbird_s1","file":"art/pets-evo/hummingbird_s1.png","label":"振翅小蜂鸟","sub":"成长体","kind":"pet"},{"key":"hummingbird_s2","file":"art/pets-evo/hummingbird_s2.png","label":"振翅小蜂鸟","sub":"究极体","kind":"pet"},{"key":"slime_king_p1","file":"art/bosses/slime_king_p1.png","label":"青茸史莱姆王","sub":"形态Ⅰ","kind":"boss"},{"key":"slime_king_p2","file":"art/bosses/slime_king_p2.png","label":"青茸史莱姆王","sub":"形态Ⅱ","kind":"boss"},{"key":"slime_king_p3","file":"art/bosses/slime_king_p3.png","label":"青茸史莱姆王","sub":"形态Ⅲ","kind":"boss"},{"key":"caramel_fox_p1","file":"art/bosses/caramel_fox_p1.png","label":"焦糖狐火领主","sub":"形态Ⅰ","kind":"boss"},{"key":"caramel_fox_p2","file":"art/bosses/caramel_fox_p2.png","label":"焦糖狐火领主","sub":"形态Ⅱ","kind":"boss"},{"key":"caramel_fox_p3","file":"art/bosses/caramel_fox_p3.png","label":"焦糖狐火领主","sub":"形态Ⅲ","kind":"boss"},{"key":"tide_lord_p1","file":"art/bosses/tide_lord_p1.png","label":"溪谷潮语领主","sub":"形态Ⅰ","kind":"boss"},{"key":"tide_lord_p2","file":"art/bosses/tide_lord_p2.png","label":"溪谷潮语领主","sub":"形态Ⅱ","kind":"boss"},{"key":"tide_lord_p3","file":"art/bosses/tide_lord_p3.png","label":"溪谷潮语领主","sub":"形态Ⅲ","kind":"boss"},{"key":"honey_bear_p1","file":"art/bosses/honey_bear_p1.png","label":"蜜蜡金甲熊王","sub":"形态Ⅰ","kind":"boss"},{"key":"honey_bear_p2","file":"art/bosses/honey_bear_p2.png","label":"蜜蜡金甲熊王","sub":"形态Ⅱ","kind":"boss"},{"key":"honey_bear_p3","file":"art/bosses/honey_bear_p3.png","label":"蜜蜡金甲熊王","sub":"形态Ⅲ","kind":"boss"},{"key":"moon_demon_p1","file":"art/bosses/moon_demon_p1.png","label":"月蚀幽影魔王","sub":"形态Ⅰ","kind":"boss"},{"key":"moon_demon_p2","file":"art/bosses/moon_demon_p2.png","label":"月蚀幽影魔王","sub":"形态Ⅱ","kind":"boss"},{"key":"moon_demon_p3","file":"art/bosses/moon_demon_p3.png","label":"月蚀幽影魔王","sub":"形态Ⅲ","kind":"boss"},{"key":"cloud_whale_p1","file":"art/bosses/cloud_whale_p1.png","label":"云海光翼巨鲸","sub":"形态Ⅰ","kind":"boss"},{"key":"cloud_whale_p2","file":"art/bosses/cloud_whale_p2.png","label":"云海光翼巨鲸","sub":"形态Ⅱ","kind":"boss"},{"key":"cloud_whale_p3","file":"art/bosses/cloud_whale_p3.png","label":"云海光翼巨鲸","sub":"形态Ⅲ","kind":"boss"},{"key":"magma_drake_p1","file":"art/bosses/magma_drake_p1.png","label":"熔核赤焰幼龙","sub":"形态Ⅰ","kind":"boss"},{"key":"magma_drake_p2","file":"art/bosses/magma_drake_p2.png","label":"熔核赤焰幼龙","sub":"形态Ⅱ","kind":"boss"},{"key":"magma_drake_p3","file":"art/bosses/magma_drake_p3.png","label":"熔核赤焰幼龙","sub":"形态Ⅲ","kind":"boss"},{"key":"star_beast_p1","file":"art/bosses/star_beast_p1.png","label":"星潮怒涛巨兽","sub":"形态Ⅰ","kind":"boss"},{"key":"star_beast_p2","file":"art/bosses/star_beast_p2.png","label":"星潮怒涛巨兽","sub":"形态Ⅱ","kind":"boss"},{"key":"star_beast_p3","file":"art/bosses/star_beast_p3.png","label":"星潮怒涛巨兽","sub":"形态Ⅲ","kind":"boss"},{"key":"prism_queen_p1","file":"art/bosses/prism_queen_p1.png","label":"幻光蝶后","sub":"形态Ⅰ","kind":"boss"},{"key":"prism_queen_p2","file":"art/bosses/prism_queen_p2.png","label":"幻光蝶后","sub":"形态Ⅱ","kind":"boss"},{"key":"prism_queen_p3","file":"art/bosses/prism_queen_p3.png","label":"幻光蝶后","sub":"形态Ⅲ","kind":"boss"},{"key":"peak_titan_p1","file":"art/bosses/peak_titan_p1.png","label":"永恒石心魔神","sub":"形态Ⅰ","kind":"boss"},{"key":"peak_titan_p2","file":"art/bosses/peak_titan_p2.png","label":"永恒石心魔神","sub":"形态Ⅱ","kind":"boss"},{"key":"peak_titan_p3","file":"art/bosses/peak_titan_p3.png","label":"永恒石心魔神","sub":"形态Ⅲ","kind":"boss"},{"key":"watcher_p1","file":"art/bosses/watcher_p1.png","label":"守梦人·执念","sub":"形态Ⅰ","kind":"boss"},{"key":"watcher_p2","file":"art/bosses/watcher_p2.png","label":"守梦人·执念","sub":"形态Ⅱ","kind":"boss"},{"key":"watcher_p3","file":"art/bosses/watcher_p3.png","label":"守梦人·执念","sub":"形态Ⅲ","kind":"boss"},{"key":"goodnight_p1","file":"art/bosses/goodnight_p1.png","label":"晚安先生","sub":"形态Ⅰ","kind":"boss"},{"key":"goodnight_p2","file":"art/bosses/goodnight_p2.png","label":"晚安先生","sub":"形态Ⅱ","kind":"boss"},{"key":"goodnight_p3","file":"art/bosses/goodnight_p3.png","label":"晚安先生","sub":"形态Ⅲ","kind":"boss"}];
+const marked = new Set();
+const listEl = document.getElementById('list');
+function render(filter) {
+  listEl.innerHTML = '';
+  const groups = {};
+  ITEMS.filter(it => filter === 'all' || (filter === 'boss' ? it.kind === 'boss' : it.sub === filter)).forEach(it => {
+    (groups[it.sub] = groups[it.sub] || []).push(it);
+  });
+  for (const [sub, arr] of Object.entries(groups)) {
+    const sec = document.createElement('section');
+    sec.innerHTML = '<h2>' + sub + ' · ' + arr.length + ' 张</h2>';
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    arr.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'card' + (marked.has(it.key) ? ' on' : '');
+      el.innerHTML = '<span class="tag">翻</span><img src="' + it.file + '" loading="lazy" alt=""><div class="name">' + it.label + '</div><div class="id">' + it.key + '</div>';
+      el.addEventListener('click', () => {
+        if (marked.has(it.key)) { marked.delete(it.key); el.classList.remove('on'); }
+        else { marked.add(it.key); el.classList.add('on'); }
+        refresh();
+      });
+      grid.appendChild(el);
+    });
+    sec.appendChild(grid);
+    listEl.appendChild(sec);
+  }
+}
+let currentFilter = 'all';
+function markPage(on) {
+  ITEMS.filter(it => currentFilter === 'all' || (currentFilter === 'boss' ? it.kind === 'boss' : it.sub === currentFilter)).forEach(it => {
+    if (on) marked.add(it.key); else marked.delete(it.key);
+  });
+  document.querySelectorAll('.card').forEach(c => {});
+  render(currentFilter);
+  refresh();
+}
+function refresh() {
+  document.getElementById('cnt').textContent = marked.size;
+  document.getElementById('out').value = [...marked].join(', ');
+}
+document.getElementById('filters').addEventListener('click', e => {
+  const b = e.target.closest('button[data-f]');
+  if (!b) return;
+  document.querySelectorAll('#filters button[data-f]').forEach(x => x.classList.toggle('on', x === b));
+  currentFilter = b.dataset.f;
+  render(b.dataset.f);
+});
+document.getElementById('copy').addEventListener('click', () => {
+  const out = document.getElementById('out');
+  out.select();
+  try { document.execCommand('copy'); document.getElementById('copy').textContent = '已复制 ✓'; setTimeout(() => document.getElementById('copy').textContent = '复制清单', 1200); } catch (e) {}
+});
+document.getElementById('clear').addEventListener('click', () => {
+  marked.clear();
+  document.querySelectorAll('.card.on').forEach(c => c.classList.remove('on'));
+  refresh();
+});
+render('all');
+document.getElementById('markAll').addEventListener('click', () => markPage(true));
+document.getElementById('markNone').addEventListener('click', () => markPage(false));
+window.__auditReady = true;
+</script></body></html>
