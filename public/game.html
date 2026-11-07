@@ -13712,6 +13712,20 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .battle-layer .b-unit:active .b-name,.battle-layer .b-unit:active .b-cap{display:block}
 .battle-layer .b-unit.boss-unit .b-name{display:block}
 
+/* 手机站位：前排在上（靠中），后排在下（靠外），斜角错开不打架 */
+@media (max-width:760px){
+  .battle-layer .b-team{display:block!important;position:relative;min-height:330px}
+  .battle-layer .b-row-line.front-line{position:absolute;top:0;right:0;left:auto;display:flex!important;flex-direction:column!important;gap:4px;align-items:flex-end;min-height:0!important;width:auto}
+  .battle-layer .b-row-line.back-line{position:absolute;bottom:0;left:0;display:flex!important;flex-direction:column!important;gap:4px;align-items:flex-start;min-height:0!important;width:auto}
+  .battle-layer .b-row-line.boss-line,.battle-layer .b-row-line.mob-line{position:static!important;width:100%}
+  .battle-layer .b-side.enemy .b-row-line.front-line{right:auto;left:0;align-items:flex-start}
+  .battle-layer .b-side.enemy .b-row-line.back-line{left:auto;right:0;align-items:flex-end}
+}
+/* 名字与等级常显（折叠取消） */
+.battle-layer .b-unit .b-name,.battle-layer .b-unit .b-cap{display:block!important}
+/* 护甲/增益图标一律不显示 */
+.battle-layer .b-buffs,.battle-layer .b-unit .shield-label{display:none!important}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
