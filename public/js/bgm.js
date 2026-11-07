@@ -61,12 +61,14 @@
       .join('');
     el = document.createElement('div');
     el.id = 'miniBgm';
-    el.innerHTML = '<div class="mini-bgm-box"><h4>背景音乐</h4>'
+    el.innerHTML = '<div class="mini-bgm-box"><h4>背景音乐 <button id="miniBgmX" class="mini-bgm-x" aria-label="关闭">✕</button></h4>'
       + '<div class="mini-bgm-list">' + items + '</div>'
       + '<div class="mini-bgm-foot"><label>音量 <input id="miniBgmVol" type="range" min="0" max="100" value="' + Math.round(vol() * 100) + '"></label>'
       + '<button id="miniBgmOff" class="mini-bgm-btn">' + (s.off ? '开启音乐' : '关闭音乐') + '</button></div></div>';
     document.body.appendChild(el);
     el.addEventListener('click', function (ev) {
+      if (ev.target === el) { el.remove(); return; }
+      if (ev.target && ev.target.id === 'miniBgmX') { el.remove(); return; }
       var u = ev.target && ev.target.dataset ? ev.target.dataset.u : null;
       if (u !== null && ev.target.classList.contains('mini-bgm-row')) {
         var o = st(); o.track = u; o.off = false; save(o); el.remove(); play(u || undefined); panel();
@@ -88,7 +90,8 @@
     style.textContent = '#miniBgmBtn{position:fixed;right:14px;bottom:78px;z-index:9999;width:44px;height:44px;border-radius:50%;border:1px solid #f0dcc4;background:#fffaf2;box-shadow:0 6px 16px rgba(120,80,50,.18);font-size:20px;line-height:1;cursor:pointer}'
       + '#miniBgm{position:fixed;inset:0;z-index:10000;background:rgba(60,45,35,.28);display:flex;align-items:center;justify-content:center;padding:18px}'
       + '.mini-bgm-box{width:min(360px,92vw);background:#fffdf8;border-radius:18px;padding:14px;box-shadow:0 16px 40px rgba(90,60,40,.22)}'
-      + '.mini-bgm-box h4{margin:0 0 8px;font-size:15px;text-align:center;color:#4a382a}'
+      + '.mini-bgm-box h4{margin:0 0 8px;font-size:15px;text-align:center;color:#4a382a;position:relative}'
+      + '.mini-bgm-x{position:absolute;right:0;top:-4px;width:26px;height:26px;border-radius:50%;border:1px solid #efe2d2;background:#fff;font-size:13px;line-height:1;cursor:pointer;color:#8a6f52}'
       + '.mini-bgm-list{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:6px}'
       + '.mini-bgm-row{text-align:left;padding:9px 11px;border-radius:11px;border:1px solid #efe2d2;background:#fff;font-size:12px;color:#4a382a;cursor:pointer}'
       + '.mini-bgm-row.on{border-color:#f0c05a;background:#fff8ea;font-weight:700}'

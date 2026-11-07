@@ -7140,7 +7140,7 @@ function openBgmPicker(mode) {
     .join('');
   UI.modal = { kind: 'bgm', mode: m };
   document.getElementById('modalRoot').innerHTML =
-    '<div class="modal-box bgm-box"><h3>背景音乐 · 选曲</h3>'
+    '<div class="modal-box bgm-box"><h3>背景音乐 · 选曲<button class="panel-x" data-act="closeModal" type="button" aria-label="关闭">✕</button></h3>'
     + '<p class="deco-tip">选一首会一直播这首；选「随机播放」则每次进场景换一首。</p>'
     + '<div class="bgm-tabs"><button class="btn btn-ghost btn-xs' + (m === 'home' ? ' on' : '') + '" data-act="openBgm" data-mode="home" type="button">首页</button>'
     + '<button class="btn btn-ghost btn-xs' + (m === 'battle' ? ' on' : '') + '" data-act="openBgm" data-mode="battle" type="button">战斗</button></div>'
@@ -10524,6 +10524,7 @@ function renderDecoModal(uid) {
   document.getElementById('modalRoot').innerHTML =
     '<div class="modal-box deco-box"><h3>装扮 · ' + esc(pet ? templateOf(pet).name : '') + '</h3>'
     + '<p class="deco-tip">点一件穿上，再点一次取下。配饰会跟到首页立绘上。</p>'
+    + '<button class="panel-x" data-act="closeModal" type="button" aria-label="关闭" style="position:absolute;right:10px;top:8px">✕</button>'
     + '<div class="deco-grid">' + cards + '</div>'
     + '<button class="btn btn-ghost" data-act="closeModal" type="button">完成</button></div>';
   document.getElementById('modalRoot').className = 'modal-layer open';
@@ -13692,6 +13693,9 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
   .battle-layer .b-side-label{font-size:8.5px!important}
   .battle-layer .b-cap{font-size:8.5px!important}
 }
+
+.modal-box h3{position:relative}
+.modal-box h3 .panel-x,.panel-x{position:absolute;right:0;top:-6px;width:26px;height:26px;border-radius:50%;border:1px solid #efe2d2;background:#fff;font-size:13px;line-height:1;cursor:pointer;color:#8a6f52}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
