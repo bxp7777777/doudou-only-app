@@ -8887,6 +8887,27 @@ function finishBattle() {
   });
 }
 
+// 每日值夜：打 3 场 / 喂 5 次 / 摸 10 次 → 1 张挑战券（跨天归零）
+const DUTY_GOALS = { kill: 3, feed: 5, pat: 10 };
+function dutyToday() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function ensureDuty() {
+  const day = dutyToday();
+  if (!state.duty || state.duty.day !== day) state.duty = { day: day, kill: 0, feed: 0, pat: 0, got: false };
+  return state.duty;
+}
+function dutyBump(kind) {
+  const d = ensureDuty();
+  if (d.got) return;
+  d[kind] = num(d[kind], 0) + 1;
+  if (d.kill >= DUTY_GOALS.kill && d.feed >= DUTY_GOALS.feed && d.pat >= DUTY_GOALS.pat) {
+    d.got = true;
+    addReward({ challenge: 1 });
+    saveGame();
+    toast('今日值夜完成：挑战券 +1');
+  } else {
+    saveGame();
+  }
+}
 function renderBattleResult(data) {
   // 连战模式下逐层静默结算，只在最后汇总一次
   if (UI.towerRush) return;
@@ -8935,6 +8956,7 @@ function renderBattleResult(data) {
 }
 
 function closeBattle() {
+  if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
   document.body.classList.remove('battle-mode');
   bgmPlay('home');
   const b = UI.battle;
@@ -11650,6 +11672,7 @@ function careCardHTML() {
 function patPet(uid) {
   const pet = uid ? state.pets[uid] : getMainPet();
   if (!pet) { toast('先去抽一只宠物吧'); return; }
+  try { dutyBump('pat'); } catch (e) {}
   const now = Date.now();
   if (now - (UI.patTimerBy[pet.uid] || UI.patTimer || 0) < 180) return;
   UI.patTimerBy[pet.uid] = now;
@@ -12219,6 +12242,7 @@ function feedPet(uid) {
   const cost = 80;
   if (state.resources.gold < cost) { toast('金币不足，需要 80 金币', 'bad'); return; }
   state.resources.gold -= cost;
+  try { dutyBump('feed'); } catch (e) {}
   pet.hunger = clamp(num(pet.hunger, 80) + 18, 0, 100);
   pet.mood = clamp(num(pet.mood, 80) + 6, 0, 100);
   const el = templateOf(pet).element;
