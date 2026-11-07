@@ -3241,20 +3241,25 @@ const BOSS_BY_CHAPTER = Object.fromEntries(BOSS_DEFS.map(b => [b.chapter, b]));
 function bossByChapter(ch) { return BOSS_BY_CHAPTER[ch] || BOSS_DEFS[BOSS_DEFS.length - 1]; }
 // 每章一套插画配色 + 一张场景底图（章节卡、开战剧情页共用，纯表现不影响任何数值）
 const CHAPTER_ART = {
-  1:  { scene: 'art/scenes/scene_cream.jpg',   deep: '#8a7440', accent: '#f2c14e', light: '#fff7e0' },
-  2:  { scene: 'art/scenes/scene_sakura.jpg',  deep: '#9a4f63', accent: '#f2789f', light: '#ffe9f0' },
-  3:  { scene: 'art/scenes/scene_forest.jpg',  deep: '#2f6d5a', accent: '#6fcfa8', light: '#e8fbf3' },
-  4:  { scene: 'art/scenes/scene_autumn.jpg',  deep: '#8a5a1f', accent: '#f0a63c', light: '#fff2d6' },
-  5:  { scene: 'art/scenes/scene_starry.jpg',  deep: '#2c2f63', accent: '#8f86e8', light: '#eceaff' },
-  6:  { scene: 'art/scenes/scene_seaside.jpg', deep: '#3f6c94', accent: '#8fd0f2', light: '#eaf7ff' },
-  7:  { scene: 'art/scenes/scene_autumn.jpg',  deep: '#8c2f22', accent: '#ff8f5e', light: '#ffe6d9' },
-  8:  { scene: 'art/scenes/scene_starry.jpg',  deep: '#1d3a66', accent: '#78cfe8', light: '#e6f7ff' },
-  9:  { scene: 'art/bg-ai2.jpg',               deep: '#7b3f8f', accent: '#ff9ed2', light: '#ffe8f6' },
-  10: { scene: 'art/scenes/scene_seaside.jpg', deep: '#4a5566', accent: '#c7b27f', light: '#f7f3e8' },
-  11: { scene: 'art/scenes/scene_starry.jpg',  deep: '#1b2246', accent: '#8d9bf0', light: '#e9ecff' },
-  12: { scene: 'art/bg-ai4.jpg',               deep: '#a3562f', accent: '#ffb877', light: '#fff1e2' }
+  1:  { scenes: ['art/scenes/scene_cream.jpg'], deep: '#8a7440', accent: '#f2c14e', light: '#fff7e0' },
+  2:  { scenes: ['art/scenes/scene_sakura.jpg'], deep: '#9a4f63', accent: '#f2789f', light: '#ffe9f0' },
+  3:  { scenes: ['art/scenes/scene_forest.jpg'], deep: '#2f6d5a', accent: '#6fcfa8', light: '#e8fbf3' },
+  4:  { scenes: ['art/scenes/ch_honey.jpg', 'art/scenes/scene_autumn.jpg'], deep: '#8a5a1f', accent: '#f0a63c', light: '#fff2d6' },
+  5:  { scenes: ['art/scenes/scene_starry.jpg'], deep: '#2c2f63', accent: '#8f86e8', light: '#eceaff' },
+  6:  { scenes: ['art/scenes/ch_cloud.jpg', 'art/scenes/scene_seaside.jpg'], deep: '#3f6c94', accent: '#8fd0f2', light: '#eaf7ff' },
+  7:  { scenes: ['art/scenes/ch_volcano.jpg', 'art/scenes/scene_autumn.jpg'], deep: '#8c2f22', accent: '#ff8f5e', light: '#ffe6d9' },
+  8:  { scenes: ['art/scenes/ch_starchase.jpg', 'art/scenes/scene_starry.jpg'], deep: '#1d3a66', accent: '#78cfe8', light: '#e6f7ff' },
+  9:  { scenes: ['art/scenes/ch_rainbow.jpg', 'art/bg-ai2.jpg'], deep: '#7b3f8f', accent: '#ff9ed2', light: '#ffe8f6' },
+  10: { scenes: ['art/scenes/ch_peak.jpg', 'art/scenes/scene_seaside.jpg'], deep: '#4a5566', accent: '#c7b27f', light: '#f7f3e8' },
+  11: { scenes: ['art/scenes/ch_dream.jpg', 'art/scenes/scene_starry.jpg'], deep: '#1b2246', accent: '#8d9bf0', light: '#e9ecff' },
+  12: { scenes: ['art/scenes/ch_outside.jpg', 'art/bg-ai4.jpg'], deep: '#a3562f', accent: '#ffb877', light: '#fff1e2' }
 };
 function chapterArt(ch) { return CHAPTER_ART[clamp(Math.floor(num(ch, 1)), 1, 12)] || CHAPTER_ART[1]; }
+function chapterSceneStyle(art, overlay) {
+  const list = (art && art.scenes && art.scenes.length) ? art.scenes : ['art/scenes/scene_cream.jpg'];
+  const layers = [overlay].filter(Boolean).concat(list.map(u => "url('" + u + "')"));
+  return 'background-image:' + layers.join(',') + ';background-size:cover;background-position:center;';
+}
 function chapterTint(hex, alpha) {
   const h = String(hex || '#888888').replace('#', '');
   const r = parseInt(h.slice(0, 2), 16) || 136;
@@ -7176,7 +7181,6 @@ function battleUnitHTML(unit) {
         <div class="b-hp"><i class="b-hp-fill" style="width:${hpPct}%"></i><b class="b-hp-text">${fmt(unit.hp)}</b></div>
         <div class="b-rage"><i class="rage-fill b-rage-fill" style="width:${ragePct}%"></i><b class="b-rage-text">${Math.floor(unit.rage)}</b></div>
       </div>
-      <div class="b-buffs"></div>
     </div>`;
 }
 
@@ -8580,6 +8584,14 @@ function renderBattleResult(data) {
         <div class="pp-meta">🔁 ${data.battleMeta.rounds} 回合 · 💥 全队输出 ${fmt(data.battleMeta.totalDmg)} · 最高输出 ${esc(data.battleMeta.top)}</div>
         ${data.perfRows.map((m, i) => `<div class="perf-row${i === 0 ? ' top' : ''}"><span class="pr-rank">${i + 1}</span><span class="pr-emo">${esc(m.emoji)}</span><span class="pr-name">${esc(m.name)}</span><span class="pr-stat">💥${fmt(m.dmg)}${m.crit ? ` · 暴击×${m.crit}` : ''} · 出手${m.hits}</span></div>`).join('')}
       </div>` : '';
+  const resChapter = (UI.battle && UI.battle.config && UI.battle.config.stage) ? UI.battle.config.stage.chapter : 0;
+  const resArt = resChapter ? chapterArt(resChapter) : null;
+  if (resArt) {
+    resultEl.style.setProperty('--res-deep', resArt.deep);
+    resultEl.style.setProperty('--res-accent', resArt.accent);
+    resultEl.style.setProperty('--res-light', resArt.light);
+    resultEl.setAttribute('style', resultEl.getAttribute('style') + ';' + chapterSceneStyle(resArt, 'linear-gradient(180deg,rgba(255,253,247,.9),rgba(255,246,238,.94))'));
+  }
   resultEl.classList.add('open');
   resultEl.innerHTML = `
     <div class="result-box">
@@ -9189,7 +9201,7 @@ function renderAdventure() {
         </button>`;
       }).join('')}
     </div>
-    <div class="chapter-banner" style="--ch-deep:${chapterArt(ch.id).deep};--ch-accent:${chapterArt(ch.id).accent};background-image:linear-gradient(120deg,rgba(255,253,246,.9),rgba(255,250,240,.55)),url('${chapterArt(ch.id).scene}');">
+    <div class="chapter-banner" style="--ch-deep:${chapterArt(ch.id).deep};--ch-accent:${chapterArt(ch.id).accent};${chapterSceneStyle(chapterArt(ch.id), 'linear-gradient(120deg,rgba(255,253,246,.9),rgba(255,250,240,.55))')}">
       <div class="flex"><span class="ch-large">${ch.emoji}</span><div><h2>第 ${ch.id} 章 · ${esc(ch.name)} ${unlocked ? '' : '🔒'}</h2><p>${esc(ch.desc)}</p>${(CHAPTER_NARRATIVE[ch.id] || {}).enter ? `<p class="chapter-story">📖 ${esc(CHAPTER_NARRATIVE[ch.id].enter)}</p>` : ''}</div></div>
       <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/${stageCount * 3}</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
     </div>
@@ -9197,7 +9209,7 @@ function renderAdventure() {
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>小怪与精英共 6 场，末尾是章节首领（前 10 章 7 关，11、12 章各 8 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
       <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageNeedPower(next) ? 'mint' : 'pink'}">${teamPower >= stageNeedPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(stageNeedPower(next))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
-      <div class="stage-grid">
+      <div class="stage-grid" style="--ch-deep:${chapterArt(ch.id).deep};--ch-accent:${chapterArt(ch.id).accent};--ch-light:${chapterArt(ch.id).light};">
         ${Array.from({ length: stageCount }, (_, i) => {
           const stage = getStage(stageStart + i + 1);
           const isLocked = !unlocked || stage.index > state.stage.maxCleared + 1;
@@ -9205,9 +9217,14 @@ function renderAdventure() {
           const stars = state.stage.stars[stage.index] || 0;
           const isNext = stage.index === state.stage.maxCleared + 1;
           const canSweep = stars >= 3 && state.stamina.value >= SWEEP_STAMINA_COST;
+          const bossDef = stage.type === 'boss' ? bossByChapter(stage.chapter) : null;
+          const bossUrls = bossDef ? bossArtCandidates(bossDef.id, 1) : [];
+          const stageArt = (!isLocked && bossDef && bossUrls.length)
+            ? `<div class="stage-emoji stage-emoji-art"><img src="${bossUrls[0]}" alt="${esc(bossDef.name)}" loading="lazy" ${artChainAttr(bossUrls, bossDef.name, 'remove')}></div>`
+            : `<div class="stage-emoji">${isLocked ? '🔒' : stage.emoji}</div>`;
           return `<div class="stage-card ${isLocked ? 'locked' : ''} ${isCleared ? 'cleared' : ''} ${isNext && !isLocked ? 'next' : ''}">
             <div class="stage-top"><span class="stage-no">${stage.chapter}-${stage.sub}</span><span class="stage-type">${stage.typeName}</span></div>
-            <div class="stage-emoji">${isLocked ? '🔒' : stage.emoji}</div>
+            ${stageArt}
             <div class="stage-name">${esc(stage.name)}</div>
             ${!isLocked && stage.blurb ? `<div class="stage-blurb">${esc(stage.blurb)}</div>` : ''}
             <div class="stage-meta">敌人战力 ${fmt(stageDisplayPower(stage))} · ${ELEMENTS[stage.element].emoji}${ELEMENTS[stage.element].name}</div>
@@ -11446,7 +11463,7 @@ function openPreBattle(stage) {
     ? '<img class="pb-boss" src="' + bossUrls[0] + '" alt="' + esc(bossDef.name) + '" ' + artChainAttr(bossUrls, bossDef.name, 'remove') + '>'
     : '';
   const rootStyle = '--pb-deep:' + art.deep + ';--pb-accent:' + art.accent + ';--pb-light:' + art.light + ';';
-  const bgStyle = "background-image:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0)),url('" + art.scene + "')";
+  const bgStyle = chapterSceneStyle(art, 'linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,0))');
   const tintStyle = 'background:radial-gradient(circle at 50% 34%, rgba(255,255,255,.86), rgba(255,255,255,.42) 40%, ' + chapterTint(art.deep, isBoss ? 0.82 : 0.6) + ' 100%)';
   const html = '<div class="prebattle' + (isBoss ? ' is-boss' : '') + '" id="preBattle" style="' + rootStyle + '">' +
     '<div class="pb-bg" style="' + bgStyle + '"></div>' +
@@ -13259,6 +13276,18 @@ body.prebattle-open{overflow:hidden}
   .pb-mark{font-size:58vw;left:-18vw;top:-8vh;opacity:.1}
   .pb-lines p{font-size:15px}
 }
+
+/* ---- A2/A3：关卡卡与结算页沿用章节配色 ---- */
+.stage-emoji-art{width:70px;height:70px;display:grid;place-items:center;margin:0 auto 4px}
+.stage-emoji-art img{max-width:100%;max-height:100%;object-fit:contain;transform:scaleX(-1);filter:drop-shadow(0 7px 12px rgba(70,44,26,.22))}
+.stage-card .stage-no{font-weight:800}
+.stage-card.next{border-color:var(--ch-accent,#f0a63c);box-shadow:0 12px 26px rgba(120,88,60,.16)}
+.stage-card.cleared .stage-no{color:var(--ch-accent,#3f8f6b)}
+#battleResult{backdrop-filter:blur(3px)}
+#battleResult .result-box{border-top:4px solid var(--res-accent,#f0c05a);background:linear-gradient(180deg,var(--res-light,#fffdf9),#fffdf9)}
+#battleResult .result-stars{color:var(--res-accent,#f3b94d)}
+#battleResult .result-emoji{filter:drop-shadow(0 8px 16px rgba(80,50,30,.18))}
+#battleResult .result-box h2{color:#3f3025}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
