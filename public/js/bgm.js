@@ -12,7 +12,9 @@
     ['audio/bgm_song_6.mp3', '宿敌 · 许嵩'],
     ['audio/bgm_song_7.mp3', '一笑倾城 · 汪苏泷'],
     ['audio/bgm_song_8.mp3', '如果有来生 · 谭维维'],
-    ['audio/bgm_song_9.mp3', '玻璃 · Gareth.T']
+    ['audio/bgm_song_9.mp3', '玻璃 · Gareth.T'],
+    ['audio/bgm_song_10.mp3', '下一秒 · 张碧晨'],
+    ['audio/bgm_song_11.mp3', '如果可以 · 韦礼安']
   ];
   var KEY = 'mini_bgm';
   function st() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }

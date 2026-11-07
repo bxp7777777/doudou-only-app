@@ -7127,7 +7127,8 @@ function showBondSplash(bondId, bondName, quote, aName, bName) {
 const BGM_TRACKS = {
   home: ['audio/bgm_home_1.mp3', 'audio/bgm_home_2.mp3', 'audio/bgm_home_3.mp3',
     'audio/bgm_song_1.mp3', 'audio/bgm_song_2.mp3', 'audio/bgm_song_3.mp3', 'audio/bgm_song_4.mp3', 'audio/bgm_song_5.mp3',
-    'audio/bgm_song_6.mp3', 'audio/bgm_song_7.mp3', 'audio/bgm_song_8.mp3', 'audio/bgm_song_9.mp3'],
+    'audio/bgm_song_6.mp3', 'audio/bgm_song_7.mp3', 'audio/bgm_song_8.mp3', 'audio/bgm_song_9.mp3',
+    'audio/bgm_song_10.mp3', 'audio/bgm_song_11.mp3'],
   battle: ['audio/bgm_battle_1.mp3']
 };
 const BGM_TITLES = {
@@ -7139,7 +7140,8 @@ const BGM_TITLES = {
   'audio/bgm_song_3.mp3': '再一起 · 余佳运', 'audio/bgm_song_4.mp3': '慢慢喜欢你 · 莫文蔚',
   'audio/bgm_song_5.mp3': '如果你也刚好抬头看树 · 孙天宇', 'audio/bgm_song_6.mp3': '宿敌 · 许嵩',
   'audio/bgm_song_7.mp3': '一笑倾城 · 汪苏泷', 'audio/bgm_song_8.mp3': '如果有来生 · 谭维维',
-  'audio/bgm_song_9.mp3': '玻璃 · Gareth.T'
+  'audio/bgm_song_9.mp3': '玻璃 · Gareth.T',
+  'audio/bgm_song_10.mp3': '下一秒 · 张碧晨', 'audio/bgm_song_11.mp3': '如果可以 · 韦礼安'
 };
 function bgmTitle(u) { return BGM_TITLES[u] || (u || '').split('/').pop() || '随机'; }
 function bgmPickOf(mode) {
@@ -10539,7 +10541,8 @@ function toggleDeco(id) {
   if (!uid || !state.pets[uid]) { toast('先在宠物页点开一只宠物', 'bad'); return; }
   const d = decoOf();
   if (d.equipped[uid] === id) delete d.equipped[uid]; else d.equipped[uid] = id;
-  saveGame(); renderAll();
+  saveGame();
+  if (typeof renderPage === 'function') renderPage();
   renderDecoModal(uid);
   toast((d.equipped[uid] ? '已装扮：' + (COSMETIC_NAMES[id] || id) : '已取下装扮'), 'good');
 }
