@@ -37,7 +37,10 @@ function dayIndex(key) {
 
 function greeting(period, seed) {
   const arr = GREETING[period] || GREETING.morning;
-  const line = (seed === undefined || seed === null) ? arr[0] : rot(arr, seed);
+  let line = (seed === undefined || seed === null) ? arr[0] : rot(arr, seed);
+  // 标题只留前半句问候：把"……就好""……好呀"这类收尾分句去掉，避免一句话两个"好"
+  line = line.replace(/[，,]\s*[^，,]{0,12}就好\s*$/, '');
+  line = line.replace(/[，,]\s*(下午好呀|晚上好呀|中午好呀)\s*$/, '');
   // 词池里多数句子本来就以「豆豆大王」开头；没有前缀的才补，避免出现「豆豆大王豆豆大王…」和两个「好」
   return /豆豆大王|早安/.test(line) ? line : '豆豆大王，' + line;
 }
