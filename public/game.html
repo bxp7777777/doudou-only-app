@@ -876,7 +876,7 @@ body.modal-open{overflow:hidden}
   background:radial-gradient(circle at 50% 34%,rgba(255,213,136,.5),rgba(255,213,136,0) 72%);
 }
 .b-unit.ult-lunge{transition:transform var(--b-cast,.18s) cubic-bezier(.2,.9,.3,1.2),opacity .3s,filter .3s;z-index:6}
-.b-side.ally .b-unit.ult-lunge{transform:translate(14px,-7px) scale(1.05)}
+.b-side.ally .b-unit.ult-lunge{transform:translate(14px,-7px) scale(1.12);filter:saturate(1.12) brightness(1.06)}
 .b-side.enemy .b-unit.ult-lunge{transform:translate(-14px,-7px) scale(1.05)}
 .b-unit.hit-recoil .b-emoji-wrap{animation:bHitRecoil .34s cubic-bezier(.2,.9,.3,1.2) both}
 .b-side.enemy .b-unit.hit-recoil .b-emoji-wrap{animation-name:bHitRecoilR}
@@ -1946,15 +1946,18 @@ html[data-petanim="1"] .pal-img{animation:petFloat 3.2s ease-in-out infinite,art
 .rig-bone{position:absolute;inset:0;display:block;pointer-events:none;border-radius:inherit}
 .rig-b1{transform-origin:50% 74%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 68%,rgba(0,0,0,.45) 73%,transparent 78%);mask-image:linear-gradient(180deg,#000 0%,#000 68%,rgba(0,0,0,.45) 73%,transparent 78%)}
 .rig-b2{transform-origin:50% 58%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 52%,rgba(0,0,0,.45) 57%,transparent 62%);mask-image:linear-gradient(180deg,#000 0%,#000 52%,rgba(0,0,0,.45) 57%,transparent 62%)}
+.rig-b4{transform-origin:50% 92%;-webkit-mask-image:linear-gradient(0deg,#000 0%,#000 16%,rgba(0,0,0,.4) 22%,transparent 30%);mask-image:linear-gradient(0deg,#000 0%,#000 16%,rgba(0,0,0,.4) 22%,transparent 30%)}
 .rig-b3{transform-origin:50% 44%;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 38%,rgba(0,0,0,.45) 43%,transparent 48%);mask-image:linear-gradient(180deg,#000 0%,#000 38%,rgba(0,0,0,.45) 43%,transparent 48%)}
 @keyframes rigBend1{0%,100%{transform:rotate(calc(-1 * var(--amp1,2deg)))}50%{transform:rotate(var(--amp1,2deg))}}
 @keyframes rigBend2{0%,100%{transform:rotate(var(--amp2,1.7deg))}50%{transform:rotate(calc(-1 * var(--amp2,1.7deg)))}}
 @keyframes rigBend3{0%,100%{transform:rotate(calc(-1 * var(--amp3,2deg)))}50%{transform:rotate(var(--amp3,2deg))}}
+@keyframes rigBend4{0%,100%{transform:rotate(var(--amp4,1.2deg))}50%{transform:rotate(calc(-1 * var(--amp4,1.2deg)))}}
 @keyframes rigBreathe{0%,100%{transform:scale(1,1) translateX(calc(-1 * var(--shift,.35%)))}50%{transform:scale(1.016,.984) translateX(var(--shift,.35%))}}
 html[data-petanim="1"] .rig{animation:rigBreathe var(--c1,8.6s) ease-in-out calc(-1 * var(--d1,0s)) infinite}
 html[data-petanim="1"] .rig-b1{animation:rigBend1 var(--c1,8.6s) ease-in-out calc(-1 * var(--d1,0s)) infinite}
 html[data-petanim="1"] .rig-b2{animation:rigBend2 var(--c2,6.4s) ease-in-out calc(-1 * var(--d2,0s)) infinite}
 html[data-petanim="1"] .rig-b3{animation:rigBend3 var(--c3,5.2s) ease-in-out calc(-1 * var(--d3,0s)) infinite}
+html[data-petanim="1"] .rig-b4{animation:rigBend4 var(--c4,9.4s) ease-in-out calc(-1 * var(--d4,0s)) infinite}
 /* 有骨骼的框不要再整框摇摆，两层叠着晃会互相打架 */
 html[data-petanim="1"] .art-alive.art-rig{animation:none}
 html[data-petanim="1"] .art-alive.art-rig>img{animation:none}
@@ -5377,6 +5380,7 @@ function rigArtHTML(url, char, chainAttr) {
   return '<span class="rig">'
     + '<img src="' + url + '" alt="' + alt + '" loading="lazy" ' + chainAttr + '>'
     + '<span class="rig-bone rig-b1">' + copy + '<span class="rig-bone rig-b2">' + copy + '<span class="rig-bone rig-b3">' + copy + '</span></span></span>'
+    + '<span class="rig-bone rig-b4">' + copy + '</span>'
     + '</span>';
 }
 function artFrameHTML(urls, char, sizeClass, withRig) {
@@ -7045,6 +7049,20 @@ function syncBossArtPhase(battle, boss) {
 function startBattle(config) {
   if (UI.battle && !UI.battle.over) return false;
   const allies = buildAllyBattleTeam();
+  // 羁绊合体：同队凑齐一组羁绊（双宠）时，双方开战自带怒气、攻防小加成，战报里点名喊话
+  let bondCombo = null;
+  if (allies.length >= 2) {
+    bondCombo = BONDS.find(b => b.pets.length === 2 && b.pets.every(id => allies.some(a => a.templateId === id))) || null;
+    if (bondCombo) {
+      for (const a of allies) {
+        if (bondCombo.pets.indexOf(a.templateId) < 0) continue;
+        a.rage = Math.min(100, num(a.rage, 0) + 30);
+        a.atk = Math.round(a.atk * 1.10);
+        a.def = Math.round(a.def * 1.06);
+        a.bondCombo = bondCombo.id;
+      }
+    }
+  }
   if (!allies.length) { toast('还没有上阵宠物，先去宠物页安排队伍吧', 'bad'); return false; }
   let enemies = Array.isArray(config.enemies) && config.enemies.length ? config.enemies : null;
   if (!enemies) {
@@ -7079,6 +7097,7 @@ function startBattle(config) {
   UI.battle = battle;
   pushBattleLog(battle, `⚔️ ${config.title || '战斗'} 开始！`);
   pushBattleLog(battle, `我方 ${allies.length} 名伙伴登场，对方 ${enemies.length} 名敌人。`);
+  if (bondCombo) pushBattleLog(battle, '💞 羁绊合体 · ' + bondCombo.name + '：' + bondCombo.quote, 'ult');
   if (config.bossTaunt) pushBattleLog(battle, '👹 ' + config.bossTaunt);
   document.body.classList.add('battle-open');
   const root = $('#battleRoot');
