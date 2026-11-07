@@ -6976,6 +6976,11 @@ function createEnemyFormation(powerTarget, options = {}) {
       return { artKind: 'boss', artId: options.bossDef.id, element: options.bossDef.element, name: options.bossDef.name, emoji: options.bossDef.emoji };
     }
     if (!isB) {
+      if (options.petArt) {
+        const pid = lineup[i] || lineup[0];
+        const pt = PET_MAP[pid];
+        if (pt) return { artKind: 'pet', artId: pid, element: pt.element, name: pt.name, emoji: pt.emoji || '🐾' };
+      }
       const m = pickMob(options.element, options.type === 'elite');
       return { artKind: 'mob', artId: m.id, element: m.element, name: m.name, emoji: m.emoji };
     }
@@ -11788,12 +11793,19 @@ function buildStageEnemyOptions(stage) {
     }
   }
   const ch11Final = stage.chapter === 11 && stage.sub >= stageCountOf(11);
+  if (stage.chapter === 11) {
+    const SSR_OTHERS = ['dragon', 'lion', 'unicorn', 'qilin', 'narwhal'];
+    lineup.length = 0;
+    const take = clamp(Math.floor((stage.sub - 1) / 2) + 2, 2, SSR_OTHERS.length);
+    for (let i = 0; i < take; i++) lineup.push(SSR_OTHERS[i]);
+  }
   const bossDef = stage.type === 'boss' ? bossByChapter(stage.chapter) : null;
   // 章节越早 Boss 档案倍率打折，避免新手首章被高血 Boss 劝退；后期足额高属性
   const bossScale = bossDef ? (stage.chapter <= 2 ? 0.82 : (stage.chapter <= 5 ? 0.92 : 1)) : 1;
   return {
     count: (stage.chapter === 11 && lineup.length ? lineup.length : count),
     bossDef: ch11Final ? null : undefined,
+    petArt: stage.chapter === 11,
     lineup,
     element: stage.element,
     type: stage.type,
