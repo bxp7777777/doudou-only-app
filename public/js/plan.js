@@ -38,7 +38,8 @@ function dayIndex(key) {
 function greeting(period, seed) {
   const arr = GREETING[period] || GREETING.morning;
   const line = (seed === undefined || seed === null) ? arr[0] : rot(arr, seed);
-  return '豆豆大王' + line;
+  // 词池里多数句子本来就以「豆豆大王」开头；没有前缀的才补，避免出现「豆豆大王豆豆大王…」和两个「好」
+  return /豆豆大王|早安/.test(line) ? line : '豆豆大王，' + line;
 }
 
 /* ------------------------- 1. 喝水 ------------------------- */
