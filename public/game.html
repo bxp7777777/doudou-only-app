@@ -13679,6 +13679,20 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .bgm-item{text-align:left;padding:8px 11px;border-radius:11px;border:1px solid #efe2d2;background:#fffdf8;font-size:11.5px;color:#4a382a;cursor:pointer}
 .bgm-item.on{border-color:#f0c05a;background:#fff8ea;box-shadow:0 0 0 2px rgba(240,192,90,.22);font-weight:700}
 
+/* 手机战斗页：内容超高改成可内部滚动（页面本身仍锁死），并抬掉过小的字号 */
+@media (max-width:760px){
+  .battle-layer{overflow:hidden}
+  .battle-layer .battle-shell{max-height:100dvh;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .battle-layer .b-side{padding:4px 2px!important}
+  .battle-layer .b-log,.battle-layer .battle-log{max-height:22vh;overflow-y:auto}
+  .battle-layer .b-name{font-size:9.5px!important}
+  .battle-layer .bar-label{font-size:8.5px!important}
+  .battle-layer .b-hp-text{font-size:8.5px!important}
+  .battle-layer .b-el{font-size:8.5px!important}
+  .battle-layer .b-side-label{font-size:8.5px!important}
+  .battle-layer .b-cap{font-size:8.5px!important}
+}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
