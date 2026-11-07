@@ -7105,7 +7105,19 @@ function startBattle(config) {
   if (config.bossTaunt) pushBattleLog(battle, '👹 ' + config.bossTaunt);
   document.body.classList.add('battle-open');
   const root = $('#battleRoot');
-  root.className = 'battle-layer open' + (config.theme ? ' theme-' + config.theme : '');
+  // 战斗背景也是章节插画：章节配色薄纱 + 章节场景图 + 旧战场图兜底
+  const bgChapter = (config.stage && config.stage.chapter) || 0;
+  if (bgChapter) {
+    const bgArt = chapterArt(bgChapter);
+    const scrim = "linear-gradient(180deg," + chapterTint(bgArt.light, 0.86) + "," + chapterTint(bgArt.deep, 0.82) + ")";
+    const layers = [scrim].concat((bgArt.scenes || []).map(u => "url('" + u + "')")).concat(["url('art/battle-field.jpg')"]);
+    root.style.backgroundImage = layers.join(",");
+    root.style.backgroundSize = "cover";
+    root.style.backgroundPosition = "center";
+    root.dataset.chapterArt = String(bgChapter);
+  } else {
+    root.style.backgroundImage = "";
+  }
   root.innerHTML = renderBattleScreenHTML(battle);
   updateBattleUI();
   renderBattleLog();
@@ -10837,17 +10849,10 @@ function claimAllHome() {
     state.quests.metrics.dailyClaims += 1;
     tasks++;
   }
-  let plots = 0;
+  // 家园一键领取直接复用「一键收菜」：成长倍率、经验果加成和掉落都和单独收菜一致
   const now = Date.now();
-  state.garden.plots.forEach((p, i) => {
-    if (gardenPlotStatus(p, now) !== 'ready') return;
-    const t = gardenTier(i);
-    addReward({ gold: num(p.gold, t.gold), fruit: num(p.fruit, t.fruit) });
-    p.state = 'empty';
-    p.readyAt = 0;
-    delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
-    plots++;
-  });
+  let plots = state.garden.plots.filter(p => gardenPlotStatus(p, now) === 'ready').length;
+  if (plots) gardenHarvestAll(true);
   if (state.garden.auto) gardenPlantAll(true);
   let signed = false;
   if (state.signIn.days < 7 && state.signIn.lastDate !== localDateKey()) {
@@ -10945,7 +10950,7 @@ function gardenHarvestAll(silent) {
     if (gardenPlotStatus(p, now) !== 'ready') return;
     const t = gardenTier(i);
     gold += Math.round(num(p.gold, t.gold) * mult);
-    fruit += Math.round(num(p.fruit, t.fruit));
+    fruit += Math.round(num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST);
     p.state = 'empty';
     p.readyAt = 0;
     delete p.tier; delete p.minutes; delete p.gold; delete p.fruit;
@@ -13288,6 +13293,14 @@ body.prebattle-open{overflow:hidden}
 #battleResult .result-stars{color:var(--res-accent,#f3b94d)}
 #battleResult .result-emoji{filter:drop-shadow(0 8px 16px rgba(80,50,30,.18))}
 #battleResult .result-box h2{color:#3f3025}
+
+/* ---- 怒气条压成细线：只留一条会亮的线，数字去掉 ---- */
+.b-unit .b-rage{height:3px;border-radius:999px;background:rgba(120,90,60,.16);overflow:hidden;margin-top:2px;box-shadow:none;position:relative}
+.b-unit .b-rage .b-rage-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#ffd784,#ffab52);transition:width .22s ease}
+.b-unit .b-rage .b-rage-text{display:none}
+.b-unit .b-rage.rage-full{box-shadow:0 0 6px rgba(255,170,80,.9)}
+.b-unit .b-rage.rage-full .b-rage-fill{background:linear-gradient(90deg,#ffe6a8,#ff9c3a)}
+.battle-layer .b-unit .b-rage{margin-top:3px}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
