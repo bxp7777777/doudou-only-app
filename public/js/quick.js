@@ -18,20 +18,41 @@
     box.id = 'quickBox';
     box.innerHTML = '<button type="button" data-q="cup">💧 喝一杯</button>'
       + '<button type="button" data-q="food">🍚 吃一口</button>'
-      + '<button type="button" data-q="mood">🫧 记心情</button>';
+      + '<button type="button" data-q="mood">🫧 记心情</button>'
+      + '<button type="button" data-q="focus">🎯 只做一件事</button>';
     document.body.appendChild(box);
     box.addEventListener('click', function (ev) {
       var q = ev.target && ev.target.dataset ? ev.target.dataset.q : '';
       if (!q) return;
       if (q === 'cup') { fire('cup') ? close() : toast('先去首页点一次小水杯，之后这里就能一键记了'); }
       else if (q === 'food') { fire('foodAdd') ? close() : toast('吃饭记录在页面里，滚到「今天吃了什么」那里就能加'); }
-      else { fire('diary-mood') ? close() : toast('心情记录在日记页，切过去就能点'); }
+      else if (q === 'mood') { fire('diary-mood') ? close() : toast('心情记录在日记页，切过去就能点'); }
+      else if (q === 'focus') { toggleFocus(); close(); }
     });
     setTimeout(function () {
       document.addEventListener('pointerdown', function off(ev) {
         if (box && !box.contains(ev.target) && ev.target.id !== 'quickFab') { close(); document.removeEventListener('pointerdown', off); }
       });
     }, 0);
+  }
+  function toggleFocus() {
+    var on = document.body.classList.toggle('focus-mode');
+    var pill = document.getElementById('focusPill');
+    if (on) {
+      if (!pill) {
+        pill = document.createElement('button');
+        pill.id = 'focusPill';
+        pill.type = 'button';
+        pill.textContent = '只做一件事 · 点我退出';
+        pill.addEventListener('click', toggleFocus);
+        document.body.appendChild(pill);
+      }
+      pill.style.display = 'block';
+    } else if (pill) pill.style.display = 'none';
+    try { localStorage.setItem('doudou_focus', on ? '1' : '0'); } catch (e) {}
+  }
+  function restoreFocus() {
+    try { if (localStorage.getItem('doudou_focus') === '1') toggleFocus(); } catch (e) {}
   }
   function toast(msg) {
     var t = document.createElement('div');
@@ -54,6 +75,7 @@
     b.setAttribute('aria-label', '快捷记录');
     b.addEventListener('click', function () { OPEN ? close() : open(); });
     document.body.appendChild(b);
+    restoreFocus();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();

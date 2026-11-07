@@ -950,6 +950,32 @@ function birthdayBlessingHTML() {
 }
 
 /* ---- 巨蟹座 · 每日温和提示（按日期轮换；只做陪伴提醒与小彩蛋，不预测吉凶祸福） ---- */
+const NOT_TODAY = [
+  '今天不必回完所有消息。',
+  '今天不必把每一件事都做完。',
+  '今天不必笑着应付不想理的人。',
+  '今天不必解释自己的选择。',
+  '今天不必为休息找理由。',
+  '今天不必和谁比进度。',
+  '今天不必硬着头皮应下不情愿的事。',
+  '今天不必把话说得漂亮。',
+  '今天不必追着别人的情绪跑。',
+  '今天不必马上回电话。',
+  '今天不必今天就想明白。',
+  '今天不必把房间收拾干净。',
+  '今天不必每条朋友圈都看。',
+  '今天不必保持体面。',
+  '今天不必吃不想吃的东西。',
+  '今天不必等一个人回复。',
+  '今天不必证明自己很努力。',
+  '今天不必回那句让你不舒服的话。',
+  '今天不必计划明天。',
+  '今天不必把情绪说清楚。',
+  '今天不必出席不想去的场合。',
+  '今天不必假装没事。',
+  '今天不必一直在线。',
+  '今天不必做到最好。',
+];
 const SIGN_TIPS = [
   '今天多给自己一点耐心，慢一点也没关系。',
   '记得喝几口温的，先把自己照顾好。',
@@ -1087,6 +1113,7 @@ function dailySignCardHTML() {
   return `<section class="card sign-card">
     <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 今日小提示</span></h2>
     <p class="line">${esc(tip)}</p>
+    <p class="line sign-not">今天不必：${esc(NOT_TODAY[seed % NOT_TODAY.length]).replace(/^今天不必/, '')}</p>
     <p class="card-sub" style="margin-top:6px">今日小彩蛋 ${icon} · 小标记 ${luckyNo}</p>
   </section>`;
 }
