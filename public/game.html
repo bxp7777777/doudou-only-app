@@ -13399,6 +13399,16 @@ body.prebattle-open{overflow:hidden}
 /* 主页立绘同步缩小到同一档 */
 .home-pet-rig,.home-pet-img{max-width:104px!important;max-height:104px!important}
 
+/* 固定槽位：前排 3、后排 2，人数不足时也占住位置，站位不抖动 */
+.battle-layer .b-row-line.front-line{min-height:calc(3 * 64px);justify-content:center}
+.battle-layer .b-row-line.back-line{min-height:calc(2 * 64px);justify-content:center}
+.battle-layer .b-row-line .b-unit{min-height:62px}
+@media (max-width:420px){
+  .battle-layer .b-row-line.front-line{min-height:calc(3 * 58px)}
+  .battle-layer .b-row-line.back-line{min-height:calc(2 * 58px)}
+  .battle-layer .b-row-line .b-unit{min-height:56px}
+}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
