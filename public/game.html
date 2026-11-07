@@ -6663,7 +6663,9 @@ function claimSignIn() {
   if (!state.signIn.firstDate) state.signIn.firstDate = today;
   state.signIn.lastDate = today;
   state.signIn.days += 1;
-  const reward = SIGNIN_REWARDS[state.signIn.days - 1];
+  const reward = Object.assign({}, SIGNIN_REWARDS[state.signIn.days - 1] || {});
+  // 每 3 天签到额外给 1 张挑战券（第 3、6、7 天起循环）
+  if (state.signIn.days % 3 === 0) reward.challenge = num(reward.challenge, 0) + 1;
   const logs = addReward(reward || {});
   saveGame();
   renderAll();
@@ -8368,7 +8370,7 @@ const ARENA_SHOP = [
   { id: 'stone3', name: '进化石福袋', emoji: '💎', cost: 180, limit: 1, desc: '随机属性进化石 ×3', reward: { stonesRandom: 3 } },
   { id: 'star10', name: '星尘碎片包', emoji: '🌠', cost: 240, limit: 1, desc: '星尘碎片 ×10', reward: { starShard: 10 } },
   { id: 'book1', name: '技能书', emoji: '📘', cost: 200, limit: 1, desc: '技能书 ×1', reward: { skillBook: 1 } },
-  { id: 'ticket2', name: '挑战券', emoji: '🎟️', cost: 120, limit: 2, desc: '挑战券 ×2', reward: { challenge: 2 } }
+  { id: 'ticket2', name: '挑战券', emoji: '🎟️', cost: 120, limit: 4, desc: '挑战券 ×2', reward: { challenge: 2 } }
 ];
 const ARENA_SHOP_MAP = Object.fromEntries(ARENA_SHOP.map(it => [it.id, it]));
 // 竞技商店每日限购计数（日期变了自动清零，复用已有 arena 存档字段，不新增存档键）
@@ -11096,7 +11098,16 @@ function claimIdle() {
   const gold = Math.floor(state.idle.pendingGold);
   const fruit = Math.floor(state.idle.pendingFruit);
   if (gold < 1 && fruit < 1) { toast('还没有攒下收益，让伙伴再驻守一会儿吧'); return; }
-  const logs = addReward({ gold, fruit });
+  // 驻守也能攒挑战券：每满 3 小时 1 张，每天至多 2 张
+  const nowMs = Date.now();
+  const dayKey = localDateKey();
+  const lastAt = num(state.idle.ticketAt, 0) || nowMs;
+  const hours = Math.max(0, (nowMs - lastAt) / 3600000);
+  const gotToday = state.idle.ticketDay === dayKey ? num(state.idle.ticketGot, 0) : 0;
+  const gain = Math.min(Math.max(0, 2 - gotToday), Math.floor(hours / 3));
+  if (gain > 0) { state.idle.ticketDay = dayKey; state.idle.ticketGot = gotToday + gain; }
+  state.idle.ticketAt = nowMs;
+  const logs = addReward({ gold, fruit, challenge: gain });
   state.idle.pendingGold = 0;
   state.idle.pendingFruit = 0;
   advanceTutorial(3);
@@ -11455,7 +11466,7 @@ function selfCareCheckPerfect() {
   const sc = selfCareToday();
   if (sc.perfect || selfCarePoints().total < 6) return [];
   sc.perfect = true;
-  return addReward({ crystal: 15, starShard: 3 });
+  return addReward({ crystal: 15, starShard: 3, challenge: 1 });
 }
 function claimSelfCare(kind) {
   const sc = selfCareToday();
