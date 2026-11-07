@@ -7566,18 +7566,19 @@ function executeUnitSkill(unit, index, events) {
     events.push({ type: 'ult', unitUid: unit.uid, name: skill.name, rarity: unit.rarity, element: unit.element });
     pushBattleLog(b, `✨ ${unit.name} 的奥义发动！`, 'ult');
     // 合体技：任意一方满怒即可启动——羁绊队友在场、存活且怒气 ≥40 就会跟手
-    let comboBoost = 1;
+    unit.comboBoost = 1;
     if (unit.bondCombo) {
       const mate = b.allies.find(a => a !== unit && a.alive && a.bondCombo === unit.bondCombo && num(a.rage, 0) >= 40);
       if (mate) {
         mate.rage = Math.max(0, num(mate.rage, 0) - 40);
-        comboBoost = 1.5;
+        unit.comboBoost = 1.5;
         events.push({ type: 'ult', unitUid: mate.uid, name: '合体 · ' + skill.name, rarity: mate.rarity, element: mate.element });
         pushBattleLog(b, '💞 合体技 · ' + unit.name + ' × ' + mate.name + '！伤害 ×1.5', 'ult');
       }
     }
   }
-  const levelMult = (1 + (skillEntry.level - 1) * 0.06) * comboBoost;
+  const levelMult = (1 + (skillEntry.level - 1) * 0.06) * (unit.comboBoost || 1);
+    unit.comboBoost = 1;
   for (const effect of skill.effects || []) {
     applySkillEffect(unit, skill, effect, levelMult, events);
     if (b.over) break;
