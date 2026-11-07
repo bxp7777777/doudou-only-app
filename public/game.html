@@ -5770,7 +5770,7 @@ function calcTeamPower(s = state) {
   const ctx = teamContextForState(s, team);
   return sum(team.map(p => calcPower(getPetStats(p, ctx, s))));
 }
-function maxTeamSize() { return 5; }
+function maxTeamSize() { return 6; }
 function getSkillLevel(pet, index) {
   const keys = ['basic', 'a1', 'a2', 'ult'];
   const key = keys[index] || 'basic';
@@ -8758,7 +8758,7 @@ function setMain(uid) {
   if (!pet) return;
   const wasIn = deployedRow(uid) != null;
   if (!wasIn && teamPetsOf(state).length >= maxTeamSize()) {
-    toast('队伍已满 5 只，先在队伍页让一只下阵，再设为主宠', 'bad'); return;
+    toast('队伍已满 6 只，先在队伍页让一只下阵，再设为主宠', 'bad'); return;
   }
   // 先按 uid 去重再排：旧写法后排直接取 rest 前 3 只，会把「刚被顶到前排的那只」又放进后排，
   // 于是主页中间和伙伴位出现同一只宠物。这里前排吃 rest 第 1 只，后排从第 2 只开始。
@@ -9147,7 +9147,7 @@ function renderHome() {
 
     <div class="home-bottom-grid">
       <div class="card">
-        <div class="card-head"><div><h2>🐾 驻守小队</h2><p>前排承伤，后排输出辅助。最多上阵 5 只。</p></div><button class="btn btn-ghost btn-xs" type="button" data-act="nav" data-tab="pets">调整队伍</button></div>
+        <div class="card-head"><div><h2>🐾 驻守小队</h2><p>前排承伤，后排输出辅助。最多上阵 6 只（前排 3 + 后排 3）。</p></div><button class="btn btn-ghost btn-xs" type="button" data-act="nav" data-tab="pets">调整队伍</button></div>
         <div class="team-chips">${teamChips}</div>
         <div class="divider-dots">✦</div>
         <div class="quick-grid">
@@ -9375,7 +9375,7 @@ function renderPets() {
       : `<div class="card empty"><span class="empty-emoji">🥚</span>还没有宠物。去商店抽一颗蛋吧！<div style="margin-top:10px"><button class="btn btn-primary" type="button" data-act="nav" data-tab="shop">去抽蛋</button></div></div>`;
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>🛏️ 出战队伍</h2><p>前排优先承受普攻，后排更容易受到溅射/穿击。最多 5 只。</p></div>
+        <div class="card-head"><div><h2>🛏️ 出战队伍</h2><p>前排优先承受普攻，后排更容易受到溅射/穿击。最多 6 只（前排 3 + 后排 3）。</p></div>
           <div class="flex"><span class="chip mint">队伍战力 ${fmt(teamPower)}</span><button class="btn btn-lav btn-sm" type="button" data-act="levelTeam">🍎 一键升级</button><button class="btn btn-mint btn-sm" type="button" data-act="autoTeam">一键上阵</button><button class="btn btn-ghost btn-sm" type="button" data-act="clearTeam">清空</button><button class="btn btn-ghost btn-sm" type="button" data-act="teamPreset">📌 阵容</button></div>
         </div>
         <div class="team-board">
@@ -11625,7 +11625,7 @@ function deployPet(uid, row) {
   if (deployedRow(uid) === row) { toast('它已经在那个位置啦'); return; }
   const total = state.team.front.length + state.team.back.length;
   const moving = deployedRow(uid) != null;
-  if (!moving && total >= maxTeamSize()) { toast('队伍已满 5 只，请先让一只替补', 'bad'); return; }
+  if (!moving && total >= maxTeamSize()) { toast('队伍已满 6 只，请先让一只替补', 'bad'); return; }
   if (state.team[row].length >= cap) { toast(row === 'front' ? '前排已满（2 只）' : '后排已满（3 只）', 'bad'); return; }
   state.team.front = state.team.front.filter(id => id !== uid);
   state.team.back = state.team.back.filter(id => id !== uid);
@@ -13399,13 +13399,13 @@ body.prebattle-open{overflow:hidden}
 /* 主页立绘同步缩小到同一档 */
 .home-pet-rig,.home-pet-img{max-width:104px!important;max-height:104px!important}
 
-/* 固定槽位：前排 3、后排 2，人数不足时也占住位置，站位不抖动 */
+/* 固定槽位：前排 3、后排 3（六人队），人数不足时也占住位置，站位不抖动 */
 .battle-layer .b-row-line.front-line{min-height:calc(3 * 64px);justify-content:center}
-.battle-layer .b-row-line.back-line{min-height:calc(2 * 64px);justify-content:center}
+.battle-layer .b-row-line.back-line{min-height:calc(3 * 64px);justify-content:center}
 .battle-layer .b-row-line .b-unit{min-height:62px}
 @media (max-width:420px){
   .battle-layer .b-row-line.front-line{min-height:calc(3 * 58px)}
-  .battle-layer .b-row-line.back-line{min-height:calc(2 * 58px)}
+  .battle-layer .b-row-line.back-line{min-height:calc(3 * 58px)}
   .battle-layer .b-row-line .b-unit{min-height:56px}
 }
 
