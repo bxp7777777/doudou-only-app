@@ -13380,6 +13380,25 @@ body.prebattle-open{overflow:hidden}
 .battle-layer .rig,.battle-layer .rig>img,.battle-layer .art-alive,.battle-layer .art-alive>img{animation:none!important}
 .battle-layer .b-unit,.battle-layer .art-frame{will-change:auto}
 
+/* 战斗站位：前排靠中间竖排，后排靠外侧竖排（我方前排=右列、后排=左列；敌方相反） */
+.battle-layer .b-team{display:grid!important;grid-template-columns:1fr 1fr;gap:5px;align-items:center!important}
+.battle-layer .b-row-line{display:flex!important;flex-direction:column!important;gap:5px;min-width:0;align-items:center}
+.battle-layer .b-side.ally .b-row-line.front-line{grid-column:2}
+.battle-layer .b-side.ally .b-row-line.back-line{grid-column:1}
+.battle-layer .b-side.enemy .b-row-line.front-line{grid-column:1}
+.battle-layer .b-side.enemy .b-row-line.back-line{grid-column:2}
+.battle-layer .b-row-line.boss-line,.battle-layer .b-row-line.mob-line{grid-column:1/-1}
+.battle-layer .b-row-line .b-unit,.battle-layer .b-row-line.back-line .b-unit{flex:0 0 auto;max-width:none;width:100%}
+/* 我方前后排一样大：约为原前排的 65% */
+.battle-layer .b-side.ally .art-frame.art-battle{width:58px!important;height:58px!important}
+.battle-layer .b-side.ally .b-emoji-wrap{min-height:52px}
+.battle-layer .b-side.ally .b-plate{max-width:74px;width:100%}
+/* 等级/我方敌方文字加深 */
+.battle-layer .b-side-label{color:#4a382a!important;opacity:.95!important;font-weight:900}
+.battle-layer .b-unit .b-name,.battle-layer .b-unit .b-lv,.battle-layer .b-unit .b-cap,.battle-layer .b-unit .b-el,.battle-layer .b-unit .bar-label{color:#403026!important}
+/* 主页立绘同步缩小到同一档 */
+.home-pet-rig,.home-pet-img{max-width:104px!important;max-height:104px!important}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
