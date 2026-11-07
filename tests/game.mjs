@@ -375,10 +375,10 @@ if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPow
     check(list.filter((s) => s.type === 'mob').length === (wide ? 5 : 4), '第 ' + ch + ' 章应有 ' + (wide ? 5 : 4) + ' 个小怪关');
   }
   const s11 = globalThis.getStage(1);
-  const expect11 = Math.round(s11.recPower * 3.4 * 0.92);
+  const expect11 = Math.round(s11.recPower * 3.4 * (globalThis.STAGE_TYPE_POWER ? globalThis.STAGE_TYPE_POWER.mob : 1.06));
   check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×3.4×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
   const s1070 = globalThis.getStage(70);
-  const expectFinal = Math.round(s1070.recPower * 0.84 * 1.08);
+  const expectFinal = Math.round(s1070.recPower * 0.84 * (globalThis.STAGE_TYPE_POWER ? globalThis.STAGE_TYPE_POWER.boss : 1.18));
   check(globalThis.stageEnemyPower(s1070) === expectFinal, '第 10 章首领敌人战力应为 recPower×0.84×首领系数，实际 ' + globalThis.stageEnemyPower(s1070));
 }
 

@@ -3175,7 +3175,7 @@ const CHAPTERS = [
   { id: 8, name: '星砂海岸', emoji: '⭐', element: 'water', boss: '星潮海獭', bossEmoji: '🦦', desc: '「捡名字的人」退潮后沙滩上全是会眨眼的星星，每一颗是一个名字。海獭把它们摆成一桌晚饭，一颗也不吃。', theme: 'star' },
   { id: 9, name: '彩虹花园', emoji: '🌈', element: 'light', boss: '幻彩蝶后', bossEmoji: '🦋', desc: '「永远漂亮」花开得一样大、一样颜色、一样朝向。蝶后翅膀张开，一动不动——它是标本。', theme: 'rainbow' },
   { id: 10, name: '永恒之巅', emoji: '🏔️', element: 'earth', boss: '永恒守望者', bossEmoji: '🗿', desc: '「留下来吧」山顶只有一张椅子，和一口钟。钟停在 17:47。他坐在椅子上，像等了你很久。', theme: 'peak' },
-  { id: 11, name: '自己的梦', emoji: '🪞', element: 'dark', boss: '守梦人·执念', bossEmoji: '👤', desc: '「不逃走」走廊一节一节地长。每一节都站着一个人，脸朝墙——其中一个是你的背影。', theme: 'night', stages: 8 },
+  { id: 11, name: '自己的梦', emoji: '🪞', element: 'dark', boss: '守梦人', bossEmoji: '👤', desc: '「不逃走」走廊一节一节地长。每一节都站着一个人，脸朝墙——其中一个是你的背影。', theme: 'night', stages: 8 },
   { id: 12, name: '梦的外面', emoji: '🌅', element: 'light', boss: '晚安先生', bossEmoji: '🌙', desc: '「外面也是梦」门后不是白天，是另一层梦。门外提着灯等你的人，长得和你一模一样。', theme: 'sky', stages: 8 }
 ];
 const STAGE_KINDS = [
@@ -3223,18 +3223,18 @@ const MOB_DEFS = [
 const MOB_MAP = Object.fromEntries(MOB_DEFS.map(m => [m.id, m]));
 // 10 只章节首领（洛克王国式原创高属性 Boss，不照搬官方专名）；倍率在 createEnemyFormation 缩放时生效
 const BOSS_DEFS = [
-  { chapter: 1,  id: 'slime_king',  name: '青茸史莱姆王', emoji: '🟢', element: 'grass', rarity: 'UR', hpMult: 3.40, atkMult: 1.18, defMult: 1.15, spd: 14, flavor: '草原深处一只巨大的软糖史莱姆，皮糙肉厚。' },
-  { chapter: 2,  id: 'caramel_fox',  name: '焦糖狐火领主', emoji: '🦊', element: 'fire',  rarity: 'UR', hpMult: 3.10, atkMult: 1.32, defMult: 1.05, spd: 24, flavor: '火焰在尾尖盘旋，出手又快又疼。' },
-  { chapter: 3,  id: 'tide_lord',    name: '溪谷潮语领主', emoji: '🐙', element: 'water', rarity: 'UR', hpMult: 3.20, atkMult: 1.22, defMult: 1.20, spd: 18, flavor: '掌握水流的冷静领主，防御滴水不漏。' },
-  { chapter: 4,  id: 'honey_bear',   name: '蜜蜡金甲熊王', emoji: '🐻', element: 'earth', rarity: 'UR', hpMult: 3.80, atkMult: 1.15, defMult: 1.45, spd: 10, flavor: '披了一身蜂蜜甲，极硬且越打越稳。' },
-  { chapter: 5,  id: 'moon_demon',   name: '月蚀幽影魔王', emoji: '🌑', element: 'dark',  rarity: 'UR', hpMult: 3.00, atkMult: 1.42, defMult: 1.12, spd: 26, flavor: '黑夜中第一击又准又狠，谨防被秒前排。' },
-  { chapter: 6,  id: 'cloud_whale',  name: '云海光翼巨鲸', emoji: '🐋', element: 'light', rarity: 'UR', hpMult: 3.50, atkMult: 1.20, defMult: 1.25, spd: 16, flavor: '云海里翻身的光巨兽，血量惊人。' },
-  { chapter: 7,  id: 'magma_drake',  name: '熔核赤焰幼龙', emoji: '🐲', element: 'fire',  rarity: 'UR', hpMult: 3.20, atkMult: 1.38, defMult: 1.18, spd: 22, flavor: '熔岩巨龙的幼崽，吐息灼热。' },
-  { chapter: 8,  id: 'star_beast',    name: '星潮怒涛巨兽', emoji: '🌊', element: 'water', rarity: 'UR', hpMult: 3.40, atkMult: 1.26, defMult: 1.22, spd: 20, flavor: '潮水与星光缠绕的巨兽，攻守均衡。' },
-  { chapter: 9,  id: 'prism_queen', name: '幻光蝶后',     emoji: '🦋', element: 'light', rarity: 'UR', hpMult: 3.10, atkMult: 1.34, defMult: 1.10, spd: 28, flavor: '振翅即是幻光，高速且连击。' },
-  { chapter: 10, id: 'peak_titan',   name: '永恒石心魔神', emoji: '🗿', element: 'earth', rarity: 'UR', hpMult: 4.20, atkMult: 1.30, defMult: 1.55, spd: 12, flavor: '旅途尽头的守护者，血厚防高，需要队伍成型再挑战。' },
-  { chapter: 11, id: 'watcher',      name: '守梦人·执念', emoji: '👤', element: 'dark',  rarity: 'UR', hpMult: 3.60, atkMult: 1.45, defMult: 1.30, spd: 26, flavor: '它用你的招式，穿你的衣服。它不肯放手，因为它就是你。' },
-  { chapter: 12, id: 'goodnight',    name: '晚安先生',     emoji: '🌙', element: 'light', rarity: 'UR', hpMult: 4.80, atkMult: 1.50, defMult: 1.60, spd: 20, flavor: '他总是很客气，从不强迫谁，只是替你决定。' }
+  { chapter: 1,  id: 'slime_king',  name: '青茸史莱姆王', emoji: '🟢', element: 'grass', rarity: 'UR', hpMult: 2.15, atkMult: 1.45, defMult: 1.15, spd: 14, flavor: '草原深处一只巨大的软糖史莱姆，皮糙肉厚。' },
+  { chapter: 2,  id: 'caramel_fox',  name: '焦糖狐火领主', emoji: '🦊', element: 'fire',  rarity: 'UR', hpMult: 2.05, atkMult: 1.55, defMult: 1.05, spd: 24, flavor: '火焰在尾尖盘旋，出手又快又疼。' },
+  { chapter: 3,  id: 'tide_lord',    name: '溪谷潮语领主', emoji: '🐙', element: 'water', rarity: 'UR', hpMult: 2.10, atkMult: 1.50, defMult: 1.20, spd: 18, flavor: '掌握水流的冷静领主，防御滴水不漏。' },
+  { chapter: 4,  id: 'honey_bear',   name: '蜜蜡金甲熊王', emoji: '🐻', element: 'earth', rarity: 'UR', hpMult: 2.30, atkMult: 1.45, defMult: 1.45, spd: 10, flavor: '披了一身蜂蜜甲，极硬且越打越稳。' },
+  { chapter: 5,  id: 'moon_demon',   name: '月蚀幽影魔王', emoji: '🌑', element: 'dark',  rarity: 'UR', hpMult: 2.00, atkMult: 1.60, defMult: 1.12, spd: 26, flavor: '黑夜中第一击又准又狠，谨防被秒前排。' },
+  { chapter: 6,  id: 'cloud_whale',  name: '云海光翼巨鲸', emoji: '🐋', element: 'light', rarity: 'UR', hpMult: 2.20, atkMult: 1.50, defMult: 1.25, spd: 16, flavor: '云海里翻身的光巨兽，血量惊人。' },
+  { chapter: 7,  id: 'magma_drake',  name: '熔核赤焰幼龙', emoji: '🐲', element: 'fire',  rarity: 'UR', hpMult: 2.15, atkMult: 1.58, defMult: 1.18, spd: 22, flavor: '熔岩巨龙的幼崽，吐息灼热。' },
+  { chapter: 8,  id: 'star_beast',    name: '星潮怒涛巨兽', emoji: '🌊', element: 'water', rarity: 'UR', hpMult: 2.20, atkMult: 1.52, defMult: 1.22, spd: 20, flavor: '潮水与星光缠绕的巨兽，攻守均衡。' },
+  { chapter: 9,  id: 'prism_queen', name: '幻光蝶后',     emoji: '🦋', element: 'light', rarity: 'UR', hpMult: 2.05, atkMult: 1.55, defMult: 1.10, spd: 28, flavor: '振翅即是幻光，高速且连击。' },
+  { chapter: 10, id: 'peak_titan',   name: '永恒石心魔神', emoji: '🗿', element: 'earth', rarity: 'UR', hpMult: 2.45, atkMult: 1.55, defMult: 1.55, spd: 12, flavor: '旅途尽头的守护者，血厚防高，需要队伍成型再挑战。' },
+  { chapter: 11, id: 'watcher',      name: '守梦人', emoji: '👤', element: 'dark',  rarity: 'UR', hpMult: 2.30, atkMult: 1.65, defMult: 1.30, spd: 26, flavor: '它用你的招式，穿你的衣服。它不肯放手，因为它就是你。' },
+  { chapter: 12, id: 'goodnight',    name: '晚安先生',     emoji: '🌙', element: 'light', rarity: 'UR', hpMult: 2.60, atkMult: 1.70, defMult: 1.60, spd: 20, flavor: '他总是很客气，从不强迫谁，只是替你决定。' }
 ];
 const BOSS_MAP = Object.fromEntries(BOSS_DEFS.map(b => [b.id, b]));
 const BOSS_BY_CHAPTER = Object.fromEntries(BOSS_DEFS.map(b => [b.chapter, b]));
@@ -3250,7 +3250,9 @@ const CHAPTER_STORY = {
   7:  { intro: '熔岩像焦糖一样流动，泥兜猪顶在最前面挡下热浪，为后排争取出手空间。', winLine: '赤焰幼龙被安抚下来，火山口恢复了平静。' },
   8:  { intro: '退潮的沙滩上铺满小星星，水栖伙伴们在浅滩里互相招呼。', winLine: '星潮退去，队伍捡到了一枚会眨眼的贝壳。' },
   9:  { intro: '幻彩蝶后振翅抖落彩虹，光系伙伴们在彩光里格外耀眼。', winLine: '蝶后献上一片彩羽，花园重归宁静。' },
-  10: { intro: '所有旅途的尽头，风把故事吹成永恒；泥兜猪和小金毛崽并肩站在最高处，身后是一路同行的伙伴。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' }
+  10: { intro: '所有旅途的尽头，风把故事吹成永恒；泥兜猪和小金毛崽并肩站在最高处，身后是一路同行的伙伴。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' },
+  11: { intro: '钟楼的钟停在 17:47，秒针也不动。小金毛崽用爪子拨了一下钟摆，钟摆没响，只落下一层灰。', winLine: '守梦人把钥匙放在台阶上，转身走进钟声里，没有回头。' },
+  12: { intro: '门口的日历是五月二十七日 · 星期三，字印得很正。天色一直停在傍晚，像谁把那一格光留在了原地。', winLine: '他把灯递过来，说：那这次，你来关。' }
 };
 // 章节首领登场喊话（Boss 战开场展示，纯剧情文案，不影响战斗判定）
 // 章节叙事：进章 / 首领登场 / 通关余韵（纯剧情，不影响任何数值与判定）
@@ -3264,7 +3266,9 @@ const CHAPTER_NARRATIVE = {
   7: { enter: '熔岩像焦糖一样缓慢流动，热浪把空气烤出褶皱。', boss: '火山口喷出一小股赤焰，幼龙从里面探出头，眼睛亮得像两枚火星。', clear: '火山口安静下来，焦糖色的岩浆慢慢凝成暗红。' },
   8: { enter: '退潮后的沙滩铺满会眨眼的小星星，走一步亮一片。', boss: '潮水毫无预兆地涨起来，星光在水面上聚成一个巨大的轮廓。', clear: '潮水退去，贝壳在沙里轻轻合上，像谁悄悄说了句晚安。' },
   9: { enter: '花瓣会自己飘起来，颜色在光里一层一层地换。', boss: '蝶后振翅，满园的颜色同时亮起，晃得人分不清哪一朵是真花。', clear: '彩光散去，花园里每一朵花都朝着队伍开。' },
-  10: { enter: '风的尽头是一道很长的石阶，每一级都刻着某个旅人停下的理由。', boss: '守望者从风里显形，没有敌意，只是要确认这支队伍走完这一路的决心。', clear: '风停下来，山巅安静得能听见彼此的心跳。' }
+  10: { enter: '风的尽头是一道很长的石阶，每一级都刻着某个旅人停下的理由。', boss: '守望者从风里显形，没有敌意，只是要确认这支队伍走完这一路的决心。', clear: '风停下来，山巅安静得能听见彼此的心跳。' },
+  11: { enter: '钟楼的门没锁。台阶落了一层灰，只有最上面那级是干净的——有人每天来擦那一级。', boss: '他坐在钟底下，背对着光。听见脚步声也没回头：「你们走路的声音，我听过。」', clear: '钟走了半格，又停住。他没解释，只是把门口让开，让队伍下楼。' },
+  12: { enter: '镇子安静得能听见灯芯烧的声音。每扇门都关着，只有一扇门缝里漏出一点暖色。', boss: '他把灯举到与肩同高，站在门里：「这么晚了，还要出去吗？」语气像在问冷不冷。', clear: '天亮以前，钟自己响了一下。他坐下来，把灯放在脚边，第一次没说「再睡五分钟」。' }
 };
 // 首领战后余韵（首通时展示）
 const BOSS_AFTER = {
@@ -3277,7 +3281,9 @@ const BOSS_AFTER = {
   7: '幼龙缩回火山口，岩浆渐渐暗下去。它打了个小小的喷嚏，火星落在队伍脚边烫出几颗亮晶：「……下次再来，我请你们泡温泉。」',
   8: '潮水退去，星光的轮廓散成一群小鱼。沙滩上多了一枚会眨眼的贝壳，凑近了能听见很小的声音：「谢谢你们没有踩疼星星。」',
   9: '蝶后落在最高的花上，收拢起所有彩光，只留下一片最素的羽毛：「真正的颜色，你们已经看过了。」花园安静下来，像刚睡醒。',
-  10: '守望者没有倒下，只是让开了最后一级台阶。风重新流动起来，把这句话送进每个人耳朵：「走下去，别回头。」队伍在风里站了很久。'
+  10: '守望者没有倒下，只是让开了最后一级台阶。风重新流动起来，把这句话送进每个人耳朵：「走下去，别回头。」队伍在风里站了很久。',
+  11: '守梦人把钥匙放在台阶上，没说是给谁的。他坐回钟底下，像在等一个不会来的人。「你们走吧。」他说，「我在这儿等，本来也是我自己选的。」',
+  12: '他站起来，把灯递过来：「拿着吧，天亮之前，路上还是要有点光。」灯比看起来轻，也比看起来暖。'
 };
 
 const BOSS_TAUNTS = {
@@ -3290,7 +3296,9 @@ const BOSS_TAUNTS = {
   7: '嗷——热浪先帮你们热热身，再认真较量。我这条命，是火山口一口一口喂大的。',
   8: '潮水裹着星光压过来，不如趁早退一步？退潮的人，我从来不留。',
   9: '振翅之间真假幻光纷飞，看你们往哪边躲。躲错一次，就会爱上错的那一朵。',
-  10: '旅人到此为止吧，这趟故事该交还给山顶的风了。你们走上来时的脚印，我都看见了。'
+  10: '旅人到此为止吧，这趟故事该交还给山顶的风了。你们走上来时的脚印，我都看见了。',
+  11: '再往前，就是我不肯让开的地方了。要不，你们先歇一会儿？',
+  12: '这么晚了，外面冷。要不今天先到这儿——我替你们把灯留着。'
 };
 // 结算情绪文案池：让每次胜负不再是同一句话；全部为表现文案，不改奖励与数值
 const FIRST_CLEAR_FEEL = [
@@ -3316,6 +3324,8 @@ const FAIL_FEEL = [
 const WIN_SUB_POOL = ['毛茸茸的胜利！', '伙伴们配合得很漂亮！', '士气正盛，乘胜前进！'];
 const FAIL_SUB_POOL = ['拍拍灰，下次一定扳回来。', '休整一下，好运在下一场等你。', '队伍在偷偷攒力气呢。'];
 const FINAL_CLEAR_FEEL = '走到永恒之巅的那一刻，所有辛苦都化作了光。';
+const FINAL_END_FEEL = '你把灯吹灭，天亮自己进来了。这一夜不是你守的，是你走完的。';
+
 // 战斗过程伙伴喊话：我方出手按性格蹦短句、低血一句打气；带全局节流不刷屏，纯表现不影响出手与伤害
 const BATTLE_QUIPS = {
   brave: ['交给我，正面迎上！', '看我顶到最前面！', '上就上，绝不先退。'],
@@ -3388,8 +3398,8 @@ function getStage(index) {
 function stageIndex(chapter, sub) { return stageIndexOf(chapter, sub); }
 // 难度系数：敌人实际战力 = recPower × 章系数 × 关卡类型系数。只影响敌人强度与展示，不改奖励公式
 // 章系数保持"前期明显加压、后期收敛"的走向；第 10 章少于 1 是为了抵消 7 关布局带来的 recPower 抬升
-const STAGE_DIFFICULTY = { 1: 3.4, 2: 2.7, 3: 2.4, 4: 2.1, 5: 1.55, 6: 1.2, 7: 1.15, 8: 1.05, 9: 0.88, 10: 0.84 };
-const STAGE_TYPE_POWER = { mob: 0.92, elite: 1.0, boss: 1.08 };
+const STAGE_DIFFICULTY = { 1: 3.4, 2: 2.7, 3: 2.4, 4: 2.1, 5: 1.55, 6: 1.2, 7: 1.15, 8: 1.05, 9: 0.88, 10: 0.84, 11: 0.86, 12: 0.56 };
+const STAGE_TYPE_POWER = { mob: 1.06, elite: 1.08, boss: 1.18 };
 function stageEnemyPower(stage) {
   if (!stage) return 0;
   const ch = STAGE_DIFFICULTY[stage.chapter] || 1;
@@ -3793,9 +3803,10 @@ const ENCOUNTER_STORIES = [
     a3c: { act: 3, em: '🚉', sp: '结局', text: '车还是没来。他说：「明天再来等吧。」这是他第一次说「明天」。', ending: { title: '结局 · 明天再来等', rewards: { bondBadge: 2, intimacyAll: 4 } } },
   } },
   { id: 's_letter', emoji: '📮', title: '邮筒里的旧信', sub: '4 幕 · 4 结局', acts: 4, start: 'a1', nodes: {
-    a1: { act: 1, em: '📮', sp: '旁白', text: '邮筒的锁锈住了。你敲开它，里面只有一封。收信人：阿满。信封背面有一行字：「我没有生气。」', choices: [{ t: '拆开看看', next: 'a2a' }, { t: '先去晒谷场找阿满', next: 'a2b' }, { t: '先看看邮筒里还有没有别的', next: 'a2b' }] },
+    a1: { act: 1, em: '📮', sp: '旁白', text: '邮筒的锁锈住了。你敲开它，里面只有一封。收信人：阿满。信封背面有一行字：「我没有生气。」', choices: [{ t: '拆开看看', next: 'a2a' }, { t: '先去晒谷场找阿满', next: 'a2b' }, { t: '先看看邮筒里还有没有别的', next: 'a2c' }] },
     a2a: { act: 2, em: '✉️', sp: '信', text: '信纸只有三行。前两行是道歉，第三行被水泡开了，看不清。', choices: [{ t: '去晒谷场', next: 'a3a' }, { t: '先把信烘干', next: 'a3b' }] },
     a2b: { act: 2, em: '🌾', sp: '旁白', text: '晒谷场上有个老人，正在晒一场早就晒干了的谷子。', choices: [{ t: '把信给他', next: 'a3a' }, { t: '先问他：为什么当年没去', next: 'a3b' }] },
+    a2c: { act: 2, em: '📮', sp: '旁白', text: '邮筒底下还压着一张纸，同一个人的字，只写了日期：「五月二十七日」。没有年份。', choices: [{ t: '先把日期记下来', next: 'a3b' }, { t: '把它一起带上', next: 'a3a' }] },
     a3a: { act: 3, em: '🧓', sp: '阿满', text: '他把信接过去，没有立刻拆。他用拇指把信封抹平，抹了三遍。「这个字，是他写的。」', choices: [{ t: '告诉他：信里说没生气', next: 'a4a' }, { t: '把信留下，先走', next: 'a4b' }] },
     a3b: { act: 3, em: '🌗', sp: '阿满', text: '「那天我等了一下午。」他说，「我以为他不来了。」他顿了顿，「后来我搬走了。我不想让人看见我在等。」', choices: [{ t: '把信给他', next: 'a4a' }, { t: '把信带回去', next: 'a4b' }] },
     a4a: { act: 4, em: '💌', sp: '旁白', text: '他把信贴在胸口，说了一句「没生气就好」，然后哭得像个孩子。', choices: [{ t: '再陪他一会儿', next: 'e1' }, { t: '说该走了', next: 'e2' }] },
@@ -3830,12 +3841,12 @@ const FINAL_ENDINGS = {
   C2: { code: 'C2', title: '结局 · 重复的路', text: '走到第三天，你在门口放下灯，说：「我明天还来。」门里没有回答。但灯没被拿出来，也没被吹灭。' },
   A3: { code: 'A3', title: '结局 · 你终于成了那个不肯放手的人', text: '你终于成了那个不肯放手的人。钟停了，椅子空了。你坐下，替他把灯扶正，等下一个提灯的人问：「能不能，让他再睡五分钟？」你说：「可以。」' },
   B3: { code: 'B3', title: '结局 · 醒来的人', text: '白天真的来了。你的手空了，但不再抖。小猪和小金毛在你脚边睡着，睡得很沉，没有做梦。你数了数——五只，一只不少。' },
-  C3: { code: 'C3', title: '结局 · 五分钟', text: '📅 五月二十八日 · 星期四。门口的日历自己翻了一页，字是印上去的，不是写上去的。他终于坐起来，说：「再等五分钟。」你说：「好。」——这一次，五分钟真的只有五分钟。' }
+  C3: { code: 'C3', title: '结局 · 五分钟', text: '📅 五月二十八日 · 星期四 · 17:52。门口的日历自己翻了一页，字是印上去的，不是写上去的。他终于坐起来，说：「再等五分钟。」你说：「好。」——这一次，五分钟真的只有五分钟。' }
 };
 function finalEndingLoop() { return clamp(num(state.rebirth && state.rebirth.count, 0) + 1, 1, 3); }
 function finalEndingsOwned() {
-  const list = (state.encounter && Array.isArray(state.encounter.endings)) ? state.encounter.endings : [];
-  return list.filter(k => String(k).indexOf('final:') === 0).map(k => String(k).slice(6));
+  const map = (state.encounter && state.encounter.endings && typeof state.encounter.endings === 'object') ? state.encounter.endings : {};
+  return Object.keys(map).filter(k => k.indexOf('final:') === 0).map(k => k.slice(6));
 }
 function openFinalEndingModal() {
   const loop = finalEndingLoop();
@@ -3852,9 +3863,8 @@ function openFinalEndingModal() {
 function chooseFinalEnding(code) {
   const e = FINAL_ENDINGS[code];
   if (!e) return;
-  state.encounter.endings = Array.isArray(state.encounter.endings) ? state.encounter.endings : [];
-  const key = 'final:' + code;
-  if (!state.encounter.endings.includes(key)) state.encounter.endings.push(key);
+  if (!state.encounter.endings || typeof state.encounter.endings !== 'object' || Array.isArray(state.encounter.endings)) state.encounter.endings = {};
+  state.encounter.endings['final:' + code] = Date.now();
   saveGame();
   openModal(e.title, '<p class="note" style="line-height:1.9">' + esc(e.text) + '</p><p class="tiny muted">已记下这条路 · 共 ' + finalEndingsOwned().length + '/9</p><div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="closeModal">合上</button></div>', { wide: true });
 }
@@ -4840,8 +4850,8 @@ function defaultState() {
     stage: { maxCleared: 0, stars: {}, recall: 0, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0, weekStart: 0, weekClears: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
-    boss: { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' },
-    encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0 },
+    boss: { date: '', attempts: 0, bestDamage: 0, everBest: 0, claimed: false, seed: '' },
+    encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0, endings: {} },
     gacha: { normal: 0, rare: 0, total: 0, lastResults: [] },
     daily: { date: '', progress: {}, claimed: [] },
     signIn: { firstDate: '', lastDate: '', days: 0 },
@@ -4984,18 +4994,19 @@ function sanitizeState(s) {
   s.arena.lastWinBonusDate = String(s.arena.lastWinBonusDate || '');
   s.arena.shopDay = String(s.arena.shopDay || '');
   s.arena.shopCount = s.arena.shopCount && typeof s.arena.shopCount === 'object' ? s.arena.shopCount : {};
-  if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, claimed: false, seed: '' };
+  if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, everBest: 0, claimed: false, seed: '' };
   s.boss.attempts = clamp(Math.floor(num(s.boss.attempts, 0)), 0, 3);
   s.boss.bestDamage = Math.max(0, Math.floor(num(s.boss.bestDamage, 0)));
   s.boss.claimed = !!s.boss.claimed;
   s.boss.date = String(s.boss.date || '');
   s.boss.seed = String(s.boss.seed || '');
-  if (!s.encounter || typeof s.encounter !== 'object') s.encounter = { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0 };
+  if (!s.encounter || typeof s.encounter !== 'object') s.encounter = { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0, endings: {} };
   s.encounter.refreshAt = num(s.encounter.refreshAt, 0);
   s.encounter.attempts = clamp(Math.floor(num(s.encounter.attempts, 0)), 0, 2);
   s.encounter.activeId = ENCOUNTERS.some(e => e.id === s.encounter.activeId) ? s.encounter.activeId : ENCOUNTERS[0].id;
   s.encounter.history = Array.isArray(s.encounter.history) ? s.encounter.history.slice(-8).map(String) : [];
   s.encounter.total = Math.max(0, Math.floor(num(s.encounter.total, 0)));
+  s.encounter.endings = (s.encounter.endings && typeof s.encounter.endings === 'object' && !Array.isArray(s.encounter.endings)) ? s.encounter.endings : {};
   if (!s.gacha || typeof s.gacha !== 'object') s.gacha = { normal: 0, rare: 0, total: 0, lastResults: [] };
   s.gacha.normal = Math.max(0, Math.floor(num(s.gacha.normal, 0)));
   s.gacha.rare = Math.max(0, Math.floor(num(s.gacha.rare, 0)));
@@ -7006,7 +7017,7 @@ function syncBossBar() {
 // Boss 跨过 67% / 34% 时换阶段立绘：只换表现，不碰任何数值
 function syncBossArtPhase(battle, boss) {
   if (!boss || boss.artKind !== 'boss' || !boss.artId) return;
-  const phase = bossPhaseOf((boss.hp || 0) / Math.max(1, boss.maxHp || 1));
+  const phase = (boss.artId && bossLivesOf(boss.artId) > 1) ? bossUnitPhase(boss) : bossPhaseOf((boss.hp || 0) / Math.max(1, boss.maxHp || 1));
   if (boss._artPhase === phase) return;
   const first = boss._artPhase === undefined;
   boss._artPhase = phase;
@@ -7469,7 +7480,7 @@ function executeUnitSkill(unit, index, events) {
   if (skill.kind === 'ult') {
     if (unit.rage < 100) return;
     unit.rage = 0;
-  } else if (index === 1 || index === 2) {
+  } else if (index > 0) {
     unit.cooldowns[index] = Math.max(1, skill.cooldown || 2);
   }
   pushBattleLog(b, `${unit.name} 使用了「${skill.name}」`, 'skill');
@@ -8361,6 +8372,7 @@ function finishBattle() {
         }
         else feels.push(pick(FIRST_CLEAR_FEEL));
         if (stage.chapter === 10 && stage.type === 'boss') feels.push(FINAL_CLEAR_FEEL);
+        if (stage.chapter === 12 && stage.type === 'boss') feels.push(FINAL_END_FEEL);
         storyLine = feels.filter(Boolean).join(' ');
         if (stage.type === 'boss') {
           const chObj = CHAPTERS.find(c => c.id === stage.chapter);
@@ -8477,6 +8489,7 @@ function finishBattle() {
     const damage = b.totalDamage;
     const before = state.boss.bestDamage;
     state.boss.bestDamage = Math.max(before, damage);
+    state.boss.everBest = Math.max(num(state.boss.everBest, 0), state.boss.bestDamage);
     const board = getBossLeaderboard();
     // 长夜之影 以伤害排名，不发放普通通关奖励；排名奖励在面板领取。
     resultTitle = damage > before ? '伤害新纪录！' : '讨伐结束';
@@ -9090,7 +9103,7 @@ function renderHome() {
           </div>
           <div class="note pink" style="margin-top:9px">当前章节：第 ${chapter} 章 · ${CHAPTERS[chapter - 1].name}。摸头、投喂、战斗都会提升亲密度。</div>
           ${state.stage.recall > state.stage.maxCleared ? `<button class="btn btn-mint btn-sm btn-wide" type="button" data-act="recallRush" style="margin-top:8px">🌀 回忆速通：直接回到 ${chapterOfStage(state.stage.recall)}-${subOfStage(state.stage.recall)}</button><div class="tiny muted center" style="margin-top:4px">跳过已经走过的路，不发奖励，只把进度接上。</div>` : ''}
-${state.stage.maxCleared >= STAGES.length ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
+${rebirthUnlocked() ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
         </div>
       </div>
     </div>
@@ -9160,7 +9173,7 @@ function renderAdventure() {
       <div style="text-align:right"><span class="chip mint">本章星星 ${earnedStars}/${stageCount * 3}</span><div class="tiny muted" style="margin-top:4px">${unlocked ? '首领已就位' : '通关上一章首领后解锁'}</div></div>
     </div>
     <div class="card">
-      <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>4 小怪 + 2 精英 + 章节首领（每章 7 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
+      <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>小怪与精英共 6 场，末尾是章节首领（前 10 章 7 关，11、12 章各 8 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
       <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageNeedPower(next) ? 'mint' : 'pink'}">${teamPower >= stageNeedPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(stageNeedPower(next))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid">
@@ -9341,7 +9354,7 @@ function renderPets() {
       <div class="card">
         <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。入梦后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
         ${codexBar}
-        ${(() => { const own = finalEndingsOwned(); const loop = finalEndingLoop(); const list = ['A', 'B', 'C'].map(k => FINAL_ENDINGS[k + loop]); return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>第 ' + loop + ' 次入梦可选的结局 · 已记下 ' + own.length + '/9</p></div></div><div class="note">' + list.map(e => own.indexOf(e.code) >= 0 ? '✅ ' + esc(e.title) : '⬜ ' + esc(e.title)).join('<br>') + '</div></div>'; })()}
+        ${(() => { const own = finalEndingsOwned(); const groups = [1, 2, 3].map(n => { const rows = ['A', 'B', 'C'].map(k => { const e = FINAL_ENDINGS[k + n]; return (own.indexOf(e.code) >= 0 ? '✅ ' : '⬜ ') + esc(e.title); }).join('<br>'); return '<div style="margin-bottom:7px"><b class="small">第 ' + n + ' 次梦</b><br><span class="tiny">' + rows + '</span></div>'; }).join(''); return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>三次入梦 × 三种选择，一共九条路（打赢 12-8 每次可以选一条）· 已记下 ' + own.length + '/9</p></div></div><div class="note">' + groups + '</div></div>'; })()}
         <div class="codex-grid">
           ${codexList.length ? codexList.map(t => {
             const recorded = seenIds.has(t.id);
@@ -9565,7 +9578,7 @@ function renderBattlePage() {
       <div class="idle-stats" style="margin:0">
         <div class="idle-stat"><span>主线最高关</span><b>${stageLabel}</b></div>
         <div class="idle-stat"><span>梦塔最高层</span><b>${state.tower.best} / 30</b></div>
-        <div class="idle-stat"><span>Boss 最高伤害</span><b>${fmt(state.boss.bestDamage)}</b></div>
+        <div class="idle-stat"><span>Boss 最高伤害</span><b>${fmt(Math.max(num(state.boss.bestDamage, 0), num(state.boss.everBest, 0)))}</b></div>
         <div class="idle-stat"><span>最高段位分</span><b>${fmt(state.hall.arenaBest)}</b></div>
         <div class="idle-stat"><span>梦练场最长连胜</span><b>${state.hall.arenaWinStreak} 场</b></div>
         <div class="idle-stat"><span>当前连胜</span><b>${state.hall.arenaStreak} 场</b></div>
@@ -10463,6 +10476,9 @@ function openEquipPetPicker(itemId) {
 }
 
 /* -------- 入梦池 -------- */
+function rebirthUnlocked() {
+  return state.stage.maxCleared >= STAGES.length && num(state.stage.stars[STAGES.length], 0) > 0;
+}
 function rebirthEternalPreview() {
   return 10 + Math.floor(calcTeamPower() / 1500) + Math.max(0, chapterOfStage(Math.max(1, state.stage.maxCleared)) - 1) * 2;
 }
@@ -10482,7 +10498,7 @@ function recallRush() {
   toast('回忆接上了：现在走到 ' + chapterOfStage(target) + '-' + subOfStage(target) + '。', 'gold', 3000);
 }
 function openRebirthModal() {
-  const unlocked = state.stage.maxCleared >= STAGES.length;
+  const unlocked = rebirthUnlocked();
   const preview = rebirthEternalPreview();
   const upgradeHtml = REBIRTH_UPGRADES.map(upgrade => {
     const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
@@ -10504,15 +10520,15 @@ function openRebirthModal() {
     <div class="rebirth-upgrades">${upgradeHtml}</div>
     <div class="note lav">已走到 ${highestStageLabel()} · 队伍战力 ${fmt(calcTeamPower())} · 这是第 ${finalEndingLoop()} 次入梦。走得越远，入梦带回的永恒结晶越多。</div>
     <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入第 ${finalEndingLoop() + 1} 次梦</button>
-    <div class="tiny muted center" style="margin-top:6px">主线会退回 1-1，别的东西都不会少。需要再确认一次。</div>`
-    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>梦还没走到头</h3><p>通关 12-8「晚安先生」之后，才能入下一次梦。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, 5 * STAGES_PER_CHAPTER - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
+    <div class="tiny muted center" style="margin-top:6px">主线会退回 1-1 并清空关卡星星，别的东西都不会少。回忆速通接回来的进度不算入梦条件。</div>`
+    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>梦还没走到头</h3><p>通关 12-8「晚安先生」之后，才能入下一次梦。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, STAGES.length - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
   openModal('🌀 入梦', body, { wide: true });
 }
 function openRebirthConfirm() {
-  if (state.stage.maxCleared < STAGES.length) { toast('还没走到梦的尽头，入不了梦', 'bad'); return; }
+  if (!rebirthUnlocked()) { toast('这一世的梦还没真正走到头，入不了梦', 'bad'); return; }
   const gain = rebirthEternalPreview();
   const body = `
-    <div class="warning-box"><b>要入梦吗？</b><p>只有主线的进度会退回 1-1：宠物、等级、星级、进化、装备、金币、钻石、经验果、梦塔、梦练场和背包材料都留着。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶、永恒强化和已经看过的结局也都会保留。</p></div>
+    <div class="warning-box"><b>要入梦吗？</b><p>只有主线的进度会退回 1-1：宠物、等级、星级、进化、装备、金币、钻石、经验果、梦塔、梦练场和背包材料都留着。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶、永恒强化和已经看过的结局也都会保留。</p><p>关卡星星会一起清零，要重新三星才能扫荡；回忆速通接回来的旧进度不算「亲手走到头」，想再入梦得重新打赢 12-8。</p></div>
     <div class="offline-rewards"><div class="offline-reward"><span>🌀</span><div><small>获得永恒结晶</small><b>${fmt(gain)}</b></div></div></div>
     <div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="openRebirth">再想想</button><button class="btn btn-lav" type="button" data-act="rebirthConfirm">确认轮回</button></div>`;
   openModal('🌀 入梦之前', body, { wide: false });
@@ -10520,7 +10536,7 @@ function openRebirthConfirm() {
 
 /* -------- 奇遇 -------- */
 function storyEndingTotal() { let n = 0; for (const s of ENCOUNTER_STORIES) for (const k in s.nodes) if (s.nodes[k].ending) n++; return n; }
-function storyEndingCount() { return state.encounter.endings ? Object.keys(state.encounter.endings).length : 0; }
+function storyEndingCount() { const m = state.encounter.endings; return m && typeof m === 'object' ? Object.keys(m).filter(k => k.indexOf('final:') !== 0).length : 0; }
 function storyById(id) { return ENCOUNTER_STORIES.find(s => s.id === id) || null; }
 function exploreStory(id) {
   ensureEncounter();
@@ -10582,7 +10598,8 @@ function openStoryEnding(story, node) {
   const s = UI.story || { path: [], logs: [] };
   const logs = addReward(node.ending.rewards);
   state.encounter.history.push(`${story.title}：${node.ending.title.replace('结局 · ', '')}`);
-  if (state.encounter.endings) state.encounter.endings[story.id + ':' + node.ending.title] = Date.now();
+  if (!state.encounter.endings || typeof state.encounter.endings !== 'object' || Array.isArray(state.encounter.endings)) state.encounter.endings = {};
+  state.encounter.endings[story.id + ':' + node.ending.title] = Date.now();
   state.encounter.history = state.encounter.history.slice(-8);
   const path = s.path.join(' → ');
   UI.story = null;
@@ -11349,14 +11366,14 @@ function startStage(index) {
     stage,
     stageIndex: stage.index,
     title: `第 ${stage.chapter}-${stage.sub} 关 · ${stage.name}`,
-    subtitle: stage.type === 'boss' ? '章节首领 · 三回合内击败敌人可拿满星评价' : '自动回合制 · 普攻攒怒气，100 怒气放奥义',
+    subtitle: stage.type === 'boss' ? '章节首领 · 全员存活可拿满星评价' : '自动回合制 · 普攻攒怒气，100 怒气放奥义',
     emoji: stage.emoji,
     enemies,
     theme: stage.theme || '',
     storyIntro: stageIntroText(stage),
     bossTaunt: stage.type === 'boss' ? (BOSS_TAUNTS[stage.chapter] || '') : '',
     staminaCost: STAGE_STAMINA_COST,
-    maxRounds: 30
+    maxRounds: 40
   });
   if (ok) {
     UI.adventureChapter = stage.chapter;
@@ -12122,7 +12139,7 @@ function performRebirthConfirm() {
   openRebirthConfirm();
 }
 function doRebirth() {
-  if (state.stage.maxCleared < STAGES.length) { toast('还没走到梦的尽头，入不了梦', 'bad'); return; }
+  if (!rebirthUnlocked()) { toast('这一世的梦还没真正走到头，入不了梦', 'bad'); return; }
   const gain = rebirthEternalPreview();
   // 入梦：不重开存档，只把主线退回 1-1。宠物、金币、装备、梦塔、图鉴、奇遇记录全都留着。
   state.rebirth.count = num(state.rebirth.count, 0) + 1;
@@ -13049,6 +13066,32 @@ else bootGame();
   #back-home:active {
     transform: scale(0.94);
   }
+/* ---- 剧情可读性：手机上也能看清字 ---- */
+.story-text{font-size:16px;line-height:1.95;padding:12px 14px;color:#4a3a2a;border-left-width:4px}
+.story-ending h3{font-size:19px}
+.story-ending p{font-size:15.5px;line-height:1.95;color:#453626}
+.story-speaker{font-size:15px}
+.story-acts{font-size:12px}
+.story-choice span{font-size:14.5px;font-weight:800}
+.story-choice small{font-size:12px}
+.chapter-story{font-size:14.5px;line-height:1.9;margin-top:8px;color:#6b5540;background:rgba(255,250,240,.9);border-left:3px solid #eccd97;border-radius:0 10px 10px 0;padding:9px 12px}
+.chapter-banner p{font-size:13px;line-height:1.7}
+.battle-story{font-size:14.5px;line-height:1.9;padding:9px 12px}
+.result-story{font-size:15px;line-height:1.85}
+.flavor-text{font-size:13px;line-height:1.85}
+.flavor-memory{font-size:13px;line-height:1.85}
+.codex-card p{font-size:11.5px;line-height:1.6}
+.encounter-event p{font-size:13px;line-height:1.75}
+.note{font-size:12.5px;line-height:1.7}
+.battle-log{font-size:11.5px}
+@media (max-width:420px){
+  .story-text{font-size:15px}
+  .story-ending p{font-size:15px}
+  .chapter-story{font-size:13.5px}
+  .battle-story{font-size:13.5px}
+  .flavor-text,.flavor-memory{font-size:12.5px}
+}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
