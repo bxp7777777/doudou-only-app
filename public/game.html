@@ -13599,6 +13599,24 @@ function bootGame() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootGame);
 else bootGame();
+
+// 花园：点一下地块就给 1 金币，可以连点刷，单日上限 10000
+function gardenTapState() {
+  const day = new Date().toISOString().slice(0, 10);
+  if (!state.gardenTap || state.gardenTap.day !== day) state.gardenTap = { day: day, n: 0 };
+  return state.gardenTap;
+}
+function gardenTapCoin(ev) {
+  const el = ev.target && ev.target.closest ? ev.target.closest('.garden-cell') : null;
+  if (!el || !document.querySelector('.page-garden')) return;
+  const t = gardenTapState();
+  if (t.n >= 10000) { if (!gardenTapCoin._warned) { gardenTapCoin._warned = true; toast('今天的花园金币到 10000 了，明天再来'); } return; }
+  t.n++;
+  addReward({ crystal: 1 });
+  saveGame();
+  if (UI.page === 'garden' && typeof renderPage === 'function' && t.n % 5 === 0) renderPage();
+}
+document.addEventListener('pointerup', gardenTapCoin, true);
 </script>
 
 <!-- 回家：PWA 独立窗口里没有浏览器返回键，留一个固定的回家按钮 -->
