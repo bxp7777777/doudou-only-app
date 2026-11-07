@@ -7075,6 +7075,29 @@ function syncBossArtPhase(battle, boss) {
 }
 
 /* -------- 战斗开场 -------- */
+// 合体技同框特写：借用 art/bonds 的同框图，压半屏 1.6 秒。没有图就只显示文字，不破版
+function showBondSplash(bondId, bondName, quote, aName, bName) {
+  const root = document.getElementById('battleRoot');
+  if (!root) return;
+  const url = (typeof bondArtUrl === 'function') ? bondArtUrl(bondId) : null;
+  let el = document.getElementById('bondSplash');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'bondSplash';
+    el.className = 'bond-splash';
+    root.appendChild(el);
+  }
+  el.innerHTML = '<div class="bond-splash-bg"' + (url ? ' style="background-image:url(\'' + url + '\')"' : '') + '></div>'
+    + '<div class="bond-splash-txt"><div class="bond-splash-name">💞 ' + esc(bondName || '合体技') + '</div>'
+    + '<div class="bond-splash-pair">' + esc(aName || '') + ' × ' + esc(bName || '') + '</div>'
+    + (quote ? '<div class="bond-splash-quote">' + esc(quote) + '</div>' : '') + '</div>';
+  el.classList.remove('on');
+  void el.offsetWidth;
+  el.classList.add('on');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.classList.remove('on'); }, 1700);
+}
+
 function startBattle(config) {
   // 上一场若是异常中断（没有计时器、over 仍为 false），不再永久挡住新战斗
   if (UI.battle && !UI.battle.over && UI.battle.timer) return false;
@@ -7094,6 +7117,8 @@ function startBattle(config) {
         a.atk = Math.round(a.atk * 1.10);
         a.def = Math.round(a.def * 1.06);
         a.bondCombo = bondCombo.id;
+        a.bondName = bondCombo.name;
+        a.bondQuote = bondCombo.quote || '';
       }
     }
   }
@@ -7574,6 +7599,7 @@ function executeUnitSkill(unit, index, events) {
         unit.comboBoost = 1.5;
         events.push({ type: 'ult', unitUid: mate.uid, name: '合体 · ' + skill.name, rarity: mate.rarity, element: mate.element });
         pushBattleLog(b, '💞 合体技 · ' + unit.name + ' × ' + mate.name + '！伤害 ×1.5', 'ult');
+        showBondSplash(unit.bondCombo, unit.bondName, unit.bondQuote, unit.name, mate.name);
       }
     }
   }
@@ -13408,6 +13434,17 @@ body.prebattle-open{overflow:hidden}
   .battle-layer .b-row-line.back-line{min-height:calc(3 * 58px)}
   .battle-layer .b-row-line .b-unit{min-height:56px}
 }
+
+/* 合体技同框特写：半屏压图 + 台词，1.7s 自动收 */
+.bond-splash{position:fixed;inset:0;z-index:126;display:none;pointer-events:none;align-items:center;justify-content:center;flex-direction:column;gap:6px}
+.bond-splash.on{display:flex;animation:bondSplashIn 1.7s ease both}
+.bond-splash-bg{position:absolute;inset:0;background-size:cover;background-position:center 30%;opacity:0;mask-image:radial-gradient(circle at 50% 42%,#000 34%,transparent 72%);-webkit-mask-image:radial-gradient(circle at 50% 42%,#000 34%,transparent 72%);animation:bondSplashBg 1.7s ease both}
+.bond-splash-txt{position:relative;z-index:1;text-align:center;padding:10px 18px;border-radius:16px;background:rgba(255,252,246,.78);border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(90,60,40,.18);backdrop-filter:blur(3px)}
+.bond-splash-name{font-size:16px;font-weight:900;color:#7b4e6c;letter-spacing:.5px}
+.bond-splash-pair{font-size:10px;color:#8a6f52;margin-top:2px}
+.bond-splash-quote{font-family:"Songti SC",serif;font-size:11.5px;color:#6f5741;margin-top:5px;font-style:italic}
+@keyframes bondSplashIn{0%{opacity:0}14%{opacity:1}82%{opacity:1}100%{opacity:0}}
+@keyframes bondSplashBg{0%{opacity:0;transform:scale(1.06)}20%{opacity:.86}82%{opacity:.86}100%{opacity:0;transform:scale(1)}}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
