@@ -5515,7 +5515,7 @@ function homePetArt(pet, tpl) {
   const fb = esc(petEmoji(pet));
   const urls = evoArtCandidates(tpl.id, pet.evo || 0).concat(petArtCandidates(tpl.id));
   if (!urls.length) return `<span class="main-pet-emoji">${fb}</span>`;
-  return `<span class="home-pet-img home-pet-rig">${rigArtHTML(urls[0], petEmoji(pet), artChainAttr(urls, petEmoji(pet)))}</span>`;
+  return `<span class="home-pet-img home-pet-rig">${rigArtHTML(urls[0], petEmoji(pet), artChainAttr(urls, petEmoji(pet)))}${decoOverlayHTML(pet.uid)}</span>`;
 }
 // 主页驻守小队小头像：有立绘显示小圆图，缺失回退 emoji
 function miniPetArt(pet) {
@@ -10364,6 +10364,63 @@ function petPowerBreakdown(pet) {
   ].filter((r) => r.value !== 0);
 }
 
+// 宠物装扮：6 件透明底配饰，挂在立绘右上（宠物朝右时的脸前侧）
+const COSMETIC_ART = {
+  cos_flower_crown: 'art/cosmetics/cos_flower_crown.png',
+  cos_star_clip: 'art/cosmetics/cos_star_clip.png',
+  cos_scarf_cream: 'art/cosmetics/cos_scarf_cream.png',
+  cos_scarf_mint: 'art/cosmetics/cos_scarf_mint.png',
+  cos_lantern: 'art/cosmetics/cos_lantern.png',
+  cos_bow: 'art/cosmetics/cos_bow.png'
+};
+const COSMETIC_NAMES = {
+  cos_flower_crown: '花环头饰', cos_star_clip: '星星发夹', cos_scarf_cream: '奶油围巾',
+  cos_scarf_mint: '薄荷围巾', cos_lantern: '小夜灯', cos_bow: '蝴蝶结'
+};
+function decoOf() {
+  if (!state.cosmetics || typeof state.cosmetics !== 'object') state.cosmetics = {};
+  const c = state.cosmetics;
+  if (!c.deco || typeof c.deco !== 'object') c.deco = {};
+  if (!c.deco.equipped || typeof c.deco.equipped !== 'object') c.deco.equipped = {};
+  return c.deco;
+}
+function decoOfPet(uid) { return decoOf().equipped[uid] || ''; }
+function decoOverlayHTML(uid, cls) {
+  const id = decoOfPet(uid);
+  if (!id || !COSMETIC_ART[id]) return '';
+  return '<img class="deco-overlay ' + (cls || '') + '" src="' + COSMETIC_ART[id] + '" alt="" aria-hidden="true" onerror="this.remove()">';
+}
+function toggleDeco(id) {
+  const uid = UI.selectedPet;
+  if (!uid || !state.pets[uid]) { toast('先在宠物页点开一只宠物', 'bad'); return; }
+  const d = decoOf();
+  if (d.equipped[uid] === id) delete d.equipped[uid]; else d.equipped[uid] = id;
+  saveGame(); renderAll();
+  renderDecoModal(uid);
+  toast((d.equipped[uid] ? '已装扮：' + (COSMETIC_NAMES[id] || id) : '已取下装扮'), 'good');
+}
+function renderDecoModal(uid) {
+  const pet = state.pets[uid];
+  const cur = decoOfPet(uid);
+  const cards = Object.keys(COSMETIC_ART).map(id =>
+    '<button class="deco-card' + (cur === id ? ' on' : '') + '" data-act="decoPick" data-deco="' + id + '" type="button">'
+    + '<img src="' + COSMETIC_ART[id] + '" alt="" onerror="this.remove()">'
+    + '<span>' + (COSMETIC_NAMES[id] || id) + '</span></button>'
+  ).join('');
+  UI.modal = { kind: 'deco', uid: uid };
+  document.getElementById('modalRoot').innerHTML =
+    '<div class="modal-box deco-box"><h3>装扮 · ' + esc(pet ? templateOf(pet).name : '') + '</h3>'
+    + '<p class="deco-tip">点一件穿上，再点一次取下。配饰会跟到首页立绘上。</p>'
+    + '<div class="deco-grid">' + cards + '</div>'
+    + '<button class="btn btn-ghost" data-act="closeModal" type="button">完成</button></div>';
+  document.getElementById('modalRoot').className = 'modal-layer open';
+}
+function openDecoModal() {
+  const uid = UI.selectedPet || [...state.team.front, ...state.team.back][0];
+  if (!uid || !state.pets[uid]) { toast('先去宠物页点开一只宠物，再回来装扮', 'bad'); return; }
+  renderDecoModal(uid);
+}
+
 function openPetModal(uid) {
   const pet = state.pets[uid];
   if (!pet) { toast('没有找到这只宠物', 'bad'); return; }
@@ -10778,6 +10835,7 @@ function openSettingsModal() {
     <div class="settings-section">
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
+      <div class="settings-row"><span>宠物装扮</span><button class="btn btn-ghost btn-xs" type="button" data-act="openDeco">6 件配饰</button></div>
       <div class="settings-row"><span>立绘小动作</span><button id="btnTogglePetAnim" class="btn btn-ghost btn-xs" type="button" data-act="togglePetAnim">${state.settings.petAnim === false ? '关闭' : '开启'}</button></div>
       <div class="settings-row"><span>轻音乐</span><button id="btnToggleMusic" class="btn btn-ghost btn-xs" type="button" data-act="toggleMusic">${state.settings.music ? '开启' : '关闭'}</button></div>
       <div class="settings-row"><span>风格</span><span class="music-opt-row"><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'light' ? ' on' : ''}" type="button" data-act="music-style" data-key="light">轻快小曲</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'calm' ? ' on' : ''}" type="button" data-act="music-style" data-key="calm">舒缓琶音</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'breeze' ? ' on' : ''}" type="button" data-act="music-style" data-key="breeze">清新风铃</button><button class="btn btn-ghost btn-xs music-opt${state.settings.musicStyle === 'lull' ? ' on' : ''}" type="button" data-act="music-style" data-key="lull">温柔摇篮</button></span></div>
@@ -12576,6 +12634,8 @@ function handleActionClick(event) {
       break;
     case 'deploy': deployPet(uid, target.dataset.row === 'front' ? 'front' : 'back'); break;
     case 'petSort': UI.petSort = target.dataset.sort || 'default'; renderPage(); break;
+    case 'openDeco': openDecoModal(); break;
+    case 'decoPick': toggleDeco(target.dataset.deco); break;
     case 'exchangeJump': {
       const el = document.getElementById(target.dataset.target || '');
       if (el) window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - 78), behavior: 'smooth' });
@@ -13459,6 +13519,19 @@ body.prebattle-open{overflow:hidden}
 body.battle-mode{overflow:hidden!important;overscroll-behavior:none;touch-action:none}
 body.battle-mode #view{overflow:hidden}
 .battle-layer{touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none}
+
+/* 装扮：配饰挂在立绘右上，跟着立绘一起缩放 */
+.deco-overlay{position:absolute;right:4%;top:2%;width:34%;height:34%;object-fit:contain;pointer-events:none;z-index:2;filter:drop-shadow(0 3px 6px rgba(120,90,60,.18))}
+.home-pet-img{position:relative}
+.home-pet-img .deco-overlay{right:6%;top:0;width:32%;height:32%}
+.deco-box{max-width:340px}
+.deco-box h3{font-size:15px;margin:2px 0 4px;text-align:center}
+.deco-tip{font-size:10px;color:var(--muted);text-align:center;margin:0 0 8px;line-height:1.6}
+.deco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
+.deco-card{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:13px;border:1px solid #efe2d2;background:#fffdf8;cursor:pointer}
+.deco-card img{width:42px;height:42px;object-fit:contain}
+.deco-card span{font-size:9.5px;color:#6f5741}
+.deco-card.on{border-color:#f0c05a;background:#fff8ea;box-shadow:0 0 0 2px rgba(240,192,90,.24)}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
