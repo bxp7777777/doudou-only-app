@@ -37,8 +37,8 @@ function dayIndex(key) {
 
 function greeting(period, seed) {
   const arr = GREETING[period] || GREETING.morning;
-  if (seed === undefined || seed === null) return arr[0];
-  return rot(arr, seed);
+  const line = (seed === undefined || seed === null) ? arr[0] : rot(arr, seed);
+  return '豆豆大王' + line;
 }
 
 /* ------------------------- 1. 喝水 ------------------------- */

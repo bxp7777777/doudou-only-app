@@ -7236,7 +7236,9 @@ function openBgmPicker(mode) {
     + '<button class="btn btn-ghost btn-xs' + (m === 'battle' ? ' on' : '') + '" data-act="openBgm" data-mode="battle" type="button">战斗</button></div>'
     + '<div class="bgm-list">' + items + '</div>'
     + '<button class="btn btn-ghost" data-act="closeModal" type="button">完成</button></div>';
-  document.getElementById('modalRoot').className = 'modal-layer open';
+  const _mr = document.getElementById('modalRoot');
+  _mr.className = 'modal-layer open';
+  _mr.onclick = (ev) => { if (ev.target === _mr) { _mr.className = ''; _mr.innerHTML = ''; UI.modal = null; } };
 }
 let bgmAudio = null, bgmMode = '', bgmFade = 0, bgmUnlocked = false;
 function bgmVol() {
@@ -10652,7 +10654,9 @@ function renderDecoModal(uid) {
     + '<button class="panel-x" data-act="closeModal" type="button" aria-label="关闭" style="position:absolute;right:10px;top:8px">✕</button>'
     + '<div class="deco-grid">' + cards + '</div>'
     + '<button class="btn btn-ghost" data-act="closeModal" type="button">完成</button></div>';
-  document.getElementById('modalRoot').className = 'modal-layer open';
+  const _mr = document.getElementById('modalRoot');
+  _mr.className = 'modal-layer open';
+  _mr.onclick = (ev) => { if (ev.target === _mr) { _mr.className = ''; _mr.innerHTML = ''; UI.modal = null; } };
 }
 function openDecoModal() {
   const uid = UI.selectedPet || [...state.team.front, ...state.team.back][0];
