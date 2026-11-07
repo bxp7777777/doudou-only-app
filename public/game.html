@@ -3221,6 +3221,21 @@ const STAGE_AFTER = {
   9: '有一朵花歪了，风进来了。', 10: '钟往前走了 1 分钟。',
   11: '有一节走廊的灯灭了。', 12: '门缝里透进来一点白天。'
 };
+// 关卡名：按章节故事推进给 6 个专属后缀（从痕迹走到首领），缺章回退旧词表
+const STAGE_NAMES = {
+  1: ['灶边', '糖霜', '风口', '排果', '那个坑', '糖兽'],
+  2: ['焦草坡', '断句', '灰堆', '半句话', '等话', '狐火'],
+  3: ['咸水', '旧毛巾', '泪窝', '上游', '水心', '水灵'],
+  4: ['甜地', '未拆信', '呼吸床', '温被', '拖鞋', '熊王'],
+  5: ['亮爪印', '冷月光', '坐痕', '停钟', '背影', '没脸守卫'],
+  6: ['软云', '未拆行李', '别地口音', '凹痕', '云底', '巨鲸'],
+  7: ['糖岩', '纸灰', '墙缝信', '护信火', '信边', '幼龙'],
+  8: ['眨眼砂', '名字阵', '星桌', '潮线', '十二碗', '海獭'],
+  9: ['同色花', '无风处', '花牌', '堵径', '木框', '蝶后'],
+  10: ['一张椅', '停摆钟', '上行脚印', '干净灰', '钟前', '守望者'],
+  11: ['长走廊', '脸朝墙', '回走脚印', '明灭灯', '你的背影', '守梦人'],
+  12: ['另一层', '提灯人', '薄梦', '两条影', '抬头', '晚安先生']
+};
 // 每个地方的关前一句：这件"没做完的事"留下的痕迹（按章轮换，不随机）
 const STAGE_INTRO = {
   1: ['草莓硬得像石头，咬下去有声音。', '草叶上结着糖霜，一碰就碎。', '风是甜的，吹久了牙疼。', '有人把草莓摆成一排，从没动过。', '奶油地里有个坑，形状像躺过一个人。', '糖兽坐在中间，慢慢地舔自己的手。'],
@@ -3436,7 +3451,8 @@ for (const chapter of CHAPTERS) {
     const bdef = kind.type === 'boss' ? bossByChapter(chapter.id) : null;
     const slotKey = ['mob1', 'mob2', 'mob3', 'elite', 'mob4', 'elite2'][i - 1];
     const suffixPool = STAGE_NAME_WORDS[slotKey] || STAGE_NAME_WORDS.mob1;
-    const suffix = bdef ? '' : suffixPool[(chapter.id - 1) % 10];
+    const namePool = STAGE_NAMES[chapter.id] || null;
+    const suffix = bdef ? '' : (namePool ? namePool[(i - 1) % namePool.length] : suffixPool[(chapter.id - 1) % 10]);
     const blurbPool = STAGE_BLURB[kind.type] || [];
     const storyPool = STAGE_INTRO[chapter.id] || null;
     const eliteLine = kind.type === 'elite' ? (STAGE_ELITE[chapter.id] || '') : '';
