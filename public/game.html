@@ -7108,8 +7108,6 @@ function renderBattleScreenHTML(battle) {
           </div>
         </div>
       </div>
-      ${c.storyIntro ? `<div class="battle-story">📖 ${esc(c.storyIntro)}</div>` : ''}
-      ${c.bossTaunt ? `<div class="battle-story boss-taunt">👹 ${esc(c.bossTaunt)}</div>` : ''}
       <div class="b-queue" id="battleQueue"><span class="b-q-title">出手顺序</span></div>
       ${bossBarHTML(battle)}
       <div class="b-hp-summary">
@@ -11355,7 +11353,12 @@ function startStage(index) {
   if (index > state.stage.maxCleared + 1) { toast('请先通关前置关卡', 'bad'); return; }
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
-  // 最终关留 5% 余量：满配战力 25,773 对 25,024 只剩 3%，少练一只或换队就会卡死
+  // 首领关与每章第一关：先给一页剧情，看完点「开战」再进战斗
+  if (stage.type === 'boss' || stage.sub === 1) { openPreBattle(stage); return; }
+  launchStageBattle(stage);
+}
+function launchStageBattle(stage) {
+  if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
   const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
   const enemies = createEnemyFormation(enemyPower, buildStageEnemyOptions(stage));
   if (!spendStamina(STAGE_STAMINA_COST)) { toast('体力不足', 'bad'); return; }
@@ -11370,8 +11373,8 @@ function startStage(index) {
     emoji: stage.emoji,
     enemies,
     theme: stage.theme || '',
-    storyIntro: stageIntroText(stage),
-    bossTaunt: stage.type === 'boss' ? (BOSS_TAUNTS[stage.chapter] || '') : '',
+    storyIntro: '',
+    bossTaunt: '',
     staminaCost: STAGE_STAMINA_COST,
     maxRounds: 40
   });
@@ -11381,6 +11384,61 @@ function startStage(index) {
     saveGame();
     playSfx('battle');
   }
+}
+function preBattleLines(stage) {
+  const c = CHAPTER_NARRATIVE[stage.chapter] || {};
+  const out = [];
+  if (stage.type === 'boss') {
+    if (c.enter) out.push(c.enter);
+    if (c.boss) out.push(c.boss);
+    if (stage.blurb) out.push(stage.blurb);
+  } else {
+    if (stage.sub === 1 && c.enter) out.push(c.enter);
+    if (stage.blurb && out.indexOf(stage.blurb) < 0) out.push(stage.blurb);
+  }
+  return out;
+}
+function closePreBattle() {
+  const el = document.getElementById('preBattle');
+  if (el) el.remove();
+  document.body.classList.remove('prebattle-open');
+  UI.preBattleStage = 0;
+}
+function confirmPreBattle() {
+  const index = UI.preBattleStage || 0;
+  closePreBattle();
+  if (index) launchStageBattle(getStage(index));
+}
+function openPreBattle(stage) {
+  closePreBattle();
+  const lines = preBattleLines(stage);
+  const taunt = stage.type === 'boss' ? (BOSS_TAUNTS[stage.chapter] || '') : '';
+  const isBoss = stage.type === 'boss';
+  const teamPower = calcTeamPower();
+  const need = stageNeedPower(stage);
+  const html = '<div class="prebattle' + (isBoss ? ' is-boss' : '') + '" id="preBattle">' +
+    '<div class="pb-bg"></div>' +
+    '<div class="pb-inner">' +
+      '<div class="pb-chapter">第 ' + stage.chapter + ' 章 · ' + esc((CHAPTERS[stage.chapter - 1] || {}).name || '') + '</div>' +
+      '<div class="pb-stage"><span class="pb-emoji">' + esc(stage.emoji) + '</span>' + stage.chapter + '-' + stage.sub + '　' + esc(stage.name) + '</div>' +
+      '<div class="pb-lines">' + lines.map(t => '<p>' + esc(t) + '</p>').join('') + '</div>' +
+      (taunt ? '<div class="pb-taunt">「' + esc(taunt) + '」</div>' : '') +
+      '<div class="pb-stats">' +
+        '<div><small>我方战力</small><b>' + fmt(teamPower) + '</b></div>' +
+        '<div><small>参考需求</small><b class="' + (teamPower >= need ? 'pb-ok' : 'pb-warn') + '">' + fmt(need) + '</b></div>' +
+        '<div><small>' + (isBoss ? '首领' : '敌人') + '</small><b>' + (isBoss ? '三条命' : '三只') + '</b></div>' +
+      '</div>' +
+      '<div class="pb-actions">' +
+        '<button class="btn btn-ghost" type="button" data-act="closePreBattle">回头再说</button>' +
+        '<button class="btn btn-primary pb-start" type="button" data-act="confirmPreBattle">' + (isBoss ? '⚔️ 开战' : '⚔️ 出发') + '</button>' +
+      '</div>' +
+      '<button class="pb-skip" type="button" data-act="confirmPreBattle">跳过剧情，直接开打</button>' +
+    '</div>' +
+  '</div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.body.classList.add('prebattle-open');
+  UI.preBattleStage = stage.index;
+  playSfx('tap');
 }
 function sweepStage(index) {
   const stage = getStage(index);
@@ -12333,6 +12391,8 @@ function handleActionClick(event) {
       renderPage();
       break;
     case 'startStage': startStage(Number(target.dataset.index)); break;
+    case 'closePreBattle': closePreBattle(); break;
+    case 'confirmPreBattle': confirmPreBattle(); break;
     case 'sweepStage': sweepStage(Number(target.dataset.index)); break;
     case 'startDungeon': startDungeon(); break;
 
@@ -13090,6 +13150,57 @@ else bootGame();
   .chapter-story{font-size:13.5px}
   .battle-story{font-size:13.5px}
   .flavor-text,.flavor-memory{font-size:12.5px}
+}
+
+/* ---------- 开战前的剧情页：看完点「开战」再进战斗 ---------- */
+body.prebattle-open{overflow:hidden}
+.prebattle{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:16px;animation:pbIn .26s ease both}
+.pb-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 22%,rgba(255,246,228,.94),rgba(250,226,200,.92) 44%,rgba(238,210,190,.95)),linear-gradient(180deg,#fff8ec,#f2ddc4)}
+.prebattle.is-boss .pb-bg{background:radial-gradient(circle at 50% 26%,rgba(255,234,216,.92),rgba(239,199,174,.92) 46%,rgba(205,163,150,.96)),linear-gradient(180deg,#fdf1e6,#e4c0b2)}
+.prebattle.is-boss .pb-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 62%,transparent 38%,rgba(84,46,38,.34))}
+.pb-bg::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.55) 1px,transparent 1px);background-size:17px 17px;opacity:.32}
+.pb-inner{position:relative;width:min(680px,100%);max-height:92vh;overflow:auto;background:rgba(255,252,246,.88);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.92);border-radius:26px;box-shadow:0 30px 80px rgba(94,64,44,.3);padding:26px 24px 18px;animation:pbCard .34s cubic-bezier(.2,.9,.3,1.1) both}
+.pb-chapter{font-size:12px;letter-spacing:3px;color:#a88a67}
+.pb-stage{font-size:23px;font-weight:800;margin:6px 0 14px;color:#463527;display:flex;align-items:center;gap:8px;line-height:1.3}
+.pb-emoji{font-size:28px;line-height:1}
+.pb-lines p{margin:0 0 12px;font-size:16px;line-height:1.95;color:#4a3a2a}
+.pb-taunt{margin:14px 0 4px;padding:12px 14px;border-left:3px solid #e0927a;background:rgba(255,240,234,.92);border-radius:0 12px 12px 0;font-size:15.5px;line-height:1.85;color:#8a4a3c;font-weight:600}
+.pb-stats{display:flex;gap:10px;margin:18px 0 14px;flex-wrap:wrap}
+.pb-stats>div{flex:1 1 118px;background:rgba(255,255,255,.74);border:1px solid #f0dfc8;border-radius:14px;padding:9px 11px;display:flex;flex-direction:column;gap:2px}
+.pb-stats small{font-size:11px;color:#a08a72}
+.pb-stats b{font-size:17px;color:#41322a;font-variant-numeric:tabular-nums}
+.pb-ok{color:#3f8f6b}.pb-warn{color:#c2683f}
+.pb-actions{display:flex;gap:10px}
+.pb-actions .btn{flex:1;min-height:50px;font-size:15px;border-radius:16px}
+.pb-start{background:linear-gradient(160deg,#ffbf80,#ef8757);border-color:#eda169;color:#fff;box-shadow:0 10px 22px rgba(230,120,70,.32)}
+.pb-skip{display:block;width:100%;margin-top:8px;background:none;border:0;color:#a08a72;font-size:12px;padding:8px;cursor:pointer}
+.pb-skip:hover{color:#8b6a4c}
+@keyframes pbIn{from{opacity:0}to{opacity:1}}
+@keyframes pbCard{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+
+/* ---------- UI 精修：更柔和的卡片、更有质感的按钮与血条 ---------- */
+.card{border-radius:20px;box-shadow:0 10px 26px rgba(120,88,60,.08);transition:box-shadow .18s ease,transform .18s ease}
+.card:hover{box-shadow:0 16px 34px rgba(120,88,60,.12)}
+.btn{border-radius:14px;transition:transform .12s ease,box-shadow .18s ease,filter .18s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.btn-primary{background:linear-gradient(160deg,#ffc98f,#f39b6a);border-color:#f0a877;box-shadow:0 8px 18px rgba(240,150,100,.28)}
+.page-title{letter-spacing:.6px}
+.chapter-banner{background:linear-gradient(120deg,#fff7ea,#ffe9d2);border-radius:18px;box-shadow:0 8px 20px rgba(150,110,70,.1)}
+.stage-card{border-radius:16px;transition:transform .16s ease,box-shadow .16s ease}
+.stage-card:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(120,88,60,.12)}
+.battle-layer .b-emoji-wrap{font-size:40px;min-height:48px}
+.battle-layer .b-unit .b-name{font-size:10.5px}
+.battle-layer .b-hp-track{height:9px;background:rgba(90,60,40,.1);box-shadow:inset 0 1px 3px rgba(90,60,40,.16)}
+.battle-layer .b-hp-track i{background:linear-gradient(90deg,#b9ecd4,#5cbd96);border-radius:999px;box-shadow:0 1px 2px rgba(40,90,70,.18)}
+.res-pill{background:rgba(255,255,255,.86);box-shadow:0 3px 10px rgba(120,88,60,.08)}
+.modal{border-radius:24px}
+@media (max-width:420px){
+  .pb-inner{padding:20px 16px 14px;border-radius:22px}
+  .pb-stage{font-size:19px}
+  .pb-lines p{font-size:15px;line-height:1.9}
+  .pb-taunt{font-size:14.5px}
+  .battle-layer .b-emoji-wrap{font-size:34px;min-height:42px}
 }
 
 </style>
