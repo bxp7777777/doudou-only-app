@@ -7106,6 +7106,42 @@ const BGM_TRACKS = {
   home: ['audio/bgm_home_1.mp3', 'audio/bgm_home_2.mp3', 'audio/bgm_home_3.mp3', 'audio/bgm_home_4.mp3', 'audio/bgm_home_5.mp3'],
   battle: ['audio/bgm_battle_1.mp3', 'audio/bgm_battle_2.mp3', 'audio/bgm_battle_3.mp3', 'audio/bgm_battle_4.mp3']
 };
+const BGM_TITLES = {
+  'audio/bgm_home_1.mp3': '妈妈说 · 余佳运', 'audio/bgm_home_2.mp3': '和你 · 余佳运',
+  'audio/bgm_home_3.mp3': '再一起 · 余佳运', 'audio/bgm_home_4.mp3': '慢慢喜欢你 · 莫文蔚',
+  'audio/bgm_home_5.mp3': '如果你也刚好抬头看树 · 孙天宇',
+  'audio/bgm_battle_1.mp3': '宿敌 · 许嵩', 'audio/bgm_battle_2.mp3': '一笑倾城 · 汪苏泷',
+  'audio/bgm_battle_3.mp3': '如果有来生 · 谭维维', 'audio/bgm_battle_4.mp3': '玻璃 · Gareth.T'
+};
+function bgmTitle(u) { return BGM_TITLES[u] || (u || '').split('/').pop() || '随机'; }
+function bgmPickOf(mode) {
+  const p = state && state.settings ? state.settings.bgmPick : null;
+  return p && p[mode] ? p[mode] : '';
+}
+function setBgmPick(mode, url) {
+  if (!state.settings.bgmPick || typeof state.settings.bgmPick !== 'object') state.settings.bgmPick = {};
+  state.settings.bgmPick[mode] = url || '';
+  saveGame();
+  bgmMode = '';
+  if (state.settings.music !== false) bgmPlay(UI.battle && !UI.battle.over ? 'battle' : 'home');
+}
+function openBgmPicker(mode) {
+  const m = mode === 'battle' ? 'battle' : 'home';
+  const list = BGM_TRACKS[m] || [];
+  const cur = bgmPickOf(m);
+  const items = ['<button class="bgm-item' + (cur ? '' : ' on') + '" data-act="bgmPickSet" data-mode="' + m + '" data-url="" type="button">🎲 随机播放</button>']
+    .concat(list.map(u => '<button class="bgm-item' + (cur === u ? ' on' : '') + '" data-act="bgmPickSet" data-mode="' + m + '" data-url="' + u + '" type="button">🎵 ' + esc(bgmTitle(u)) + '</button>'))
+    .join('');
+  UI.modal = { kind: 'bgm', mode: m };
+  document.getElementById('modalRoot').innerHTML =
+    '<div class="modal-box bgm-box"><h3>背景音乐 · 选曲</h3>'
+    + '<p class="deco-tip">选一首会一直播这首；选「随机播放」则每次进场景换一首。</p>'
+    + '<div class="bgm-tabs"><button class="btn btn-ghost btn-xs' + (m === 'home' ? ' on' : '') + '" data-act="openBgm" data-mode="home" type="button">首页</button>'
+    + '<button class="btn btn-ghost btn-xs' + (m === 'battle' ? ' on' : '') + '" data-act="openBgm" data-mode="battle" type="button">战斗</button></div>'
+    + '<div class="bgm-list">' + items + '</div>'
+    + '<button class="btn btn-ghost" data-act="closeModal" type="button">完成</button></div>';
+  document.getElementById('modalRoot').className = 'modal-layer open';
+}
 let bgmAudio = null, bgmMode = '', bgmFade = 0, bgmUnlocked = false;
 function bgmVol() {
   const v = state && state.settings ? state.settings.musicVol : 0.45;
@@ -7138,7 +7174,8 @@ function bgmPlay(mode) {
   const el = bgmAudio;
   el.loop = true;
   el.preload = 'auto';
-  const next = list[Math.floor(Math.random() * list.length)];
+  const picked = bgmPickOf(mode);
+  const next = (picked && list.indexOf(picked) >= 0) ? picked : list[Math.floor(Math.random() * list.length)];
   const changed = el.dataset.src !== next;
   if (changed) { el.dataset.src = next; el.src = next; }
   el.volume = 0;
@@ -10905,6 +10942,7 @@ function openSettingsModal() {
     <div class="settings-section">
       <h3>🔊 声音</h3>
       <div class="settings-row"><span>音效</span><button id="btnToggleSfx" class="btn btn-ghost btn-xs" type="button" data-act="toggleSfx">${state.settings.sfx ? '开启' : '关闭'}</button></div>
+      <div class="settings-row"><span>背景音乐 · 选曲</span><button class="btn btn-ghost btn-xs" type="button" data-act="openBgm" data-mode="home">🎵 选曲</button></div>
       <div class="settings-row"><span>音乐音量</span><input type="range" min="0" max="100" value="45" class="bgm-vol" oninput="setBgmVol(this.value)" onchange="setBgmVol(this.value)"></div>
       <div class="settings-row"><span>宠物装扮</span><button class="btn btn-ghost btn-xs" type="button" data-act="openDeco">6 件配饰</button></div>
       <div class="settings-row"><span>立绘小动作</span><button id="btnTogglePetAnim" class="btn btn-ghost btn-xs" type="button" data-act="togglePetAnim">${state.settings.petAnim === false ? '关闭' : '开启'}</button></div>
@@ -11448,7 +11486,7 @@ function careCardHTML() {
   const btn = (act, label, disabled, cls) => `<button class="btn ${cls || 'btn-ghost'} btn-sm" type="button" data-act="${act}" ${disabled ? 'disabled' : ''}>${label}</button>`;
   const taskBtn = t => sc[t.id] ? btn(t.act, t.emoji + ' ' + t.label.split('分钟')[0].replace('出门走走', '出门') + ' ✓', true, 'btn-mint') : btn(t.act, `${t.emoji} ${t.label} · +${fmt(reward.gold)}`, false);
   return `<section class="card care-card">
-    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><p>四项小自律 + 抱抱/晚安 = 今日陪伴值（6 点），四项自律全完成今天挂机 +10%。</p></div><span class="chip ${points.total >= 6 ? 'yellow' : (done ? 'mint' : '')}">${points.total}/6 · ${title}</span></div>
+    <div class="card-head"><div><h2>🤝 今日小陪伴</h2><button class="btn btn-ghost btn-xs" type="button" data-act="openBgm" data-mode="home" style="margin-left:6px">🎵 背景音乐</button><p>四项小自律 + 抱抱/晚安 = 今日陪伴值（6 点），四项自律全完成今天挂机 +10%。</p></div><span class="chip ${points.total >= 6 ? 'yellow' : (done ? 'mint' : '')}">${points.total}/6 · ${title}</span></div>
     <div style="display:flex;align-items:center;gap:8px;margin:2px 0 9px">
       <div style="flex:1;height:8px;border-radius:999px;background:#f2e6d8;overflow:hidden">
         <div style="height:100%;width:${pct}%;border-radius:999px;background:linear-gradient(90deg,#ffd28f,#ffb072)"></div>
@@ -12706,6 +12744,8 @@ function handleActionClick(event) {
     case 'deploy': deployPet(uid, target.dataset.row === 'front' ? 'front' : 'back'); break;
     case 'petSort': UI.petSort = target.dataset.sort || 'default'; renderPage(); break;
     case 'openDeco': openDecoModal(); break;
+    case 'openBgm': openBgmPicker(target.dataset.mode || (UI.modal && UI.modal.mode)); break;
+    case 'bgmPickSet': setBgmPick(target.dataset.mode, target.dataset.url); openBgmPicker(target.dataset.mode); break;
     case 'decoPick': toggleDeco(target.dataset.deco); break;
     case 'exchangeJump': {
       const el = document.getElementById(target.dataset.target || '');
@@ -13624,6 +13664,14 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 
 /* 音乐音量滑条 */
 .bgm-vol{width:120px;accent-color:#e9a95c;height:4px}
+
+.bgm-box{max-width:340px}
+.bgm-box h3{font-size:15px;margin:2px 0 4px;text-align:center}
+.bgm-tabs{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+.bgm-tabs .on{border-color:#f0c05a;background:#fff8ea}
+.bgm-list{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;max-height:44vh;overflow:auto}
+.bgm-item{text-align:left;padding:8px 11px;border-radius:11px;border:1px solid #efe2d2;background:#fffdf8;font-size:11.5px;color:#4a382a;cursor:pointer}
+.bgm-item.on{border-color:#f0c05a;background:#fff8ea;box-shadow:0 0 0 2px rgba(240,192,90,.22);font-weight:700}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
