@@ -1108,13 +1108,10 @@ function daySeed(now) {
 function dailySignCardHTML() {
   const seed = daySeed();
   const tip = SIGN_TIPS[seed % SIGN_TIPS.length];
-  const icon = SIGN_LUCK[seed % SIGN_LUCK.length];
-  const luckyNo = (seed % 9) + 1;
   return `<section class="card sign-card">
     <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 今日小提示</span></h2>
     <p class="line">${esc(tip)}</p>
     <p class="line sign-not">今天不必：${esc(NOT_TODAY[seed % NOT_TODAY.length]).replace(/^今天不必/, '')}</p>
-    <p class="card-sub" style="margin-top:6px">今日小彩蛋 ${icon} · 小标记 ${luckyNo}</p>
   </section>`;
 }
 
