@@ -1436,3 +1436,8 @@ html[data-dark="1"] .tomato-min { color: var(--ink-soft) !important; }
 .hero-quote .hq-label{margin:0;font-size:11px;color:#a08a72;letter-spacing:.5px}
 .hero-quote .hq-body{margin:4px 0 0;font-size:13px;line-height:1.55;color:#4a382a}
 @media (max-width:420px){.hero-buddy{gap:9px}.hero-quote{padding:8px 9px}.hero-quote .hq-body{font-size:12.5px}}
+
+/* 今日一句：换一句 */
+.hero-quote .hq-label{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hq-next{border:1px solid #f0e2d2;background:#fff;color:#a08a72;font-size:10.5px;padding:2px 8px;border-radius:9px;cursor:pointer;line-height:1.5}
+.hq-next:active{background:#fdf4e7}

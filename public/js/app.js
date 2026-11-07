@@ -390,6 +390,13 @@ const PERSONA_TAGS = [
 ];
 
 /* 「关心型」小卡：只在真的需要时才出现，不进抽屉 */
+function backupCardHTML() {
+  return '<section class="card"><h2 class="card-head"><span class="card-icon">🗂️</span><span class="card-title">备份与恢复</span></h2>'
+    + '<p class="card-sub">导出成一份文件存好；换手机、清缓存前先导一次。</p>'
+    + '<div class="btn-row"><button class="btn" type="button" data-act="backup-export">导出备份</button>'
+    + '<button class="btn btn-ghost" type="button" data-act="backup-import">从文件恢复</button></div></section>';
+}
+
 function careCardsHTML(now) {
   return [birthdayBlessingHTML(), careHintHTML(), comfortHTML()].join('');
 }
@@ -405,7 +412,8 @@ function toolsDrawerHTML(now) {
     tomatoCardHTML(),
     dailyTuneCardHTML(),
     pledgeCardHTML(now),
-    foodPrefCardHTML()
+    foodPrefCardHTML(),
+    backupCardHTML()
   ].join('');
   return `<section class="card tools-card">
     <details id="tools-drawer" ${state.toolsOpen ? 'open' : ''}>
@@ -479,9 +487,26 @@ function dailySignCardHTML() {
   </section>`;
 }
 
-function healLineInner() {
+const HEAL_NEXT_KEY = 'doudou_heal_next';
+function healIndex() {
   const di = Math.floor(Date.now() / 86400000);
-  return '<p class="hq-label">🌱 今日一句</p><p class="hq-body">' + esc(HEAL_LINES[di % HEAL_LINES.length]) + '</p>';
+  let off = 0;
+  try {
+    const raw = JSON.parse(localStorage.getItem(HEAL_NEXT_KEY) || '{}');
+    off = raw.day === di ? Number(raw.n) || 0 : 0;
+  } catch (e) { off = 0; }
+  return ((di + off) % HEAL_LINES.length + HEAL_LINES.length) % HEAL_LINES.length;
+}
+function healLineInner() {
+  return '<p class="hq-label">🌱 今日一句<button type="button" class="hq-next" data-act="heal-next" aria-label="换一句">换一句</button></p><p class="hq-body">' + esc(HEAL_LINES[healIndex()]) + '</p>';
+}
+function nextHeal() {
+  const di = Math.floor(Date.now() / 86400000);
+  let off = 0;
+  try { const raw = JSON.parse(localStorage.getItem(HEAL_NEXT_KEY) || '{}'); off = raw.day === di ? Number(raw.n) || 0 : 0; } catch (e) {}
+  try { localStorage.setItem(HEAL_NEXT_KEY, JSON.stringify({ day: di, n: off + 1 })); } catch (e) {}
+  const body = document.querySelector('.hero-quote .hq-body');
+  if (body) body.textContent = HEAL_LINES[healIndex()];
 }
 
 function healLineHTML() {
@@ -1782,6 +1807,7 @@ document.addEventListener('click', (e) => {
     return;
   }
 
+  if (act === 'heal-next') return nextHeal();
   if (act === 'backup-export') return exportBackup();
   if (act === 'backup-import') return importBackup();
 
