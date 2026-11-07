@@ -13369,6 +13369,11 @@ body.prebattle-open{overflow:hidden}
 
 @media (max-width:760px){.battle-layer .rig-b4{display:none}}
 
+/* 战斗中不再跑骨骼与遮罩动画：11 个单位 × 4 层带蒙版的贴图同台，手机 GPU 顶不住 */
+.battle-layer .rig-bone{display:none}
+.battle-layer .rig,.battle-layer .rig>img,.battle-layer .art-alive,.battle-layer .art-alive>img{animation:none!important}
+.battle-layer .b-unit,.battle-layer .art-frame{will-change:auto}
+
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
 </body>
