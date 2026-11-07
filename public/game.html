@@ -2145,10 +2145,6 @@ function deepMerge(base, extra) {
   if (extra === undefined || extra === null) return base;
   return typeof extra === typeof base ? extra : base;
 }
-function uidStr(prefix) {
-  return prefix + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
 /* ========== 1. DATA 数据表 ========== */
 const ELEMENTS = {
   fire:  { name: '火', emoji: '🔥', color: '#ee8a63', soft: '#ffe4d8' },
@@ -3116,11 +3112,7 @@ const PET_TIER_LINES = {
 };
 const RARITY_ORDER = ['R', 'SR', 'SSR'];
 
-function petTemplate(id) { return PET_MAP[id] || PETS[0]; }
 function rarityRank(r) { return RARITIES[r] ? RARITIES[r].order : 0; }
-function skillsOf(petData) { return petData.skills.map(id => SKILLS[id]).filter(Boolean); }
-function skillById(id) { return SKILLS[id] || null; }
-
 /* ========== 1B. 装备 / 关卡 / 商店 / 任务 / 奇遇数据 ========== */
 const EQUIP_SLOTS = {
   weapon:   { name: '武器',   emoji: '🗡️', main: 'atk', base: 18,  label: '攻击' },
@@ -3694,10 +3686,10 @@ const ACHIEVEMENTS = [
   { id: 'xb_intsum_500', name: '温馨大家庭·渐熟', desc: '全队亲密度总和达到 500', icon: '💞', target: 500, get: s => Object.values(s.pets||{}).reduce((a,p)=>a+Number(p.intimacy||0),0), reward: { crystal: 18 } },
   { id: 'xb_intsum_900', name: '温馨大家庭·干练', desc: '全队亲密度总和达到 900', icon: '💞', target: 900, get: s => Object.values(s.pets||{}).reduce((a,p)=>a+Number(p.intimacy||0),0), reward: { crystal: 18 } },
   { id: 'xb_intsum_1400', name: '温馨大家庭·大师', desc: '全队亲密度总和达到 1,400', icon: '💞', target: 1400, get: s => Object.values(s.pets||{}).reduce((a,p)=>a+Number(p.intimacy||0),0), reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
-  { id: 'xb_gold_250000', name: '财源细流·初尝', desc: '累计获得金币达到 250,000', icon: '💰', target: 250000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 10, starShard: 10 } },
-  { id: 'xb_gold_500000', name: '财源细流·渐熟', desc: '累计获得金币达到 500,000', icon: '💰', target: 500000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
-  { id: 'xb_gold_800000', name: '财源细流·干练', desc: '累计获得金币达到 800,000', icon: '💰', target: 800000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
-  { id: 'xb_gold_1500000', name: '财源细流·传说', desc: '累计获得金币达到 1,500,000', icon: '💰', target: 1500000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_gold_250000', name: '财源细流·初尝', desc: '累计获得金币达到 80,000', icon: '💰', target: 80000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 10, starShard: 10 } },
+  { id: 'xb_gold_500000', name: '财源细流·渐熟', desc: '累计获得金币达到 220,000', icon: '💰', target: 220000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
+  { id: 'xb_gold_800000', name: '财源细流·干练', desc: '累计获得金币达到 500,000', icon: '💰', target: 500000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
+  { id: 'xb_gold_1500000', name: '财源细流·传说', desc: '累计获得金币达到 900,000', icon: '💰', target: 900000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 100, eternal: 2, starShard: 10 } },
   { id: 'xb_enh_30', name: '百炼精工·初尝', desc: '装备强化次数达到 30', icon: '🔨', target: 30, get: s => s.quests.metrics.enhancements, reward: { crystal: 10 } },
   { id: 'xb_enh_60', name: '百炼精工·渐熟', desc: '装备强化次数达到 60', icon: '🔨', target: 60, get: s => s.quests.metrics.enhancements, reward: { crystal: 18 } },
   { id: 'xb_enh_120', name: '百炼精工·干练', desc: '装备强化次数达到 120', icon: '🔨', target: 120, get: s => s.quests.metrics.enhancements, reward: { crystal: 18 } },
@@ -4878,7 +4870,7 @@ function defaultState() {
     stage: { maxCleared: 0, stars: {}, recall: 0, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0, weekStart: 0, weekClears: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
-    boss: { date: '', attempts: 0, bestDamage: 0, everBest: 0, claimed: false, seed: '' },
+    boss: { date: '', attempts: 0, bestDamage: 0, totalDamage: 0, everBest: 0, claimed: false, seed: '' },
     encounter: { refreshAt: 0, attempts: 0, activeId: 'merchant', history: [], total: 0, endings: {} },
     gacha: { normal: 0, rare: 0, total: 0, lastResults: [] },
     daily: { date: '', progress: {}, claimed: [] },
@@ -5022,7 +5014,7 @@ function sanitizeState(s) {
   s.arena.lastWinBonusDate = String(s.arena.lastWinBonusDate || '');
   s.arena.shopDay = String(s.arena.shopDay || '');
   s.arena.shopCount = s.arena.shopCount && typeof s.arena.shopCount === 'object' ? s.arena.shopCount : {};
-  if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, everBest: 0, claimed: false, seed: '' };
+  if (!s.boss || typeof s.boss !== 'object') s.boss = { date: '', attempts: 0, bestDamage: 0, totalDamage: 0, everBest: 0, claimed: false, seed: '' };
   s.boss.attempts = clamp(Math.floor(num(s.boss.attempts, 0)), 0, 3);
   s.boss.bestDamage = Math.max(0, Math.floor(num(s.boss.bestDamage, 0)));
   s.boss.claimed = !!s.boss.claimed;
@@ -5256,8 +5248,6 @@ function bossArtCandidates(id, phase) {
   }
   return BOSS_ART_PNG[id] ? [base + '.png', base + '.jpg'] : [base + '.jpg'];
 }
-function mobArtUrl(id) { const l = mobArtCandidates(id); return l.length ? l[0] : null; }
-function bossArtUrl(id) { const l = bossArtCandidates(id); return l.length ? l[0] : null; }
 function elementArtUrl(el) { return ELEMENT_ART[el] ? 'art/icons/element_' + el + '.jpg' : null; }
 function resArtUrl(k) { return RES_ART[k] ? 'art/icons/res_' + k + '.jpg' : null; }
 // 小图标位（元素徽章/资源图标）：有图返回圆形图框，图片失败才回退 emoji，无图返回 null
@@ -5361,16 +5351,12 @@ const EVO_ART_PNG = {
   hummingbird_s2: true,
 };
 // 老 jpg 进化图（早期 5 只主角）：PNG 缺失时作为兜底
-const EVO_ART_JPG = { pig_s1: true, pig_s2: true, golden_s1: true, golden_s2: true, dragon_s1: true, dragon_s2: true, lion_s1: true, lion_s2: true, unicorn_s2: true };
+const EVO_ART_JPG = { pig_s1: true, pig_s2: true, golden_s1: true, golden_s2: true, dragon_s1: true, dragon_s2: true, lion_s1: true, lion_s2: true, unicorn_s2: true, unicorn_s1: true, goat_s1: true, gull_s1: true, flysquirrel_s1: true, sparrow_s1: true, moth_s1: true, albatross_s1: true, penguin_s1: true, seal_s1: true, arcticfox_s1: true, polarbear_s1: true, walrus_s1: true, koala_s1: true, flamingo_s1: true, octopus_s1: true, mushroom_s1: true, bat_s1: true, lynx_s1: true, alpaca_s1: true, mole_s1: true, jellyfish_s1: true, peacock_s1: true };
 function petArtCandidates(templateId) {
   if (!PET_ART[templateId]) return [];
   return PET_ART_PNG[templateId]
     ? ['art/pets/' + templateId + '.png', 'art/pets/' + templateId + '.jpg']
     : ['art/pets/' + templateId + '.jpg'];
-}
-function petArtUrl(templateId) {
-  const list = petArtCandidates(templateId);
-  return list.length ? list[0] : null;
 }
 // 生成内联 onerror：按 urls 顺序逐个换 src，全部失败后按 mode 收尾（emoji 占位 / 直接移除）
 function artChainAttr(urls, char, mode) {
@@ -5431,10 +5417,6 @@ function evoArtCandidates(templateId, evo) {
   if (!EVO_ART_PNG[key] && !EVO_ART_JPG[key]) return [];
   const base = 'art/pets-evo/' + key;
   return EVO_ART_PNG[key] ? [base + '.png', base + '.jpg'] : [base + '.jpg'];
-}
-function evoArtUrl(templateId, evo) {
-  const list = evoArtCandidates(templateId, evo);
-  return list.length ? list[0] : null;
 }
 // 实景场景背景登记：键=存档背景键(state.cosmetics.background)，值=半透明叠加空景图；未登记或图片缺失时沿用底层 CSS 渐变场景，不产生白图
 const SCENE_PHOTOS = {
@@ -5755,19 +5737,11 @@ function calcTeamPower(s = state) {
   const ctx = teamContextForState(s, team);
   return sum(team.map(p => calcPower(getPetStats(p, ctx, s))));
 }
-function averageTeamPower(s = state) {
-  const team = teamPetsOf(s);
-  if (!team.length) return 0;
-  return Math.round(calcTeamPower(s) / team.length);
-}
 function maxTeamSize() { return 5; }
 function getSkillLevel(pet, index) {
   const keys = ['basic', 'a1', 'a2', 'ult'];
   const key = keys[index] || 'basic';
   return clamp(Math.floor(num(pet.skillLv && pet.skillLv[key], 1)), 1, 10);
-}
-function skillLevelMultiplier(pet, index) {
-  return 1 + (getSkillLevel(pet, index) - 1) * 0.06;
 }
 function levelCostFor(pet) {
   const lv = pet.level;
@@ -5853,6 +5827,7 @@ function ensureDaily(s = state) {
     s.boss.date = today;
     s.boss.attempts = 3;
     s.boss.bestDamage = 0;
+    s.boss.totalDamage = 0;
     s.boss.claimed = false;
     s.boss.seed = String(hashString('boss-' + today));
     changed = true;
@@ -6075,12 +6050,6 @@ function addReward(reward, options = {}) {
   return logs;
 }
 
-function normalizeRewardLog(logs) {
-  return (logs || []).map(l => {
-    if (l.extra) return l;
-    return l;
-  });
-}
 function rewardLogHTML(logs) {
   if (!logs || !logs.length) return '<span class="chip">无掉落</span>';
   return logs.map(l => `<span class="chip">${esc(l.icon)} ${esc(l.label)}${l.amount != null ? ' ×' + fmt(l.amount) : ''}${l.extra ? ' · ' + esc(l.extra) : ''}</span>`).join('');
@@ -6199,24 +6168,30 @@ function getDailyBossInfo() {
 }
 function getBossLeaderboard() {
   const info = getDailyBossInfo();
-  const basePower = Math.max(1200, calcTeamPower());
+  // 排行榜的对手按「主线进度」生成，不再跟着玩家战力自缩放：推得越远，榜上的伤害越高
+  const chapter = Math.max(1, chapterOfStage(Math.max(1, state.stage.maxCleared)));
+  const baseline = Math.max(7000, Math.round(2400 * Math.pow(1.34, chapter - 1)));
   const rng = seededRandom(hashString('lb-' + localDateKey()));
-  const list = ARENA_NAMES.slice(0, 9).map((name, i) => ({
+  const bots = ARENA_NAMES.slice(0, 11).map((name, i) => ({
     name,
-    score: Math.round(basePower * (0.9 + rng() * 4.6) + i * 35),
+    score: Math.round(baseline * (0.55 + rng() * 2.5)),
     isPlayer: false
   }));
-  if (state.boss.bestDamage > 0) {
-    list.push({ name: state.player.name || '你', score: state.boss.bestDamage, isPlayer: true });
-  }
+  const mine = Math.max(num(state.boss.totalDamage, 0), num(state.boss.bestDamage, 0));
+  const list = bots.slice();
+  if (mine > 0) list.push({ name: state.player.name || '你', score: mine, isPlayer: true });
   list.sort((a, b) => b.score - a.score);
   const rank = list.findIndex(x => x.isPlayer) + 1;
-  return { info, list: list.slice(0, 10), rank };
+  const top = list.slice(0, 10);
+  const me = list.find(x => x.isPlayer);
+  if (me && rank > 10) top.push(me);
+  return { info, list: top, rank, baseline, mine };
 }
 function bossRankReward(rank) {
   if (rank === 1) return { crystal: 300, arenaCoin: 80, starShard: 10 };
   if (rank === 2) return { crystal: 230, arenaCoin: 60, starShard: 6 };
   if (rank === 3) return { crystal: 180, arenaCoin: 45, starShard: 4 };
+  if (rank >= 4 && rank <= 6) return { crystal: 150, arenaCoin: 35, starShard: 3 };
   if (rank > 0 && rank <= 10) return { crystal: 110, arenaCoin: 25, starShard: 2 };
   return { crystal: 50, arenaCoin: 10 };
 }
@@ -6957,6 +6932,8 @@ function buildDailyBossEnemy() {
   const avgDef = teamStats.length ? sum(teamStats.map(s => s.def)) / teamStats.length : 60;
   const level = info.level;
   const def = BOSS_MAP[info.bossId] || BOSS_DEFS[0];
+  // 三条命共 3.6×战力：一次挑战（12 回合）差不多打掉一条命，三次挑战正好走完三个阶段
+  const totalHp = Math.max(9000, Math.round(allyPower * 3.6));
   return {
     uid: 'enemy-boss',
     petUid: null,
@@ -6970,10 +6947,10 @@ function buildDailyBossEnemy() {
     rarity: 'UR',
     row: 'front',
     level,
-    maxHp: Math.max(22000, Math.round(allyPower * 34)),
-    hp: Math.max(22000, Math.round(allyPower * 34)),
-    atk: Math.max(180, Math.round(avgAtk * 1.35)),
-    def: Math.max(80, Math.round(avgDef * 2.8)),
+    maxHp: totalHp,
+    hp: totalHp,
+    atk: Math.max(180, Math.round(avgAtk * 1.5)),
+    def: Math.max(80, Math.round(avgDef * 2.2)),
     spd: def.spd || 24,
     crit: 0.14,
     critDmg: 0.65,
@@ -6995,8 +6972,8 @@ function buildDailyBossEnemy() {
     raidBoss: true,
     lives: bossLivesOf(info.bossId),
     lifeLeft: bossLivesOf(info.bossId),
-    maxHp: Math.round(Math.max(22000, Math.round(allyPower * 34)) / bossLivesOf(info.bossId)),
-    hp: Math.round(Math.max(22000, Math.round(allyPower * 34)) / bossLivesOf(info.bossId)),
+    maxHp: Math.round(totalHp / bossLivesOf(info.bossId)),
+    hp: Math.round(totalHp / bossLivesOf(info.bossId)),
     skills: enemySkillSlots('boss', info.bossId, info.element) || template.skills.map((id, i) => ({ def: SKILLS[id], level: 2, index: i }))
   };
 }
@@ -8161,10 +8138,6 @@ function arenaShopReset(s = state) {
   }
   return s.arena.shopCount || {};
 }
-function arenaShopBought(id, s = state) {
-  const counts = arenaShopReset(s);
-  return Math.max(0, Math.floor(num(counts[id], 0)));
-}
 const FRUIT_EXCHANGE = [
   { id: 'fruitStar', icon: '🌟', name: '星尘碎片 ×10', cost: 1200, reward: { starShard: 10 }, desc: '通用升星材料，缺碎片时的替补。' },
   { id: 'fruitStone', icon: '🔨', name: '强化石 ×5', cost: 900, reward: { enhanceStone: 5 }, desc: '装备强化必备材料。' },
@@ -8526,6 +8499,7 @@ function finishBattle() {
     const damage = b.totalDamage;
     const before = state.boss.bestDamage;
     state.boss.bestDamage = Math.max(before, damage);
+    state.boss.totalDamage = num(state.boss.totalDamage, 0) + damage;
     state.boss.everBest = Math.max(num(state.boss.everBest, 0), state.boss.bestDamage);
     const board = getBossLeaderboard();
     // 长夜之影 以伤害排名，不发放普通通关奖励；排名奖励在面板领取。
@@ -9180,12 +9154,6 @@ function addRewardPreview(reward) {
 
 /* -------- 冒险 -------- */
 // 战斗开场的章节叙事：首关给进章旁白，首领关给登场旁白，中间关不重复整章前言
-function stageIntroText(stage) {
-  const c = CHAPTER_NARRATIVE[stage.chapter] || {};
-  if (stage.type === 'boss') return c.boss || '';
-  if (stage.sub === 1) return c.enter || stage.intro || '';
-  return '';
-}
 function renderAdventure() {
   if (!UI.adventureChapter) UI.adventureChapter = currentChapterNumber();
   UI.adventureChapter = clamp(UI.adventureChapter, 1, CHAPTERS.length);
@@ -10917,7 +10885,39 @@ function ensureGarden() {
   if (!state.garden || !Array.isArray(state.garden.plots)) state.garden = { plots: [] };
   if (typeof state.garden.auto !== 'boolean') state.garden.auto = false;
   if (typeof state.garden.autoHarvest !== 'boolean') state.garden.autoHarvest = false;
+  if (typeof state.garden.lastSeen !== 'number') state.garden.lastSeen = Date.now();
   while (state.garden.plots.length < GARDEN_SIZE) state.garden.plots.push({ state: 'empty' });
+}
+// 离线结算：关掉页面这段时间，自动收菜按成熟轮次补发（最多 8 轮，需已买自动收菜）
+function settleGardenOffline() {
+  ensureGarden();
+  const now = Date.now();
+  const last = num(state.garden.lastSeen, 0);
+  state.garden.lastSeen = now;
+  if (!last || last >= now) return;
+  if (now - last < 2 * 60000) return;
+  if (!state.garden.autoHarvest) return;
+  const mult = gardenProgressMult();
+  let gold = 0;
+  let fruit = 0;
+  let n = 0;
+  state.garden.plots.forEach((p, i) => {
+    if (!p || p.state === 'empty') return;
+    const t = gardenTier(i);
+    const cycle = Math.max(60000, num(t.minutes, 30) * 60000);
+    const readyAt = num(p.readyAt, 0);
+    if (readyAt > now) return;
+    const cycles = Math.min(8, Math.floor((now - readyAt) / cycle) + 1);
+    gold += Math.round(num(p.gold, t.gold) * mult) * cycles;
+    fruit += Math.round(num(p.fruit, t.fruit) * GARDEN_FRUIT_BOOST) * cycles;
+    n += cycles;
+    p.readyAt = now + (cycle - ((now - readyAt) % cycle));
+    p.state = state.garden.auto ? 'growing' : 'empty';
+  });
+  if (!n) return;
+  addReward({ gold, fruit, ...gardenDropBonus() });
+  bumpMetric('gardens', n);
+  persist({ render: false });
 }
 function gardenPlotStatus(p, now = Date.now()) {
   if (!p || p.state === 'empty') return 'empty';
@@ -11011,7 +11011,9 @@ function buyGardenAutoHarvest() {
   playSfx('buy');
 }
 function gardenAutoTick(now) {
-  if (!state.garden || !state.garden.autoHarvest) return;
+  if (!state.garden || !Array.isArray(state.garden.plots)) return;
+  state.garden.lastSeen = now;
+  if (!state.garden.autoHarvest) return;
   if (!Array.isArray(state.garden.plots)) return;
   if (!state.garden.plots.some(p => p && gardenPlotStatus(p, now) === 'ready')) return;
   gardenHarvestAll(true);
@@ -12910,6 +12912,7 @@ function handleVisibilityChange() {
     syncAudio();
     return;
   }
+  settleGardenOffline();
   const now = Date.now();
   if (!UI.offlineOffer) {
     const gap = Math.max(0, (now - UI.lastTick) / 1000);
@@ -13119,6 +13122,8 @@ function bootGame() {
     if (migratedEvo) { bumpMetric('evolutions', migratedEvo); noteBonds(); }
     regenAll();
     ensureDaily();
+    ensureGarden();
+    settleGardenOffline();
     ensureEncounter();
     ensureArenaSeason();
     updateCareElapsed(elapsed);
