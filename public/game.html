@@ -7296,6 +7296,22 @@ function toggleMusic() {
   renderPage();
 }
 
+// 第 11 章：宠物类敌人戴"反差色"——压暗成炭黑底，再点一点各自的冷色光
+const CH11_TINT = { dragon: '#1f7f86', lion: '#cf5a1e', unicorn: '#cfd6dd', qilin: '#b8862a', narwhal: '#2b4c8c', pig: '#b3242b', golden: '#3f7fc4' };
+function applyCh11Tint() {
+  const st = UI.battle && UI.battle.config && UI.battle.config.stage;
+  if (!st || st.chapter !== 11) return;
+  const order = ['dragon', 'lion', 'unicorn', 'qilin', 'narwhal', 'pig', 'golden'];
+  const units = document.querySelectorAll('#battleRoot .b-side.enemy .b-unit');
+  units.forEach((el, i) => {
+    const c = CH11_TINT[order[i] || ''];
+    if (!c) return;
+    const f = el.querySelector('.art-frame');
+    if (f) f.style.filter = 'grayscale(.86) brightness(.6) contrast(1.18) drop-shadow(0 0 7px ' + c + ')';
+    const p = el.querySelector('.b-plate');
+    if (p) p.style.boxShadow = 'inset 0 0 0 1.5px ' + c + '66';
+  });
+}
 function startBattle(config) {
   // 上一场若是异常中断（没有计时器、over 仍为 false），不再永久挡住新战斗
   if (UI.battle && !UI.battle.over && UI.battle.timer) return false;
@@ -7303,6 +7319,7 @@ function startBattle(config) {
   const battleRoot = document.getElementById('battleRoot');
   if (battleRoot) battleRoot.className = 'battle-layer open';
   bgmPlay('battle');
+  requestAnimationFrame(() => { try { applyCh11Tint(); } catch (e) {} });
   if (config && config.stage && config.stage.sub === 1 && STAGE_OPEN[config.stage.chapter]) {
     toast('📍 ' + (config.stage.chapterName || '') + ' · ' + STAGE_OPEN[config.stage.chapter], 'good', 3600);
   }
@@ -13844,6 +13861,10 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .battle-layer .b-buffs,.battle-layer .b-unit .shield-label{display:none!important}
 
 .result-after{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:#f6fbf3;border:1px solid #dfefd7;color:#4a6a45;font-size:12px;line-height:1.5}
+
+/* 宠物类敌人：立绘反向（朝左），与站在对面的伙伴相对 */
+.battle-layer .b-side.enemy .b-unit .art-frame img{transform:scaleX(-1)}
+.battle-layer .b-side.enemy .b-unit .rig{transform:scaleX(-1)}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
