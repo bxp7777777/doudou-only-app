@@ -7103,14 +7103,21 @@ function showBondSplash(bondId, bondName, quote, aName, bName) {
 
 // ── 背景音乐：首页 / 战斗 两套曲库，随机起播、循环、淡入淡出；音乐关掉就整条静默 ──
 const BGM_TRACKS = {
-  home: ['audio/bgm_home_1.mp3', 'audio/bgm_home_2.mp3', 'audio/bgm_home_3.mp3'],
+  home: ['audio/bgm_home_1.mp3', 'audio/bgm_home_2.mp3', 'audio/bgm_home_3.mp3',
+    'audio/bgm_song_1.mp3', 'audio/bgm_song_2.mp3', 'audio/bgm_song_3.mp3', 'audio/bgm_song_4.mp3', 'audio/bgm_song_5.mp3',
+    'audio/bgm_song_6.mp3', 'audio/bgm_song_7.mp3', 'audio/bgm_song_8.mp3', 'audio/bgm_song_9.mp3'],
   battle: ['audio/bgm_battle_1.mp3']
 };
 const BGM_TITLES = {
   'audio/bgm_home_1.mp3': '洛克王国 · 背景一',
   'audio/bgm_home_2.mp3': '人鱼湾（海鸥与海浪）· 顾月寒',
   'audio/bgm_home_3.mp3': '洛克王国 · 背景二',
-  'audio/bgm_battle_1.mp3': '洛克王国战斗音乐'
+  'audio/bgm_battle_1.mp3': '洛克王国战斗音乐',
+  'audio/bgm_song_1.mp3': '妈妈说 · 余佳运', 'audio/bgm_song_2.mp3': '和你 · 余佳运',
+  'audio/bgm_song_3.mp3': '再一起 · 余佳运', 'audio/bgm_song_4.mp3': '慢慢喜欢你 · 莫文蔚',
+  'audio/bgm_song_5.mp3': '如果你也刚好抬头看树 · 孙天宇', 'audio/bgm_song_6.mp3': '宿敌 · 许嵩',
+  'audio/bgm_song_7.mp3': '一笑倾城 · 汪苏泷', 'audio/bgm_song_8.mp3': '如果有来生 · 谭维维',
+  'audio/bgm_song_9.mp3': '玻璃 · Gareth.T'
 };
 function bgmTitle(u) { return BGM_TITLES[u] || (u || '').split('/').pop() || '随机'; }
 function bgmPickOf(mode) {
