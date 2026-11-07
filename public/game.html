@@ -3196,6 +3196,31 @@ const STAGE_BLURB = {
   elite: ['体型壮硕的精英挡在路口，眼神认真地打量队伍。', '这一带的头目带着几名手下把守，气场明显更强。', '尘土扬起，精英快步上前，想先试探队伍的成色。', '它守住了要道，似乎在等一支配得上交手的队伍。'],
   boss: []
 };
+// 章节横幅 / 精英拦路理由 / 战后余波：都按现有 12 章世界观写，只做表现不改数值
+const STAGE_OPEN = {
+  1: '这里等一碗热的，等了很久。', 2: '这里有一句话，烧了二十年没说完。',
+  3: '这里有人替别人哭，替到忘了是谁。', 4: '这里有人再想睡五分钟。',
+  5: '这里有人没被叫醒。', 6: '这里驮着很多人想去的地方。',
+  7: '这里有一封信，烧不坏。', 8: '这里有人一颗一颗捡名字。',
+  9: '这里什么都漂亮，就是不动。', 10: '这里钟停在 17:47，有人坐着等。',
+  11: '这里每走一节，都是你自己。', 12: '这里门外也是梦。'
+};
+const STAGE_ELITE = {
+  1: '这锅粥是我看着的，你不能碰。', 2: '这句话还没说完，别添柴。',
+  3: '她哭到一半，你等会儿再过去。', 4: '他刚睡着，脚别出声。',
+  5: '这个梦我挡了二十年，你也一样。', 6: '上面驮的东西太重，落不下来。',
+  7: '信要烧完才算数，你让开。', 8: '名字还没数完，少一颗不行。',
+  9: '这里不许乱，乱一点就难看了。', 10: '椅子有人坐，你先站着。',
+  11: '这一节归我守，你过不去。', 12: '灯还亮着，等他走完再开门。'
+};
+const STAGE_AFTER = {
+  1: '灶台凉了，草莓开始变软。', 2: '火小了一点，那句话缺了个角。',
+  3: '溪水淡了一点，哭的人抬头了。', 4: '床凉了，被子叠好了。',
+  5: '爪印熄了，站着的影子坐下了。', 6: '它降了一寸，背上的东西轻了。',
+  7: '信还是没烧掉，但火不再往上蹿。', 8: '星子少了一颗——被叫走了。',
+  9: '有一朵花歪了，风进来了。', 10: '钟往前走了 1 分钟。',
+  11: '有一节走廊的灯灭了。', 12: '门缝里透进来一点白天。'
+};
 // 每个地方的关前一句：这件"没做完的事"留下的痕迹（按章轮换，不随机）
 const STAGE_INTRO = {
   1: ['草莓硬得像石头，咬下去有声音。', '草叶上结着糖霜，一碰就碎。', '风是甜的，吹久了牙疼。', '有人把草莓摆成一排，从没动过。', '奶油地里有个坑，形状像躺过一个人。', '糖兽坐在中间，慢慢地舔自己的手。'],
@@ -3414,7 +3439,8 @@ for (const chapter of CHAPTERS) {
     const suffix = bdef ? '' : suffixPool[(chapter.id - 1) % 10];
     const blurbPool = STAGE_BLURB[kind.type] || [];
     const storyPool = STAGE_INTRO[chapter.id] || null;
-    const blurb = bdef ? bdef.flavor : (storyPool ? storyPool[(i - 1) % storyPool.length] : (blurbPool[(index - 1) % blurbPool.length] || ''));
+    const eliteLine = kind.type === 'elite' ? (STAGE_ELITE[chapter.id] || '') : '';
+    const blurb = bdef ? bdef.flavor : (eliteLine || (storyPool ? storyPool[(i - 1) % storyPool.length] : (blurbPool[(index - 1) % blurbPool.length] || '')));
     STAGES.push({
       index, chapter: chapter.id, chapterName: chapter.name,
       sub: i, type: kind.type, typeName: kind.label,
@@ -7261,6 +7287,9 @@ function startBattle(config) {
   const battleRoot = document.getElementById('battleRoot');
   if (battleRoot) battleRoot.className = 'battle-layer open';
   bgmPlay('battle');
+  if (config && config.stage && config.stage.sub === 1 && STAGE_OPEN[config.stage.chapter]) {
+    toast('📍 ' + (config.stage.chapterName || '') + ' · ' + STAGE_OPEN[config.stage.chapter], 'good', 3600);
+  }
   document.body.classList.add('battle-mode');
   // 手机上面板太窄：名字/等级默认折叠，点一下宠物再浮出来
   if (battleRoot && !battleRoot.dataset.infoBound) {
@@ -8823,6 +8852,10 @@ function renderBattleResult(data) {
   if (UI.towerRush) return;
   const resultEl = $('#battleResult');
   if (!resultEl) return;
+  if (data.win && UI.battle && UI.battle.config && UI.battle.config.stage) {
+    const ac = UI.battle.config.stage.chapter;
+    if (STAGE_AFTER[ac]) data.afterLine = STAGE_AFTER[ac];
+  }
   const starHtml = data.mode === 'stage' || data.mode === 'tower' ? starRow(data.stars) : '';
   const chips = (data.chips || []).map(c => `<span class="reward-chip">${esc(c.icon)} ${esc(c.label)} ${esc(c.value)}</span>`).join('');
   const perfHtml = (data.perfRows && data.perfRows.length) ? `
@@ -8848,6 +8881,7 @@ function renderBattleResult(data) {
       ${starHtml}
       ${data.story ? `<p class="result-story">📖 ${esc(data.story)}</p>` : ''}
       ${data.review ? `<div class="chapter-review"><div class="cr-title">${esc(data.review.title)}</div><div class="cr-line">⭐ ${esc(data.review.stars)}</div><div class="cr-line">👑 ${esc(data.review.boss)}</div>${data.review.vibe ? `<div class="cr-vibe">${esc(data.review.vibe)}</div>` : ''}</div>` : ''}
+      ${data.afterLine ? '<p class="result-after">🌿 ' + esc(data.afterLine) + '</p>' : ''}
       <div class="result-rewards">${chips}</div>
       <div class="result-rewards">${rewardLogHTML(data.logs)}</div>
       ${perfHtml}
@@ -13778,6 +13812,8 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .battle-layer .b-unit .b-name,.battle-layer .b-unit .b-cap{display:block!important}
 /* 护甲/增益图标一律不显示 */
 .battle-layer .b-buffs,.battle-layer .b-unit .shield-label{display:none!important}
+
+.result-after{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:#f6fbf3;border:1px solid #dfefd7;color:#4a6a45;font-size:12px;line-height:1.5}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
