@@ -9243,6 +9243,17 @@ const PAT_COMBO = [
   '小爪子也想被夸一夸',
   '再摸一下，就一下下嘛'
 ];
+
+const PET_ELEMENT_LINES = {
+  earth: { hungry: ['肚子空空的…地里的东西都啃完了。', '要是有一碗土里长的就行，我不挑。'], full: ['刚吃饱，肚皮圆圆的，别笑我。', '吃得饱饱的，泥坑都能多翻两圈。'] },
+  light: { hungry: ['光有点暗了…我饿了，能不能靠近你一点。', '空着的时候，身上亮不起来。'], full: ['吃饱了，我这边亮堂堂的。', '暖乎乎的，光都软了。'] },
+  fire: { hungry: ['火要灭了…有吃的吗，不然撑不住。', '肚子空了，火苗都蔫了。'], full: ['吃饱啦，火苗蹿得老高。', '这顿吃得痛快，浑身都热。'] },
+  grass: { hungry: ['饿了…叶子都蔫了。', '肚子咕咕叫，能来点青的吗。'], full: ['吃饱了，叶子又直起来了。', '肚子饱饱的，站着都舒服。'] },
+  dark: { hungry: ['饿得连影子都薄了。', '空着肚子，黑都黑得不踏实。'], full: ['吃饱了，影子都厚实了。', '肚子满了，夜里也不怕。'] },
+  water: { hungry: ['渴…也饿，水汽都散光了。', '肚子空了，身上有点干。'], full: ['吃饱喝足，水汽圆滚滚的。', '饱了，浑身都是润的。'] },
+  wind: { hungry: ['饿得飞不动了。', '肚子空空的，风都带不起来。'], full: ['吃饱了，能绕着屋子跑三圈。', '肚子满满，风也轻快。'] },
+  ice: { hungry: ['饿了…冰都有点化。', '空着肚子，凉劲儿都散了。'], full: ['吃饱了，凉得正好。', '肚子饱饱，冰面亮亮的。'] }
+};
 function patSpeech(pet, combo = 0) {
   const h = num(pet.hunger, 80), m = num(pet.mood, 80), int = num(pet.intimacy, 0);
   const tierLine = tierLineOf(pet);
@@ -9252,6 +9263,8 @@ function patSpeech(pet, combo = 0) {
   if (m < 30) pool.push(...PAT_COMMON.sad);
   if (int >= 60) pool.push(...PAT_COMMON.close);
   if (m >= 70 && h >= 50) pool.push(...PAT_COMMON.happy);
+  const elLines = PET_ELEMENT_LINES[templateOf(pet).element];
+  if (elLines) { if (h < 30) pool.push(...elLines.hungry); if (m >= 70 && h >= 50) pool.push(...elLines.full); }
   if (combo >= 3) pool.push(...PAT_COMBO);
   pool.push(...PAT_COMMON.normal);
   const main = pick(pool);
