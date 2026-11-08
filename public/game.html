@@ -11416,7 +11416,7 @@ function openSettingsModal() {
     <div class="settings-section">
       <h3>🔁 其他</h3>
       <div class="flex" style="gap:6px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" type="button" data-act="restartTutorial">重看新手引导</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-act="restartTutorial">重看新手引导</button> <button class="btn btn-ghost btn-sm" type="button" data-act="storyIntro">📖 重看剧情介绍</button>
         <button class="btn btn-ghost btn-sm" type="button" data-act="openRebirth">打开入梦池</button>
         <button class="btn btn-ghost btn-sm" type="button" data-act="resetRequest">⚠️ 清空存档</button>
       </div>
@@ -13322,7 +13322,8 @@ case 'storyChoose': storyChoose(Number(target.dataset.index)); break;
     case 'importSave': importSave(); break;
     case 'resetRequest': openResetConfirm(); break;
     case 'resetConfirm': resetGame(); break;
-    case 'restartTutorial': restartTutorial(); break;
+    case 'storyIntro': closeModal(); setTimeout(function(){ try { openPrologue(); } catch (e) {} }, 180); break;
+      case 'restartTutorial': restartTutorial(); break;
 
     case 'buyRebirthUpgrade': useRebirthUpgrade(target.dataset.id); break;
     case 'performRebirth': performRebirthConfirm(); break;
