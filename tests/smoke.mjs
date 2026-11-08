@@ -257,37 +257,43 @@ check(!examOff.some((m) => m.id === 'exam'), '非期末周不该出现期末卡'
 const examOver = examBuild('2026-12-30', 'morning', new Date(2026, 11, 30, 8, 0));
 check(examOver.filter((m) => m.id === 'exam').length === 1, '期末卡只应出现一次');
 
-/* 1000 篇每日小故事：全量走一遍，检查字数区间、正文唯一、禁用词；标题允许复用 */
+/* 1000 篇每日小故事：全量走一遍，检查字数区间、正文唯一、标题唯一、禁用词 */
 let lastBody = null;
 const bodySeen = new Set();
+const storyTitles = new Set();
 const storyBodies = [];
 for (let i = 0; i < 1000; i++) {
   const s = storyUtil.current(date.addDays('2026-01-01', i));
   check(s.body.length >= 100, `故事太短（${s.body.length}字）：${s.title}`);
   check(s.body.length <= 300, `故事太长（${s.body.length}字）：${s.title}`);
   bodySeen.add(s.body);
+  storyTitles.add(s.title);
   storyBodies.push(s.body);
   if (lastBody) check(lastBody !== s.body, `连续两天正文相同：${s.title}`);
   lastBody = s.body;
 }
 check(bodySeen.size === 1000, `故事正文应正好 1000 篇且唯一，实际 ${bodySeen.size}`);
+check(storyTitles.size === 1000, `故事标题应正好 1000 个且唯一，实际 ${storyTitles.size}`);
 const storyAll = storyBodies.join('');
 for (const b of ['榴莲', '臭豆腐', '螺蛳粉', '穿搭', '外套', '羽绒', '加件衣服']) {
   check(!storyAll.includes(b), `故事里出现禁用词「${b}」`);
 }
 
-/* 1000 条每日一笑：数量、字数区间、正文唯一、禁用词、取篇/换篇可用 */
+/* 1000 条每日一笑：数量、字数区间、正文唯一、标题唯一、禁用词、取篇/换篇可用 */
 const JOKES = (await import('../public/js/jokes.js')).default;
 check(JOKES.length === 1000, `笑话应 1000 条，实际 ${JOKES.length}`);
 const jokeSeen = new Set();
+const jokeTitles = new Set();
 const jokeAll = [];
 for (const j of JOKES) {
   check(j.body.length >= 45, `笑话太短（${j.body.length}字）：${j.title}`);
   check(j.body.length <= 140, `笑话太长（${j.body.length}字）：${j.title}`);
   jokeSeen.add(j.body);
+  jokeTitles.add(j.title);
   jokeAll.push(j.body);
 }
 check(jokeSeen.size === JOKES.length, '笑话正文存在重复');
+check(jokeTitles.size === JOKES.length, `笑话标题应正好 ${JOKES.length} 个且唯一，实际 ${jokeTitles.size}`);
 for (const b of ['榴莲', '臭豆腐', '螺蛳粉', '穿搭', '外套', '羽绒', '加件衣服']) {
   check(!jokeAll.join('').includes(b), `笑话里出现禁用词「${b}」`);
 }
