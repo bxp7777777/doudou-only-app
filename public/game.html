@@ -9121,71 +9121,46 @@ function renderBattleResult(data) {
 }
 
 
-// 结局播放：第 12 章最后一关胜利后，一段可以一句一句翻的收尾
-const ENDING_SCREENS = [
-  '门关上以后，走廊一格一格地暗下去。',
-  '不是一下子黑的。是一节暗，停一下，再下一节暗——像有人一间一间地关灯，怕动作太大吵到谁。',
-  '它走得很慢，因为地板还是热的。刚才站过的地方、坐过的地方、挡住人的地方，都还留着一点温。',
-  '这一次口袋里有一小把硬草莓，一颗被捏软了；一片彩羽，边角已经发干；一枚会眨眼的贝壳；还有半张没烧完的纸。',
-  '它把这些放在桌上，一件一件摆好，像别人做梦时那样摆。',
-  '然后它坐下来，把灯芯剪短一点。灯还够亮，但不用那么亮了。',
-  '天亮不是忽然的。天亮是很多很小的声音叠起来的：邻居开门、水壶响、楼下有人喊了一嗓子、鸟在窗台跳了两下。',
-  '天没有真的亮起来——外面的天一直停在傍晚。可是屋里亮了，因为有人起床了。',
-  '到了傍晚，它又出门了。它没有犹豫，也没有叹气。',
-  '「今晚有人来吗？」\n没人回答。但它还是出门了。',
-  '走廊尽头没有门。只有一个人坐在那儿，背对着它，脸朝墙。',
-  '它见过这个姿势很多次。每次它都是绕过去的。这一次没有路可以绕。',
-  '它走过去，看清了那个人的脸。\n是它自己。',
-  '那个人也有一句没说完的话。也有一片不肯变软的地方。也有一个等不到的人。',
-  '小金毛崽把头轻轻抵在那个人的背上，像平常对任何人做的那样。',
-  '然后泥兜猪坐下来，挨着那个自己，一起靠着墙，把脚伸直。',
-  '「你也在等？」\n「嗯。」\n「等谁？」\n「不知道。等着有人来。」',
-  '灯还亮着。它没有关。这一夜没有人来替它值夜——但它允许自己，也可以被陪着。',
-  '它出门的时候，把门带上。这一次，门在身后关上的时候，有很轻的一声。\n不是锁。是答应。',
-  '外面的天一直停在傍晚。\n但灯总会有人提着。'
+// 结局：一段完整的小说式收尾，打完第 12 章自动铺开，可以一直往下读
+const ENDING_PARAS = [
+  '门关上以后，走廊一格一格地暗下去。不是一下子黑的，是一节暗，停一下，再下一节暗——像有人一间一间地关灯，怕动作太大吵到谁。它走得很慢，因为地板还是热的。刚才站过的地方、坐过的地方、挡住人的地方，都还留着一点温。',
+  '这一次口袋里有一小把硬草莓，一颗被捏软了；一片彩羽，边角已经发干；一枚会眨眼的贝壳；还有半张没烧完的纸，上面的字看不清了。它把这些放在桌上，一件一件摆好，像别人做梦时那样摆。然后它坐下来，把灯芯剪短一点。灯还够亮，但不用那么亮了。',
+  '天亮不是忽然的。天亮是很多很小的声音叠起来的：邻居开门、水壶响、楼下有人喊了一嗓子、鸟在窗台跳了两下。天没有真的亮起来——外面的天一直停在傍晚。可是屋里亮了，因为有人起床了。泥兜猪把身子横在门口，挡着早上的风；小金毛崽把鼻子贴在窗缝上，闻今天的味道。值完夜的人，早上一般不说话。',
+  '到了傍晚，它又出门了。它没有犹豫，也没有叹气，只是把灯点上，把门带上，然后走进那条走廊。走廊在它面前重新长出来，一节，又一节。因为它知道：今天有人会睡着，今天有人会把话说到一半，今天有人会在门口等，等不到。如果没有人去，那些地方就会再厚一层，明天更难走。',
+  '「今晚有人来吗？」没人回答。但它还是出门了。',
+  '走廊尽头没有门。只有一个人坐在那儿，背对着它，脸朝墙。和所有守梦人一样的姿势：肩膀垮着，手放在膝上，像是已经坐了很多年。它见过这个姿势很多次——草原尽头的、丘陵上的、溪谷里的、山顶椅子上的。每次它都是绕过去的。这次没有路可以绕。',
+  '它走过去，看清了那个人的脸。是它自己。不是影子，不是镜子，也不是梦里的复制品，是一个同样值过很多夜、同样把身子横在门口、同样怕黑却从不说的人。那个人也有一句没说完的话，也有一片不肯变软的地方，也有一个等不到的人。它把所有人的夜都收拾干净了，自己那一夜一直空着——空到长出了走廊，长到尽头坐着一个自己。',
+  '小金毛崽跟上来，在旁边站住。它没有问，也没有叫，只是把头轻轻抵在那个人的背上，像平常对任何人做的那样。走廊安静了很久，久到能听见灯芯烧的声音。然后泥兜猪坐下来。它没有坐椅子，只是挨着那个自己，一起靠着墙，把脚伸直。',
+  '「你也在等？」「嗯。」「等谁？」「不知道。等着有人来。」小金毛崽把下巴搁在它膝盖上。泥兜猪伸手，把那个自己的肩膀往里带了带，像替谁盖被子。它终于做了一件它从来只对别人做的事——留下来，陪着。灯还亮着。它没有关。这一夜没有人来替它值夜，但它允许自己，也可以被陪着。',
+  '走廊在它们身后一格一格地暗下去。不是有人关灯，是灯自己知道可以歇了。暗到最后一节，那个背影先睡着，睡的时候肩膀松下来，手也从膝上滑开了。泥兜猪没有走，它等那个人的呼吸变匀，才站起来，替它把灯芯剪短一点。灯还亮着，但不用那么亮了。',
+  '它出门的时候，把门带上。这一次，门在身后关上的时候，有很轻的一声。不是锁，是答应。',
+  '豆豆大王没有变成谁，也没有赢什么。它只是每天傍晚准时出门，天亮前回来。它把所有人的梦收拾干净，然后在自己的那一夜里，学会坐一会儿。',
+  '外面的天一直停在傍晚。但灯总会有人提着。'
 ];
-let endingIndex = 0;
-function renderEndingScreen() {
-  const t = document.getElementById('endingText');
-  const n = document.getElementById('endingNext');
-  if (!t) return;
-  t.textContent = ENDING_SCREENS[endingIndex] || '';
-  if (n) n.textContent = endingIndex >= ENDING_SCREENS.length - 1 ? '关 灯' : '下一句 ›';
-}
-function endingAdvance() {
-  if (endingIndex >= ENDING_SCREENS.length - 1) { closeEnding(); return; }
-  endingIndex += 1;
-  renderEndingScreen();
-}
 function closeEnding() {
   const el = document.getElementById('endingLayer');
   if (el) el.remove();
   document.body.classList.remove('ending-open');
-  if (state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
+  if (typeof state !== 'undefined' && state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
 }
 function openEnding() {
   closeEnding();
-  endingIndex = 0;
   const layer = document.createElement('div');
   layer.id = 'endingLayer';
   layer.className = 'ending-layer';
-  layer.innerHTML = '<div class="ending-card">'
-    + '<div class="ending-cap">最 后 一 夜</div>'
-    + '<p class="ending-text" id="endingText"></p>'
-    + '<div class="ending-foot"><span class="ending-note" id="endingTip">点屏幕继续</span>'
-    + '<button class="ending-btn" type="button" id="endingNext">下一句 ›</button></div>'
-    + '</div>';
+  const body = ENDING_PARAS.map(function (t, i) {
+    if (t.indexOf('「今晚有人来吗？」') === 0) return '<p class="ending-quote">' + t + '</p>';
+    if (i === ENDING_PARAS.length - 2 || i === ENDING_PARAS.length - 1) return '<p class="ending-mark">' + t + '</p>';
+    return '<p>' + t + '</p>';
+  }).join('');
+  layer.innerHTML = '<div class="ending-sheet"><div class="ending-cap">最 后 一 夜</div>'
+    + '<div class="ending-scroll">' + body + '</div>'
+    + '<div class="ending-foot"><button class="ending-btn" type="button" id="endingDone">关 灯</button></div></div>';
   document.body.appendChild(layer);
   document.body.classList.add('ending-open');
-  renderEndingScreen();
-  layer.addEventListener('click', function (ev) {
-    if (ev.target && ev.target.id === 'endingNext') return;
-    endingAdvance();
-  });
-  const btn = layer.querySelector('#endingNext');
-  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); endingAdvance(); });
+  const btn = layer.querySelector('#endingDone');
+  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closeEnding(); });
 }
-
 function closeBattle() {
   if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
   const _fin = UI.battle && UI.battle.win && UI.battle.config && UI.battle.config.stage && UI.battle.config.stage.chapter === 12 && UI.battle.config.stage.sub >= stageCountOf(12);
@@ -14170,13 +14145,15 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .battle-layer .b-side.enemy .b-unit .art-frame img{transform:scaleX(-1)}
 .battle-layer .b-side.enemy .b-unit .rig{transform:scaleX(-1)}
 
-.ending-layer{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at 50% 30%,#2a2320,#161211 70%);display:flex;align-items:center;justify-content:center;padding:24px;cursor:pointer}
-.ending-card{max-width:520px;width:100%;text-align:center}
-.ending-cap{font-size:11px;letter-spacing:.4em;color:#a9927a;margin-bottom:26px}
-.ending-text{font-family:Songti SC,serif;font-size:16px;line-height:2.1;color:#f2e7dc;white-space:pre-line;min-height:132px}
-.ending-foot{display:flex;align-items:center;justify-content:space-between;margin-top:30px;gap:12px}
-.ending-note{font-size:10.5px;color:#7d6a5a}
-.ending-btn{border:1px solid #4a3d33;background:rgba(255,255,255,.06);color:#e9dccf;font-size:12.5px;padding:9px 16px;border-radius:12px;cursor:pointer}
+.ending-layer{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at 50% 24%,#2a2320,#151110 72%);display:flex;align-items:center;justify-content:center;padding:18px;overflow:hidden}
+.ending-sheet{max-width:560px;width:100%;max-height:100%;display:flex;flex-direction:column}
+.ending-cap{font-size:11px;letter-spacing:.42em;color:#a9927a;text-align:center;margin:4px 0 18px}
+.ending-scroll{overflow-y:auto;padding:2px 6px 26px;touch-action:pan-y;-webkit-overflow-scrolling:touch;mask-image:linear-gradient(180deg,transparent,#000 18px,#000 calc(100% - 24px),transparent)}
+.ending-scroll p{font-family:Songti SC,serif;font-size:15.5px;line-height:2.05;color:#f0e6db;margin:0 0 18px;text-indent:2em;text-align:justify}
+.ending-quote{text-indent:0!important;text-align:center;color:#e8d8c6;letter-spacing:.05em}
+.ending-mark{text-indent:0!important;text-align:center;color:#cbb6a0;font-style:italic;margin-top:26px!important}
+.ending-foot{display:flex;justify-content:center;padding:6px 0 2px;border-top:1px solid rgba(255,255,255,.08)}
+.ending-btn{margin-top:10px;border:1px solid #4a3d33;background:rgba(255,255,255,.06);color:#e9dccf;font-size:13px;padding:10px 26px;border-radius:14px;cursor:pointer;letter-spacing:.2em}
 body.ending-open{overflow:hidden}
 
 </style>
