@@ -9160,6 +9160,33 @@ function closePrologue() {
   document.body.classList.remove('ending-open');
   if (typeof state !== 'undefined' && state) { state.prologueSeen = true; try { saveGame(); } catch (e) {} }
 }
+
+const SHORT_INTRO_PARAS = [
+  '梦是白天没做完的事，自己排好的队。',
+  '豆豆大王每夜走进去，把没结束的事陪着结束一次，然后关灯。',
+  '一个负责顶住，一个负责记得——今晚有人来就行。'
+];
+function openShortIntro() {
+  const old = document.getElementById('prologueLayer');
+  if (old) old.remove();
+  const layer = document.createElement('div');
+  layer.id = 'prologueLayer';
+  layer.className = 'ending-layer';
+  const body = SHORT_INTRO_PARAS.map(function (t) { return '<p class="ending-mark">' + t + '</p>'; }).join('');
+  layer.innerHTML = '<div class="ending-sheet"><div class="ending-cap">豆 豆 大 王</div>'
+    + '<div class="short-intro">' + body + '</div>'
+    + '<div class="ending-foot"><button class="ending-btn" type="button" id="shortDone">出 门</button></div></div>';
+  document.body.appendChild(layer);
+  document.body.classList.add('ending-open');
+  const btn = layer.querySelector('#shortDone');
+  if (btn) btn.addEventListener('click', function (ev) {
+    ev.stopPropagation();
+    layer.remove();
+    document.body.classList.remove('ending-open');
+    if (typeof state !== 'undefined' && state) { state.shortIntroSeen = true; try { saveGame(); } catch (e) {} }
+  });
+}
+
 function openPrologue() {
   const old = document.getElementById('prologueLayer');
   if (old) old.remove();
@@ -14196,6 +14223,9 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .ending-foot{display:flex;justify-content:center;padding:6px 0 2px;border-top:1px solid rgba(255,255,255,.08)}
 .ending-btn{margin-top:10px;border:1px solid #4a3d33;background:rgba(255,255,255,.06);color:#e9dccf;font-size:13px;padding:10px 26px;border-radius:14px;cursor:pointer;letter-spacing:.2em}
 body.ending-open{overflow:hidden}
+
+.short-intro{padding:26px 6px 10px;text-align:center}
+.short-intro p{font-family:Songti SC,serif;font-size:17px;line-height:2.1;color:#f0e6db;margin:0 0 22px;text-indent:0!important}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
