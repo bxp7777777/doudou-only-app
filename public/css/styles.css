@@ -1450,3 +1450,7 @@ body.focus-mode .hero-quote{display:block}
 
 .sign-fortune{color:#7c6a58;font-size:13px}
 .sign-fortune[data-state=fallback]{color:#9a8878}
+.sign-extra{color:#91806d;font-size:12px;line-height:1.6;margin-top:2px}
+.sign-extra[hidden]{display:none}
+.sign-aspects{margin:0}
+.sign-extra .sign-pills{margin-top:6px}

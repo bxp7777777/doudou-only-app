@@ -54,7 +54,6 @@ const WMO = {
 
 const round = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? null : Math.round(Number(n)));
 
-const horoscopeCache = new Map();
 function apiUrl(c) {
   return (
     'https://api.open-meteo.com/v1/forecast?latitude=' + c.lat + '&longitude=' + c.lon +
@@ -104,6 +103,86 @@ async function getWeather() {
 
   cache = { at: Date.now(), data: results };
   return { data: results, cached: false };
+}
+
+/* ------------------------- 星座运势（联网，双源互为备份） ------------------------- */
+
+const SIGN_CN = {
+  aries: '白羊', taurus: '金牛', gemini: '双子', cancer: '巨蟹', leo: '狮子', virgo: '处女',
+  libra: '天秤', scorpio: '天蝎', sagittarius: '射手', capricorn: '摩羯', aquarius: '水瓶', pisces: '双鱼'
+};
+// 中英双写都收：cancer / 巨蟹 / 巨蟹座
+const SIGN_ALIAS = {};
+for (const [key, cn] of Object.entries(SIGN_CN)) {
+  SIGN_ALIAS[key] = key;
+  SIGN_ALIAS[cn] = key;
+  SIGN_ALIAS[cn + '座'] = key;
+}
+
+// 两个免费源返回同一种纯文本模板，互为备份：一条挂了下一条顶上
+const FORTUNE_SOURCES = [
+  { name: 'suyanw', url: (cn) => 'https://api.suyanw.cn/api/xingzuo.php?msg=' + encodeURIComponent(cn) },
+  { name: 'yujn', url: (cn) => 'https://api.yujn.cn/api/xingzuo.php?msg=' + encodeURIComponent(cn) }
+];
+const fortuneCache = new Map();
+const FORTUNE_TTL = 60 * 60 * 1000; // 1 小时：同一天内上游更新也能跟上
+
+function fortuneDay() {
+  const f = new Intl.DateTimeFormat('zh-CN', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' });
+  return f.format(new Date()).replace(/\//g, '-');
+}
+
+function parseFortuneText(raw) {
+  // 上游偶尔把换行写成字面量 \n，先还原
+  const txt = String(raw || '').replace(/\\n/g, '\n');
+  const kv = {};
+  for (const line of txt.split(/\r?\n/)) {
+    const s = line.trim();
+    if (!s) continue;
+    const i = s.indexOf('：');
+    if (i > 0) kv[s.slice(0, i).trim()] = s.slice(i + 1).trim();
+  }
+  const summary = kv['整体运势'] || '';
+  const love = kv['爱情运势'] || '';
+  const work = kv['事业运势'] || '';
+  const money = kv['财富运势'] || '';
+  if (!summary && !love && !work && !money) return null;
+  return {
+    summary,
+    love,
+    work,
+    money,
+    advice: kv['提示'] || '',
+    luckyColor: kv['幸运颜色'] || '',
+    luckyNumber: kv['幸运数字'] || '',
+    nobleSign: kv['贵人星座'] || '',
+    nobleDir: kv['贵人方位'] || ''
+  };
+}
+
+async function getHoroscope(sign) {
+  const day = fortuneDay();
+  const ck = sign + '@' + day;
+  const hit = fortuneCache.get(ck);
+  if (hit && Date.now() - hit.at < FORTUNE_TTL) return hit.data;
+
+  const cn = SIGN_CN[sign];
+  let lastErr = null;
+  for (const src of FORTUNE_SOURCES) {
+    try {
+      const up = await fetch(src.url(cn), { signal: AbortSignal.timeout(7000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+      if (!up.ok) throw new Error('upstream ' + up.status);
+      const parsed = parseFortuneText(await up.text());
+      if (!parsed) throw new Error('empty');
+      const data = Object.assign({ ok: true, sign, date: day, source: src.name, fetchedAt: Date.now() }, parsed);
+      fortuneCache.set(ck, { at: Date.now(), data });
+      return data;
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  if (lastErr) throw lastErr;
+  return null;
 }
 
 /* ------------------------- 跨设备同步（Railway Volume 存储） ------------------------- */
@@ -343,22 +422,15 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname === '/api/horoscope') {
-      const sign = String(url.searchParams.get('sign') || 'cancer').toLowerCase();
-      const ok = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces'];
-      if (!ok.includes(sign)) return sendJson(res, 400, { ok: false, reason: 'bad-sign' });
-      const cacheKey = 'horoscope:' + sign + ':' + new Date().toISOString().slice(0, 10);
-      const cached = horoscopeCache.get(cacheKey);
-      if (cached) return sendJson(res, 200, cached);
+      const asked = String(url.searchParams.get('sign') || 'cancer').trim().toLowerCase();
+      const sign = SIGN_ALIAS[asked] || SIGN_ALIAS[asked.replace(/座$/, '')];
+      if (!sign) return sendJson(res, 400, { ok: false, reason: 'bad-sign' });
       try {
-        const up = await fetch('https://api.vvhan.com/api/horoscope?type=' + sign + '&time=today', { signal: AbortSignal.timeout(6000), headers: { 'User-Agent': 'Mozilla/5.0' } });
-        const data = await up.json();
-        const d = (data && data.data) || {};
-        const out = { ok: true, sign, date: d.date || '', summary: d.shortcomment || d.fortunetext || '', love: d.love || '', money: d.money || '', work: d.work || '', luckyColor: d.luckycolor || '', luckyNumber: d.luckynumber || '', source: 'vvhan' };
-        if (!out.summary) return sendJson(res, 502, { ok: false, reason: 'empty' });
-        horoscopeCache.set(cacheKey, out);
+        const out = await getHoroscope(sign);
+        if (!out) return sendJson(res, 502, { ok: false, reason: 'upstream-empty' });
         return sendJson(res, 200, out);
       } catch (e) {
-        return sendJson(res, 502, { ok: false, reason: 'upstream-error' });
+        return sendJson(res, 502, { ok: false, reason: 'upstream-error', detail: String(e && e.message ? e.message : e) });
       }
     }
     if (url.pathname === '/api/weather') {

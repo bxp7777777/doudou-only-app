@@ -1349,22 +1349,45 @@ function daySeed(now) {
 }
 
 const FORTUNE_SIGN = 'cancer';
+function fortuneLead(text) {
+  const s = String(text || '').trim();
+  if (!s) return '';
+  const m = s.match(/^[^。！？]{8,}[。！？]/);
+  const lead = m ? m[0] : s;
+  return lead.length > 64 ? lead.slice(0, 62) + '…' : lead;
+}
+function clipText(s, n) {
+  const t = String(s || '').trim();
+  return t.length > n ? t.slice(0, n) + '…' : t;
+}
 async function loadFortune() {
   const el = document.getElementById('signFortune');
+  const extra = document.getElementById('signFortuneExtra');
   if (!el) return;
   try {
     const r = await fetch('/api/horoscope?sign=' + FORTUNE_SIGN, { headers: { Accept: 'application/json' } });
     const d = await r.json();
     if (!d || !d.ok || !d.summary) throw new Error('empty');
-    const bits = [];
-    if (d.love) bits.push('感情：' + String(d.love).slice(0, 26));
-    if (d.work) bits.push('工作：' + String(d.work).slice(0, 26));
-    if (d.money) bits.push('钱：' + String(d.money).slice(0, 26));
-    el.textContent = String(d.summary).slice(0, 90) + (bits.length ? '　' + bits.join('　') : '');
-    el.dataset.state = 'ok';
+    el.textContent = fortuneLead(d.summary);
+    if (el.dataset) el.dataset.state = 'ok';
+    if (extra) {
+      const aspects = [];
+      if (d.love) aspects.push('感情 ' + clipText(d.love, 18));
+      if (d.work) aspects.push('工作 ' + clipText(d.work, 18));
+      if (d.money) aspects.push('钱 ' + clipText(d.money, 18));
+      const luck = [];
+      if (d.luckyColor) luck.push('幸运色 ' + d.luckyColor);
+      if (d.luckyNumber) luck.push('幸运数 ' + d.luckyNumber);
+      if (d.nobleSign) luck.push('贵人 ' + d.nobleSign);
+      extra.innerHTML =
+        (aspects.length ? '<p class="sign-aspects">' + esc(aspects.join('　')) + '</p>' : '') +
+        (luck.length ? '<div class="sign-pills">' + luck.map((x) => '<span class="sign-pill">' + esc(x) + '</span>').join('') + '</div>' : '');
+      extra.hidden = !extra.innerHTML;
+    }
   } catch (e) {
     el.textContent = '今天不预测运气，只提醒一句：慢一点也没关系。';
-    el.dataset.state = 'fallback';
+    if (el.dataset) el.dataset.state = 'fallback';
+    if (extra) { extra.innerHTML = ''; extra.hidden = true; }
   }
 }
 function dailySignCardHTML() {
@@ -1375,7 +1398,8 @@ function dailySignCardHTML() {
     <h2 class="card-head"><span class="card-icon">♋</span><span class="card-title">巨蟹座 · 今日小提示</span></h2>
     <p class="line">${esc(tip)}</p>
     <p class="line sign-fortune" id="signFortune" data-state="loading">今日运势加载中……</p>
-    <p class="line sign-not">今天不必：${esc(NOT_TODAY[seed % NOT_TODAY.length]).replace(/^今天不必/, '')}</p>
+    <div class="sign-extra" id="signFortuneExtra" hidden></div>
+    <p class="line sign-not">今天不必：${esc(NOT_TODAY[notIdx]).replace(/^今天不必/, '')}</p>
   </section>`;
 }
 

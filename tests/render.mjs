@@ -54,7 +54,7 @@ const homeHtml = () => nodes.app.innerHTML;
 check(document.body.className === 'theme-duo', '默认背景应为「贴贴」，实际 ' + document.body.className);
 check(homeHtml().includes('小猪盯吃喝'), '首页没渲染 hero');
 check(homeHtml().includes('喝水'), '首页没渲染喝水卡');
-check(homeHtml().includes('音乐氛围'), '首页缺音乐氛围卡');
+check(homeHtml().includes('日常小提醒'), '首页缺日常小提醒卡');
 check(homeHtml().includes('今日一曲'), '首页缺今日一曲纯文案卡');
 // 天气卡只有部分时段出，出了就必须有兜底文案（不能白卡）
 if (homeHtml().includes('南宁')) check(homeHtml().includes('没查到'), '天气卡失败时应兜底');
@@ -92,7 +92,8 @@ check(/《.+》/.test(homeHtml()), '小故事页没渲染故事标题');
 check(homeHtml().includes('每日一笑'), '缺「每日一笑」笑话卡');
 check(homeHtml().includes('陪伴小勋章'), '缺陪伴勋章卡');
 check(homeHtml().includes('天天相伴') && homeHtml().includes('开心一刻') && homeHtml().includes('故事收藏家'), '主要勋章名称未展示');
-check(homeHtml().includes('日常小提醒'), '故事页缺「日常小提醒」卡');
+check(homeHtml().includes('巨蟹座 · 今日小提示'), '故事页缺「巨蟹座 · 今日小提示」卡');
+check(homeHtml().includes('signFortune'), '故事页缺联网运势行');
 check(homeHtml().includes('睡前小建议'), '故事页缺「睡前小建议」卡');
 check(homeHtml().includes('换一个笑话'), '缺「换一个笑话」按钮');
 click({ act: 'joke-another' });
