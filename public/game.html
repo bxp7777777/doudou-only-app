@@ -6971,7 +6971,7 @@ function createEnemyFormation(powerTarget, options = {}) {
     lineup.push(pick(source).id);
   }
   const artFor = (i) => {
-    const isB = !!options.boss && i === 0;
+    const isB = !!options.boss && !!options.bossDef && i === 0;
     if (isB && options.bossDef) {
       return { artKind: 'boss', artId: options.bossDef.id, element: options.bossDef.element, name: options.bossDef.name, emoji: options.bossDef.emoji };
     }
@@ -11869,7 +11869,13 @@ function launchStageBattle(stage) {
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
   const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
-  const enemies = createEnemyFormation(enemyPower, buildStageEnemyOptions(stage));
+  const _opts = buildStageEnemyOptions(stage);
+  // 第 11 章末关：泥兜猪 + 金毛崽以宠物立绘同框当守梦人，不套 Boss 档案/剪影/头衔
+  if (stage.chapter === 11 && stage.sub >= stageCountOf(11)) {
+    _opts.boss = false; _opts.bossDef = null; _opts.bossName = null; _opts.bossEmoji = null;
+    _opts.petArt = true; _opts.lineup = ['pig', 'golden']; _opts.count = 2;
+  }
+  const enemies = createEnemyFormation(enemyPower, _opts);
   const ok = startBattle({
     mode: 'stage',
     stage,
