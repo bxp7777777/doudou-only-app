@@ -54,6 +54,7 @@ const WMO = {
 
 const round = (n) => (n === null || n === undefined || Number.isNaN(Number(n)) ? null : Math.round(Number(n)));
 
+const horoscopeCache = new Map();
 function apiUrl(c) {
   return (
     'https://api.open-meteo.com/v1/forecast?latitude=' + c.lat + '&longitude=' + c.lon +
@@ -341,6 +342,25 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (url.pathname === '/api/horoscope') {
+      const sign = String(url.searchParams.get('sign') || 'cancer').toLowerCase();
+      const ok = ['aries','taurus','gemini','cancer','leo','virgo','libra','scorpio','sagittarius','capricorn','aquarius','pisces'];
+      if (!ok.includes(sign)) return sendJson(res, 400, { ok: false, reason: 'bad-sign' });
+      const cacheKey = 'horoscope:' + sign + ':' + new Date().toISOString().slice(0, 10);
+      const cached = horoscopeCache.get(cacheKey);
+      if (cached) return sendJson(res, 200, cached);
+      try {
+        const up = await fetch('https://api.vvhan.com/api/horoscope?type=' + sign + '&time=today', { signal: AbortSignal.timeout(6000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+        const data = await up.json();
+        const d = (data && data.data) || {};
+        const out = { ok: true, sign, date: d.date || '', summary: d.shortcomment || d.fortunetext || '', love: d.love || '', money: d.money || '', work: d.work || '', luckyColor: d.luckycolor || '', luckyNumber: d.luckynumber || '', source: 'vvhan' };
+        if (!out.summary) return sendJson(res, 502, { ok: false, reason: 'empty' });
+        horoscopeCache.set(cacheKey, out);
+        return sendJson(res, 200, out);
+      } catch (e) {
+        return sendJson(res, 502, { ok: false, reason: 'upstream-error' });
+      }
+    }
     if (url.pathname === '/api/weather') {
       try {
         const { data, cached } = await getWeather();
