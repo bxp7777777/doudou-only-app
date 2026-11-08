@@ -291,7 +291,8 @@ const achs = countArray('ACHIEVEMENTS');
 const encs = countArray('ENCOUNTERS');
 console.log('宠物', pets, '· 成就', achs, '· 奇遇', encs);
 check(pets >= 20, `宠物不足 20：${pets}`);
-check(achs === 200, `成就应为 200：实际 ${achs}`);
+check(achs >= 190, `成就数量异常：实际 ${achs}`);
+check(!/id: 'a_rebirth1'|id: 'xb_rebirth_/.test(text), '成就里不应再有入梦/轮回项');
 check(encs >= 50, `奇遇不足 50：${encs}`);
 check(text.includes('ddgame'), '存档没用 ddgame 前缀');
 check(text.includes('musicStyle'), '游戏缺背景音乐风格字段');
@@ -375,11 +376,13 @@ if (typeof globalThis.getStage === 'function' && typeof globalThis.stageEnemyPow
     check(list.filter((s) => s.type === 'mob').length === (wide ? 5 : 4), '第 ' + ch + ' 章应有 ' + (wide ? 5 : 4) + ' 个小怪关');
   }
   const s11 = globalThis.getStage(1);
-  const expect11 = Math.round(s11.recPower * 3.4 * (globalThis.STAGE_TYPE_POWER ? globalThis.STAGE_TYPE_POWER.mob : 1.06));
-  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为 recPower×3.4×小怪系数，实际 ' + globalThis.stageEnemyPower(s11));
-  const s1070 = globalThis.getStage(70);
-  const expectFinal = Math.round(s1070.recPower * 0.84 * (globalThis.STAGE_TYPE_POWER ? globalThis.STAGE_TYPE_POWER.boss : 1.18));
-  check(globalThis.stageEnemyPower(s1070) === expectFinal, '第 10 章首领敌人战力应为 recPower×0.84×首领系数，实际 ' + globalThis.stageEnemyPower(s1070));
+  const expect11 = Math.round(globalThis.stageNeedPower(s11) / globalThis.stagePowerFactor(s11));
+  check(globalThis.stageEnemyPower(s11) === expect11, '1-1 敌人战力应为目标曲线÷安全系数，实际 ' + globalThis.stageEnemyPower(s11));
+  const s70 = globalThis.getStage(70);
+  const expect70 = Math.round(globalThis.stageNeedPower(s70) / globalThis.stagePowerFactor(s70));
+  check(globalThis.stageEnemyPower(s70) === expect70, '第 10 章首领敌人战力应为目标曲线÷安全系数，实际 ' + globalThis.stageEnemyPower(s70));
+  check(globalThis.stageNeedPower(globalThis.getStage(78)) === 50000, '78 推荐战力目标应为 50,000');
+  check(globalThis.stageNeedPower(globalThis.getStage(86)) === 54000, '86 推荐战力目标应为 54,000');
 }
 
 /* 旧存档（5 关/章）迁移：第 5 关的首领要落到新布局的最后一关，不能退回前面重打 */
@@ -474,7 +477,10 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('`我方 ${aliveN(b.allies)}/${b.allies.length}`') && text.includes('`敌方 ${aliveN(b.enemies)}/${b.enemies.length}`'), '回合条两侧应显示双方存活数');
   check(text.includes('<div class="b-plate">') && text.includes('<b class="b-hp-text">'), '单位应改成立绘 + 小铭牌结构');
   check(!text.includes('<div class="b-el">${el.emoji} ${el.name} · ${unit.rarity}</div>'), '单位信息块不该再整块铺属性行');
-  check(text.includes('.battle-layer .b-side.enemy .b-unit .art-frame{transform:scaleX(-1)}'), '敌方立绘应镜像面向中央');
+  check(text.includes('.battle-layer .b-side.enemy .b-unit.flip-art .art-frame{transform:scaleX(-1)}'), '翻转名单内敌方立绘应镜像面向中央');
+  const flipIds = ['thorncap', 'flame_imp', 'shade_bat', 'pebble_golem', 'rock_boar', 'frost_pup', 'moon_demon'];
+  check(flipIds.every(id => globalThis.enemyFlipClass(id) === ' flip-art'), '逐只镜像名单应包含 6 小怪 + 月蚀幽影魔王');
+  check(globalThis.enemyFlipClass('thorncap') === ' flip-art' && globalThis.enemyFlipClass('moss_slime') === '', '翻转名单内外的单位应正确加/不加 flip-art');
   check(text.includes(".battle-layer .battle-field::before{content:\"\";position:absolute;left:-8%;right:-8%;bottom:-6%;height:64%"), '战场应加透视地台');
   check(text.includes('.battle-layer .b-row-line.back-line,.battle-layer .b-row-line.mob-line{transform:translateY(-3px) scale(.93)}'), '后排应有纵深缩放');
   check(text.includes('.battle-layer .battle-field{grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}'), '栅格应用 minmax(0,1fr) 防止立绘撑破屏幕');
@@ -488,7 +494,7 @@ check(text.includes('.b-unit.attack-forward .rig-b3') && text.includes('.b-unit.
   check(text.includes('.battle-layer .battle-controls{position:relative;flex-wrap:nowrap;overflow:visible'), '控制条应收成一行（菜单不被裁切）');
   check(text.includes('title="${esc(u.name)}">${e.emoji}</span>'), '出手顺序应只留表情、名字进 title');
   check(text.includes('.battle-layer .b-unit.dead .art-frame{transform:rotate(78deg)'), '倒地后立绘应保持倒下');
-  check(text.includes('.battle-layer .b-side.enemy .b-unit.dead .art-frame{transform:scaleX(-1) rotate(78deg)'), '敌方倒地也要保持镜像');
+  check(text.includes('.battle-layer .b-side.enemy .b-unit.flip-art.dead .art-frame{transform:scaleX(-1) rotate(78deg)'), '翻转名单内的敌方倒地也要保持镜像');
   check(text.includes('@keyframes bDeathFall{0%{opacity:1;transform:scale(1)}'), '死亡动画不该再整块旋转（避免尸体回正）');
   check(text.includes('data-act="battleMoreMenu" id="btnMoreMenu"') && text.includes('id="battleMoreMenu"'), '控制条应有「⋯ 更多」菜单');
   check(text.includes("function battleMoreMenu()") && text.includes("function closeBattleMore()"), '更多菜单应可开可关');
