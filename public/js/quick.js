@@ -17,7 +17,6 @@
     box = document.createElement('div');
     box.id = 'quickBox';
     box.innerHTML = '<button type="button" data-q="cup">💧 喝一杯</button>'
-      + '<button type="button" data-q="food">🍚 吃一口</button>'
       + '<button type="button" data-q="mood">🫧 记心情</button>'
       + '<button type="button" data-q="focus">🎯 只做一件事</button>';
     document.body.appendChild(box);
