@@ -1555,22 +1555,6 @@ textarea.input{width:100%;resize:vertical;line-height:1.55}
 .offline-rewards + .note{margin-top:4px}
 .main-pet-emoji{display:inline-block;line-height:1}
 
-/* 轮回 */
-.rebirth-hero{
-  display:flex;align-items:center;gap:12px;padding:12px;border-radius:16px;
-  background:linear-gradient(140deg,#f8f2ff,#eee4ff 55%,#fff1f3);border:1px solid #e1d0f4;
-}
-.rebirth-vortex{font-size:47px;line-height:1;flex:0 0 auto;animation:spinSlow 9s linear infinite;filter:drop-shadow(0 5px 8px rgba(129,99,180,.2))}
-.rebirth-hero h3{font-size:14px;margin:0 0 2px;color:#715390}
-.rebirth-hero p{font-size:10px;color:#8d779f;margin:0;line-height:1.55}
-.rebirth-upgrades{display:flex;flex-direction:column;gap:7px}
-.rebirth-upgrade{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:12px;background:#fffaf3;border:1px solid #f0decb;flex-wrap:wrap}
-.rebirth-ico{width:37px;height:37px;border-radius:11px;display:grid;place-items:center;font-size:20px;background:#f4ecff;border:1px solid #dfd1f4;flex:0 0 auto}
-.rebirth-info{flex:1;min-width:150px}
-.rebirth-info b{font-size:11px;display:block}
-.rebirth-info p{font-size:9px;color:var(--muted);margin:1px 0 2px;line-height:1.45}
-.rebirth-upgrade .btn{flex:0 0 auto}
-
 /* 奇遇选择 */
 .encounter-choices{display:flex;flex-direction:column;gap:7px;margin:10px 0}
 .encounter-choice{
@@ -3687,7 +3671,7 @@ const TUTORIAL_STEPS = [
   { step: 2, title: '第一场冒险', desc: '带上伙伴去冒险页挑战 1-1。战斗全自动，也可以中途加速。', button: '去冒险', tab: 'adventure' },
   { step: 3, title: '收下挂机收益', desc: '回到家园，领取驻守关卡已经产出的金币和经验果。', button: '回家园', tab: 'home' },
   { step: 4, title: '升级与进化', desc: '在宠物详情里喂经验果升级。升到 Lv.10 / Lv.30 会自动进化；想提前变强，可以花同属性进化石和金币「提前进化」。', button: '去养成', tab: 'pets' },
-  { step: 5, title: '第一次入梦', desc: '对战页的梦塔已经开启，去走一层别人的噩梦吧。', button: '去梦塔', tab: 'battle' }
+  { step: 5, title: '第一次梦塔', desc: '对战页的梦塔已经开启，去走一层别人的噩梦吧。', button: '去梦塔', tab: 'battle' }
 ];
 
 const HELP_FAQ = [
@@ -3699,14 +3683,7 @@ const HELP_FAQ = [
   ['进化要什么？', '升到 Lv.10 / Lv.30 会自动进化，不需要材料；想提前看新形态，也可以在宠物详情里花对应属性进化石和金币「提前进化」。'],
   ['羁绊怎么点亮？', '把指定宠物同时放进前/后排即可自动点亮羁绊。羁绊徽章可以永久强化已点亮的羁绊。'],
   ['梦练场什么时候结算？', '每天可领取一次段位结算奖励；赛季 7 天重置，重置时按当前段位发放额外梦练币。'],
-  ['怎么入梦？', '通关 12-8「晚安先生」后开启入梦池。入梦只把主线退回 1-1，宠物、金币、梦塔、图鉴全部保留；结局只有一个，不会因为入梦次数改变。'],
   ['存档在哪？', '浏览器 localStorage 的 ddgame:v1。设置里可导出/导入 JSON。清除浏览器数据会导致存档丢失，请定期导出。']
-];
-
-const REBIRTH_UPGRADES = [
-  { id: 'idle', name: '永恒·时光', emoji: '⏳', max: 20, baseCost: 8, desc: '挂机效率 +5% / 级，永不过期。', valueText: (lv) => `挂机效率 +${lv * 5}%` },
-  { id: 'star', name: '永恒·星辉', emoji: '🌟', max: 6, baseCost: 12, desc: '新获得的宠物初始星级 +1 / 2 级。', valueText: (lv) => `初始 ${1 + Math.floor(lv / 2)} 星` },
-  { id: 'gold', name: '永恒·富足', emoji: '🪙', max: 10, baseCost: 6, desc: '重生后的初始金币 +1000 / 级。', valueText: (lv) => `初始金币 ${6000 + lv * 1000}` }
 ];
 
 const COSMETICS = [
@@ -3737,7 +3714,7 @@ const ACHIEVEMENTS = [
   { id: 'a_clear10', name: '章节英雄', desc: '通关 10 个关卡', icon: '📖', target: 10, get: s => s.stage.maxCleared, reward: { crystal: 80, fruit: 20 } },
   { id: 'a_clear15', name: '草原霸主', desc: '通关第 3 章首领', icon: '🌾', target: 21, get: s => s.stage.maxCleared, reward: { crystal: 120, stonesRandom: 3 } },
   { id: 'a_clear25', name: '远征勇者', desc: '通关第 5 章首领', icon: '🌙', target: 35, get: s => s.stage.maxCleared, reward: { crystal: 200, frame: 'moon' } },
-  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 86, get: s => s.stage.maxCleared, reward: { crystal: 500, eternal: 10 } },
+  { id: 'a_clear50', name: '传奇旅人', desc: '通关全部主线章节', icon: '🏔️', target: 86, get: s => s.stage.maxCleared, reward: { crystal: 500, } },
   { id: 'a_pet1', name: '第一只萌宠', desc: '拥有 1 只宠物', icon: '🥚', target: 1, get: s => Object.keys(s.pets).length, reward: { crystal: 25 } },
   { id: 'a_pet5', name: '毛茸茸小队', desc: '收集 5 种不同宠物', icon: '🐾', target: 5, get: s => stateUniqueCount(s), reward: { crystal: 80, equipShard: 20 } },
   { id: 'a_pet12', name: '图鉴大师', desc: `收集全部 ${PETS.length} 种宠物`, icon: '📚', target: PETS.length, get: s => stateUniqueCount(s), reward: { crystal: 300, frame: 'mint' } },
@@ -3745,10 +3722,10 @@ const ACHIEVEMENTS = [
   { id: 'a_evo10', name: '进化研究员', desc: '进化宠物累计 10 次', icon: '💎', target: 10, get: s => s.quests.metrics.evolutions, reward: { crystal: 180, stonesRandom: 5 } },
   { id: 'a_ultimate', name: '究极体降临', desc: '拥有任意一只究极体宠物', icon: '🌟', target: 1, get: s => stateHasAnyEvo2(s) ? 1 : 0, reward: { crystal: 200, stoneChoice: 1 } },
   { id: 'a_star5', name: '星级新秀', desc: '任意宠物达到 5 星', icon: '⭐', target: 5, get: s => stateMaxStar(s), reward: { crystal: 70 } },
-  { id: 'a_star10', name: '十星萌主', desc: '任意宠物达到 10 星', icon: '🌠', target: 10, get: s => stateMaxStar(s), reward: { crystal: 300, eternal: 5 } },
+  { id: 'a_star10', name: '十星萌主', desc: '任意宠物达到 10 星', icon: '🌠', target: 10, get: s => stateMaxStar(s), reward: { crystal: 300, } },
   { id: 'a_power1k', name: '初具战力', desc: '队伍总战力达到 1,000', icon: '💪', target: 1000, get: s => calcTeamPower(s), reward: { crystal: 30 } },
   { id: 'a_power5k', name: '渐入佳境', desc: '队伍总战力达到 5,000', icon: '🔥', target: 5000, get: s => calcTeamPower(s), reward: { crystal: 90, skillBook: 2 } },
-  { id: 'a_power20k', name: '小镇守护者', desc: '队伍总战力达到 20,000', icon: '🛡️', target: 20000, get: s => calcTeamPower(s), reward: { crystal: 250, eternal: 3 } },
+  { id: 'a_power20k', name: '小镇守护者', desc: '队伍总战力达到 20,000', icon: '🛡️', target: 20000, get: s => calcTeamPower(s), reward: { crystal: 250, } },
   { id: 'a_idle1h', name: '挂机一小时', desc: '累计挂机 1 小时', icon: '⏳', target: 3600, get: s => Math.floor(s.quests.metrics.idleSeconds), reward: { crystal: 25, fruit: 10 } },
   { id: 'a_idle10h', name: '时间的朋友', desc: '累计挂机 10 小时', icon: '🕰️', target: 36000, get: s => Math.floor(s.quests.metrics.idleSeconds), reward: { crystal: 120, fruit: 50 } },
   { id: 'a_pull10', name: '抽蛋新手', desc: '累计抽蛋 10 次', icon: '🥚', target: 10, get: s => s.quests.metrics.pulls, reward: { crystal: 45 } },
@@ -3765,11 +3742,10 @@ const ACHIEVEMENTS = [
   { id: 'a_gold100k', name: '富甲一方', desc: '累计获得 100,000 金币', icon: '💰', target: 100000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 100, gold: 3000 } },
   { id: 'a_enhance10', name: '强化工匠', desc: '装备强化累计 10 次', icon: '🔨', target: 10, get: s => s.quests.metrics.enhancements, reward: { enhanceStone: 8, crystal: 40 } },
   { id: 'a_fullgear', name: '全套神装', desc: '任意宠物穿满 4 件装备', icon: '🎽', target: 1, get: s => stateAnyFullEquip(s) ? 1 : 0, reward: { crystal: 150, equipShard: 50 } },
-  { id: 'a_rebirth1', name: '入梦一次', desc: '完成 1 次入梦', icon: '🌀', target: 1, get: s => s.rebirth.count, reward: { eternal: 8, crystal: 250 } },
   { id: 'a_sign7', name: '七日守候', desc: '完成七日签到', icon: '📅', target: 7, get: s => s.signIn.days, reward: { crystal: 180, frame: 'moon' } },
   { id: 'a_daily50', name: '每日达人', desc: '累计领取 50 次日任奖励', icon: '✅', target: 50, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 200, skillBook: 3 } },
   { id: 'a_bond1', name: '羁绊之力', desc: '点亮任意 1 个羁绊', icon: '🔗', target: 1, get: s => s.bonds.ever.length, reward: { crystal: 40, bondBadge: 2 } },
-  { id: 'a_bondall', name: '满羁绊', desc: `集齐全部 ${BONDS.length} 个羁绊`, icon: '💞', target: BONDS.length, get: s => s.bonds.ever.length, reward: { crystal: 500, frame: 'rainbow', eternal: 6 } },
+  { id: 'a_bondall', name: '满羁绊', desc: `集齐全部 ${BONDS.length} 个羁绊`, icon: '💞', target: BONDS.length, get: s => s.bonds.ever.length, reward: { crystal: 500, frame: 'rainbow', } },
   { id: 'xb_battle_20', name: '身经百战·初尝', desc: '战斗总次数达到 20', icon: '⚔️', target: 20, get: s => s.quests.metrics.battles, reward: { crystal: 10 } },
   { id: 'xb_battle_50', name: '身经百战·渐熟', desc: '战斗总次数达到 50', icon: '⚔️', target: 50, get: s => s.quests.metrics.battles, reward: { crystal: 18 } },
   { id: 'xb_battle_100', name: '身经百战·干练', desc: '战斗总次数达到 100', icon: '⚔️', target: 100, get: s => s.quests.metrics.battles, reward: { crystal: 18 } },
@@ -3785,14 +3761,14 @@ const ACHIEVEMENTS = [
   { id: 'xb_win_200', name: '常胜将军·渐熟', desc: '战斗胜利达到 200', icon: '🏆', target: 200, get: s => s.quests.metrics.wins, reward: { crystal: 18 } },
   { id: 'xb_win_400', name: '常胜将军·干练', desc: '战斗胜利达到 400', icon: '🏆', target: 400, get: s => s.quests.metrics.wins, reward: { crystal: 18 } },
   { id: 'xb_win_600', name: '常胜将军·专家', desc: '战斗胜利达到 600', icon: '🏆', target: 600, get: s => s.quests.metrics.wins, reward: { crystal: 18 } },
-  { id: 'xb_win_800', name: '常胜将军·传说', desc: '战斗胜利达到 800', icon: '🏆', target: 800, get: s => s.quests.metrics.wins, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_win_800', name: '常胜将军·传说', desc: '战斗胜利达到 800', icon: '🏆', target: 800, get: s => s.quests.metrics.wins, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_clear_8', name: '旅途行者·初尝', desc: '通关关卡达到 8', icon: '🗺️', target: 8, get: s => s.stage.maxCleared, reward: { crystal: 10 } },
   { id: 'xb_clear_12', name: '旅途行者·渐熟', desc: '通关关卡达到 12', icon: '🗺️', target: 12, get: s => s.stage.maxCleared, reward: { crystal: 18 } },
   { id: 'xb_clear_20', name: '旅途行者·干练', desc: '通关关卡达到 20', icon: '🗺️', target: 20, get: s => s.stage.maxCleared, reward: { crystal: 18 } },
   { id: 'xb_clear_25', name: '旅途行者·专家', desc: '通关关卡达到 25', icon: '🗺️', target: 25, get: s => s.stage.maxCleared, reward: { crystal: 18 } },
   { id: 'xb_clear_30', name: '旅途行者·能手', desc: '通关关卡达到 30', icon: '🗺️', target: 30, get: s => s.stage.maxCleared, reward: { crystal: 18 } },
   { id: 'xb_clear_38', name: '旅途行者·资深', desc: '通关关卡达到 38', icon: '🗺️', target: 38, get: s => s.stage.maxCleared, reward: { crystal: 18, starShard: 6 } },
-  { id: 'xb_clear_45', name: '旅途行者·传说', desc: '通关关卡达到 45', icon: '🗺️', target: 45, get: s => s.stage.maxCleared, reward: { crystal: 100, eternal: 2, starShard: 6 } },
+  { id: 'xb_clear_45', name: '旅途行者·传说', desc: '通关关卡达到 45', icon: '🗺️', target: 45, get: s => s.stage.maxCleared, reward: { crystal: 100, starShard: 6 } },
   { id: 'xb_kind_3', name: '百花之友·初尝', desc: '不同宠物种类达到 3', icon: '🐾', target: 3, get: s => new Set(Object.values(s.pets||{}).map(p=>p.templateId)).size, reward: { crystal: 10 } },
   { id: 'xb_kind_8', name: '百花之友·渐熟', desc: '不同宠物种类达到 8', icon: '🐾', target: 8, get: s => new Set(Object.values(s.pets||{}).map(p=>p.templateId)).size, reward: { crystal: 18 } },
   { id: 'xb_kind_12', name: '百花之友·干练', desc: '不同宠物种类达到 12', icon: '🐾', target: 12, get: s => new Set(Object.values(s.pets||{}).map(p=>p.templateId)).size, reward: { crystal: 18 } },
@@ -3813,7 +3789,7 @@ const ACHIEVEMENTS = [
   { id: 'xb_evo_40', name: '进化匠人·渐熟', desc: '进化次数达到 40', icon: '✨', target: 40, get: s => s.quests.metrics.evolutions, reward: { crystal: 18 } },
   { id: 'xb_evo_80', name: '进化匠人·干练', desc: '进化次数达到 80', icon: '✨', target: 80, get: s => s.quests.metrics.evolutions, reward: { crystal: 18 } },
   { id: 'xb_evo_120', name: '进化匠人·专家', desc: '进化次数达到 120', icon: '✨', target: 120, get: s => s.quests.metrics.evolutions, reward: { crystal: 18 } },
-  { id: 'xb_evo_150', name: '进化匠人·传说', desc: '进化次数达到 150', icon: '✨', target: 150, get: s => s.quests.metrics.evolutions, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_evo_150', name: '进化匠人·传说', desc: '进化次数达到 150', icon: '✨', target: 150, get: s => s.quests.metrics.evolutions, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_evo1_2', name: '蜕变小队·初尝', desc: '完成一次进化的宠物达到 2', icon: '🌗', target: 2, get: s => Object.values(s.pets||{}).filter(p=>(p.evo||0)>=1).length, reward: { crystal: 10 } },
   { id: 'xb_evo1_4', name: '蜕变小队·渐熟', desc: '完成一次进化的宠物达到 4', icon: '🌗', target: 4, get: s => Object.values(s.pets||{}).filter(p=>(p.evo||0)>=1).length, reward: { crystal: 18 } },
   { id: 'xb_evo1_6', name: '蜕变小队·干练', desc: '完成一次进化的宠物达到 6', icon: '🌗', target: 6, get: s => Object.values(s.pets||{}).filter(p=>(p.evo||0)>=1).length, reward: { crystal: 18 } },
@@ -3831,7 +3807,7 @@ const ACHIEVEMENTS = [
   { id: 'xb_lvl_15', name: '悉心栽培·初尝', desc: '最高宠物等级达到 15', icon: '📈', target: 15, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.level||0)), reward: { crystal: 10 } },
   { id: 'xb_lvl_30', name: '悉心栽培·渐熟', desc: '最高宠物等级达到 30', icon: '📈', target: 30, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.level||0)), reward: { crystal: 18 } },
   { id: 'xb_lvl_45', name: '悉心栽培·干练', desc: '最高宠物等级达到 45', icon: '📈', target: 45, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.level||0)), reward: { crystal: 18 } },
-  { id: 'xb_lvl_60', name: '悉心栽培·传说', desc: '最高宠物等级达到 60', icon: '📈', target: 60, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.level||0)), reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_lvl_60', name: '悉心栽培·传说', desc: '最高宠物等级达到 60', icon: '📈', target: 60, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.level||0)), reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_lvlup_30', name: '茁壮成长·初尝', desc: '升级次数达到 30', icon: '🌱', target: 30, get: s => s.quests.metrics.levelUps, reward: { crystal: 10 } },
   { id: 'xb_lvlup_100', name: '茁壮成长·渐熟', desc: '升级次数达到 100', icon: '🌱', target: 100, get: s => s.quests.metrics.levelUps, reward: { crystal: 18 } },
   { id: 'xb_lvlup_250', name: '茁壮成长·干练', desc: '升级次数达到 250', icon: '🌱', target: 250, get: s => s.quests.metrics.levelUps, reward: { crystal: 18 } },
@@ -3839,12 +3815,12 @@ const ACHIEVEMENTS = [
   { id: 'xb_skill_3', name: '技艺精湛·初尝', desc: '最高技能等级达到 3', icon: '📜', target: 3, get: s => Math.max(0,...Object.values(s.pets||{}).flatMap(p=>Object.values(p.skillLv||{}).map(v=>Number(v)||0))), reward: { crystal: 10 } },
   { id: 'xb_skill_5', name: '技艺精湛·渐熟', desc: '最高技能等级达到 5', icon: '📜', target: 5, get: s => Math.max(0,...Object.values(s.pets||{}).flatMap(p=>Object.values(p.skillLv||{}).map(v=>Number(v)||0))), reward: { crystal: 18 } },
   { id: 'xb_skill_7', name: '技艺精湛·干练', desc: '最高技能等级达到 7', icon: '📜', target: 7, get: s => Math.max(0,...Object.values(s.pets||{}).flatMap(p=>Object.values(p.skillLv||{}).map(v=>Number(v)||0))), reward: { crystal: 18 } },
-  { id: 'xb_skill_10', name: '技艺精湛·传说', desc: '最高技能等级达到 10', icon: '📜', target: 10, get: s => Math.max(0,...Object.values(s.pets||{}).flatMap(p=>Object.values(p.skillLv||{}).map(v=>Number(v)||0))), reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_skill_10', name: '技艺精湛·传说', desc: '最高技能等级达到 10', icon: '📜', target: 10, get: s => Math.max(0,...Object.values(s.pets||{}).flatMap(p=>Object.values(p.skillLv||{}).map(v=>Number(v)||0))), reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_feed_100', name: '投喂心意·初尝', desc: '喂食次数达到 100', icon: '🍓', target: 100, get: s => s.quests.metrics.feeds, reward: { crystal: 10 } },
   { id: 'xb_feed_250', name: '投喂心意·渐熟', desc: '喂食次数达到 250', icon: '🍓', target: 250, get: s => s.quests.metrics.feeds, reward: { crystal: 18 } },
   { id: 'xb_feed_500', name: '投喂心意·干练', desc: '喂食次数达到 500', icon: '🍓', target: 500, get: s => s.quests.metrics.feeds, reward: { crystal: 18 } },
   { id: 'xb_feed_1000', name: '投喂心意·专家', desc: '喂食次数达到 1,000', icon: '🍓', target: 1000, get: s => s.quests.metrics.feeds, reward: { crystal: 18 } },
-  { id: 'xb_feed_1500', name: '投喂心意·传说', desc: '喂食次数达到 1,500', icon: '🍓', target: 1500, get: s => s.quests.metrics.feeds, reward: { crystal: 100, eternal: 2, starShard: 10, bondBadge: 2 } },
+  { id: 'xb_feed_1500', name: '投喂心意·传说', desc: '喂食次数达到 1,500', icon: '🍓', target: 1500, get: s => s.quests.metrics.feeds, reward: { crystal: 100, starShard: 10, bondBadge: 2 } },
   { id: 'xb_intmax_40', name: '知心伙伴·初尝', desc: '单宠最高亲密度达到 40', icon: '💗', target: 40, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.intimacy||0)), reward: { crystal: 10 } },
   { id: 'xb_intmax_65', name: '知心伙伴·渐熟', desc: '单宠最高亲密度达到 65', icon: '💗', target: 65, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.intimacy||0)), reward: { crystal: 18 } },
   { id: 'xb_intmax_85', name: '知心伙伴·干练', desc: '单宠最高亲密度达到 85', icon: '💗', target: 85, get: s => Math.max(0,...Object.values(s.pets||{}).map(p=>p.intimacy||0)), reward: { crystal: 18 } },
@@ -3856,12 +3832,12 @@ const ACHIEVEMENTS = [
   { id: 'xb_gold_250000', name: '财源细流·初尝', desc: '累计获得金币达到 80,000', icon: '💰', target: 80000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 10, starShard: 10 } },
   { id: 'xb_gold_500000', name: '财源细流·渐熟', desc: '累计获得金币达到 220,000', icon: '💰', target: 220000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
   { id: 'xb_gold_800000', name: '财源细流·干练', desc: '累计获得金币达到 500,000', icon: '💰', target: 500000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 18, starShard: 10 } },
-  { id: 'xb_gold_1500000', name: '财源细流·传说', desc: '累计获得金币达到 900,000', icon: '💰', target: 900000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_gold_1500000', name: '财源细流·传说', desc: '累计获得金币达到 900,000', icon: '💰', target: 900000, get: s => s.quests.metrics.goldEarned, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_enh_30', name: '百炼精工·初尝', desc: '装备强化次数达到 30', icon: '🔨', target: 30, get: s => s.quests.metrics.enhancements, reward: { crystal: 10 } },
   { id: 'xb_enh_60', name: '百炼精工·渐熟', desc: '装备强化次数达到 60', icon: '🔨', target: 60, get: s => s.quests.metrics.enhancements, reward: { crystal: 18 } },
   { id: 'xb_enh_120', name: '百炼精工·干练', desc: '装备强化次数达到 120', icon: '🔨', target: 120, get: s => s.quests.metrics.enhancements, reward: { crystal: 18 } },
   { id: 'xb_enh_200', name: '百炼精工·专家', desc: '装备强化次数达到 200', icon: '🔨', target: 200, get: s => s.quests.metrics.enhancements, reward: { crystal: 18 } },
-  { id: 'xb_enh_300', name: '百炼精工·传说', desc: '装备强化次数达到 300', icon: '🔨', target: 300, get: s => s.quests.metrics.enhancements, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_enh_300', name: '百炼精工·传说', desc: '装备强化次数达到 300', icon: '🔨', target: 300, get: s => s.quests.metrics.enhancements, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_feq_2', name: '全副武装·初尝', desc: '穿满四件装备的宠物达到 2', icon: '🎽', target: 2, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 10 } },
   { id: 'xb_feq_3', name: '全副武装·渐熟', desc: '穿满四件装备的宠物达到 3', icon: '🎽', target: 3, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 18 } },
   { id: 'xb_feq_4', name: '全副武装·大师', desc: '穿满四件装备的宠物达到 4', icon: '🎽', target: 4, get: s => Object.values(s.pets||{}).filter(p=>p.equipment&&Object.keys(p.equipment).filter(k=>p.equipment[k]).length>=4).length, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
@@ -3869,7 +3845,7 @@ const ACHIEVEMENTS = [
   { id: 'xb_awin_120', name: '竞技能手·渐熟', desc: '梦练场胜利达到 120', icon: '🏟️', target: 120, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
   { id: 'xb_awin_250', name: '竞技能手·干练', desc: '梦练场胜利达到 250', icon: '🏟️', target: 250, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
   { id: 'xb_awin_500', name: '竞技能手·专家', desc: '梦练场胜利达到 500', icon: '🏟️', target: 500, get: s => s.quests.metrics.arenaWins, reward: { crystal: 18 } },
-  { id: 'xb_awin_800', name: '竞技能手·传说', desc: '梦练场胜利达到 800', icon: '🏟️', target: 800, get: s => s.quests.metrics.arenaWins, reward: { crystal: 100, eternal: 2, starShard: 10, arenaCoin: 150 } },
+  { id: 'xb_awin_800', name: '竞技能手·传说', desc: '梦练场胜利达到 800', icon: '🏟️', target: 800, get: s => s.quests.metrics.arenaWins, reward: { crystal: 100, starShard: 10, arenaCoin: 150 } },
   { id: 'xb_abat_30', name: '逐鹿擂台·初尝', desc: '梦练场对局达到 30', icon: '🥊', target: 30, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 10 } },
   { id: 'xb_abat_80', name: '逐鹿擂台·渐熟', desc: '梦练场对局达到 80', icon: '🥊', target: 80, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
   { id: 'xb_abat_150', name: '逐鹿擂台·干练', desc: '梦练场对局达到 150', icon: '🥊', target: 150, get: s => s.quests.metrics.arenaBattles, reward: { crystal: 18 } },
@@ -3877,12 +3853,12 @@ const ACHIEVEMENTS = [
   { id: 'xb_streak_3', name: '连胜旋风·初尝', desc: '梦练场最长连胜达到 3', icon: '🔥', target: 3, get: s => s.hall.arenaWinStreak, reward: { crystal: 10 } },
   { id: 'xb_streak_5', name: '连胜旋风·渐熟', desc: '梦练场最长连胜达到 5', icon: '🔥', target: 5, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
   { id: 'xb_streak_8', name: '连胜旋风·干练', desc: '梦练场最长连胜达到 8', icon: '🔥', target: 8, get: s => s.hall.arenaWinStreak, reward: { crystal: 18 } },
-  { id: 'xb_streak_12', name: '连胜旋风·传说', desc: '梦练场最长连胜达到 12', icon: '🔥', target: 12, get: s => s.hall.arenaWinStreak, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_streak_12', name: '连胜旋风·传说', desc: '梦练场最长连胜达到 12', icon: '🔥', target: 12, get: s => s.hall.arenaWinStreak, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_abest_1100', name: '天梯攀登者·初尝', desc: '历史最高竞技段位分达到 1,100', icon: '👑', target: 1100, get: s => s.hall.arenaBest, reward: { crystal: 10 } },
   { id: 'xb_abest_1300', name: '天梯攀登者·渐熟', desc: '历史最高竞技段位分达到 1,300', icon: '👑', target: 1300, get: s => s.hall.arenaBest, reward: { crystal: 18 } },
   { id: 'xb_abest_1550', name: '天梯攀登者·干练', desc: '历史最高竞技段位分达到 1,550', icon: '👑', target: 1550, get: s => s.hall.arenaBest, reward: { crystal: 18 } },
-  { id: 'xb_abest_1850', name: '天梯攀登者·专家', desc: '历史最高竞技段位分达到 1,850', icon: '👑', target: 1850, get: s => s.hall.arenaBest, reward: { crystal: 18, eternal: 2 } },
-  { id: 'xb_abest_2200', name: '天梯攀登者·传说', desc: '历史最高竞技段位分达到 2,200', icon: '👑', target: 2200, get: s => s.hall.arenaBest, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_abest_1850', name: '天梯攀登者·专家', desc: '历史最高竞技段位分达到 1,850', icon: '👑', target: 1850, get: s => s.hall.arenaBest, reward: { crystal: 18, } },
+  { id: 'xb_abest_2200', name: '天梯攀登者·传说', desc: '历史最高竞技段位分达到 2,200', icon: '👑', target: 2200, get: s => s.hall.arenaBest, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_tower_5', name: '梦塔行者·初尝', desc: '梦塔最高层数达到 5', icon: '🗼', target: 5, get: s => s.tower.best, reward: { crystal: 10 } },
   { id: 'xb_tower_15', name: '梦塔行者·渐熟', desc: '梦塔最高层数达到 15', icon: '🗼', target: 15, get: s => s.tower.best, reward: { crystal: 18 } },
   { id: 'xb_tower_20', name: '梦塔行者·干练', desc: '梦塔最高层数达到 20', icon: '🗼', target: 20, get: s => s.tower.best, reward: { crystal: 18 } },
@@ -3896,37 +3872,34 @@ const ACHIEVEMENTS = [
   { id: 'xb_boss_30', name: '讨伐先锋·渐熟', desc: '挑战长夜之影达到 30', icon: '👹', target: 30, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
   { id: 'xb_boss_60', name: '讨伐先锋·干练', desc: '挑战长夜之影达到 60', icon: '👹', target: 60, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
   { id: 'xb_boss_120', name: '讨伐先锋·专家', desc: '挑战长夜之影达到 120', icon: '👹', target: 120, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 18 } },
-  { id: 'xb_boss_200', name: '讨伐先锋·传说', desc: '挑战长夜之影达到 200', icon: '👹', target: 200, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_boss_200', name: '讨伐先锋·传说', desc: '挑战长夜之影达到 200', icon: '👹', target: 200, get: s => s.quests.metrics.bossAttempts, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_enc_40', name: '奇遇旅人·初尝', desc: '奇遇完成次数达到 40', icon: '🧭', target: 40, get: s => s.quests.metrics.encounters, reward: { crystal: 10 } },
   { id: 'xb_enc_80', name: '奇遇旅人·渐熟', desc: '奇遇完成次数达到 80', icon: '🧭', target: 80, get: s => s.quests.metrics.encounters, reward: { crystal: 18 } },
   { id: 'xb_enc_150', name: '奇遇旅人·干练', desc: '奇遇完成次数达到 150', icon: '🧭', target: 150, get: s => s.quests.metrics.encounters, reward: { crystal: 18 } },
   { id: 'xb_enc_300', name: '奇遇旅人·专家', desc: '奇遇完成次数达到 300', icon: '🧭', target: 300, get: s => s.quests.metrics.encounters, reward: { crystal: 18 } },
-  { id: 'xb_enc_400', name: '奇遇旅人·传说', desc: '奇遇完成次数达到 400', icon: '🧭', target: 400, get: s => s.quests.metrics.encounters, reward: { crystal: 100, eternal: 2, starShard: 10 } },
+  { id: 'xb_enc_400', name: '奇遇旅人·传说', desc: '奇遇完成次数达到 400', icon: '🧭', target: 400, get: s => s.quests.metrics.encounters, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_pull_150', name: '蛋屋常客·初尝', desc: '累计抽蛋达到 150', icon: '🎰', target: 150, get: s => s.quests.metrics.pulls, reward: { crystal: 10 } },
   { id: 'xb_pull_300', name: '蛋屋常客·渐熟', desc: '累计抽蛋达到 300', icon: '🎰', target: 300, get: s => s.quests.metrics.pulls, reward: { crystal: 18 } },
   { id: 'xb_pull_600', name: '蛋屋常客·干练', desc: '累计抽蛋达到 600', icon: '🎰', target: 600, get: s => s.quests.metrics.pulls, reward: { crystal: 18 } },
   { id: 'xb_pull_1000', name: '蛋屋常客·专家', desc: '累计抽蛋达到 1,000', icon: '🎰', target: 1000, get: s => s.quests.metrics.pulls, reward: { crystal: 18 } },
-  { id: 'xb_pull_1500', name: '蛋屋常客·传说', desc: '累计抽蛋达到 1,500', icon: '🎰', target: 1500, get: s => s.quests.metrics.pulls, reward: { crystal: 100, eternal: 2, starShard: 15 } },
+  { id: 'xb_pull_1500', name: '蛋屋常客·传说', desc: '累计抽蛋达到 1,500', icon: '🎰', target: 1500, get: s => s.quests.metrics.pulls, reward: { crystal: 100, starShard: 15 } },
   { id: 'xb_idle_7200', name: '静待花开·初尝', desc: '累计挂机秒数达到 7,200', icon: '⏳', target: 7200, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 10 } },
   { id: 'xb_idle_18000', name: '静待花开·渐熟', desc: '累计挂机秒数达到 18,000', icon: '⏳', target: 18000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 18 } },
   { id: 'xb_idle_72000', name: '静待花开·干练', desc: '累计挂机秒数达到 72,000', icon: '⏳', target: 72000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 18 } },
   { id: 'xb_idle_180000', name: '静待花开·专家', desc: '累计挂机秒数达到 180,000', icon: '⏳', target: 180000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 18 } },
   { id: 'xb_idle_360000', name: '静待花开·能手', desc: '累计挂机秒数达到 360,000', icon: '⏳', target: 360000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 18 } },
-  { id: 'xb_idle_720000', name: '静待花开·传说', desc: '累计挂机秒数达到 720,000', icon: '⏳', target: 720000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 100, eternal: 2, starShard: 10, fruit: 40 } },
+  { id: 'xb_idle_720000', name: '静待花开·传说', desc: '累计挂机秒数达到 720,000', icon: '⏳', target: 720000, get: s => s.quests.metrics.idleSeconds, reward: { crystal: 100, starShard: 10, fruit: 40 } },
   { id: 'xb_daily_100', name: '日常坚持者·初尝', desc: '日任务领取次数达到 100', icon: '✅', target: 100, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 10 } },
   { id: 'xb_daily_200', name: '日常坚持者·渐熟', desc: '日任务领取次数达到 200', icon: '✅', target: 200, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 18 } },
   { id: 'xb_daily_350', name: '日常坚持者·干练', desc: '日任务领取次数达到 350', icon: '✅', target: 350, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 18 } },
   { id: 'xb_daily_600', name: '日常坚持者·专家', desc: '日任务领取次数达到 600', icon: '✅', target: 600, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 18 } },
-  { id: 'xb_daily_800', name: '日常坚持者·传说', desc: '日任务领取次数达到 800', icon: '✅', target: 800, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 100, eternal: 2, starShard: 10 } },
-  { id: 'xb_rebirth_2', name: '入梦旅人·初尝', desc: '入梦次数达到 2', icon: '🌀', target: 2, get: s => s.rebirth.count, reward: { crystal: 10 } },
-  { id: 'xb_rebirth_3', name: '入梦旅人·渐熟', desc: '入梦次数达到 3', icon: '🌀', target: 3, get: s => s.rebirth.count, reward: { crystal: 18 } },
-  { id: 'xb_rebirth_5', name: '入梦旅人·传说', desc: '入梦次数达到 5', icon: '🌀', target: 5, get: s => s.rebirth.count, reward: { crystal: 100, eternal: 4, starShard: 10 } },
+  { id: 'xb_daily_800', name: '日常坚持者·传说', desc: '日任务领取次数达到 800', icon: '✅', target: 800, get: s => s.quests.metrics.dailyClaims, reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_bond_2', name: '羁绊织网·初尝', desc: '点亮羁绊数量达到 2', icon: '🔗', target: 2, get: s => s.bonds.ever.length, reward: { crystal: 10 } },
   { id: 'xb_bond_3', name: '羁绊织网·渐熟', desc: '点亮羁绊数量达到 3', icon: '🔗', target: 3, get: s => s.bonds.ever.length, reward: { crystal: 18 } },
   { id: 'xb_bond_4', name: '羁绊织网·大师', desc: '点亮羁绊数量达到 4', icon: '🔗', target: 4, get: s => s.bonds.ever.length, reward: { crystal: 50, starShard: 6, enhanceStone: 2 } },
   { id: 'xb_power_15000', name: '镇队之力·初尝', desc: '队伍总战力达到 15,000', icon: '🛡️', target: 15000, get: s => calcTeamPower(s), reward: { crystal: 10 } },
   { id: 'xb_power_30000', name: '镇队之力·渐熟', desc: '队伍总战力达到 30,000', icon: '🛡️', target: 30000, get: s => calcTeamPower(s), reward: { crystal: 18 } },
-  { id: 'xb_power_60000', name: '镇队之力·传说', desc: '队伍总战力达到 60,000', icon: '🛡️', target: 60000, get: s => calcTeamPower(s), reward: { crystal: 100, eternal: 3, starShard: 10 } },
+  { id: 'xb_power_60000', name: '镇队之力·传说', desc: '队伍总战力达到 60,000', icon: '🛡️', target: 60000, get: s => calcTeamPower(s), reward: { crystal: 100, starShard: 10 } },
   { id: 'xb_shiny_1', name: '流光宠儿·初尝', desc: '闪亮宠物数量达到 1', icon: '💫', target: 1, get: s => Object.values(s.pets||{}).filter(p=>!!p.shiny).length, reward: { crystal: 10 } },
   { id: 'xb_shiny_3', name: '流光宠儿·大师', desc: '闪亮宠物数量达到 3', icon: '💫', target: 3, get: s => Object.values(s.pets||{}).filter(p=>!!p.shiny).length, reward: { crystal: 50, starShard: 10, enhanceStone: 2 } },
   { id: 'xb_pair1', name: '双子同行', desc: '小猪与小金毛崽都完成一次进化', icon: '🤝', target: 1, get: s => (Object.values(s.pets||{}).some(p=>p.templateId==="pig"&&(p.evo||0)>=1)&&Object.values(s.pets||{}).some(p=>p.templateId==="golden"&&(p.evo||0)>=1))?1:0, reward: { crystal: 18, bondBadge: 2 } },
@@ -4603,7 +4576,7 @@ const ENCOUNTERS = [
       { label: '对星轨许愿', cost: { gold: 350 }, outcomes: [
         { w: 48, text: '愿望上达，得一件史诗装备。', rewards: { equipment: 'epic' } },
         { w: 32, text: '星光化作随机宠物碎片。', rewards: { randomShards: 16 } },
-        { w: 20, text: '星落处存下永恒结晶。', rewards: { eternal: 1 } },
+        { w: 20, text: '星落处捡到两颗小星星。', rewards: { crystal: 2 } },
       ] },
     ]
   },
@@ -5023,14 +4996,14 @@ function defaultState() {
     stamina: { value: MAX_STAMINA, max: MAX_STAMINA, ts: now },
     challenge: { value: MAX_CHALLENGE, max: MAX_CHALLENGE, ts: now },
     stones: { fire: 0, grass: 0, water: 0, light: 0, dark: 0, earth: 0, wind: 0, ice: 0 },
-    items: { skillBook: 2, equipShard: 20, starShard: 10, bondBadge: 2, enhanceStone: 10, arenaCoin: 40, eternal: 0 },
+    items: { skillBook: 2, equipShard: 20, starShard: 10, bondBadge: 2, enhanceStone: 10, arenaCoin: 40, },
     pets: {},
     petShards: {},
     team: { front: [], back: [] },
     nextPetId: 1,
     equipment: [],
     nextEquipId: 1,
-    stage: { maxCleared: 0, stars: {}, recall: 0, layout: STAGES_PER_CHAPTER },
+    stage: { maxCleared: 0, stars: {}, layout: STAGES_PER_CHAPTER },
     tower: { floor: 1, best: 0, weekStart: 0, weekClears: 0 },
     arena: { rating: 1000, wins: 0, losses: 0, seasonStart: now, season: 1, lastSettleDate: '', streakRewardGiven: 0, lastWinBonusDate: '', shopDay: '', shopCount: {} },
     boss: { date: '', attempts: 0, bestDamage: 0, totalDamage: 0, everBest: 0, claimed: false, seed: '' },
@@ -5046,7 +5019,7 @@ function defaultState() {
         battles: 0, wins: 0, pulls: 0, evolutions: 0, enhancements: 0, feeds: 0,
         arenaWins: 0, arenaBattles: 0, bossAttempts: 0, encounters: 0, idleSeconds: 0,
         goldEarned: 0, dailyClaims: 0, sweeps: 0, levelUps: 0, starUps: 0,
-        towerClears: 0, rebirths: 0
+        towerClears: 0
       }
     },
     codex: { claimed: [], seen: [] },
@@ -5057,8 +5030,6 @@ function defaultState() {
     cosmetics: { owned: ['bg_cream'], background: 'bg_cream', petAccessory: {} },
     tutorial: { step: 1, done: false },
     settings: { sfx: true, music: false, petAnim: true },
-    rebirth: { count: 0 },
-    eternal: { idle: 0, star: 0, gold: 0 },
     hall: { arenaBest: 0, arenaWinStreak: 0, arenaStreak: 0 },
     lastTab: 'home'
   };
@@ -5158,7 +5129,13 @@ function sanitizeState(s) {
 
   s.stage = s.stage && typeof s.stage === 'object' ? s.stage : {};
   s.stage.maxCleared = clamp(Math.floor(num(s.stage.maxCleared, 0)), 0, STAGES.length);
-  s.stage.recall = clamp(Math.floor(num(s.stage.recall, s.stage.maxCleared)), 0, STAGES.length);
+  // 旧“入梦”存档可能把主线退回 1-1、把旧进度留在 recall 里；现在取消轮回，直接把旧进度接回主线
+  const legacyRecall = clamp(Math.floor(num(s.stage.recall, 0)), 0, STAGES.length);
+  if (legacyRecall > s.stage.maxCleared) s.stage.maxCleared = legacyRecall;
+  delete s.stage.recall;
+  delete s.rebirth;
+  delete s.eternal;
+  if (s.items && typeof s.items === 'object') delete s.items.eternal;
   s.stage.stars = s.stage.stars && typeof s.stage.stars === 'object' ? s.stage.stars : {};
   s.tower = s.tower && typeof s.tower === 'object' ? s.tower : {};
   s.tower.floor = clamp(Math.floor(num(s.tower.floor, 1)), 1, 31);
@@ -5254,10 +5231,6 @@ function sanitizeState(s) {
   s.settings.music = !!s.settings.music;
   if (s.settings.musicStyle === 'chord') s.settings.musicStyle = 'light';
   else if (!['light', 'calm', 'breeze', 'lull'].includes(s.settings.musicStyle)) s.settings.musicStyle = 'light';
-  s.rebirth = s.rebirth && typeof s.rebirth === 'object' ? s.rebirth : { count: 0 };
-  s.rebirth.count = Math.max(0, Math.floor(num(s.rebirth.count, 0)));
-  s.eternal = s.eternal && typeof s.eternal === 'object' ? s.eternal : { idle: 0, star: 0, gold: 0 };
-  for (const key of ['idle', 'star', 'gold']) s.eternal[key] = clamp(Math.floor(num(s.eternal[key], 0)), 0, (REBIRTH_UPGRADES.find(u => u.id === key) || {}).max || 20);
   s.hall = s.hall && typeof s.hall === 'object' ? s.hall : {};
   s.hall.arenaBest = Math.max(0, Math.floor(num(s.hall.arenaBest, 0)));
   s.hall.arenaWinStreak = Math.max(0, Math.floor(num(s.hall.arenaWinStreak, 0)));
@@ -6114,7 +6087,7 @@ function autoDeployPet(pet) {
 }
 
 function initialPetStar(s = state) {
-  return clamp(1 + Math.floor((s.eternal.star || 0) / 2), 1, 10);
+  return 1;
 }
 
 function createPet(templateId, options = {}) {
@@ -6169,13 +6142,13 @@ function resourceLabel(key) {
   return ({
     gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书',
     equipShard: '装备碎片', starShard: '升星碎片', bondBadge: '羁绊徽章',
-    enhanceStone: '强化石', arenaCoin: '梦练币', eternal: '永恒结晶'
+    enhanceStone: '强化石', arenaCoin: '梦练币'
   })[key] || key;
 }
 function resourceIcon(key) {
   return ({
     gold: '🪙', crystal: '💎', fruit: '🍎', skillBook: '📘', equipShard: '🧩',
-    starShard: '🌟', bondBadge: '🔗', enhanceStone: '🔨', arenaCoin: '🎖️', eternal: '🌀',
+    starShard: '🌟', bondBadge: '🔗', enhanceStone: '🔨', arenaCoin: '🎖️',
     equipment: '🎁', shards: '🧩', intimacy: '💗'
   })[key] || '✨';
 }
@@ -6234,7 +6207,7 @@ function addReward(reward, options = {}) {
     }
     logs.push({ icon: '🧩', label: '随机宠物碎片', amount, extra: diff.join('、') });
   }
-  for (const key of ['skillBook', 'equipShard', 'starShard', 'bondBadge', 'enhanceStone', 'arenaCoin', 'eternal']) {
+  for (const key of ['skillBook', 'equipShard', 'starShard', 'bondBadge', 'enhanceStone', 'arenaCoin']) {
     if (reward[key]) {
       const amount = Math.max(0, Math.floor(num(reward[key], 0)));
       state.items[key] += amount;
@@ -6457,7 +6430,6 @@ function calcIdleRates(ignoreBoost = false) {
   }
   const teamPower = calcTeamPower();
   const efficiency = clamp(teamPower / Math.max(1, stage.recPower), 0.45, 2.2);
-  const eternalBonus = 1 + (state.eternal.idle || 0) * 0.05;
   const boost = !ignoreBoost && state.idle.boostUntil > Date.now();
   const boostMult = boost ? 2 : 1;
   // 全队平均饱食 / 心情温和影响挂机产出：喂饱、哄开心略增产，长期冷落略减产
@@ -6468,8 +6440,8 @@ function calcIdleRates(ignoreBoost = false) {
     * selfCareBonusMult();
   return {
     // 挂机产出 ÷15：原来 1 小时挂机 ≈ 60 关的金币、120 关的果实，把关卡经济彻底淹掉了
-    gold: stage.baseGold * efficiency * eternalBonus * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
-    fruit: stage.baseFruit * efficiency * eternalBonus * boostMult * idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR,
+    gold: stage.baseGold * efficiency * boostMult * idleCareMult / IDLE_RATE_DIVISOR,
+    fruit: stage.baseFruit * efficiency * boostMult * idleCareMult * IDLE_FRUIT_BOOST / IDLE_RATE_DIVISOR,
     stage,
     teamPower,
     efficiency,
@@ -6785,7 +6757,7 @@ const ACH_CATEGORIES = [
   { id: 'arena', name: '梦练场', emoji: '🏟️', match: ['xb_awin_', 'xb_abat_', 'xb_streak_', 'xb_abest_', 'a_arena'] },
   { id: 'tower', name: '梦塔与首领', emoji: '🗼', match: ['xb_tower_', 'xb_tclear_', 'xb_boss_', 'a_tower', 'a_boss'] },
   { id: 'economy', name: '资源与装备', emoji: '🪙', match: ['xb_gold_', 'xb_enh_', 'xb_feq_', 'a_gold', 'a_enhance', 'a_fullgear'] },
-  { id: 'idle', name: '挂机与日常', emoji: '🌙', match: ['xb_idle_', 'xb_daily_', 'xb_pull_', 'xb_enc_', 'xb_rebirth', 'xb_power', 'a_pull', 'a_idle', 'a_enc', 'a_sign', 'a_rebirth', 'a_power', 'a_daily50', 'merchant', 'orchard'] }
+  { id: 'idle', name: '挂机与日常', emoji: '🌙', match: ['xb_idle_', 'xb_daily_', 'xb_pull_', 'xb_enc_', 'xb_power', 'a_pull', 'a_idle', 'a_enc', 'a_sign', 'a_power', 'a_daily50', 'merchant', 'orchard'] }
 ];
 const ACH_CAT_OTHER = { id: 'other', name: '其他', emoji: '🎁' };
 function achievementCategoryOf(ach) {
@@ -9744,9 +9716,8 @@ function renderHome() {
           <button class="quick-btn" type="button" data-act="nav" data-tab="shop"><span class="emoji">🥚</span>抽蛋</button>
           <button class="quick-btn" type="button" data-act="openFeed" data-uid="${pet ? pet.uid : ''}"><span class="emoji">🍓</span>喂食</button>
           <button class="quick-btn" type="button" data-act="nav" data-tab="quest"><span class="emoji">📜</span>领奖励</button>
-          <button class="quick-btn" type="button" data-act="openRebirth"><span class="emoji">🌀</span>入梦池</button>
         </div>
-        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（敌人战力 ${fmt(stageDisplayPower(next))}）。` : '主线已全部通关，去梦塔或轮回吧。'} 当前队伍战力 ${fmt(power)}。</div>
+        <div class="note mint" style="margin-top:10px">${next ? `下一关 ${next.chapter}-${next.sub}（敌人战力 ${fmt(stageDisplayPower(next))}）。` : '主线已全部通关，去梦塔或小镇里逛逛吧。'} 当前队伍战力 ${fmt(power)}。</div>
       </div>
 
       <div class="grid">
@@ -9775,8 +9746,6 @@ function renderHome() {
             <div class="idle-stat"><span>梦塔</span><b>${state.tower.best} / 30</b></div>
           </div>
           <div class="note pink" style="margin-top:9px">当前章节：第 ${chapter} 章 · ${CHAPTERS[chapter - 1].name}。摸头、投喂、战斗都会提升亲密度。</div>
-          ${state.stage.recall > state.stage.maxCleared ? `<button class="btn btn-mint btn-sm btn-wide" type="button" data-act="recallRush" style="margin-top:8px">🌀 回忆速通：直接回到 ${chapterOfStage(state.stage.recall)}-${subOfStage(state.stage.recall)}</button><div class="tiny muted center" style="margin-top:4px">跳过已经走过的路，不发奖励，只把进度接上。</div>` : ''}
-${rebirthUnlocked() ? `<button class="btn btn-lav btn-sm btn-wide" type="button" data-act="openRebirth" style="margin-top:9px">🌀 轮回之泉已开启</button>` : `<div class="tiny muted" style="margin-top:7px">通关第 5 章首领后可开启轮回之泉。</div>`}
         </div>
       </div>
     </div>
@@ -9788,7 +9757,7 @@ function addRewardPreview(reward) {
     gold: '金币', crystal: '钻石', fruit: '经验果', skillBook: '技能书', equipShard: '装备碎片',
     enhanceStone: '强化石', bondBadge: '羁绊徽章', arenaCoin: '梦练币', starShard: '升星碎片',
     stonesRandom: '随机进化石', stoneChoice: '随机进化石', randomShards: '随机碎片',
-    intimacyAll: '全队亲密', frame: '头像框', equipment: '装备', eternal: '永恒结晶'
+    intimacyAll: '全队亲密', frame: '头像框', equipment: '装备'
   };
   for (const key of Object.keys(reward || {})) {
     if (!reward[key]) continue;
@@ -9982,7 +9951,7 @@ function renderPets() {
         <div class="card-head"><div><h2>🎒 材料背包</h2><p>进化石按属性区分，升星碎片可补足同名碎片缺口。</p></div><button class="btn btn-lav btn-sm" type="button" data-act="forgeEquipment">🧩 装备锻造 · 40碎片 + 🪙800</button></div>
         <div class="bag-res-grid">
           ${ELEMENT_KEYS.map(el => `<div class="bag-res"><span class="ico">${artIconFrame(elementArtUrl(el), ELEMENTS[el].emoji, 'art-bagico') || ELEMENTS[el].emoji}</span><div><b>${fmt(num(state.stones[el], 0))}</b><span>${ELEMENTS[el].name}进化石</span></div></div>`).join('')}
-          ${['skillBook','equipShard','starShard','bondBadge','enhanceStone','arenaCoin','eternal'].map(key => `<div class="bag-res"><span class="ico">${resourceIcon(key)}</span><div><b>${fmt(state.items[key])}</b><span>${resourceLabel(key)}</span></div></div>`).join('')}
+          ${['skillBook','equipShard','starShard','bondBadge','enhanceStone','arenaCoin'].map(key => `<div class="bag-res"><span class="ico">${resourceIcon(key)}</span><div><b>${fmt(state.items[key])}</b><span>${resourceLabel(key)}</span></div></div>`).join('')}
         </div>
       </div>
       <div class="card">
@@ -10025,7 +9994,7 @@ function renderPets() {
         <button type="button" class="${cf.miss ? 'active' : ''}" data-act="codexFilter" data-miss="1">${cf.miss ? '只看未收录' : '含已收录'}</button></div>`;
     body = `
       <div class="card">
-        <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。入梦后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
+        <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。图鉴记录会一直保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
         ${codexBar}
         <div class="codex-grid">
           ${codexList.length ? codexList.map(t => {
@@ -10246,7 +10215,7 @@ function renderBattlePage() {
       </div>
     </div>
     <div class="card">
-      <div class="card-head"><div><h2>🏅 本地名人堂</h2><p>记录本机存档里的最好成绩，入梦与赛季结算都不清空。</p></div><span class="chip">永久纪录</span></div>
+      <div class="card-head"><div><h2>🏅 本地名人堂</h2><p>记录本机存档里的最好成绩，赛季结算不清空。</p></div><span class="chip">永久纪录</span></div>
       <div class="idle-stats" style="margin:0">
         <div class="idle-stat"><span>主线最高关</span><b>${stageLabel}</b></div>
         <div class="idle-stat"><span>梦塔最高层</span><b>${state.tower.best} / 30</b></div>
@@ -10466,11 +10435,6 @@ function renderShop() {
 /* -------- 任务 -------- */
 /* 成就的「多一句」：按类别轮换的小句子，让 200 条成就描述不再只有干巴巴的目标 */
 const ACH_NOTE_GROUPS = [
-  { key: 'loop', re: /rebirth/, notes: [
-    '入梦不是重来，是带着他们再走一遍。', '第一次入梦，还特地去看了看那两只老搭档。', '路还是那条路，脚步声熟多了。',
-    '永恒结晶，换的是下次的从容。', '每入一次梦，小镇就更熟一点。', '新的开局，还是那两只老搭档。',
-    '有些话，第二次听才听懂。', '入梦那天，会想把每个伙伴都看一遍。', '梦一开，路又长又短。'
-  ] },
   { key: 'arena', re: /arena|hall\.|tower/, notes: [
     '梦练场里的对手都很会演。', '排名往上走一格，手心就热一下。', '输给谁，都记了小本本——反正醒来就忘了。',
     '连胜那几天，连走路都带风。', '梦里的对手一层比一层难缠。', '梦塔爬到一半，才想起要带奶——它已经睡着了。',
@@ -10663,7 +10627,6 @@ function renderQuest() {
             ['🧹', '扫荡次数', state.quests.metrics.sweeps],
             ['🏟️', '梦练场胜利', state.quests.metrics.arenaWins],
             ['🧭', '奇遇完成', state.quests.metrics.encounters],
-            ['🌀', '入梦次数', state.rebirth.count],
             ['⏳', '累计挂机', fmt(state.quests.metrics.idleSeconds) + '秒']
           ].map(([icon, label, value]) => `<div class="bag-res"><span class="ico">${icon}</span><div><b>${fmt(value)}</b><span>${label}</span></div></div>`).join('')}
         </div>
@@ -11209,66 +11172,6 @@ function openEquipPetPicker(itemId) {
   openModal(`${slotDef.emoji} 给谁装备`, body, { wide: true });
 }
 
-/* -------- 入梦池 -------- */
-function rebirthUnlocked() {
-  return state.stage.maxCleared >= STAGES.length && num(state.stage.stars[STAGES.length], 0) > 0;
-}
-function rebirthEternalPreview() {
-  return 10 + Math.floor(calcTeamPower() / 1500) + Math.max(0, chapterOfStage(Math.max(1, state.stage.maxCleared)) - 1) * 2;
-}
-function rebirthUpgradeCost(upgrade) {
-  const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
-  return Math.round(upgrade.baseCost * Math.pow(1.55, level));
-}
-
-// 回忆速通：入梦之后，把上一条走到最远的进度直接接上（不发奖励，只解锁关卡）
-function recallRush() {
-  const target = clamp(num(state.stage.recall, 0), 0, STAGES.length);
-  if (target <= state.stage.maxCleared) { toast('没有可以速通的回忆', 'bad'); return; }
-  state.stage.maxCleared = target;
-  UI.adventureChapter = chapterOfStage(Math.max(1, target));
-  saveGame();
-  renderAll();
-  toast('回忆接上了：现在走到 ' + chapterOfStage(target) + '-' + subOfStage(target) + '。', 'gold', 3000);
-}
-function openRebirthModal() {
-  const unlocked = rebirthUnlocked();
-  const preview = rebirthEternalPreview();
-  const loopNo = num(state.rebirth && state.rebirth.count, 0) + 1;
-  const upgradeHtml = REBIRTH_UPGRADES.map(upgrade => {
-    const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
-    const cost = rebirthUpgradeCost(upgrade);
-    const maxed = level >= upgrade.max;
-    return `<div class="rebirth-upgrade">
-      <div class="rebirth-ico">${upgrade.emoji}</div>
-      <div class="rebirth-info"><b>${esc(upgrade.name)} <span class="chip">Lv.${level}/${upgrade.max}</span></b><p>${esc(upgrade.desc)}</p><span class="tiny gold-text">${esc(upgrade.valueText(level))}</span></div>
-      <button class="btn btn-ghost btn-xs" type="button" data-act="buyRebirthUpgrade" data-id="${upgrade.id}" ${maxed || state.items.eternal < cost ? 'disabled' : ''}>${maxed ? '已满级' : `🌀 ${cost}`}</button>
-    </div>`;
-  }).join('');
-  const body = unlocked ? `
-    <div class="rebirth-hero"><div class="rebirth-vortex">🌀</div><div><h3>再进一次梦，不带走任何东西</h3><p>入梦只把主线的路退回 1-1：宠物、等级、装备、金币、梦塔、图鉴、奇遇记录全部留下。梦的尽头只有一条路，走到就看见了。</p></div></div>
-    <div class="offline-rewards">
-      <div class="offline-reward"><span>🌀</span><div><small>本次可获得</small><b>${fmt(preview)} 永恒结晶</b></div></div>
-      <div class="offline-reward"><span>🌀</span><div><small>当前持有</small><b>${fmt(state.items.eternal)}</b></div></div>
-    </div>
-    <h3 class="modal-h3">永恒强化</h3>
-    <div class="rebirth-upgrades">${upgradeHtml}</div>
-    <div class="note lav">已走到 ${highestStageLabel()} · 队伍战力 ${fmt(calcTeamPower())} · 这是第 ${loopNo} 次入梦。走得越远，入梦带回的永恒结晶越多。</div>
-    <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入第 ${loopNo + 1} 次梦</button>
-    <div class="tiny muted center" style="margin-top:6px">主线会退回 1-1 并清空关卡星星，别的东西都不会少。回忆速通接回来的进度不算入梦条件。</div>`
-    : `<div class="empty"><span class="empty-emoji">🌀</span><h3>梦还没走到头</h3><p>通关 12-8「晚安先生」之后，才能入下一次梦。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, STAGES.length - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
-  openModal('🌀 入梦', body, { wide: true });
-}
-function openRebirthConfirm() {
-  if (!rebirthUnlocked()) { toast('这一世的梦还没真正走到头，入不了梦', 'bad'); return; }
-  const gain = rebirthEternalPreview();
-  const body = `
-    <div class="warning-box"><b>要入梦吗？</b><p>只有主线的进度会退回 1-1：宠物、等级、星级、进化、装备、金币、钻石、经验果、梦塔、梦练场和背包材料都留着。</p><p>成就、图鉴、签到、装扮、头像框、永恒结晶、永恒强化和已经看过的结局也都会保留。</p><p>关卡星星会一起清零，要重新三星才能扫荡；回忆速通接回来的旧进度不算「亲手走到头」，想再入梦得重新打赢 12-8。</p></div>
-    <div class="offline-rewards"><div class="offline-reward"><span>🌀</span><div><small>获得永恒结晶</small><b>${fmt(gain)}</b></div></div></div>
-    <div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="openRebirth">再想想</button><button class="btn btn-lav" type="button" data-act="rebirthConfirm">确认轮回</button></div>`;
-  openModal('🌀 入梦之前', body, { wide: false });
-}
-
 /* -------- 奇遇 -------- */
 function storyEndingTotal() { let n = 0; for (const s of ENCOUNTER_STORIES) for (const k in s.nodes) if (s.nodes[k].ending) n++; return n; }
 function storyEndingCount() { const m = state.encounter.endings; return m && typeof m === 'object' ? Object.keys(m).filter(k => k.indexOf('final:') !== 0).length : 0; }
@@ -11430,7 +11333,6 @@ function openSettingsModal() {
       <h3>🔁 其他</h3>
       <div class="flex" style="gap:6px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" type="button" data-act="restartTutorial">重看新手引导</button> <button class="btn btn-ghost btn-sm" type="button" data-act="storyIntro">📖 重看剧情介绍</button>
-        <button class="btn btn-ghost btn-sm" type="button" data-act="openRebirth">打开入梦池</button>
         <button class="btn btn-ghost btn-sm" type="button" data-act="resetRequest">⚠️ 清空存档</button>
       </div>
     </div>
@@ -11935,7 +11837,7 @@ function goodnightPet() {
   const perfect = selfCareCheckPerfect();
   saveGame();
   renderAll();
-  toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你入梦 🌙${perfect.length ? ' · 今日陪伴值满 6！' + rewardLogText(perfect) : ''}`, 'good', 2600);
+  toast(`你对${petDisplayName(pet)}说了晚安，它蜷成一团陪你睡一会儿 🌙${perfect.length ? ' · 今日陪伴值满 6！' + rewardLogText(perfect) : ''}`, 'good', 2600);
 }
 function careCardHTML() {
   const sc = selfCareToday();
@@ -13005,47 +12907,6 @@ function renamePlayerAction() {
   renderAll();
   toast(`小镇档案已更新：${name}`, 'good');
 }
-function useRebirthUpgrade(id) {
-  const upgrade = REBIRTH_UPGRADES.find(x => x.id === id);
-  if (!upgrade) return;
-  const level = clamp(Math.floor(num(state.eternal[id], 0)), 0, upgrade.max);
-  if (level >= upgrade.max) { toast('已经满级', 'bad'); return; }
-  const cost = rebirthUpgradeCost(upgrade);
-  if (state.items.eternal < cost) { toast(`永恒结晶不足，需要 ${cost}`, 'bad'); return; }
-  state.items.eternal -= cost;
-  state.eternal[id] = level + 1;
-  saveGame();
-  openRebirthModal();
-  toast(`${upgrade.name} 提升到 Lv.${level + 1}`, 'gold');
-  playSfx('level');
-}
-function performRebirthConfirm() {
-  openRebirthConfirm();
-}
-function doRebirth() {
-  if (!rebirthUnlocked()) { toast('这一世的梦还没真正走到头，入不了梦', 'bad'); return; }
-  const gain = rebirthEternalPreview();
-  // 入梦：不重开存档，只把主线退回 1-1。宠物、金币、装备、梦塔、图鉴、奇遇记录全都留着。
-  state.rebirth.count = num(state.rebirth.count, 0) + 1;
-  state.items.eternal = num(state.items.eternal, 0) + gain;
-  state.quests.metrics.rebirths = num(state.quests.metrics.rebirths, 0) + 1;
-  state.stage.recall = Math.max(num(state.stage.recall, 0), num(state.stage.maxCleared, 0));
-  state.stage.maxCleared = 0;
-  state.stage.stars = {};
-  UI.tab = 'home';
-  UI.adventureChapter = 1;
-  UI.arenaOpponents = [];
-  UI.offlineOffer = null;
-  UI.lastTick = Date.now();
-  UI.scrollReset = true;
-  const loopNow = num(state.rebirth.count, 0) + 1;
-  saveGame();
-  closeModal(true);
-  renderAll();
-  toast('入梦了。这是第 ' + loopNow + ' 次入梦。', 'gold', 4000);
-  playSfx('rebirth');
-}
-
 /* -------- 设置 / 存档 -------- */
 function toggleSetting(key) {
   state.settings[key] = !state.settings[key];
@@ -13182,9 +13043,7 @@ function handleActionClick(event) {
     case 'skipTutorial': skipTutorial(); break;
 
     case 'closeModal': closeModal(); break;
-    case 'recallRush': recallRush(); break;
     case 'openSettings': openSettingsModal(); break;
-    case 'openRebirth': openRebirthModal(); break;
 
     case 'claimIdle': claimIdle(); break;
     case 'gardenPlant': gardenPlant(Number(target.dataset.index)); break;
@@ -13349,9 +13208,6 @@ case 'storyChoose': storyChoose(Number(target.dataset.index)); break;
     case 'storyIntro': closeModal(); setTimeout(function(){ try { openPrologue(); } catch (e) {} }, 180); break;
       case 'restartTutorial': restartTutorial(); break;
 
-    case 'buyRebirthUpgrade': useRebirthUpgrade(target.dataset.id); break;
-    case 'performRebirth': performRebirthConfirm(); break;
-    case 'rebirthConfirm': doRebirth(); break;
 
     default:
       break;
@@ -13527,7 +13383,6 @@ function playSfx(name) {
     ssr: [[523, 0.08, 'sine', 0.022], [659, 0.08, 'sine', 0.022, 0.07], [784, 0.08, 'sine', 0.022, 0.14], [1046, 0.3, 'sine', 0.02, 0.21]],
     encounter: [[600, 0.1, 'sine', 0.018], [760, 0.16, 'sine', 0.016, 0.08]],
     feed: [[700, 0.07, 'triangle', 0.018], [840, 0.08, 'triangle', 0.016, 0.05]],
-    rebirth: [[220, 0.2, 'sine', 0.024], [440, 0.2, 'triangle', 0.022, 0.16], [880, 0.4, 'sine', 0.02, 0.34]]
   };
   for (const [freq, dur, type, vol, delay] of (map[name] || map.tap)) audioTone(freq, dur, type, vol, delay || 0);
 }
