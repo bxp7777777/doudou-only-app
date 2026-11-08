@@ -3562,15 +3562,36 @@ function getStage(index) {
   return STAGES[clamp(index, 1, STAGES.length) - 1] || STAGES[0];
 }
 function stageIndex(chapter, sub) { return stageIndexOf(chapter, sub); }
-// 难度系数：敌人实际战力 = recPower × 章系数 × 关卡类型系数。只影响敌人强度与展示，不改奖励公式
-// 章系数保持"前期明显加压、后期收敛"的走向；第 10 章少于 1 是为了抵消 7 关布局带来的 recPower 抬升
-const STAGE_DIFFICULTY = { 1: 3.4, 2: 2.7, 3: 2.4, 4: 2.1, 5: 1.55, 6: 1.2, 7: 1.15, 8: 1.05, 9: 0.88, 10: 0.84, 11: 0.86, 12: 0.56 };
-const STAGE_TYPE_POWER = { mob: 1.06, elite: 1.08, boss: 1.18 };
+// 推荐战力：手工锚点 + 平滑单调插值。先定「这一关该有多强」，再反推敌人强度，避免逐章系数和阵容实时战力互相打架。
+const STAGE_TARGET_ANCHORS = [
+  [1, 2500], [20, 6000], [40, 16000], [60, 27000], [70, 36000], [78, 50000], [86, 54000]
+];
+function stageNeedPower(stage) {
+  if (!stage) return 0;
+  const idx = clamp(num(stage.index, 1), 1, STAGES.length);
+  const first = STAGE_TARGET_ANCHORS[0];
+  const last = STAGE_TARGET_ANCHORS[STAGE_TARGET_ANCHORS.length - 1];
+  if (idx <= first[0]) return first[1];
+  if (idx >= last[0]) return last[1];
+  for (let i = 1; i < STAGE_TARGET_ANCHORS.length; i++) {
+    const a = STAGE_TARGET_ANCHORS[i - 1];
+    const b = STAGE_TARGET_ANCHORS[i];
+    if (idx >= a[0] && idx <= b[0]) {
+      if (b[0] === a[0]) return b[1];
+      const t = (idx - a[0]) / (b[0] - a[0]);
+      const s = t * t * (3 - 2 * t);
+      return Math.round(a[1] + (b[1] - a[1]) * s);
+    }
+  }
+  return last[1];
+}
+// 玩家战力对敌人的安全余量：前期 1.4 倍，后期 1.18 倍。推荐值是安全线，不是敌人的真实战力。
+function stagePowerFactor(stage) {
+  return 1.4 - 0.22 * ((clamp(num(stage && stage.index, 1), 1, STAGES.length) - 1) / Math.max(1, STAGES.length - 1));
+}
 function stageEnemyPower(stage) {
   if (!stage) return 0;
-  const ch = STAGE_DIFFICULTY[stage.chapter] || 1;
-  const tp = STAGE_TYPE_POWER[stage.type] || 1;
-  return Math.round(num(stage.recPower, 0) * ch * tp);
+  return Math.max(250, Math.round(stageNeedPower(stage) / stagePowerFactor(stage)));
 }
 // 界面上展示的「敌人战力」用真实生成的阵容战力（Boss 有额外倍率，比目标值更高），只用于显示与对比
 const STAGE_POWER_CACHE = {};
@@ -3678,7 +3699,7 @@ const HELP_FAQ = [
   ['进化要什么？', '升到 Lv.10 / Lv.30 会自动进化，不需要材料；想提前看新形态，也可以在宠物详情里花对应属性进化石和金币「提前进化」。'],
   ['羁绊怎么点亮？', '把指定宠物同时放进前/后排即可自动点亮羁绊。羁绊徽章可以永久强化已点亮的羁绊。'],
   ['梦练场什么时候结算？', '每天可领取一次段位结算奖励；赛季 7 天重置，重置时按当前段位发放额外梦练币。'],
-  ['怎么入梦？', '通关 12-8「晚安先生」后开启入梦池。入梦只把主线退回 1-1，宠物、金币、梦塔、图鉴、结局记录全部保留；每入梦一次，梦的尽头多一条路。'],
+  ['怎么入梦？', '通关 12-8「晚安先生」后开启入梦池。入梦只把主线退回 1-1，宠物、金币、梦塔、图鉴全部保留；结局只有一个，不会因为入梦次数改变。'],
   ['存档在哪？', '浏览器 localStorage 的 ddgame:v1。设置里可导出/导入 JSON。清除浏览器数据会导致存档丢失，请定期导出。']
 ];
 
@@ -3996,44 +4017,6 @@ const ENCOUNTER_STORIES = [
     e4: { act: 4, em: '🪞', sp: '结局', text: '镜子碎得很安静。你捡起一块碎片，里面还是完整的你。', ending: { title: '结局 · 碎掉的镜子', rewards: { crystal: 80, fruit: 24 } } },
   } },
 ];
-
-// 梦的尽头：三次入梦 × 三种选择 = 九种结局
-const FINAL_ENDINGS = {
-  A1: { code: 'A1', title: '结局 · 规则之外', text: '你替他把钟拨回 17:47。他坐回椅子上，笑了一下：「你看，我说得对吧。」钟又停了。小镇又安静了。你的手还举在钟面上。' },
-  B1: { code: 'B1', title: '结局 · 破晓', text: '你叫醒了他。他站起来，走出门，站在早上七点的光里，眯着眼，很久没有说话。所有人都醒了。只有你开始困。' },
-  C1: { code: 'C1', title: '结局 · 一起醒', text: '你牵着他们走出小镇，小路上没有一个人回头。到路口时小猪问：「明天还回来吗？」你说：「明天是哪儿？」' },
-  A2: { code: 'A2', title: '结局 · 循环', text: '梦又从头来过：还是那口钟，还是那张椅子，还是那句「再睡五分钟」。你站在门口，忽然想起来——这一句你听过。' },
-  B2: { code: 'B2', title: '结局 · 第二次叫醒', text: '这次你记得：叫他之前，先握住他的手。他愣了愣，说：「你的手怎么这么凉。」然后他自己坐了起来。' },
-  C2: { code: 'C2', title: '结局 · 重复的路', text: '走到第三天，你在门口放下灯，说：「我明天还来。」门里没有回答。但灯没被拿出来，也没被吹灭。' },
-  A3: { code: 'A3', title: '结局 · 你终于成了那个不肯放手的人', text: '你终于成了那个不肯放手的人。钟停了，椅子空了。你坐下，替他把灯扶正，等下一个提灯的人问：「能不能，让他再睡五分钟？」你说：「可以。」' },
-  B3: { code: 'B3', title: '结局 · 醒来的人', text: '白天真的来了。你的手空了，但不再抖。小猪和小金毛在你脚边睡着，睡得很沉，没有做梦。你数了数——五只，一只不少。' },
-  C3: { code: 'C3', title: '结局 · 五分钟', text: '📅 五月二十八日 · 星期四 · 17:52。门口的日历自己翻了一页，字是印上去的，不是写上去的。他终于坐起来，说：「再等五分钟。」你说：「好。」——这一次，五分钟真的只有五分钟。' }
-};
-function finalEndingLoop() { return clamp(num(state.rebirth && state.rebirth.count, 0) + 1, 1, 3); }
-function finalEndingsOwned() {
-  const map = (state.encounter && state.encounter.endings && typeof state.encounter.endings === 'object') ? state.encounter.endings : {};
-  return Object.keys(map).filter(k => k.indexOf('final:') === 0).map(k => k.slice(6));
-}
-function openFinalEndingModal() {
-  const loop = finalEndingLoop();
-  const ownedSet = new Set(finalEndingsOwned());
-  if (['A', 'B', 'C'].every(k => ownedSet.has(k + loop))) return;
-  const owned = ownedSet;
-  const rows = ['A', 'B', 'C'].map(k => {
-    const e = FINAL_ENDINGS[k + loop];
-    const got = owned.has(k + loop);
-    return '<button class="btn ' + (got ? 'btn-ghost' : 'btn-primary') + '" type="button" data-act="finalEnding" data-code="' + k + loop + '" style="display:block;width:100%;margin:0 0 8px;text-align:left;padding:10px 12px">' + '<b>' + esc(e.title) + '</b><br><span class="tiny muted">' + (got ? '这条路已经走过。' : '走这条路。') + '</span></button>';
-  }).join('');
-  openModal('🌅 梦的尽头', '<p class="note">钟停在 17:47。他坐在椅子上，抬眼看你，没有说话。他知道你在做一个决定。</p>' + rows, { wide: true });
-}
-function chooseFinalEnding(code) {
-  const e = FINAL_ENDINGS[code];
-  if (!e) return;
-  if (!state.encounter.endings || typeof state.encounter.endings !== 'object' || Array.isArray(state.encounter.endings)) state.encounter.endings = {};
-  state.encounter.endings['final:' + code] = Date.now();
-  saveGame();
-  openModal(e.title, '<p class="note" style="line-height:1.9">' + esc(e.text) + '</p><p class="tiny muted">已记下这条路 · 共 ' + finalEndingsOwned().length + '/9</p><div class="modal-actions-row"><button class="btn btn-ghost" type="button" data-act="closeModal">合上</button></div>', { wide: true });
-}
 
 const ENCOUNTERS = [
   {
@@ -8736,13 +8719,42 @@ function buyArenaItem(id) {
 }
 // 主线失败时的“变强清单”：依据当前队伍真实状态给可执行提示，纯展示不自动战斗
 // 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
-// 实战需要：敌人显示战力 × 经验系数。实测前期要 1.4 倍才打得平（敌人属性分配更极端），
-// 后期玩家技能/装备更全，1.18 倍就够；用同一条曲线，避免"推荐强度"和战力对比两条标准打架。
-function stageNeedPower(stage) {
-  const k = 1.4 - 0.22 * ((stage.index - 1) / Math.max(1, STAGES.length - 1));
-  return Math.round(stageDisplayPower(stage) * k);
+function teamPowerParts(s = state) {
+  const team = teamPetsOf(s);
+  if (!team.length) return null;
+  const zeroBonus = () => ({ hpPct: 0, atkPct: 0, defPct: 0, spdPct: 0, crit: 0, dr: 0 });
+  const zeroCtx = { active: [], bonus: zeroBonus(), resonance: { bonus: zeroBonus() } };
+  const codex = Object.assign({}, s.codex || {});
+  const noCodexState = { ...s, codex: Object.assign({}, codex, { claimed: [] }) };
+  const noGearState = { ...s, equipment: [] };
+  const baseState = { ...noGearState, codex: noCodexState.codex };
+  const codexState = { ...noGearState, codex };
+  const sumPower = (ctx, st) => team.reduce((n, p) => n + calcPower(getPetStats(p, ctx, st)), 0);
+  const base = sumPower(zeroCtx, baseState);
+  const withCodex = sumPower(zeroCtx, codexState);
+  const withGear = sumPower(zeroCtx, s);
+  const ctx = teamContextForState(s, team);
+  const total = sumPower(ctx, s);
+  const gearCount = team.reduce((n, p) => n + EQUIP_SLOT_KEYS.filter(k => {
+    const it = equipmentById(p.equipment && p.equipment[k], s);
+    return !!(it && it.equippedBy === p.uid);
+  }).length, 0);
+  return {
+    total,
+    base,
+    codex: Math.max(0, withCodex - base),
+    gear: Math.max(0, withGear - withCodex),
+    bonds: Math.max(0, total - withGear),
+    gearCount,
+    bondsOn: ctx.active.length
+  };
 }
-// 关卡推荐强度：把敌人战力换算成"等级/星级/进化"这类玩家看得懂的目标
+function teamPowerPartsLine(s = state) {
+  const p = teamPowerParts(s);
+  if (!p) return '';
+  return `基础 ${fmt(p.base)} · 图鉴 ${fmt(p.codex)} · 装备 ${fmt(p.gear)} · 羁绊/共鸣 ${fmt(p.bonds)}`;
+}
+// 关卡推荐强度：把推荐战力换算成"等级/星级/进化"这类玩家看得懂的目标
 function stageAdvice(stage) {
   const need = stageNeedPower(stage);
   if (need < 3000) return 'Lv.10 · ★1 · 幼体';
@@ -8757,18 +8769,25 @@ function stageUpgradePlan(stage) {
   const team = getTeamPets();
   const power = Math.round(calcTeamPower(state));
   const need = stageNeedPower(stage);
-  const gap = Math.max(0, need - power);
+  const enemy = stageDisplayPower(stage);
+  const near = enemy > 0 && power >= Math.round(enemy * 0.92);
+  const parts = teamPowerParts(state);
+  const partsLine = parts
+    ? `战力拆解：基础 ${fmt(parts.base)} + 图鉴 ${fmt(parts.codex)} + 装备 ${fmt(parts.gear)} + 羁绊/共鸣 ${fmt(parts.bonds)}；已点亮 ${parts.bondsOn} 组羁绊、${parts.gearCount} 件装备。`
+    : '';
   let gapLine = `参考强度：${stageAdvice(stage)}。`;
   if (need > 0) {
-    gapLine = (gap > 0
-      ? `当前队伍战力 ${fmt(power)}，本关推荐 ${fmt(need)}，还差 ${fmt(gap)}。`
-      : `战力够了（${fmt(power)} ≥ ${fmt(need)}），这次多半是属性被克或状态太低，调整队伍再打一次。`) + ` 参考强度：${stageAdvice(stage)}。`;
+    gapLine = `我方 ${fmt(power)} · 敌方 ${fmt(enemy)} · 推荐 ${fmt(need)}（安全线）。`
+      + (power >= need
+        ? '已过安全线，若还输多半是属性被克、状态太低或技能搭配。'
+        : (near ? '差距在 10% 内，换克制/羁绊再打一次。' : `距安全线还差 ${fmt(need - power)}。`))
+      + ` 参考强度：${stageAdvice(stage)}。`;
   }
   // 每条建议带一个"还差多少 / 已经有多少"的比值，越小越接近达成，战败页按它排序
   const actions = [];
   if (!team.length) {
     actions.push({ text: '先在宠物页上阵至少一只主力，再回来挑战。', weight: 0 });
-    return { gapLine, actions };
+    return { gapLine, partsLine, actions };
   }
   const low = [...team].sort((a, b) => num(a.level, 1) - num(b.level, 1))[0];
   if (num(low.level, 1) < MAX_LEVEL) {
@@ -8795,7 +8814,7 @@ function stageUpgradePlan(stage) {
       });
     }
   }
-  return { gapLine, actions };
+  return { gapLine, partsLine, actions };
 }
 
 function stageWeakTips() {
@@ -8899,6 +8918,7 @@ function finishBattle() {
         const ordered = plan.actions.slice().sort((a, b) => a.weight - b.weight);
         resultAdvice = [];
         if (plan.gapLine) resultAdvice.push(plan.gapLine);
+        if (plan.partsLine) resultAdvice.push(plan.partsLine);
         ordered.forEach((a, k) => resultAdvice.push(k === 0 && ordered.length > 1 ? `【最快】${a.text}` : a.text));
         resultAdvice = resultAdvice.concat(stageWeakTips().slice(0, 2));
       }
@@ -9129,13 +9149,10 @@ const ENDING_PARAS = [
   '豆豆大王没有变成谁，也没有赢什么。它只是每天傍晚准时出门，天亮前回来。它把所有人的梦收拾干净，然后在自己的那一夜里，学会坐一会儿。',
   '外面的天一直停在傍晚。但灯总会有人提着。'
 ];
-function closeEnding(showChoices) {
+function closeEnding() {
   const el = document.getElementById('endingLayer');
   if (el) el.remove();
   document.body.classList.remove('ending-open');
-  if (typeof state !== 'undefined' && state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
-  // 关灯后再给出「梦的尽头」选择，避免小说层把选择弹窗盖住
-  if (showChoices) setTimeout(() => { try { openFinalEndingModal(); } catch (e) {} }, 260);
 }
 
 // 开始剧情介绍：第一次进游戏时铺开，讲清楚世界观
@@ -9216,7 +9233,7 @@ function openEnding() {
   document.body.appendChild(layer);
   document.body.classList.add('ending-open');
   const btn = layer.querySelector('#endingDone');
-  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closeEnding(true); });
+  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closeEnding(); });
 }
 function closeBattle() {
   if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
@@ -9825,6 +9842,7 @@ function renderAdventure() {
     <div class="card">
       <div class="card-head"><div><h2>🗺️ 关卡路线</h2><p>小怪与精英共 6 场，末尾是章节首领（前 10 章 7 关，11、12 章各 8 关）。满星后可扫荡。</p></div><span class="chip">推荐战力会逐章上升</span></div>
       <div class="team-power-line" style="margin-bottom:9px">我方战力 <b>${fmt(teamPower)}</b> <span class="muted">对比敌人战力：</span>${next ? `<span class="chip ${teamPower >= stageNeedPower(next) ? 'mint' : 'pink'}">${teamPower >= stageNeedPower(next) ? '状态良好' : '建议再养成'}</span><span class="tiny muted" style="margin-left:6px">参考需求 ${fmt(stageNeedPower(next))} 战力 · 推荐强度 ${stageAdvice(next)}</span>` : '<span class="chip mint">全通关</span>'}</div>
+      <div class="tiny muted" style="margin:0 0 9px">战力构成：${teamPowerPartsLine()}</div>
       ${next && next.element ? `<div class="tiny muted" style="margin:0 0 9px">🎯 针对下一关 ${ELEMENTS[next.element].emoji}${ELEMENTS[next.element].name}：${counterAdviceForElement(next.element)}</div>` : ''}
       <div class="stage-grid" style="--ch-deep:${chapterArt(ch.id).deep};--ch-accent:${chapterArt(ch.id).accent};--ch-light:${chapterArt(ch.id).light};">
         ${Array.from({ length: stageCount }, (_, i) => {
@@ -10009,7 +10027,6 @@ function renderPets() {
       <div class="card">
         <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。入梦后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
         ${codexBar}
-        ${(() => { const own = finalEndingsOwned(); const groups = [1, 2, 3].map(n => { const rows = ['A', 'B', 'C'].map(k => { const e = FINAL_ENDINGS[k + n]; return (own.indexOf(e.code) >= 0 ? '✅ ' : '⬜ ') + esc(e.title); }).join('<br>'); return '<div style="margin-bottom:7px"><b class="small">第 ' + n + ' 次梦</b><br><span class="tiny">' + rows + '</span></div>'; }).join(''); const loop = finalEndingLoop(); const canPick = ['A', 'B', 'C'].some(k => own.indexOf(k + loop) < 0); const reopen = (state.stage.maxCleared >= STAGES.length && canPick) ? '<button class="btn btn-ghost btn-sm" type="button" data-act="finalEndingMenu">🌅 补选本周目结局</button>' : ''; return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>三次入梦 × 三种选择，一共九条路（打赢 12-8 每次可以选一条）· 已记下 ' + own.length + '/9</p></div></div><div class="note">' + groups + '</div>' + reopen + '</div>'; })()}
         <div class="codex-grid">
           ${codexList.length ? codexList.map(t => {
             const recorded = seenIds.has(t.id);
@@ -11217,6 +11234,7 @@ function recallRush() {
 function openRebirthModal() {
   const unlocked = rebirthUnlocked();
   const preview = rebirthEternalPreview();
+  const loopNo = num(state.rebirth && state.rebirth.count, 0) + 1;
   const upgradeHtml = REBIRTH_UPGRADES.map(upgrade => {
     const level = clamp(Math.floor(num(state.eternal[upgrade.id], 0)), 0, upgrade.max);
     const cost = rebirthUpgradeCost(upgrade);
@@ -11228,15 +11246,15 @@ function openRebirthModal() {
     </div>`;
   }).join('');
   const body = unlocked ? `
-    <div class="rebirth-hero"><div class="rebirth-vortex">🌀</div><div><h3>再进一次梦，不带走任何东西</h3><p>入梦只把主线的路退回 1-1：宠物、等级、装备、金币、梦塔、图鉴、奇遇记录全部留下。每入梦一次，梦的尽头多一条路。</p></div></div>
+    <div class="rebirth-hero"><div class="rebirth-vortex">🌀</div><div><h3>再进一次梦，不带走任何东西</h3><p>入梦只把主线的路退回 1-1：宠物、等级、装备、金币、梦塔、图鉴、奇遇记录全部留下。梦的尽头只有一条路，走到就看见了。</p></div></div>
     <div class="offline-rewards">
       <div class="offline-reward"><span>🌀</span><div><small>本次可获得</small><b>${fmt(preview)} 永恒结晶</b></div></div>
       <div class="offline-reward"><span>🌀</span><div><small>当前持有</small><b>${fmt(state.items.eternal)}</b></div></div>
     </div>
     <h3 class="modal-h3">永恒强化</h3>
     <div class="rebirth-upgrades">${upgradeHtml}</div>
-    <div class="note lav">已走到 ${highestStageLabel()} · 队伍战力 ${fmt(calcTeamPower())} · 这是第 ${finalEndingLoop()} 次入梦。走得越远，入梦带回的永恒结晶越多。</div>
-    <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入第 ${finalEndingLoop() + 1} 次梦</button>
+    <div class="note lav">已走到 ${highestStageLabel()} · 队伍战力 ${fmt(calcTeamPower())} · 这是第 ${loopNo} 次入梦。走得越远，入梦带回的永恒结晶越多。</div>
+    <button class="btn btn-lav btn-wide" type="button" data-act="performRebirth">🌀 进入第 ${loopNo + 1} 次梦</button>
     <div class="tiny muted center" style="margin-top:6px">主线会退回 1-1 并清空关卡星星，别的东西都不会少。回忆速通接回来的进度不算入梦条件。</div>`
     : `<div class="empty"><span class="empty-emoji">🌀</span><h3>梦还没走到头</h3><p>通关 12-8「晚安先生」之后，才能入下一次梦。</p><p class="tiny muted">当前最高通关：${esc(highestStageLabel())}，还需要推进 ${Math.max(0, STAGES.length - state.stage.maxCleared)} 关。</p><button class="btn btn-ghost btn-sm" type="button" data-act="nav" data-tab="adventure">去冒险</button></div>`;
   openModal('🌀 入梦', body, { wide: true });
@@ -12085,7 +12103,7 @@ function buildStageEnemyOptions(stage) {
   const source = pool.length ? pool : PETS.filter(p => p.element === stage.element);
   const lineup = [];
   for (let i = 0; i < count; i++) lineup.push(pick(source.length ? source : enemyPetPool()).id);
-  // 章节难度统一由 STAGE_DIFFICULTY 决定（见 stageEnemyPower），这里不再二次缩放
+  // 章节难度统一由推荐战力曲线决定（见 stageNeedPower / stageEnemyPower），这里不再二次缩放
   // 第 11 章「自己的梦」：守梦人把别的 SSR 伙伴一个个摆到你面前；泥兜猪和金毛崽留到最后一关当守梦人
   if (stage.chapter === 11) {
     const SSR_OTHERS = ['dragon', 'lion', 'unicorn', 'qilin', 'narwhal'];
@@ -12135,7 +12153,7 @@ function launchStageBattle(stage) {
   try { UI.__finalStage = (stage.chapter === 12 && stage.sub >= stageCountOf(12)); } catch (e) {}
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
-  const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
+  const enemyPower = stageEnemyPower(stage);
   const _opts = buildStageEnemyOptions(stage);
   // 第 11 章末关：泥兜猪 + 金毛崽以宠物立绘同框当守梦人，不套 Boss 档案/剪影/头衔
   if (stage.chapter === 11 && stage.sub >= stageCountOf(11)) {
@@ -13020,11 +13038,11 @@ function doRebirth() {
   UI.offlineOffer = null;
   UI.lastTick = Date.now();
   UI.scrollReset = true;
-  const loopNow = finalEndingLoop();
+  const loopNow = num(state.rebirth.count, 0) + 1;
   saveGame();
   closeModal(true);
   renderAll();
-  toast('入梦了。第 ' + loopNow + ' 次入梦，梦的尽头多了一条路。', 'gold', 4000);
+  toast('入梦了。这是第 ' + loopNow + ' 次入梦。', 'gold', 4000);
   playSfx('rebirth');
 }
 
@@ -13164,8 +13182,6 @@ function handleActionClick(event) {
     case 'skipTutorial': skipTutorial(); break;
 
     case 'closeModal': closeModal(); break;
-    case 'finalEnding': chooseFinalEnding(target.dataset.code); break;
-    case 'finalEndingMenu': openFinalEndingModal(); break;
     case 'recallRush': recallRush(); break;
     case 'openSettings': openSettingsModal(); break;
     case 'openRebirth': openRebirthModal(); break;
