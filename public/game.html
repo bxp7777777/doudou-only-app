@@ -7693,7 +7693,52 @@ function endRound(b, events = []) {
       if (unit.shieldTurns <= 0) unit.shield = 0;
     }
     // 持续伤害 dot（灼烧等）：每回合按施术者攻击 × 固定比例扣血，不吃暴击/闪避/克制
-    let fatal = false;
+    
+// 守梦人阶段进化：泥兜猪 / 金毛崽血量跌破 65%、30% 时换形态（立绘 + 数值 + 一句台词）
+const BOSS_PHASE_AT = [0.65, 0.30];
+const BOSS_PHASE_LINES = {
+  pig: ['「……你们踩到我的泥了。」', '「这条路上，没有谁能过去。」', '「我守的不是门，是没人愿意回头看的那段路。」'],
+  golden: ['「汪……还要再往前吗？」', '「我闻到梦的味道了，别过去。」', '「我等了太久，今天谁也别想走。」']
+};
+function bossPhaseUnitEl(u) {
+  const root = document.querySelector('#battleRoot');
+  if (!root) return null;
+  let el = root.querySelector('.b-unit[data-uid="' + u.uid + '"]');
+  if (el) return el;
+  const list = root.querySelectorAll('.b-side.enemy .b-unit');
+  for (let i = 0; i < list.length; i++) {
+    const nm = (list[i].querySelector('.b-name') || {}).textContent || '';
+    if (u.name && nm.indexOf(u.name) >= 0) return list[i];
+  }
+  return null;
+}
+function bossPhaseCheck(u) {
+  try {
+    if (!u || u.side !== 'enemy' || !u.maxHp) return;
+    const id = u.artId || u.id;
+    if (id !== 'pig' && id !== 'golden') return;
+    const pct = u.hp / u.maxHp;
+    u._phase = num(u._phase, 0);
+    const at = BOSS_PHASE_AT[u._phase];
+    if (at === undefined || pct > at) return;
+    u._phase += 1;
+    const stage = u._phase + 1;
+    const urls = evoArtCandidates(id, stage);
+    const el = bossPhaseUnitEl(u);
+    if (el && urls.length) {
+      const img = el.querySelector('.art-frame img') || el.querySelector('img');
+      if (img) { img.removeAttribute('onerror'); img.src = urls[0]; }
+    }
+    u.atk = Math.round(num(u.atk, 10) * 1.18);
+    u.def = Math.round(num(u.def, 10) * 1.10);
+    const lines = BOSS_PHASE_LINES[id] || [];
+    const line = lines[Math.min(u._phase, lines.length - 1)];
+    if (line) { try { toast(line); } catch (e) {} }
+    try { renderBattle(); } catch (e) {}
+  } catch (e) {}
+}
+
+let fatal = false;
     unit.dots = (unit.dots || []).filter(dot => {
       dot.turns -= 1;
       const amount = Math.max(1, Math.round(dot.atk * num(dot.mult, 0.1)));
@@ -7998,6 +8043,7 @@ function damageOne(caster, target, multiplier, events, splash = false) {
     damage -= absorbed;
   }
   target.hp = Math.max(0, target.hp - damage);
+          bossPhaseCheck(target);
   target.rage = Math.min(100, target.rage + 6);
   if (caster.side === 'ally') { b.totalDamage += damage; perfRecordHit(caster, damage, isCrit); }
   if (caster.lifesteal > 0 && damage > 0) {
