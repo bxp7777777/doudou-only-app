@@ -3404,18 +3404,18 @@ function chapterTint(hex, alpha) {
 }
 // 关卡小剧情：每章一段开场 intro、首通一句 winLine（轻量文案，不改战斗判定；围绕泥兜猪与小金毛崽结伴推进）
 const CHAPTER_STORY = {
-  1:  { intro: '泥兜猪和小金毛崽追着一只会发光的奶油兔跑进草原，草浪里藏着第一群愿意同行的小伙伴。', winLine: '第一片草原被踏平，泥兜猪拍拍肚皮，小金毛崽摇起了尾巴。' },
-  2:  { intro: '草莓熟得发红，焦糖狐火在丘陵间一闪一闪，像是在考验队伍的默契。', winLine: '狐火被驱散，草莓的甜香留在了队伍口袋里。' },
-  3:  { intro: '溪水凉丝丝的，小金毛崽想先下去玩水，泥兜猪却提醒大家先看看水底的影子。', winLine: '溪谷的水灵安静退去，队伍学会了先观察再出手。' },
-  4:  { intro: '熊王在蜂蜜树下打盹，泥兜猪放轻脚步，小金毛崽压低声音替大家带路。', winLine: '没有吵醒熊王就穿过森林，温柔也是一种实力。' },
-  5:  { intro: '月光把爪印照得发亮，夜行的伙伴们陆续加入，队伍在夜色里更清醒。', winLine: '月蚀守卫退入石中，队伍带着月光继续上路。' },
-  6:  { intro: '云朵软得像面包，云海巨鲸翻身时洒下一片光，小金毛崽看得直摇尾巴。', winLine: '穿过云海，大家的心都变得轻飘飘的。' },
-  7:  { intro: '熔岩像焦糖一样流动，泥兜猪顶在最前面挡下热浪，为后排争取出手空间。', winLine: '赤焰幼龙被安抚下来，火山口恢复了平静。' },
-  8:  { intro: '退潮的沙滩上铺满小星星，水栖伙伴们在浅滩里互相招呼。', winLine: '星潮退去，队伍捡到了一枚会眨眼的贝壳。' },
-  9:  { intro: '幻彩蝶后振翅抖落彩虹，光系伙伴们在彩光里格外耀眼。', winLine: '蝶后献上一片彩羽，花园重归宁静。' },
-  10: { intro: '所有旅途的尽头，风把故事吹成永恒；泥兜猪和小金毛崽并肩站在最高处，身后是一路同行的伙伴。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' },
-  11: { intro: '钟楼的钟停在 17:47，秒针也不动。小金毛崽用爪子拨了一下钟摆，钟摆没响，只落下一层灰。', winLine: '守梦人把钥匙放在台阶上，转身走进钟声里，没有回头。' },
-  12: { intro: '门口的日历是五月二十七日 · 星期三，字印得很正。天色一直停在傍晚，像谁把那一格光留在了原地。', winLine: '他把灯递过来，说：那这次，你来关。' }
+  1: { intro: '泥兜猪和小金毛崽追着一只会发光的奶油兔跑进草原。草是甜的，风也是甜的，草莓硬得像石头，咬下去有声音——这里的东西都不会烂，因为主人舍不得让任何东西变软。', winLine: '第一片草原被踏平，泥兜猪拍拍肚皮，小金毛崽摇起了尾巴。' },
+  2: { intro: '山丘上全是火，草却一点没焦。烧的不是草，是一句二十年前没说完的话：说到一半，人走了，剩下半句留在原地，一直在烧。', winLine: '狐火被驱散，草莓的甜香留在了队伍口袋里。' },
+  3: { intro: '溪水喝下去有点咸。水灵一直在哭，替一个早就忘了她的人哭。她哭得太久，久到忘了自己在替谁哭，只记得哭这件事本身。', winLine: '溪谷的水灵安静退去，队伍学会了先观察再出手。' },
+  4: { intro: '森林中间有一张会呼吸的床，熊王睡在上面。它答应过谁要一直守着这个位置，那个人后来没有回来，它就睡到蜂蜜把自己整个裹住。', winLine: '没有吵醒熊王就穿过森林，温柔也是一种实力。' },
+  5: { intro: '墙上的爪印一直亮着。那尊没脸的守卫站在门口，姿势和你挡梦时一模一样——它替太多人挡过，挡到最后自己是谁都忘了。', winLine: '月蚀守卫退入石中，队伍带着月光继续上路。' },
+  6: { intro: '云很软，踩下去会陷。鲸在云里翻身，背上驮着所有人想去的地方，一次也没降落。因为一降落，就要承认有些地方这辈子到不了了。', winLine: '穿过云海，大家的心都变得轻飘飘的。' },
+  7: { intro: '熔岩像焦糖一样，流得很慢。幼龙守着一封烧不坏的信：写了七次，烧掉六次，剩下这一次，它不敢烧，也不敢寄。', winLine: '赤焰幼龙被安抚下来，火山口恢复了平静。' },
+  8: { intro: '退潮以后，沙滩上全是会眨眼的东西，每一颗是一个名字。海獭把它们摆成一桌晚饭，一颗也不吃，只是每天晚上摆一遍，摆好了就坐着看。', winLine: '星潮退去，队伍捡到了一枚会眨眼的贝壳。' },
+  9: { intro: '花开得一样大、一样颜色、一样朝向。蝶后翅膀张开，一动不动——它是标本。这里的美是定住的，定住就不会坏，不会坏就不会失去。', winLine: '蝶后献上一片彩羽，花园重归宁静。' },
+  10: { intro: '山顶只有一张椅子，和一口钟。钟停在十七点四十七分。永恒守望者坐在椅子上，像等了你很久，然后说：留下来吧。', winLine: '守望者认可了这支队伍，冒险的故事被写进了图鉴。' },
+  11: { intro: '走廊一节一节地长。每一节都站着一个人，脸朝墙。走近了才看清：其中一个是你的背影。这一章守着的不是别人，是你舍不得的那部分自己。', winLine: '守梦人把钥匙放在台阶上，转身走进钟声里，没有回头。' },
+  12: { intro: '最后一扇门后面不是白天，是另一层梦。门口站着一个提着灯的人，长得和你一模一样。日历是五月二十七日 · 星期三，天色一直停在傍晚。', winLine: '他把灯递过来，说：那这次，你来关。' }
 };
 // 章节首领登场喊话（Boss 战开场展示，纯剧情文案，不影响战斗判定）
 // 章节叙事：进章 / 首领登场 / 通关余韵（纯剧情，不影响任何数值与判定）
@@ -9143,6 +9143,42 @@ function closeEnding() {
   document.body.classList.remove('ending-open');
   if (typeof state !== 'undefined' && state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
 }
+
+// 开始剧情介绍：第一次进游戏时铺开，讲清楚世界观
+const PROLOGUE_PARAS = [
+  '每个人睡着以后，白天没做完的事会自己排队。排队的地方不是虚无，是一片一片能走进去的地方：草原、丘陵、溪谷、森林、遗迹、高原、火山、海岸、花园、山顶、走廊，还有门后。',
+  '这些地方不是凭空长出来的。它们是记忆折起来的样子——一个人反复想一件事，那件事就会长出地形。想得越久，地形越结实；越想不通，路越绕。',
+  '所以梦里的东西都很诚实：草莓硬得像石头，是因为主人不肯承认它会烂；钟停在十七点四十七分，是因为有人希望那一分钟永远别过去；沙滩上全是会眨眼的星星，因为那里埋着太多被忘掉的名字。',
+  '梦也不会自己收尾。人醒来，梦就散了，但没处理完的那部分会留在原地，一层一层叠上去，最后变成一整个夜晚。',
+  '豆豆大王的活很简单：走进去，把没结束的事陪着结束一次，然后关灯。它不负责让人不难过，只负责让人睡得着。',
+  '走在最前面的是泥兜猪，一个负责顶住；跟在旁边的是小金毛崽，一个负责记得。它们合起来，才是豆豆大王。',
+  '它们不是英雄。它们只是每天傍晚准时出门，把别人的夜收拾干净，然后再自己回家睡觉的那种人。'
+];
+function closePrologue() {
+  const el = document.getElementById('prologueLayer');
+  if (el) el.remove();
+  document.body.classList.remove('ending-open');
+  if (typeof state !== 'undefined' && state) { state.prologueSeen = true; try { saveGame(); } catch (e) {} }
+}
+function openPrologue() {
+  const old = document.getElementById('prologueLayer');
+  if (old) old.remove();
+  const layer = document.createElement('div');
+  layer.id = 'prologueLayer';
+  layer.className = 'ending-layer';
+  const body = PROLOGUE_PARAS.map(function (t, i) {
+    if (i === PROLOGUE_PARAS.length - 1) return '<p class="ending-mark">' + t + '</p>';
+    return '<p>' + t + '</p>';
+  }).join('');
+  layer.innerHTML = '<div class="ending-sheet"><div class="ending-cap">十 二 段 梦</div>'
+    + '<div class="ending-scroll">' + body + '</div>'
+    + '<div class="ending-foot"><button class="ending-btn" type="button" id="prologueDone">推 门 进 去</button></div></div>';
+  document.body.appendChild(layer);
+  document.body.classList.add('ending-open');
+  const btn = layer.querySelector('#prologueDone');
+  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closePrologue(); });
+}
+
 function openEnding() {
   closeEnding();
   const layer = document.createElement('div');
@@ -13863,6 +13899,10 @@ function gardenTapCoin(ev) {
   if (UI.page === 'garden' && typeof renderPage === 'function' && t.n % 5 === 0) renderPage();
 }
 document.addEventListener('pointerup', gardenTapCoin, true);
+
+setTimeout(function () {
+  try { if (typeof state !== 'undefined' && state && !state.prologueSeen) openPrologue(); } catch (e) {}
+}, 1100);
 </script>
 
 <!-- 回家：PWA 独立窗口里没有浏览器返回键，留一个固定的回家按钮 -->
