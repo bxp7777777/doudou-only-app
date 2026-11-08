@@ -9163,7 +9163,7 @@ function openEnding() {
 }
 function closeBattle() {
   if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
-  const _fin = UI.battle && UI.battle.win && UI.battle.config && UI.battle.config.stage && UI.battle.config.stage.chapter === 12 && UI.battle.config.stage.sub >= stageCountOf(12);
+  const _fin = !!(UI.battle && UI.battle.win && UI.__finalStage);
   document.body.classList.remove('battle-mode');
   bgmPlay('home');
   const b = UI.battle;
@@ -12074,6 +12074,7 @@ function startStage(index) {
   launchStageBattle(stage);
 }
 function launchStageBattle(stage) {
+  try { UI.__finalStage = (stage.chapter === 12 && stage.sub >= stageCountOf(12)); } catch (e) {}
   if (!getTeamPets().length) { toast('请先上阵至少一只宠物', 'bad'); return; }
   if (state.stamina.value < STAGE_STAMINA_COST) { toast('体力不足，等待恢复或明天再来吧', 'bad'); return; }
   const enemyPower = stage.index === STAGES.length ? Math.round(stageEnemyPower(stage) * 0.95) : stageEnemyPower(stage);
