@@ -3665,7 +3665,7 @@ const TUTORIAL_STEPS = [
   { step: 1, title: '先遇见一位伙伴', desc: '打开商店，抽一只属于你的萌宠。普通蛋用金币就能抽哦。', button: '去抽蛋', tab: 'shop' },
   { step: 2, title: '第一场冒险', desc: '带上伙伴去冒险页挑战 1-1。战斗全自动，也可以中途加速。', button: '去冒险', tab: 'adventure' },
   { step: 3, title: '收下挂机收益', desc: '回到家园，领取驻守关卡已经产出的金币和经验果。', button: '回家园', tab: 'home' },
-  { step: 4, title: '升级与进化', desc: '在宠物详情里喂经验果升级。进化需要等级和同属性进化石。', button: '去养成', tab: 'pets' },
+  { step: 4, title: '升级与进化', desc: '在宠物详情里喂经验果升级。升到 Lv.10 / Lv.30 会自动进化；想提前变强，可以花同属性进化石和金币「提前进化」。', button: '去养成', tab: 'pets' },
   { step: 5, title: '第一次入梦', desc: '对战页的梦塔已经开启，去走一层别人的噩梦吧。', button: '去梦塔', tab: 'battle' }
 ];
 
@@ -3675,7 +3675,7 @@ const HELP_FAQ = [
   ['十连保底是什么？', '普通蛋与稀有蛋的十连中，如果前 9 个都没有 SR/SSR，最后一个必定是 SR 或 SSR。概率公示在商店抽蛋页。'],
   ['重复宠物有什么用？', '重复的宠物会自动转换成同种族碎片。碎片用于升星，也可以在兑换商店定向兑换未拥有的宠物。'],
   ['升星碎片不够怎么办？', '升星时可以用「升星碎片」按 2:1 补足缺口。升星碎片来自任务、签到、塔与奇遇。'],
-  ['进化要什么？', '第一次进化需要等级 10、对应属性进化石 3 枚和金币；第二次需要等级 30、进化石 8 枚和金币。进化改变形态与成长倍率。'],
+  ['进化要什么？', '升到 Lv.10 / Lv.30 会自动进化，不需要材料；想提前看新形态，也可以在宠物详情里花对应属性进化石和金币「提前进化」。'],
   ['羁绊怎么点亮？', '把指定宠物同时放进前/后排即可自动点亮羁绊。羁绊徽章可以永久强化已点亮的羁绊。'],
   ['梦练场什么时候结算？', '每天可领取一次段位结算奖励；赛季 7 天重置，重置时按当前段位发放额外梦练币。'],
   ['怎么入梦？', '通关 12-8「晚安先生」后开启入梦池。入梦只把主线退回 1-1，宠物、金币、梦塔、图鉴、结局记录全部保留；每入梦一次，梦的尽头多一条路。'],
@@ -8701,10 +8701,20 @@ function levelUpTeam() {
     return;
   }
   bumpMetric('levelUps', ups);
+  advanceTutorial(4);
+  // 一键升级也要走单只升级的进化检查，否则会一直停在幼体/成体，教程也卡在「升级与进化」
+  let evoUps = 0;
+  const evolvedPets = [];
+  for (const pet of getTeamPets()) {
+    const got = autoEvolvePet(pet);
+    if (got) { evoUps += got; evolvedPets.push(pet); }
+  }
+  if (evoUps) { bumpMetric('evolutions', evoUps); noteBonds(); }
   saveGame();
   renderAll();
-  toast(`一键升级：共升 ${ups} 级，花掉 ${fmt(spent)} 经验果`, 'good', 3000);
-  playSfx('level');
+  if (evolvedPets.length) showEvolveBanner(petDisplayName(evolvedPets[0]), EVOLUTIONS[evolvedPets[0].evo].name);
+  toast(`一键升级：共升 ${ups} 级，花掉 ${fmt(spent)} 经验果${evoUps ? `，${evolvedPets.length} 只伙伴进化了` : ''}`, evoUps ? 'gold' : 'good', 3000);
+  playSfx(evoUps ? 'evolve' : 'level');
 }
 // 梦练场每日兑换
 function buyArenaItem(id) {
@@ -8725,9 +8735,6 @@ function buyArenaItem(id) {
   playSfx('buy');
 }
 // 主线失败时的“变强清单”：依据当前队伍真实状态给可执行提示，纯展示不自动战斗
-function stoneLabelOf(element) {
-  return { fire: '火', grass: '草', water: '水', light: '光', dark: '暗', earth: '土' }[element] || '通用';
-}
 // 战败时给出「缺什么、去哪补」的具体方案，而不是一句"再去练练"
 // 实战需要：敌人显示战力 × 经验系数。实测前期要 1.4 倍才打得平（敌人属性分配更极端），
 // 后期玩家技能/装备更全，1.18 倍就够；用同一条曲线，避免"推荐强度"和战力对比两条标准打架。
@@ -8774,21 +8781,6 @@ function stageUpgradePlan(stage) {
     actions.push({
       text: `升级最快：把「${t.name}」从 ${num(low.level, 1)} 级升到 ${target} 级要 ${fmt(cost)} 经验果（现有 ${fmt(have)}${lack > 0 ? `，还差 ${fmt(lack)}` : '，够了'}）。`,
       weight: lack / (have + 1)
-    });
-  }
-  const evoPet = team.find((p) => {
-    const n = nextEvolution(p);
-    return n && num(p.level, 1) >= n.levelReq && num(state.stones[templateOf(p).element], 0) < n.stones;
-  });
-  if (evoPet) {
-    const n = nextEvolution(evoPet);
-    const el = templateOf(evoPet).element;
-    const haveStone = num(state.stones[el], 0);
-    const lack = n.stones - haveStone;
-    const ch = Math.min(CHAPTERS.length, Math.max(1, evoPet.evo === 0 ? 1 : 5));
-    actions.push({
-      text: `进化缺材料：「${templateOf(evoPet).name}」进${n.name}还差 ${lack} 枚${stoneLabelOf(el)}进化石——刷第 ${ch} 章第 4 关精英、梦塔、开图鉴里程碑都会给。`,
-      weight: lack / (haveStone + 1)
     });
   }
   const starPet = [...team].sort((a, b) => num(a.star, 1) - num(b.star, 1))[0];
@@ -8862,7 +8854,6 @@ function finishBattle() {
       const rewards = makeStageRewards(stage, firstClear);
       logs = addReward(rewards);
       state.stage.maxCleared = Math.max(state.stage.maxCleared, stage.index);
-  if (stage.index >= STAGES.length) setTimeout(() => { try { openFinalEndingModal(); } catch (e) {} }, 900);
       state.stage.stars[stage.index] = Math.max(num(state.stage.stars[stage.index], 0), b.stars);
       bumpMetric('stageClears', 1);
       resultTitle = firstClear ? '首通成功！' : pick(['再次胜利！', '漂亮取胜！', '稳稳拿下！']);
@@ -8999,6 +8990,7 @@ function finishBattle() {
     const board = getBossLeaderboard();
     // 长夜之影 以伤害排名，不发放普通通关奖励；排名奖励在面板领取。
     resultTitle = damage > before ? '伤害新纪录！' : '讨伐结束';
+    resultSub = '伤害已计入长夜之影榜单。';
     resultEmoji = '👹';
     resultNote = `本次打出 ${fmt(damage)} 点伤害，今日最佳 ${fmt(state.boss.bestDamage)}。当前预计排名第 ${board.rank || '—'} 名。排名奖励可在长夜之影 面板领取。`;
     resultChips = [
@@ -9137,11 +9129,13 @@ const ENDING_PARAS = [
   '豆豆大王没有变成谁，也没有赢什么。它只是每天傍晚准时出门，天亮前回来。它把所有人的梦收拾干净，然后在自己的那一夜里，学会坐一会儿。',
   '外面的天一直停在傍晚。但灯总会有人提着。'
 ];
-function closeEnding() {
+function closeEnding(showChoices) {
   const el = document.getElementById('endingLayer');
   if (el) el.remove();
   document.body.classList.remove('ending-open');
   if (typeof state !== 'undefined' && state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
+  // 关灯后再给出「梦的尽头」选择，避免小说层把选择弹窗盖住
+  if (showChoices) setTimeout(() => { try { openFinalEndingModal(); } catch (e) {} }, 260);
 }
 
 // 开始剧情介绍：第一次进游戏时铺开，讲清楚世界观
@@ -9222,7 +9216,7 @@ function openEnding() {
   document.body.appendChild(layer);
   document.body.classList.add('ending-open');
   const btn = layer.querySelector('#endingDone');
-  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closeEnding(); });
+  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); closeEnding(true); });
 }
 function closeBattle() {
   if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
@@ -10015,7 +10009,7 @@ function renderPets() {
       <div class="card">
         <div class="card-head"><div><h2>📚 萌宠图鉴</h2><p>集齐种族、指定进化与满羁绊会永久提升全队属性。入梦后图鉴记录仍会保留。</p></div><span class="chip ${seenCount === PETS.length ? 'mint' : ''}">曾收录 ${seenCount} / ${PETS.length} 种 · 当前 ${unique} 种</span></div>
         ${codexBar}
-        ${(() => { const own = finalEndingsOwned(); const groups = [1, 2, 3].map(n => { const rows = ['A', 'B', 'C'].map(k => { const e = FINAL_ENDINGS[k + n]; return (own.indexOf(e.code) >= 0 ? '✅ ' : '⬜ ') + esc(e.title); }).join('<br>'); return '<div style="margin-bottom:7px"><b class="small">第 ' + n + ' 次梦</b><br><span class="tiny">' + rows + '</span></div>'; }).join(''); return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>三次入梦 × 三种选择，一共九条路（打赢 12-8 每次可以选一条）· 已记下 ' + own.length + '/9</p></div></div><div class="note">' + groups + '</div></div>'; })()}
+        ${(() => { const own = finalEndingsOwned(); const groups = [1, 2, 3].map(n => { const rows = ['A', 'B', 'C'].map(k => { const e = FINAL_ENDINGS[k + n]; return (own.indexOf(e.code) >= 0 ? '✅ ' : '⬜ ') + esc(e.title); }).join('<br>'); return '<div style="margin-bottom:7px"><b class="small">第 ' + n + ' 次梦</b><br><span class="tiny">' + rows + '</span></div>'; }).join(''); const loop = finalEndingLoop(); const canPick = ['A', 'B', 'C'].some(k => own.indexOf(k + loop) < 0); const reopen = (state.stage.maxCleared >= STAGES.length && canPick) ? '<button class="btn btn-ghost btn-sm" type="button" data-act="finalEndingMenu">🌅 补选本周目结局</button>' : ''; return '<div class="card" style="margin:0 0 10px"><div class="card-head"><div><h2>🌅 梦的尽头</h2><p>三次入梦 × 三种选择，一共九条路（打赢 12-8 每次可以选一条）· 已记下 ' + own.length + '/9</p></div></div><div class="note">' + groups + '</div>' + reopen + '</div>'; })()}
         <div class="codex-grid">
           ${codexList.length ? codexList.map(t => {
             const recorded = seenIds.has(t.id);
@@ -10081,13 +10075,13 @@ function renderPets() {
             <div class="task-main">
               <b>${esc(petDisplayName(pet))} <span class="tiny muted">Lv.${pet.level} · ${EVOLUTIONS[pet.evo].name} · ${pet.star}★</span></b>
               <div class="progress thin" style="margin:5px 0"><i class="mint" style="width:${pet.level / MAX_LEVEL * 100}%"></i></div>
-              <p>${elementTag(t.element)} · 经验果消耗 ${fmt(levelCost)} · 同名碎片 ${shards}${starCost ? ` / 升星需 ${starCost}` : ''}${nextEvo ? ` · 进化 Lv.${nextEvo.levelReq} / ${nextEvo.stones}颗${ELEMENTS[t.element].name}石` : ' · 已究极'}</p>
+              <p>${elementTag(t.element)} · 经验果消耗 ${fmt(levelCost)} · 同名碎片 ${shards}${starCost ? ` / 升星需 ${starCost}` : ''}${nextEvo ? ` · Lv.${nextEvo.levelReq} 自动进化（提前：${nextEvo.stones}颗${ELEMENTS[t.element].name}石 + 🪙${fmt(nextEvo.gold)}）` : ' · 已究极'}</p>
               <p class="tiny muted">💗 ${tier.name} · ${nextTierName ? `距「${nextTierName}」还差 ${nextTierGap} 点` : '已满档，无话不说'}</p>
               <div class="pet-actions" style="margin-top:5px">
                 <button class="btn btn-mint btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="1">升级 +1</button>
                 <button class="btn btn-ghost btn-xs" type="button" data-act="levelUp" data-uid="${pet.uid}" data-count="10">升级 +10</button>
                 <button class="btn btn-lav btn-xs" type="button" data-act="starUp" data-uid="${pet.uid}">升星</button>
-                <button class="btn btn-mint btn-xs" type="button" data-act="evolve" data-uid="${pet.uid}">进化</button>
+                <button class="btn btn-mint btn-xs" type="button" data-act="evolve" data-uid="${pet.uid}">提前进化</button>
                 <button class="btn btn-ghost btn-xs" type="button" data-act="petDetail" data-uid="${pet.uid}">详情</button>
               </div>
             </div>
@@ -10348,11 +10342,12 @@ function renderShop() {
           </div>`).join('')}
         </div>
         <div class="divider-dots">✦</div>
-        <div class="flex between" style="margin-bottom:8px"><h3 style="margin:0;font-size:14px">💠 属性进化石</h3><span class="tiny muted">80 钻石 / 3 颗</span></div>
+        <div class="flex between" style="margin-bottom:8px"><h3 style="margin:0;font-size:14px">💠 属性进化石</h3><span class="tiny muted">80 钻石 / 3 颗 · 10 颗可炼化 💎50</span></div>
         <div class="grid three">
           ${ELEMENT_KEYS.map(el => `<div class="shop-item stone-shop" style="--el-color:${ELEMENTS[el].color};--el-soft:${ELEMENTS[el].soft}">
             <span class="shop-ico">${artIconFrame(elementArtUrl(el), ELEMENTS[el].emoji, 'art-shopico') || ELEMENTS[el].emoji}</span><b>${ELEMENTS[el].name}进化石</b><p>持有 ${fmt(num(state.stones[el], 0))} 颗</p>
             <button class="btn btn-ghost btn-xs" type="button" data-act="buyStone" data-el="${el}" ${state.resources.crystal < 80 ? 'disabled' : ''}>💎80 换 3</button>
+            <button class="btn btn-ghost btn-xs" type="button" data-act="meltStones" data-el="${el}" ${num(state.stones[el], 0) < 10 ? 'disabled' : ''}>炼化 10 → 💎50</button>
           </div>`).join('')}
         </div>
       </div>
@@ -12922,6 +12917,17 @@ function buyStone(element) {
   toast(`获得 ${ELEMENTS[element].name}进化石 ×3`, 'good');
   playSfx('buy');
 }
+// 多余进化石回收：10 颗同属性石 → 50 钻石，给后期堆积的石头一个出口
+function meltStones(element) {
+  if (!ELEMENTS[element]) return;
+  if (num(state.stones[element], 0) < 10) { toast(`需要 10 颗${ELEMENTS[element].name}进化石才能炼化`, 'bad'); return; }
+  state.stones[element] -= 10;
+  state.resources.crystal += 50;
+  saveGame();
+  renderAll();
+  toast(`炼化 ${ELEMENTS[element].name}进化石 ×10，获得 💎50`, 'good');
+  playSfx('buy');
+}
 function buyCosmetic(id) {
   const cosmetic = COSMETIC_MAP[id];
   if (!cosmetic) return;
@@ -13159,6 +13165,7 @@ function handleActionClick(event) {
 
     case 'closeModal': closeModal(); break;
     case 'finalEnding': chooseFinalEnding(target.dataset.code); break;
+    case 'finalEndingMenu': openFinalEndingModal(); break;
     case 'recallRush': recallRush(); break;
     case 'openSettings': openSettingsModal(); break;
     case 'openRebirth': openRebirthModal(); break;
@@ -13282,6 +13289,7 @@ case 'storyChoose': storyChoose(Number(target.dataset.index)); break;
     case 'buyItem': buyMaterial(target.dataset.key, Number(target.dataset.price || 0)); break;
     case 'buyChallengeTicket': buyChallengeTicket(); break;
     case 'buyStone': buyStone(target.dataset.el); break;
+    case 'meltStones': meltStones(target.dataset.el); break;
     case 'buyCosmetic': buyCosmetic(target.dataset.id); break;
       case 'buyArenaItem': buyArenaItem(target.dataset.id); break;
       case 'levelTeam': levelUpTeam(); break;
@@ -13610,7 +13618,7 @@ let mainGameTimer = null;
 let lastArenaSeasonToast = 0;
 function gameTick() {
   if (!state) return;
-  ensureRegen();
+  regenAll();
   const dailyChanged = ensureDaily();
   const encounterChanged = ensureEncounter();
   const season = ensureArenaSeason();
