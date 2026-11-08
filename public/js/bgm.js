@@ -14,7 +14,18 @@
     ['audio/bgm_song_8.mp3', '如果有来生 · 谭维维'],
     ['audio/bgm_song_9.mp3', '玻璃 · Gareth.T'],
     ['audio/bgm_song_10.mp3', '下一秒 · 张碧晨'],
-    ['audio/bgm_song_11.mp3', '如果可以 · 韦礼安']
+    ['audio/bgm_song_11.mp3', '如果可以 · 韦礼安'],
+    ['audio/bgm_song_12.mp3', '我不难过 · 孙燕姿'],
+    ['audio/bgm_song_13.mp3', '刻在我心底的名字 · 卢广仲'],
+    ['audio/bgm_song_14.mp3', '夏夜最后的烟火 · 颜人中'],
+    ['audio/bgm_song_15.mp3', '九月底 · 余佳运'],
+    ['audio/bgm_song_16.mp3', '好久不见 · 陈奕迅'],
+    ['audio/bgm_song_17.mp3', '呼吸决定 · Fine乐团'],
+    ['audio/bgm_song_18.mp3', '关于爱的定义 · 方大同'],
+    ['audio/bgm_song_19.mp3', '想你就写信 (Live) · 周杰伦 / 李硕 / 达布希勒图 / 张鑫'],
+    ['audio/bgm_song_20.mp3', '我想念 · 汪苏泷'],
+    ['audio/bgm_song_21.mp3', '哪里都是你 · 队长'],
+    ['audio/bgm_song_22.mp3', '多远都要在一起 · G.E.M.邓紫棋']
   ];
   var KEY = 'mini_bgm';
   function st() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
