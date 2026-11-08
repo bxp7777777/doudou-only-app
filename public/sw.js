@@ -1,5 +1,5 @@
 /* 简单离线壳：静态资源缓存优先，接口一律走网络 */
-const CACHE = 'doudou-v6';
+const CACHE = 'doudou-v7';
 const SHELL = [
   '/',
   '/index.html',
@@ -58,6 +58,10 @@ self.addEventListener('fetch', (e) => {
         caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {});
         return res;
       })
-      .catch(() => caches.match(e.request).then((hit) => hit || caches.match('/index.html')))
+      .catch(() =>
+        caches
+          .match(e.request, { ignoreVary: true })
+          .then((hit) => hit || caches.match('/index.html', { ignoreVary: true }))
+      )
   );
 });

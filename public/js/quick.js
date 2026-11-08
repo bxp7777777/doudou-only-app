@@ -54,6 +54,12 @@
     };
     setTimeout(function () { document.addEventListener('pointerdown', outside); }, 0);
   }
+  /* 专注模式里番茄钟在「更多小工具」抽屉里：把抽屉打开，重渲染后也保持打开 */
+  function ensureFocusDrawer() {
+    if (!document.body.classList.contains('focus-mode')) return;
+    var d = document.getElementById('tools-drawer');
+    if (d && !d.open) d.open = true;
+  }
   function toggleFocus() {
     var on = document.body.classList.toggle('focus-mode');
     var pill = document.getElementById('focusPill');
@@ -67,6 +73,7 @@
         document.body.appendChild(pill);
       }
       pill.style.display = 'block';
+      ensureFocusDrawer();
     } else if (pill) pill.style.display = 'none';
     try { localStorage.setItem('doudou_focus', on ? '1' : '0'); } catch (e) {}
   }
@@ -94,6 +101,10 @@
     b.setAttribute('aria-label', '快捷记录');
     b.addEventListener('click', function () { OPEN ? close() : open(); });
     document.body.appendChild(b);
+    // 页面重渲染会把抽屉关回去，专注模式里要一直保持展开
+    if (window.MutationObserver) {
+      new MutationObserver(ensureFocusDrawer).observe(document.body, { childList: true, subtree: true });
+    }
     restoreFocus();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();

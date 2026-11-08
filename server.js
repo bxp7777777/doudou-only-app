@@ -7,6 +7,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -384,6 +385,25 @@ function sendJson(res, status, body) {
   res.end(buf);
 }
 
+/* 静态资源 gzip：文本类按需压缩，压缩结果按「路径+大小+改动时间」缓存 */
+const GZIP_EXT = new Set(['.html', '.css', '.js', '.mjs', '.json', '.webmanifest', '.svg', '.txt']);
+const gzipCache = new Map();
+
+function wantsGzip(req) {
+  return /\bgzip\b/i.test(String(req.headers['accept-encoding'] || ''));
+}
+
+async function gzipFor(file, stat) {
+  const key = file + '|' + stat.size + '|' + Math.floor(stat.mtimeMs);
+  const hit = gzipCache.get(key);
+  if (hit) return hit;
+  const raw = await fsp.readFile(file);
+  const gz = zlib.gzipSync(raw, { level: 6 });
+  if (gzipCache.size > 64) gzipCache.clear();
+  gzipCache.set(key, gz);
+  return gz;
+}
+
 async function serveStatic(req, res, pathname) {
   let rel = decodeURIComponent(pathname);
   if (rel === '/' || rel === '') rel = '/index.html';
@@ -407,21 +427,45 @@ async function serveStatic(req, res, pathname) {
 
   const ext = path.extname(file).toLowerCase();
   const isShell = ['.html', '.webmanifest'].includes(ext) || file.endsWith('sw.js');
-  // ETag 让「改了 JS/CSS 刷新就能看到」和「缓存不重复下载」两件事同时成立
-  const etag = 'W/"' + stat.size.toString(16) + '-' + Math.floor(stat.mtimeMs).toString(16) + '"';
+  const cacheControl = isShell ? 'no-cache' : 'public, max-age=300';
+  const useGzip = GZIP_EXT.has(ext) && stat.size >= 1024 && wantsGzip(req);
+  // ETag 让「改了 JS/CSS 刷新就能看到」和「缓存不重复下载」两件事同时成立；
+  // 压缩版单独一个 etag，避免同一个 tag 对应两种字节
+  const tag = stat.size.toString(16) + '-' + Math.floor(stat.mtimeMs).toString(16) + (useGzip ? '-gz' : '');
+  const etag = 'W/"' + tag + '"';
+  const vary = 'accept-encoding';
+
   if (req.headers['if-none-match'] === etag) {
-    res.writeHead(304, { etag, 'cache-control': isShell ? 'no-cache' : 'public, max-age=300' }).end();
+    res.writeHead(304, { etag, vary, 'cache-control': cacheControl }).end();
     return;
   }
 
-  res.writeHead(200, {
+  const headers = {
     'content-type': MIME[ext] || 'application/octet-stream',
-    'content-length': stat.size,
-    'cache-control': isShell ? 'no-cache' : 'public, max-age=300',
+    'cache-control': cacheControl,
     etag,
+    vary,
     'x-content-type-options': 'nosniff'
-  });
+  };
 
+  if (useGzip) {
+    let gz = null;
+    try {
+      gz = await gzipFor(file, stat);
+    } catch {
+      gz = null; // 压缩失败就退回原文件
+    }
+    if (gz) {
+      headers['content-encoding'] = 'gzip';
+      headers['content-length'] = gz.length;
+      res.writeHead(200, headers);
+      res.end(gz);
+      return;
+    }
+  }
+
+  headers['content-length'] = stat.size;
+  res.writeHead(200, headers);
   const stream = fs.createReadStream(file);
   stream.on('error', () => res.destroy());
   stream.pipe(res);

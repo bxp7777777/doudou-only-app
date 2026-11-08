@@ -2541,8 +2541,8 @@ document.addEventListener('click', (e) => {
     setSyncCfg({ code, secret: (syncCfg() || {}).secret, at: 0 });
     render();
     toast('连上了，正在拉另一台的数据…');
-    // 生成码/连接码本身不会触发 dd:changed，这里必须主动拉一次
-    return syncNow(false);
+    // 只拉不推：输错码时不能把本机数据写到那个不存在的码上
+    return connectSync();
   }
 
   if (act === 'sync-now') return syncNow(false);
@@ -2811,6 +2811,35 @@ function importBackup() {
   input.addEventListener('cancel', () => input.remove());
   document.body.appendChild(input);
   input.click();
+}
+
+async function connectSync() {
+  const cfg = syncCfg();
+  if (!cfg || !cfg.code) return;
+  try {
+    const res = await fetch('/api/sync/load?code=' + encodeURIComponent(cfg.code), { cache: 'no-store', headers: syncHeaders() });
+    const json = await res.json();
+    if (json && json.ok) {
+      restore(json.payload);
+      setSyncCfg({ code: cfg.code, secret: cfg.secret, at: Number(json.savedAt || 0) });
+      store.ensureDefaults();
+      applyTheme();
+      render();
+      toast('已经同步另一台设备的记录');
+      return;
+    }
+    if (json && json.reason === 'bad-secret') {
+      // 服务端要口令：保留配置，填完口令点「立即同步」即可
+      toast('服务端要求口令，请先在下方填写服务端口令');
+      return;
+    }
+    // 码不存在 / 还没存过数据：不要把本机数据推上去，先让人核对
+    setSyncCfg(null);
+    render();
+    toast('这个同步码还没有记录，核对一下再连');
+  } catch {
+    toast('网络不太顺，等会儿再点一次');
+  }
 }
 
 async function syncNow(silent) {

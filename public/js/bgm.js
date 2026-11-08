@@ -108,7 +108,9 @@
     b.setAttribute('aria-label', '背景音乐');
     b.addEventListener('click', panel);
     document.body.appendChild(b);
-    play();
+    // 默认不自动响：第一次用就是关的，想听再点 🎵 自己挑一首
+    var s0 = st();
+    if (typeof s0.off !== 'boolean') { s0.off = true; save(s0); }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
