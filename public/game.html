@@ -9173,7 +9173,7 @@ function openShortIntro() {
   layer.id = 'prologueLayer';
   layer.className = 'ending-layer';
   const body = SHORT_INTRO_PARAS.map(function (t) { return '<p class="ending-mark">' + t + '</p>'; }).join('');
-  layer.innerHTML = '<div class="ending-sheet"><div class="ending-cap">豆 豆 大 王</div>'
+  layer.innerHTML = '<div class="ending-sheet">'
     + '<div class="short-intro">' + body + '</div>'
     + '<div class="ending-foot"><button class="ending-btn" type="button" id="shortDone">出 门</button></div></div>';
   document.body.appendChild(layer);
@@ -14224,7 +14224,7 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 .ending-btn{margin-top:10px;border:1px solid #4a3d33;background:rgba(255,255,255,.06);color:#e9dccf;font-size:13px;padding:10px 26px;border-radius:14px;cursor:pointer;letter-spacing:.2em}
 body.ending-open{overflow:hidden}
 
-.short-intro{padding:26px 6px 10px;text-align:center}
+.short-intro{padding:44px 6px 12px;text-align:center}
 .short-intro p{font-family:Songti SC,serif;font-size:17px;line-height:2.1;color:#f0e6db;margin:0 0 22px;text-indent:0!important}
 
 </style>
