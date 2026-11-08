@@ -4037,6 +4037,35 @@ function chooseFinalEnding(code) {
 
 const ENCOUNTERS = [
   {
+    id: 'creamy_rabbit', emoji: '🐰', title: '奶油兔引路', desc: '一只奶油色的兔子在前面蹦一下、停一下，回头看你有没有跟上。它不解释要去哪儿，只是把路走得没那么难。',
+    choices: [
+      { label: '跟着它走一段', outcomes: [ { w: 60, text: '它把你带到一片没被踩过的草地，草下面埋着一小袋金币。', rewards: { gold: 260 } }, { w: 40, text: '它忽然停下，用前爪拍了拍地面，然后跑掉了。地上留着一颗还温着的东西。', rewards: { crystal: 8 } } ] },
+      { label: '蹲下摸摸它', outcomes: [ { w: 100, text: '它把耳朵贴在你手心，抖了一下，然后继续往前蹦。', rewards: { gold: 120 } } ] }
+    ]
+  },
+  {
+    id: 'salvage_crew', emoji: '🧺', title: '拾荒团', desc: '两个背竹筐的人在梦与梦的缝里翻东西。他们不打架，只把别人掉下的物件收好。看见你，其中一个人举起一样东西：「这个，是你的吧。」',
+    choices: [
+      { label: '认领', outcomes: [ { w: 100, text: '那是一只掉了很多天的旧怀表，表停在傍晚。他们说：拿走吧，它一直在等。', rewards: { starShard: 4 } } ] },
+      { label: '让它继续留着', outcomes: [ { w: 100, text: '他们把怀表放回筐里，朝你点了下头。走的时候，筐底有很轻的一声响。', rewards: { gold: 180 } } ] }
+    ]
+  },
+  {
+    id: 'star_leather', emoji: '🧵', title: '星皮匠', desc: '一个坐在小凳上补东西的人，膝头摊着一块会发光的皮。他不抬头，针脚又慢又稳：「别急，皮会记住形状。」',
+    choices: [
+      { label: '请他补一补装备', cost: { gold: 300 }, outcomes: [ { w: 70, text: '他把裂口缝上，用手指按了按，像在哄一块布。', rewards: { starShard: 6 } }, { w: 30, text: '他缝完抬头看了你一眼：「这块皮以前是你的吧。」', rewards: { crystal: 20 } } ] },
+      { label: '只是坐下来歇一会儿', outcomes: [ { w: 100, text: '他递过来一杯温的。你们谁都没说话，针脚的声音像雨。', rewards: { gold: 90 } } ] }
+    ]
+  },
+  {
+    id: 'long_night_shadow', emoji: '🌑', title: '长夜之影', desc: '这一带忽然暗下来，不是天黑，是有东西把光压住了。它不动手，也不说话，只是让所有东西变冷。',
+    choices: [
+      { label: '点一盏灯', cost: { crystal: 5 }, outcomes: [ { w: 100, text: '灯一亮，它就退开了，退得很快，像被烫到。原来它怕的是有人点灯。', rewards: { gold: 420, starShard: 3 } } ] },
+      { label: '站着不动，等它过去', outcomes: [ { w: 55, text: '它在你身上停了一会儿，然后散了。你身上凉了半宿。', rewards: { gold: 150 } }, { w: 45, text: '它绕着你走了三圈，最后把一小块冷的东西放在你脚边。', rewards: { crystal: 12 } } ] }
+    ]
+  },
+
+  {
     id: 'merchant', emoji: '🧙', title: '神秘商人', desc: '一位披着星星斗篷的商人推了推眼镜：「要来点意外之喜吗？」斗篷下露出三条不同颜色的袖子，谁也说不清他到底有几只手。',
     choices: [
       { label: '买一个神秘袋', cost: { gold: 600 }, outcomes: [
@@ -4869,6 +4898,11 @@ const ENCOUNTERS = [
 
 // 奇遇的「后来…」：每次结算时跟着结果一起显示，给事件一个收尾
 const ENCOUNTER_AFTER = {
+  creamy_rabbit: '走出很远，回头看，它还在原地蹦，像在送你。',
+  salvage_crew: '再回头，两个竹筐已经不见了，地上多了一枚扣子。',
+  star_leather: '针脚的声音跟了你一段路，才慢慢听不见。',
+  long_night_shadow: '那片地方后来亮了好几天，没人知道为什么。',
+
   merchant: '走出很远，身后还传来一声笑：「下次带够钱再来。」',
   orchard: '走出果园时，篮子里多了一小把没熟的青果。',
   stray: '它跟了半条街，最后在你鞋边坐下，不肯走。',
