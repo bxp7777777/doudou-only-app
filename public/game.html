@@ -9120,14 +9120,82 @@ function renderBattleResult(data) {
     </div>`;
 }
 
+
+// 结局播放：第 12 章最后一关胜利后，一段可以一句一句翻的收尾
+const ENDING_SCREENS = [
+  '门关上以后，走廊一格一格地暗下去。',
+  '不是一下子黑的。是一节暗，停一下，再下一节暗——像有人一间一间地关灯，怕动作太大吵到谁。',
+  '它走得很慢，因为地板还是热的。刚才站过的地方、坐过的地方、挡住人的地方，都还留着一点温。',
+  '这一次口袋里有一小把硬草莓，一颗被捏软了；一片彩羽，边角已经发干；一枚会眨眼的贝壳；还有半张没烧完的纸。',
+  '它把这些放在桌上，一件一件摆好，像别人做梦时那样摆。',
+  '然后它坐下来，把灯芯剪短一点。灯还够亮，但不用那么亮了。',
+  '天亮不是忽然的。天亮是很多很小的声音叠起来的：邻居开门、水壶响、楼下有人喊了一嗓子、鸟在窗台跳了两下。',
+  '天没有真的亮起来——外面的天一直停在傍晚。可是屋里亮了，因为有人起床了。',
+  '到了傍晚，它又出门了。它没有犹豫，也没有叹气。',
+  '「今晚有人来吗？」\n没人回答。但它还是出门了。',
+  '走廊尽头没有门。只有一个人坐在那儿，背对着它，脸朝墙。',
+  '它见过这个姿势很多次。每次它都是绕过去的。这一次没有路可以绕。',
+  '它走过去，看清了那个人的脸。\n是它自己。',
+  '那个人也有一句没说完的话。也有一片不肯变软的地方。也有一个等不到的人。',
+  '小金毛崽把头轻轻抵在那个人的背上，像平常对任何人做的那样。',
+  '然后泥兜猪坐下来，挨着那个自己，一起靠着墙，把脚伸直。',
+  '「你也在等？」\n「嗯。」\n「等谁？」\n「不知道。等着有人来。」',
+  '灯还亮着。它没有关。这一夜没有人来替它值夜——但它允许自己，也可以被陪着。',
+  '它出门的时候，把门带上。这一次，门在身后关上的时候，有很轻的一声。\n不是锁。是答应。',
+  '外面的天一直停在傍晚。\n但灯总会有人提着。'
+];
+let endingIndex = 0;
+function renderEndingScreen() {
+  const t = document.getElementById('endingText');
+  const n = document.getElementById('endingNext');
+  if (!t) return;
+  t.textContent = ENDING_SCREENS[endingIndex] || '';
+  if (n) n.textContent = endingIndex >= ENDING_SCREENS.length - 1 ? '关 灯' : '下一句 ›';
+}
+function endingAdvance() {
+  if (endingIndex >= ENDING_SCREENS.length - 1) { closeEnding(); return; }
+  endingIndex += 1;
+  renderEndingScreen();
+}
+function closeEnding() {
+  const el = document.getElementById('endingLayer');
+  if (el) el.remove();
+  document.body.classList.remove('ending-open');
+  if (state) { state.endingSeen = true; try { saveGame(); } catch (e) {} }
+}
+function openEnding() {
+  closeEnding();
+  endingIndex = 0;
+  const layer = document.createElement('div');
+  layer.id = 'endingLayer';
+  layer.className = 'ending-layer';
+  layer.innerHTML = '<div class="ending-card">'
+    + '<div class="ending-cap">最 后 一 夜</div>'
+    + '<p class="ending-text" id="endingText"></p>'
+    + '<div class="ending-foot"><span class="ending-note" id="endingTip">点屏幕继续</span>'
+    + '<button class="ending-btn" type="button" id="endingNext">下一句 ›</button></div>'
+    + '</div>';
+  document.body.appendChild(layer);
+  document.body.classList.add('ending-open');
+  renderEndingScreen();
+  layer.addEventListener('click', function (ev) {
+    if (ev.target && ev.target.id === 'endingNext') return;
+    endingAdvance();
+  });
+  const btn = layer.querySelector('#endingNext');
+  if (btn) btn.addEventListener('click', function (ev) { ev.stopPropagation(); endingAdvance(); });
+}
+
 function closeBattle() {
   if (UI.battle && UI.battle.win) { try { dutyBump('kill'); } catch (e) {} }
+  const _fin = UI.battle && UI.battle.win && UI.battle.config && UI.battle.config.stage && UI.battle.config.stage.chapter === 12 && UI.battle.config.stage.sub >= stageCountOf(12);
   document.body.classList.remove('battle-mode');
   bgmPlay('home');
   const b = UI.battle;
   if (b && b.timer) clearTimeout(b.timer);
   clearBattleFx();
   UI.battle = null;
+  if (_fin) { setTimeout(openEnding, 320); }
   const root = $('#battleRoot');
   if (root) { root.className = 'battle-layer'; root.innerHTML = ''; }
   document.body.classList.remove('battle-open');
@@ -14101,6 +14169,15 @@ html[data-petanim="1"] .home-pet-img{will-change:transform}
 /* 宠物类敌人：立绘反向（朝左），与站在对面的伙伴相对 */
 .battle-layer .b-side.enemy .b-unit .art-frame img{transform:scaleX(-1)}
 .battle-layer .b-side.enemy .b-unit .rig{transform:scaleX(-1)}
+
+.ending-layer{position:fixed;inset:0;z-index:9000;background:radial-gradient(circle at 50% 30%,#2a2320,#161211 70%);display:flex;align-items:center;justify-content:center;padding:24px;cursor:pointer}
+.ending-card{max-width:520px;width:100%;text-align:center}
+.ending-cap{font-size:11px;letter-spacing:.4em;color:#a9927a;margin-bottom:26px}
+.ending-text{font-family:Songti SC,serif;font-size:16px;line-height:2.1;color:#f2e7dc;white-space:pre-line;min-height:132px}
+.ending-foot{display:flex;align-items:center;justify-content:space-between;margin-top:30px;gap:12px}
+.ending-note{font-size:10.5px;color:#7d6a5a}
+.ending-btn{border:1px solid #4a3d33;background:rgba(255,255,255,.06);color:#e9dccf;font-size:12.5px;padding:9px 16px;border-radius:12px;cursor:pointer}
+body.ending-open{overflow:hidden}
 
 </style>
 <a id="back-home" href="/" aria-label="回到小跟班" title="回到小跟班">🏠</a>
