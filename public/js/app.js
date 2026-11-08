@@ -1078,7 +1078,11 @@ const SIGN_TIPS = [
   '今天的签：想抱怨就抱怨几句，不必憋着。',
   '今天的签：今天做一个小的、具体的决定就够了。',
   '今天的签：被误解也没关系，不是每件事都要澄清。',
-  '今天的签：今晚有人来，灯一直亮着。'
+  '今天的签：今晚有人来，灯一直亮着。',
+  '今天的签：今天的你已经尽力了，剩下的交给时间。',
+  '今天的签：想歇就歇，灯会替你亮着。',
+  '今天的签：不舒服的关系，可以放一放。',
+  '今天的签：今天也可以只是普通的一天。'
 ];;
 const SIGN_LUCK = ['🍊', '🌟', '☁️', '🌙', '🧸', '🫧', '🌷', '🍑', '🍀', '🦋', '🧶', '🍯'];
 
@@ -1153,39 +1157,6 @@ function moveCardHTML(now) {
 
 /* ------------------------- 音乐氛围（纯合成，零音频文件）+ 今日一曲（纯文案） ------------------------- */
 
-function musicCardHTML() {
-  const prefs = music.getPrefs();
-  const playing = music.isPlaying();
-  const playingKey = music.currentKey();
-  const cur = music.presetByKey(playingKey || prefs.preset);
-  const presetChips = music.PRESETS.map((p) => {
-    const on = (playing ? playingKey : prefs.preset) === p.key;
-    return `<button class="tomato-quick" type="button" data-act="music-preset" data-key="${p.key}" title="${esc(p.desc)}">${p.emoji} ${esc(p.name)}${on ? ' ✓' : ''}</button>`;
-  }).join('');
-  const vols = [0.2, 0.4, 0.6, 0.8, 1.0]
-    .map((v, i) => `<button class="btn btn-mini" type="button" data-act="music-vol" data-level="${v}" aria-pressed="${Math.abs(prefs.volume - v) < 0.01}">${i + 1}</button>`)
-    .join('');
-  const sleepOpts = [15, 30, 45]
-    .map((m) => `<button class="btn btn-mini" type="button" data-act="music-sleep" data-min="${m}">${m}′定时</button>`)
-    .join('');
-  return `<section class="card">
-  <h2 class="card-head"><span class="card-icon">🎵</span><span class="card-title">音乐氛围 · ${esc(cur.emoji)} ${esc(cur.name)}</span></h2>
-  <p class="card-sub">${esc(cur.desc)}；浏览器实时合成，不加载音频文件、不占仓库体积</p>
-  <div class="chips" style="flex-wrap:wrap;gap:6px">${presetChips}</div>
-  <div class="btn-row" style="margin-top:8px">
-    <button class="btn ${playing ? 'btn-ghost' : ''}" data-act="music-play">${playing ? '暂停氛围声' : '播放氛围声'}</button>
-    <button class="btn btn-ghost btn-mini" data-act="music-autofocus" aria-pressed="${prefs.autoFocus}">番茄联动：${prefs.autoFocus ? '开' : '关'}</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">
-    <span class="hint" style="margin:0">音量 1小–5大</span>${vols}
-  </div>
-  <div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">
-    <span class="hint" style="margin:0">睡前定时</span>${sleepOpts}
-  </div>
-  <p class="hint">点过一次播放声音才会出来；暂停即停，切到小游戏也不互相干扰。</p>
-  </section>`;
-}
-
 function dailyTuneCardHTML() {
   const day = todayKey();
   const tune = music.currentTune(day);
@@ -1193,14 +1164,15 @@ function dailyTuneCardHTML() {
   const fav = music.isFav(tune.idx);
   const rec = music.presetByKey(tune.rec);
   return `<section class="card">
-  <h2 class="card-head"><span class="card-icon">🎼</span><span class="card-title">今日一曲 · 纯文案</span></h2>
+  <h2 class="card-head"><span class="card-icon">🎼</span><span class="card-title">今日一曲</span></h2>
   <p class="joke-name">《${esc(tune.title)}》</p>
     <div class="btn-row" style="margin-top:2px">
       <button class="btn btn-ghost btn-mini" data-act="music-play">${music.isPlaying() ? '暂停氛围声' : '播放氛围声'}</button>
       ${[0.2, 0.6, 1.0].map((v, i) => `<button class="btn btn-mini" data-act="music-vol" data-level="${v}" aria-pressed="${Math.abs(music.getPrefs().volume - v) < 0.01}">音量${['小', '中', '大'][i]}</button>`).join('')}
     </div>
   <p class="line">${esc(tune.vibe)}</p>
-  <p class="card-sub">适合：${esc(tune.scene)} · ${esc(tune.note)}</p>
+  <details class="tune-more"><summary>更多</summary><div class="chips" style="flex-wrap:wrap;gap:6px;margin-top:6px">${music.PRESETS.map((p) => { const on = music.currentKey() === p.key || (!music.isPlaying() && music.getPrefs().preset === p.key); return `<button class="tomato-quick" type="button" data-act="music-preset" data-key="${p.key}" title="${esc(p.desc)}">${p.emoji} ${esc(p.name)}${on ? " ✓" : ""}</button>`; }).join("")}</div><div style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap"><span class="hint" style="margin:0">睡前定时</span>${[15, 30, 45].map((m) => `<button class="btn btn-mini" type="button" data-act="music-sleep" data-min="${m}">${m}′</button>`).join("")}<button class="btn btn-ghost btn-mini" type="button" data-act="music-autofocus" aria-pressed="${music.getPrefs().autoFocus}">番茄联动：${music.getPrefs().autoFocus ? "开" : "关"}</button></div></details>
+    <p class="card-sub">适合：${esc(tune.scene)} · ${esc(tune.note)}</p>
   <div class="btn-row" style="margin-top:8px">
     <button class="btn btn-ghost btn-mini" data-act="music-rec" data-key="${tune.rec}">配一点：${rec.emoji}${esc(rec.name)}</button>
     <button class="btn btn-ghost btn-mini" data-act="tune-another">换一首意境</button>

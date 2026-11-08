@@ -24,8 +24,6 @@
       var q = ev.target && ev.target.dataset ? ev.target.dataset.q : '';
       if (!q) return;
       if (q === 'cup') { fire('cup') ? close() : toast('先去首页点一次小水杯，之后这里就能一键记了'); }
-      else if (q === 'food') { fire('foodAdd') ? close() : toast('吃饭记录在页面里，滚到「今天吃了什么」那里就能加'); }
-      else if (q === 'mood') { fire('diary-mood') ? close() : toast('心情记录在日记页，切过去就能点'); }
       else if (q === 'focus') { toggleFocus(); close(); }
     });
     setTimeout(function () {
