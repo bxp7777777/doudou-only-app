@@ -1,5 +1,5 @@
 /* 简单离线壳：静态资源缓存优先，接口一律走网络 */
-const CACHE = 'doudou-v5';
+const CACHE = 'doudou-v6';
 const SHELL = [
   '/',
   '/index.html',
@@ -12,6 +12,10 @@ const SHELL = [
   '/js/cycle.js',
   '/js/story.js',
   '/js/stories.js',
+  '/js/joke.js',
+  '/js/jokes.js',
+  '/js/quick.js',
+  '/js/bgm.js',
   '/js/schedule.js',
   '/js/skincare.js',
   '/js/health.js',

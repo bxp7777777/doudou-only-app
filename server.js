@@ -228,17 +228,28 @@ function secretAllowed(req, body, url) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let size = 0;
+    let tooLarge = false;
     const chunks = [];
     req.on('data', (c) => {
+      if (tooLarge) return;
       size += c.length;
       if (size > MAX_BODY) {
-        reject(new Error('too large'));
-        req.destroy();
+        // 别直接 destroy：把剩下的收完再回 413，客户端才拿得到状态码而不是连接被重置
+        tooLarge = true;
+        chunks.length = 0;
         return;
       }
       chunks.push(c);
     });
-    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('end', () => {
+      if (tooLarge) {
+        const err = new Error('body-too-large');
+        err.code = 'BODY_TOO_LARGE';
+        reject(err);
+        return;
+      }
+      resolve(Buffer.concat(chunks).toString('utf8'));
+    });
     req.on('error', reject);
   });
 }
@@ -273,7 +284,11 @@ async function handleSync(req, res, url) {
     let body;
     try {
       body = JSON.parse(await readBody(req));
-    } catch {
+    } catch (err) {
+      if (err && err.code === 'BODY_TOO_LARGE') {
+        sendJson(res, 413, { ok: false, reason: 'too-large' });
+        return true;
+      }
       sendJson(res, 400, { ok: false, reason: 'bad-body' });
       return true;
     }

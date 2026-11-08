@@ -1,6 +1,6 @@
 /* 快捷记录：右下角浮钮，一步记喝水 / 吃饭 / 心情（复用页面现有按钮，不改数据逻辑） */
 (function () {
-  var OPEN = false, box = null;
+  var OPEN = false, box = null, outside = null;
   function find(act) {
     var list = document.querySelectorAll('[data-act="' + act + '"]');
     for (var i = 0; i < list.length; i++) if (list[i].offsetParent) return list[i];
@@ -11,7 +11,29 @@
     if (el) { el.click(); return true; }
     return false;
   }
-  function close() { if (box) { box.remove(); box = null; OPEN = false; } }
+  function close() {
+    if (box) { box.remove(); box = null; }
+    OPEN = false;
+    if (outside) { document.removeEventListener('pointerdown', outside); outside = null; }
+  }
+  /* 记心情：切到「小日子」，把心情那一排滚到眼前，让人自己点一个 */
+  function goMood() {
+    var tab = document.querySelector('[data-act="tab"][data-tab="cycle"]');
+    if (tab) tab.click();
+    else window.location.hash = '#/cycle';
+    setTimeout(function () {
+      var m = document.querySelector('[data-act="diary-mood"]');
+      if (!m) return;
+      if (m.scrollIntoView) m.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      var wrap = m.parentElement;
+      if (wrap) {
+        wrap.style.transition = 'box-shadow .3s';
+        wrap.style.boxShadow = '0 0 0 3px rgba(240,160,150,.55)';
+        setTimeout(function () { wrap.style.boxShadow = ''; }, 1600);
+      }
+      toast('点一个今天的心情就行');
+    }, 420);
+  }
   function open() {
     OPEN = true;
     box = document.createElement('div');
@@ -24,13 +46,13 @@
       var q = ev.target && ev.target.dataset ? ev.target.dataset.q : '';
       if (!q) return;
       if (q === 'cup') { fire('cup') ? close() : toast('先去首页点一次小水杯，之后这里就能一键记了'); }
+      else if (q === 'mood') { close(); goMood(); }
       else if (q === 'focus') { toggleFocus(); close(); }
     });
-    setTimeout(function () {
-      document.addEventListener('pointerdown', function off(ev) {
-        if (box && !box.contains(ev.target) && ev.target.id !== 'quickFab') { close(); document.removeEventListener('pointerdown', off); }
-      });
-    }, 0);
+    outside = function (ev) {
+      if (box && !box.contains(ev.target) && ev.target.id !== 'quickFab') close();
+    };
+    setTimeout(function () { document.addEventListener('pointerdown', outside); }, 0);
   }
   function toggleFocus() {
     var on = document.body.classList.toggle('focus-mode');
