@@ -60,12 +60,9 @@ check(!homeHtml().includes('今日一曲'), '今日一曲已经删掉，首页�
 if (homeHtml().includes('南宁')) check(homeHtml().includes('没查到'), '天气卡失败时应兜底');
 check(homeHtml().includes('letter-modal'), '首次打开应自动出现给豆豆的信');
 check(homeHtml().includes('豆豆大王好！！！') && homeHtml().includes('希望我的豆豆安乐无忧'), '信的内容不完整');
-check(homeHtml().includes('letter-entry'), '首页应保留信封重读入口');
+check(!homeHtml().includes('letter-entry'), '信封入口已移到每日故事最下面');
 click({ act: 'letter-close' });
 check(!homeHtml().includes('letter-modal'), '收好信后阅读层应关闭');
-click({ act: 'letter-open' });
-check(homeHtml().includes('letter-modal'), '首页信封入口应能重读');
-click({ act: 'letter-close' });
 
 click({ act: 'tab', tab: 'cycle' });
 check(homeHtml().includes('今天的小日子'), '小日子页没渲染日记卡');
@@ -103,6 +100,11 @@ check(homeHtml().includes('天天相伴') && homeHtml().includes('开心一刻')
 check(homeHtml().includes('巨蟹座 · 今日小提示'), '故事页缺「巨蟹座 · 今日小提示」卡');
 check(homeHtml().includes('signFortune'), '故事页缺联网运势行');
 check(homeHtml().includes('睡前小建议'), '故事页缺「睡前小建议」卡');
+check(homeHtml().includes('letter-entry'), '每日故事页最下面应有信封入口');
+check(homeHtml().lastIndexOf('letter-entry') > homeHtml().lastIndexOf('陪伴小勋章'), '信封入口应排在勋章卡之后');
+click({ act: 'letter-open' });
+check(homeHtml().includes('letter-modal'), '每日故事页的信封应能重读');
+click({ act: 'letter-close' });
 check(homeHtml().includes('换一个笑话'), '缺「换一个笑话」按钮');
 click({ act: 'joke-another' });
 check(homeHtml().includes('每日一笑'), '换笑话后笑话卡应仍在');

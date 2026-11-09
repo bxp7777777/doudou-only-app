@@ -292,7 +292,6 @@ function homePage(now, period) {
       <p class="hero-note">${esc(homeNote(period))}</p>
       ${todaySummaryHTML(today, cycle)}
     </header>
-    ${letterEntryHTML()}
     ${homeSoftCardHTML()}${modules.map(moduleHTML).join('')}
     ${careCardsHTML(now)}
     ${toolsDrawerHTML(now)}
@@ -1869,7 +1868,7 @@ function storyPage() {
       <p class="line">${esc(dayPick(SLEEP_TIPS, 1))}</p>
     </section>`;
 
-  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${personalityTagHTML()}${dailySignCardHTML()}${sleepTipCard}${storyCard}${jokeCard}${badgeCardHTML()}</div>`;
+  return `<div class="wrap">${hero('每日小故事', date.cnShort(today) + ' · 小猪 ＋ 小金毛')}${personalityTagHTML()}${dailySignCardHTML()}${sleepTipCard}${storyCard}${jokeCard}${badgeCardHTML()}${letterEntryHTML()}</div>`;
 }
 
 /* ------------------------- 备忘 ------------------------- */
