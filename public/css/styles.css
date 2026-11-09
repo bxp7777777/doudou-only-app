@@ -1461,6 +1461,8 @@ body.focus-mode .hero-quote{display:block}
 .sign-extra .sign-pills{margin-top:6px}
 
 /* 给豆豆的一封信：首页信封入口 + 阅读层 */
+body.letter-open{overflow:hidden}
+body.letter-open .app{z-index:9998}
 .letter-entry{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:13px 15px;border:1px dashed #e8cdc4;border-radius:20px;background:linear-gradient(135deg,#fff8f1,#fff1f4);box-shadow:0 5px 14px rgba(150,95,82,.06)}
 .letter-entry-icon{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:42px;height:42px;border-radius:14px;background:#fff;font-size:22px;box-shadow:0 3px 9px rgba(150,95,82,.1)}
 .letter-entry-text{flex:1 1 auto;min-width:0}

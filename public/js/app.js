@@ -226,6 +226,10 @@ function render() {
       : settingsPage()) + (state.letterOpen ? letterModalHTML() : '');
 
   if (state.tab === 'story') setTimeout(loadFortune, 60);
+  // 信打开时把整页抬到导航栏之上，并锁住背景滚动
+  try {
+    if (document.body.classList) document.body.classList[state.letterOpen ? 'add' : 'remove']('letter-open');
+  } catch (e) {}
   if (state.letterOpen) {
     setTimeout(() => {
       const closeBtn = document.querySelector('.letter-close');
