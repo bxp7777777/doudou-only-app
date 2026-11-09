@@ -28,12 +28,78 @@ const state = {
   diaryQuery: '',
   tomato: { running: false, remain: 25 * 60, focus: 25 * 60, done: 0, setMin: 25 },
   toolsOpen: false,
-  searchQuery: ''
+  searchQuery: '',
+  letterOpen: false
 };
+
+/* 给豆豆的一封信：首次打开自动出现，之后从首页信封随时重读 */
+const LETTER_SEEN_KEY = 'dd:letterSeenV1';
+const LETTER_PARAGRAPHS = [
+  '这个是哥哥做的小小应用',
+  '当你看到这个信的时候肯定已经打开它啦',
+  '哥哥做这个应用的本意就是想用这个小应用可以提醒豆豆每天的天气有没有喝水 护肤了没有 还有一些小提醒',
+  '这样大王肯定可以比之前更好的注意到这些嘿嘿',
+  '这个应用的第一版非常非常的粗糙 什么功能都没有只有一小页 也没有买域名只能本地自己看',
+  '我就研究研究不断加一些新功能 买了独属于豆豆的域名 你看这个网址名字就知道啦',
+  '俺还加了联网的功能可以看当天天气的具体情况',
+  '还有很多很多小故事 大王闲着没事可以看一看',
+  '哥哥特意选了小猪和小金毛的主题风 独属于豆豆的专属画风',
+  '那个如果可以的视频就是俺根据这个应用的小猪和小金毛立绘做的 里面的游戏也是它们俩为主角',
+  '这个应用还有歌曲 都是我从豆豆大王歌单一个一个找滴 然后一个一个导出来',
+  '这个小应用包含了哥哥的很多心血与感情 希望豆豆大王喜欢！',
+  '里面还有一些小彩蛋 大王可以慢慢发掘',
+  '豆豆大王在哥哥心里就是就是最重要的人',
+  '你要永远相信自己 无论遇到什么困难 你都有一个臭哥哥会一直一直在你后面陪着你的',
+  '迷茫的时候可以放下手上的事情 自己一个人安安静静的思考 思路会清晰许多滴',
+  '大三这一年是很疲劳的一年 豆豆大王一定要照顾好自己 知豆不',
+  '这个小应用哥哥会更新下去嘟',
+  '如果豆豆遇到什么bug或者想加一些什么就告诉我 我立马更新',
+  '最后希望我的豆豆安乐无忧 天天开心！！！'
+];
+
+function letterWasSeen() {
+  try {
+    return !!store.get(LETTER_SEEN_KEY, false);
+  } catch (e) {
+    return false;
+  }
+}
+function markLetterSeen() {
+  try {
+    store.set(LETTER_SEEN_KEY, true);
+  } catch (e) {}
+}
 
 const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
 function esc(v) {
   return String(v === null || v === undefined ? '' : v).replace(/[&<>"']/g, (c) => ESC[c]);
+}
+
+function letterEntryHTML() {
+  return `<section class="letter-entry" aria-label="给豆豆大王的一封信">
+    <span class="letter-entry-icon" aria-hidden="true">💌</span>
+    <div class="letter-entry-text">
+      <strong>给豆豆大王的一封信</strong>
+      <span>哥哥有些悄悄话，想慢慢说给你听。</span>
+    </div>
+    <button class="btn btn-mini letter-entry-open" type="button" data-act="letter-open">打开</button>
+  </section>`;
+}
+
+function letterModalHTML() {
+  return `<div class="letter-modal" data-act="letter-backdrop" role="presentation">
+    <article class="letter-paper" role="dialog" aria-modal="true" aria-labelledby="letter-title">
+      <button class="letter-close" type="button" data-act="letter-close" aria-label="收好这封信">×</button>
+      <p class="letter-kicker">只给豆豆大王</p>
+      <h2 class="letter-title" id="letter-title">给豆豆大王的一封信</h2>
+      <div class="letter-body">
+        <p class="letter-greeting">豆豆大王好！！！</p>
+        ${LETTER_PARAGRAPHS.map((p) => `<p>${esc(p)}</p>`).join('')}
+      </div>
+      <p class="letter-sign">-你的哥哥</p>
+      <button class="btn letter-done" type="button" data-act="letter-close">收好这封信</button>
+    </article>
+  </div>`;
 }
 
 function todayKey() {
@@ -147,7 +213,7 @@ function render() {
   state.lastPeriod = period;
 
   appEl.innerHTML =
-    state.tab === 'home'
+    (state.tab === 'home'
       ? homePage(now, period)
       : state.tab === 'cycle'
       ? cyclePage()
@@ -157,9 +223,15 @@ function render() {
       ? memoPage()
       : state.tab === 'search'
       ? searchPage()
-      : settingsPage();
+      : settingsPage()) + (state.letterOpen ? letterModalHTML() : '');
 
   if (state.tab === 'story') setTimeout(loadFortune, 60);
+  if (state.letterOpen) {
+    setTimeout(() => {
+      const closeBtn = document.querySelector('.letter-close');
+      if (closeBtn && closeBtn.focus) closeBtn.focus();
+    }, 30);
+  }
   tabsEl.innerHTML = TABS.map(
     (t) => `<button class="tab ${state.tab === t.key ? 'on' : ''}" data-act="tab" data-tab="${t.key}"${state.tab === t.key ? ' aria-current="page"' : ''}>
       <span class="tab-icon" aria-hidden="true">${t.icon}</span><span class="tab-label">${t.label}</span>
@@ -216,6 +288,7 @@ function homePage(now, period) {
       <p class="hero-note">${esc(homeNote(period))}</p>
       ${todaySummaryHTML(today, cycle)}
     </header>
+    ${letterEntryHTML()}
     ${homeSoftCardHTML()}${modules.map(moduleHTML).join('')}
     ${careCardsHTML(now)}
     ${toolsDrawerHTML(now)}
@@ -1346,17 +1419,6 @@ function daySeed(now) {
 }
 
 const FORTUNE_SIGN = 'cancer';
-function fortuneLead(text) {
-  const s = String(text || '').trim();
-  if (!s) return '';
-  const m = s.match(/^[^。！？]{8,}[。！？]/);
-  const lead = m ? m[0] : s;
-  return lead.length > 64 ? lead.slice(0, 62) + '…' : lead;
-}
-function clipText(s, n) {
-  const t = String(s || '').trim();
-  return t.length > n ? t.slice(0, n) + '…' : t;
-}
 async function loadFortune() {
   const el = document.getElementById('signFortune');
   const extra = document.getElementById('signFortuneExtra');
@@ -1365,19 +1427,21 @@ async function loadFortune() {
     const r = await fetch('/api/horoscope?sign=' + FORTUNE_SIGN, { headers: { Accept: 'application/json' } });
     const d = await r.json();
     if (!d || !d.ok || !d.summary) throw new Error('empty');
-    el.textContent = fortuneLead(d.summary);
+    // 联网原文完整展示，不再截成第一句 / 固定字数
+    el.textContent = String(d.summary).trim();
     if (el.dataset) el.dataset.state = 'ok';
     if (extra) {
-      const aspects = [];
-      if (d.love) aspects.push('感情 ' + clipText(d.love, 18));
-      if (d.work) aspects.push('工作 ' + clipText(d.work, 18));
-      if (d.money) aspects.push('钱 ' + clipText(d.money, 18));
+      const blocks = [];
+      if (d.love) blocks.push('<p><strong>感情</strong> ' + esc(String(d.love).trim()) + '</p>');
+      if (d.work) blocks.push('<p><strong>工作</strong> ' + esc(String(d.work).trim()) + '</p>');
+      if (d.money) blocks.push('<p><strong>钱</strong> ' + esc(String(d.money).trim()) + '</p>');
+      if (d.advice) blocks.push('<p><strong>小建议</strong> ' + esc(String(d.advice).trim()) + '</p>');
       const luck = [];
       if (d.luckyColor) luck.push('幸运色 ' + d.luckyColor);
       if (d.luckyNumber) luck.push('幸运数 ' + d.luckyNumber);
       if (d.nobleSign) luck.push('贵人 ' + d.nobleSign);
       extra.innerHTML =
-        (aspects.length ? '<p class="sign-aspects">' + esc(aspects.join('　')) + '</p>' : '') +
+        (blocks.length ? '<div class="sign-aspects">' + blocks.join('') + '</div>' : '') +
         (luck.length ? '<div class="sign-pills">' + luck.map((x) => '<span class="sign-pill">' + esc(x) + '</span>').join('') + '</div>' : '');
       extra.hidden = !extra.innerHTML;
     }
@@ -2156,6 +2220,23 @@ document.addEventListener('click', (e) => {
 
   if (act === 'tab') return setTab(el.dataset.tab);
 
+  if (act === 'letter-open') {
+    state.letterOpen = true;
+    render();
+    return;
+  }
+  if (act === 'letter-backdrop') {
+    if (e.target.closest('.letter-paper')) return;
+    state.letterOpen = false;
+    render();
+    return;
+  }
+  if (act === 'letter-close') {
+    state.letterOpen = false;
+    render();
+    return;
+  }
+
   if (act === 'search-diary') {
     state.diaryDate = el.dataset.date || todayKey();
     setTab('cycle');
@@ -2595,6 +2676,11 @@ document.addEventListener('click', (e) => {
 });
 
 document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && state.letterOpen) {
+    state.letterOpen = false;
+    render();
+    return;
+  }
   if (e.key !== 'Enter') return;
   const t = e.target;
   if (t && t.id === 'memo-input' && !e.shiftKey) {
@@ -2903,6 +2989,9 @@ async function init() {
   }
   state.tab = currentTab();
   state.lastPeriod = date.periodOfDay(new Date());
+  // 第一次打开：自动展开这封信；之后从首页信封入口随时重读
+  state.letterOpen = !letterWasSeen();
+  if (state.letterOpen) markLetterSeen();
   render();
 
   setInterval(() => {

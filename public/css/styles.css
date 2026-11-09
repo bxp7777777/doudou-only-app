@@ -1450,9 +1450,50 @@ body.focus-mode .hero-quote{display:block}
 #focusPill{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:9997;border:1px solid #e6d3bd;background:#fff8ee;color:#8a6f56;font-size:11.5px;padding:7px 14px;border-radius:999px;box-shadow:0 6px 16px rgba(120,80,50,.16);cursor:pointer}
 .sign-not{color:#9c8571;font-size:12.5px;opacity:.92}
 
-.sign-fortune{color:#7c6a58;font-size:13px}
+.sign-fortune{color:#7c6a58;font-size:13px;line-height:1.8;overflow-wrap:anywhere}
 .sign-fortune[data-state=fallback]{color:#9a8878}
-.sign-extra{color:#91806d;font-size:12px;line-height:1.6;margin-top:2px}
+.sign-extra{color:#91806d;font-size:12px;line-height:1.7;margin-top:4px}
 .sign-extra[hidden]{display:none}
 .sign-aspects{margin:0}
+.sign-aspects p{margin:0 0 5px}
+.sign-aspects p:last-child{margin-bottom:0}
+.sign-aspects strong{color:#8d5f68;font-weight:600}
 .sign-extra .sign-pills{margin-top:6px}
+
+/* 给豆豆的一封信：首页信封入口 + 阅读层 */
+.letter-entry{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:13px 15px;border:1px dashed #e8cdc4;border-radius:20px;background:linear-gradient(135deg,#fff8f1,#fff1f4);box-shadow:0 5px 14px rgba(150,95,82,.06)}
+.letter-entry-icon{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:42px;height:42px;border-radius:14px;background:#fff;font-size:22px;box-shadow:0 3px 9px rgba(150,95,82,.1)}
+.letter-entry-text{flex:1 1 auto;min-width:0}
+.letter-entry-text strong{display:block;color:#9c5967;font-size:14px;line-height:1.5}
+.letter-entry-text span{display:block;margin-top:2px;color:var(--muted);font-size:11.5px;line-height:1.55}
+.letter-entry-open{flex:0 0 auto}
+.letter-modal{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;overscroll-behavior:contain;padding:max(18px,env(safe-area-inset-top)) 14px max(22px,env(safe-area-inset-bottom));background:rgba(61,40,38,.48);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:letterFade .2s ease both}
+.letter-paper{position:relative;width:100%;max-width:560px;margin:auto;padding:26px 24px 22px;border:1px solid #f0ded1;border-radius:24px;background:linear-gradient(180deg,#fffdf8 0%,#fff8ee 100%);box-shadow:0 22px 60px rgba(92,58,48,.24);animation:letterRise .26s cubic-bezier(.2,.85,.3,1) both}
+.letter-close{position:absolute;top:10px;right:12px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.7);color:#9b7e78;font-size:23px;line-height:1;cursor:pointer}
+.letter-close:active{background:#f6e7db}
+.letter-kicker{margin:0 0 4px;color:#b58a7f;font-size:10.5px;letter-spacing:.18em}
+.letter-title{margin:0 0 16px;color:#9c5967;font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:23px;line-height:1.4;font-weight:700}
+.letter-body{color:var(--ink-soft);font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:15px;line-height:1.95}
+.letter-body p{margin:0 0 11px;white-space:pre-wrap;overflow-wrap:anywhere}
+.letter-greeting{color:#a56270;font-size:19px;font-weight:700;line-height:1.5;margin-bottom:16px !important}
+.letter-sign{margin:18px 0 14px;color:#a56270;font-family:"Songti SC","STSong","Noto Serif SC",serif;font-size:15px;text-align:right}
+.letter-done{width:100%}
+@keyframes letterFade{from{opacity:0}to{opacity:1}}
+@keyframes letterRise{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+html[data-dark="1"] .letter-entry{border-color:#4a363c;background:linear-gradient(135deg,#2c2226,#302126);box-shadow:none}
+html[data-dark="1"] .letter-entry-icon{background:#3a2c31;box-shadow:none}
+html[data-dark="1"] .letter-entry-text strong{color:#ffb3c0}
+html[data-dark="1"] .letter-paper{border-color:#44343a;background:linear-gradient(180deg,#2b2327 0%,#241e22 100%);box-shadow:0 22px 60px rgba(0,0,0,.45)}
+html[data-dark="1"] .letter-close{background:rgba(60,45,50,.8);color:#dfc8c8}
+html[data-dark="1"] .letter-close:active{background:#4a363c}
+html[data-dark="1"] .letter-title,html[data-dark="1"] .letter-greeting,html[data-dark="1"] .letter-sign{color:#ffb3c0}
+html[data-dark="1"] .letter-body{color:#e6d8d6}
+html[data-dark="1"] .sign-aspects strong{color:#ffb3c0}
+@media (max-width:420px){
+  .letter-paper{padding:23px 18px 19px;border-radius:20px}
+  .letter-title{font-size:21px;margin-bottom:14px}
+  .letter-body{font-size:14.5px;line-height:1.9}
+  .letter-greeting{font-size:18px}
+  .letter-entry{padding:12px 13px;gap:10px}
+  .letter-entry-icon{width:38px;height:38px;font-size:20px}
+}
