@@ -1422,6 +1422,24 @@ function daySeed(now) {
 }
 
 const FORTUNE_SIGN = 'cancer';
+const STUDY_TIPS = [
+  '今天先把最难的那一门拆成一小段，做完就奖励自己歇五分钟。',
+  '背书别一口气啃完，分成三小份，一次只记一份。',
+  '学累了先站起来走两步，喝口水再回来，效率反而更高。',
+  '今天适合整理一遍笔记，把散着的知识点串成一条线。',
+  '先做二十分钟，再决定要不要继续；开始比完美更重要。',
+  '遇到卡住的题先做个标记，跳过去做会的，回头再收拾它。',
+  '别和别人比进度，按自己的节奏走一格也算前进。',
+  '把手机放远一点，给自己一段不被打断的二十五分钟。',
+  '复习时先回忆一遍，再翻书对答案，记得会更牢。',
+  '作业先列个小清单，做完一项划掉一项，心里会轻一点。',
+  '眼睛酸了就看看远处，肩膀松一松，再继续。',
+  '今天学多学少都没关系，坐下来了就已经很棒。',
+  '难的内容先弄懂一小块，比从头到尾翻一遍更有用。',
+  '把今天要做的三件事写下来，做完第一件就会顺很多。',
+  '上课没听明白的地方先记下关键词，课后只补那一小段。',
+  '困的时候别硬撑，趴十分钟再回来，脑子会清醒一点。'
+];
 async function loadFortune() {
   const el = document.getElementById('signFortune');
   const extra = document.getElementById('signFortuneExtra');
@@ -1436,8 +1454,8 @@ async function loadFortune() {
     if (extra) {
       const blocks = [];
       if (d.love) blocks.push('<p><strong>感情</strong> ' + esc(String(d.love).trim()) + '</p>');
-      if (d.work) blocks.push('<p><strong>工作</strong> ' + esc(String(d.work).trim()) + '</p>');
-      if (d.money) blocks.push('<p><strong>钱</strong> ' + esc(String(d.money).trim()) + '</p>');
+      // 豆豆现在以学习为主：不展示工作/财运，换成每天一条学习小提示
+      blocks.push('<p><strong>学习</strong> ' + esc(dayPick(STUDY_TIPS, 0)) + '</p>');
       if (d.advice) blocks.push('<p><strong>小建议</strong> ' + esc(String(d.advice).trim()) + '</p>');
       const luck = [];
       if (d.luckyColor) luck.push('幸运色 ' + d.luckyColor);
