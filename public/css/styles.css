@@ -1458,6 +1458,7 @@ body.focus-mode .hero-quote{display:block}
 .sign-aspects p{margin:0 0 5px}
 .sign-aspects p:last-child{margin-bottom:0}
 .sign-aspects strong{color:#8d5f68;font-weight:600}
+.sign-src{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;background:#f7ecef;color:#a87c86;font-size:10px;line-height:1.5;white-space:nowrap;vertical-align:1px}
 .sign-extra .sign-pills{margin-top:6px}
 
 /* 给豆豆的一封信：首页信封入口 + 阅读层 */
@@ -1491,6 +1492,7 @@ html[data-dark="1"] .letter-close:active{background:#4a363c}
 html[data-dark="1"] .letter-title,html[data-dark="1"] .letter-greeting,html[data-dark="1"] .letter-sign{color:#ffb3c0}
 html[data-dark="1"] .letter-body{color:#e6d8d6}
 html[data-dark="1"] .sign-aspects strong{color:#ffb3c0}
+html[data-dark="1"] .sign-src{background:#33262b;color:#d7aab4}
 @media (max-width:420px){
   .letter-paper{padding:23px 18px 19px;border-radius:20px}
   .letter-title{font-size:21px;margin-bottom:14px}
